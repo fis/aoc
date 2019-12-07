@@ -1,13 +1,14 @@
 import collections
 import enum
+import queue
 
 def load(path):
     with open(path) as f:
         return [int(i) for i in f.readline().split(',')]
 
-def run(prog, stdin=None, trace=False):
+def run(prog, stdin=None, stdout=None, trace=False):
     vm = VM(prog)
-    vm.run(stdin=stdin, trace=trace)
+    vm.run(stdin=stdin, stdout=stdout, trace=trace)
 
 Opcode = collections.namedtuple('Opcode', 'name nargs action jump', defaults=(0, None, False))
 
@@ -29,11 +30,12 @@ class VM:
         self._ip = 0
         self._prog = list(prog)
         self._stdin = None
-        pass
+        self._stdout = None
 
-    def run(self, ip=0, stdin=None, trace=False):
+    def run(self, ip=0, stdin=None, stdout=None, trace=False):
         self._ip = ip
         self._stdin = stdin
+        self._stdout = stdout
         while True:
             opcode, args = self._fetch(self._ip)
             if trace: self._trace(opcode, args)
@@ -85,9 +87,13 @@ class VM:
         if self._stdin is None:
             return int(input('? '))
         elif self._stdin:
-            n = self._stdin[0]
-            self._stdin = self._stdin[1:]
-            print('? -> {}'.format(n))
+            if type(self._stdin) == queue.Queue:
+                n = self._stdin.get()
+            else:
+                n = self._stdin[0]
+                self._stdin = self._stdin[1:]
+            if self._stdout is None:
+                print('? -> {}'.format(n))
             return n
         else:
             raise RuntimeError('read past provided input')
@@ -102,7 +108,13 @@ class VM:
         self._write(dst, self._input())
 
     def _op_out(self, a):
-        print(self._read(a))
+        n = self._read(a)
+        if self._stdout is None:
+            print(n)
+        elif type(self._stdout) == queue.Queue:
+            self._stdout.put(n)
+        else:
+            self._stdout.append(n)
 
     def _op_jnz(self, a, tgt):
         if self._read(a) != 0:
