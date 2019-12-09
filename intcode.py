@@ -17,23 +17,27 @@ Arg = collections.namedtuple('Arg', 'mode value')
 class ArgMode(enum.Enum):
     INDIRECT = 0
     IMMEDIATE = 1
+    RELATIVE = 2
 
     @classmethod
-    def prefix(cls, mode):
+    def format(cls, arg):
         return {
-            ArgMode.INDIRECT: '@',
-            ArgMode.IMMEDIATE: '',
-        }[mode]
+            ArgMode.INDIRECT: '{}',
+            ArgMode.IMMEDIATE: '#{}',
+            ArgMode.RELATIVE: 'B{:+}',
+        }[arg.mode].format(arg.value)
 
 class VM:
     def __init__(self, prog):
         self._ip = 0
+        self._base = 0
         self._prog = list(prog)
         self._stdin = None
         self._stdout = None
 
     def run(self, ip=0, stdin=None, stdout=None, trace=False):
         self._ip = ip
+        self._base = 0
         self._stdin = stdin
         self._stdout = stdout
         while True:
@@ -48,7 +52,7 @@ class VM:
     def _trace(self, opcode, args):
         out = '{:-4d}: {}'.format(self._ip, opcode.name)
         for arg in args:
-            out += ' {}{}'.format(ArgMode.prefix(arg.mode), arg.value)
+            out += ' {}'.format(ArgMode.format(arg))
         print(out)
 
     def _fetch(self, ip):
@@ -70,16 +74,24 @@ class VM:
         return opcode, args
 
     def _read(self, arg):
-        if arg.mode == ArgMode.INDIRECT:
-            return self._prog[arg.value]
-        elif arg.mode == ArgMode.IMMEDIATE:
+        if arg.mode == ArgMode.IMMEDIATE:
             return arg.value
+        elif arg.mode == ArgMode.INDIRECT or arg.mode == ArgMode.RELATIVE:
+            p = self._base if arg.mode == ArgMode.RELATIVE else 0
+            p += arg.value
+            if p < 0: raise RuntimeError('read p {}'.format(p))
+            if p >= len(self._prog): self._prog.extend([0] * (p - len(self._prog) + 1))
+            return self._prog[p]
         else:
             raise RuntimeError('invalid read arg: ' + repr(arg))
 
     def _write(self, arg, n):
-        if arg.mode == ArgMode.INDIRECT:
-            self._prog[arg.value] = n
+        if arg.mode == ArgMode.INDIRECT or arg.mode == ArgMode.RELATIVE:
+            p = self._base if arg.mode == ArgMode.RELATIVE else 0
+            p += arg.value
+            if p < 0: raise RuntimeError('read p {}'.format(p))
+            if p >= len(self._prog): self._prog.extend([0] * (p - len(self._prog) + 1))
+            self._prog[p] = n
         else:
             raise RuntimeError('invalid write arg: ' + repr(arg))
 
@@ -134,6 +146,9 @@ class VM:
     def _op_seteq(self, a1, a2, dst):
         self._write(dst, int(self._read(a1) == self._read(a2)))
 
+    def _op_setb(self, a):
+        self._base += self._read(a)
+
     _opcodes = {
         1:  Opcode(name='add',   nargs=3, action=_op_add),
         2:  Opcode(name='mul',   nargs=3, action=_op_mul),
@@ -143,5 +158,6 @@ class VM:
         6:  Opcode(name='jz',    nargs=2, action=_op_jz, jump=True),
         7:  Opcode(name='setlt', nargs=3, action=_op_setlt),
         8:  Opcode(name='seteq', nargs=3, action=_op_seteq),
+        9:  Opcode(name='setb',  nargs=1, action=_op_setb),
         99: Opcode(name='halt'),
     }
