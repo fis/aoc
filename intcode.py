@@ -101,6 +101,8 @@ class VM:
         elif self._stdin:
             if type(self._stdin) == queue.Queue:
                 n = self._stdin.get()
+            elif callable(self._stdin):
+                n = self._stdin()
             else:
                 n = self._stdin[0]
                 self._stdin = self._stdin[1:]
@@ -125,6 +127,8 @@ class VM:
             print(n)
         elif type(self._stdout) == queue.Queue:
             self._stdout.put(n)
+        elif callable(self._stdout):
+            self._stdout(n)
         else:
             self._stdout.append(n)
 
