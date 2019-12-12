@@ -16,21 +16,15 @@ def robot(prog, white=set()):
             cycle[0] = 'turn'
             p = tuple(rpos)
             painted.add(p)
-            if n == 0:
-                if p in white: white.remove(p)
-            elif n == 1:
-                white.add(p)
-            else:
-                raise RuntimeError('bad paint: {}'.format(n))
+            if n == 0:   white.discard(p)
+            elif n == 1: white.add(p)
+            else: raise RuntimeError('bad paint: {}'.format(n))
         else:
             cycle[0] = 'paint'
             dx, dy = rdir[0], rdir[1]
-            if n == 0:
-                dx, dy = dy, -dx
-            elif n == 1:
-                dx, dy = -dy, dx
-            else:
-                raise RuntimeError('bad turn: {}'.format(n))
+            if n == 0:   dx, dy = dy, -dx
+            elif n == 1: dx, dy = -dy, dx
+            else: raise RuntimeError('bad turn: {}'.format(n))
             rpos[0] += dx
             rpos[1] += dy
             rdir[0] = dx
