@@ -195,3 +195,22 @@ them together), this was easily solvable by just finding out
 independently for each of the dimensions how many steps their cycle
 is. The full solution is then just the least common multiple of all
 three.
+
+## Day 13
+
+It's an odd day, and we all know what that means: more Intcode!
+
+Today's puzzle input was a simple Breakout clone, where you first had
+to count blocks in the initial state, then play the game to the end
+(destroy all the blocks) and report the final score.
+
+There are three parts to the solution this time:
+
+- Part 1 simply renders the initial view using ASCII characters (just
+  for illustration), then counts blocks.
+- Part 2 (interactive mode) is a curses-based implementation that can
+  be played manually. Press the left or right arrows to move the
+  paddle, any other key to keep it in place and just advance one time
+  step. This part is currently commented out.
+- Part 2 (demo mode) just runs the game until it halts, using a simple
+  controller that makes the paddle attempt to follow the ball.
