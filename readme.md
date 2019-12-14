@@ -25,7 +25,7 @@ sequence of movement instructions (right 75, down 30, ...).
 ### Part 1
 
 In part 1, the task was simply to find the intersection closest to the
-origin.  Just for fun, instead of painting every position of the
+origin. Just for fun, instead of painting every position of the
 wires, the solution instead tests every horizontal (resp. vertical)
 segment of wire 1 with every vertical (resp. horizontal) segment of
 wire 2, and keeps track of the intersections.
@@ -37,7 +37,7 @@ and asked for the intersection where the combined delay was lowest.
 
 While it would be certainly possible to generalize the part 1 solution
 for this, the variant here forgot all about orientation of the
-segments.  So instead part 2 is solved the boring way, by just looping
+segments. So instead part 2 is solved the boring way, by just looping
 over each wire step and keeping track of the delay, then locating the
 position with the lowest combined delay.
 
@@ -151,7 +151,7 @@ the next sweep. The answer was formed from the coordinates of the
 
 The solution implements the sweep by first locating all visible
 asteroids, then sorting them based on the angle of the line connecting
-them.  After removing the visible set, the cycle repeats until no
+them. After removing the visible set, the cycle repeats until no
 asteroids remain.
 
 ## Day 11
@@ -241,7 +241,7 @@ least one unit of `FUEL`. The solution computes this by performing a
 topological sort of the DAG (with
 [Kahn's algorithm](https://doi.org/10.1145%2F368996.369025)), then
 iterating over the ordered nodes and keeping track of how much each
-chemical is needed.  The topological sort guarantees that each node is
+chemical is needed. The topological sort guarantees that each node is
 visited only after all its ancestors, meaning the full quantity of
 that chemical required is known.
 
@@ -250,3 +250,7 @@ Part 2 inverted the problem, and wanted to know the maximum amount of
 solved problem, the solution just does a binary search to find the
 point where the ore consumption to generate a given amount of fuel
 exceeds a trillion.
+
+Check out the `day14-*.png` files to see the dependency graphs. They
+were created by the `day14-dot.py` script, which writes the graph in
+Graphviz .dot file format.
