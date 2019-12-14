@@ -212,5 +212,41 @@ There are three parts to the solution this time:
   be played manually. Press the left or right arrows to move the
   paddle, any other key to keep it in place and just advance one time
   step. This part is currently commented out.
-- Part 2 (demo mode) just runs the game until it halts, using a simple
-  controller that makes the paddle attempt to follow the ball.
+- Part 2 (demo mode) just runs the game in headless mode until it
+  halts, using a simple controller that makes the paddle attempt to
+  follow the ball.
+
+## Day 14
+
+The solution here approaches day 14 as a graph problem.
+
+The puzzle input specified which combination and quantities of
+chemicals produced N units of a different chemical, with the
+conditions that there was just one reaction per output chemical, and
+that no reaction could run partially.
+
+The solution turns the input list into a dependency graph where the
+directed edges lead from (e.g.) `A` to `B` and `C` if the (one)
+reaction that produces `A` requires `B` and `C` as inputs. Edge
+weights denote how many units are needed. Each node also holds the
+amount of output units produced by the reaction.
+
+The graph is always a DAG, with the property that the special chemical
+`FUEL` is the only node with no in-edges (not needed by any other
+reaction), and the special raw material `ORE` the only node with no
+out-edges (not produced by any reaction).
+
+Part 1 asked for the minimum amount of `ORE` needed to produce at
+least one unit of `FUEL`. The solution computes this by performing a
+topological sort of the DAG (with
+[Kahn's algorithm](https://doi.org/10.1145%2F368996.369025)), then
+iterating over the ordered nodes and keeping track of how much each
+chemical is needed.  The topological sort guarantees that each node is
+visited only after all its ancestors, meaning the full quantity of
+that chemical required is known.
+
+Part 2 inverted the problem, and wanted to know the maximum amount of
+`FUEL` that can be produced from a trillion `ORE`. To reduce this to a
+solved problem, the solution just does a binary search to find the
+point where the ore consumption to generate a given amount of fuel
+exceeds a trillion.
