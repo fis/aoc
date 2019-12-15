@@ -35,19 +35,30 @@ class VM:
         self._stdin = None
         self._stdout = None
 
-    def run(self, ip=0, stdin=None, stdout=None, trace=False):
-        self._ip = ip
-        self._base = 0
+    def run(self, stdin=None, stdout=None, trace=False):
         self._stdin = stdin
         self._stdout = stdout
         while True:
-            opcode, args = self._fetch(self._ip)
-            if trace: self._trace(opcode, args)
-            if opcode.action is None:
+            if not self.step(trace=trace):
                 return
-            opcode.action(self, *args)
-            if not opcode.jump:
-                self._ip += 1 + opcode.nargs
+
+    def step_out(self, stdin=None, trace=False):
+        self._stdin = stdin
+        self._stdout = []
+        while not self._stdout:
+            if not self.step(trace=trace):
+                return None
+        return self._stdout[0]
+
+    def step(self, trace=False):
+        opcode, args = self._fetch(self._ip)
+        if trace: self._trace(opcode, args)
+        if opcode.action is None:
+            return False
+        opcode.action(self, *args)
+        if not opcode.jump:
+            self._ip += 1 + opcode.nargs
+        return True
 
     def _trace(self, opcode, args):
         out = '{:-4d}: {}'.format(self._ip, opcode.name)

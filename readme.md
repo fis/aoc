@@ -254,3 +254,23 @@ exceeds a trillion.
 Check out the `day14-*.png` files to see the dependency graphs. They
 were created by the `day14-dot.py` script, which writes the graph in
 Graphviz .dot file format.
+
+## Day 15
+
+Odd is still the new Intcode.
+
+The setting in day 15 involves using an Intcode-driven robot to map a
+space, then measure the distance to a target square and time how long
+it takes to fill the empty space.
+
+The initial solution here did the mapping using a breadth-first search
+starting from the origin, because it naturally gave the answer (length
+of shortest path) to part 1. For simplicity, it also moves the robot
+back to origin between expanding each of the new fringe nodes. Turns
+out the map is actually a labyrinth, so this approach is abysmally
+slow, taking a full minute to run. Still, it does the job.
+
+The original solution for part 1 used to stop short after it found the
+target square. For part 2, the full map is needed, so it no longer
+does so. It doesn't really affect the runtime: the target square is in
+the far corner of the labyrinth.
