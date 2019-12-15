@@ -64,31 +64,21 @@ Droid = RealDroid if len(sys.argv) < 2 or sys.argv[1] != 'test' else FakeDroid
 # part 1
 
 def build_map(droid):
-    space = {(0,0): dict(tile=Tile.FLOOR, path=[(0,0)])}
-    fringe = set([(0, 0)])
-    target = None
+    space = {(0,0): Tile.FLOOR}
+    target = [None]
 
-    while fringe:
-        new_fringe = set()
-        for pos in fringe:
-            pos_path, moved = space[pos]['path'], False
-            for step in ((pos[0],pos[1]-1), (pos[0],pos[1]+1), (pos[0]-1,pos[1]), (pos[0]+1,pos[1])):
-                if step in space: continue  # already visited
-                if not moved:
-                    droid.must_move(pos_path[1:])
-                    moved = True
-                res = droid.try_move(step)
-                if res == Tile.TARGET: target = step
-                space[step] = dict(tile=res)
-                if res != Tile.WALL:
-                    space[step]['path'] = pos_path + [step]
-                    new_fringe.add(step)
-                    droid.must_move([pos])
-            if moved:
-                droid.must_move(pos_path[-2::-1])
-        fringe = new_fringe
+    def dfs(pos):
+        for step in ((pos[0],pos[1]-1), (pos[0],pos[1]+1), (pos[0]-1,pos[1]), (pos[0]+1,pos[1])):
+            if step in space: continue  # already visited
+            res = droid.try_move(step)
+            space[step] = res
+            if res == Tile.WALL: continue  # way blocked
+            if res == Tile.TARGET: target[0] = step
+            dfs(step)
+            droid.must_move([pos])
 
-    return space, target
+    dfs((0,0))
+    return space, target[0]
 
 space, target = build_map(Droid())
 
@@ -100,29 +90,29 @@ max_y = max(c[1] for c in space.keys())
 for y in range(min_y, max_y+1):
     for x in range(min_x, max_x+1):
         ch = ' '
-        if (x,y) in space: ch = tilech[space[(x,y)]['tile']]
+        if (x,y) in space: ch = tilech[space[(x,y)]]
         if x == 0 and y == 0: ch = '@'
         print(ch, end='')
     print('')
 
-path = space[target]['path']
-print(path)
-print(len(path)-1)
+def distances(space, start):
+    out = {}
+    fringe = set([(start, 0)])
+    while fringe:
+        new_fringe = set()
+        for pos, dist in fringe:
+            out[pos] = dist
+            for step in ((pos[0],pos[1]-1), (pos[0],pos[1]+1), (pos[0]-1,pos[1]), (pos[0]+1,pos[1])):
+                if step not in space or space[step] == Tile.WALL: continue  # way blocked
+                if step in out: continue  # already visited
+                new_fringe.add((step, dist+1))
+        fringe = new_fringe
+    return out
+
+dists = distances(space, (0,0))
+print(dists[target])
 
 # part 2
 
-empty = set(p for p, c in space.items() if c['tile'] == Tile.FLOOR)
-
-clock = 0
-fringe = set([target])
-while fringe:
-    new_fringe = set()
-    for pos in fringe:
-        for step in ((pos[0],pos[1]-1), (pos[0],pos[1]+1), (pos[0]-1,pos[1]), (pos[0]+1,pos[1])):
-            if step not in empty: continue
-            empty.remove(step)
-            new_fringe.add(step)
-    fringe = new_fringe
-    clock += 1
-
-print(clock-1)
+dists = distances(space, target)
+print(max(dists.values()))

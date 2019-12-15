@@ -265,12 +265,25 @@ it takes to fill the empty space.
 
 The initial solution here did the mapping using a breadth-first search
 starting from the origin, because it naturally gave the answer (length
-of shortest path) to part 1. For simplicity, it also moves the robot
+of shortest path) to part 1. For simplicity, it also moved the robot
 back to origin between expanding each of the new fringe nodes. Turns
-out the map is actually a labyrinth, so this approach is abysmally
-slow, taking a full minute to run. Still, it does the job.
+out the map is actually a labyrinth, so this approach was abysmally
+slow, taking a full minute to run. Still, it did the job, producing
+the solutions I submitted. This version is still in the revision
+history.
 
-The original solution for part 1 used to stop short after it found the
-target square. For part 2, the full map is needed, so it no longer
-does so. It doesn't really affect the runtime: the target square is in
-the far corner of the labyrinth.
+The very first solution for part 1 further used to stop short after it
+found the target square. For part 2, the full map is needed, so that
+version no longer exists at all. Stopping early doesn't really affect
+the runtime: the target square is in the far corner of the labyrinth.
+
+The current solution does a depth-first search to build the full map,
+which is far more suited to the motions of the robot. With this
+solution, it takes significantly less than a second to discover the
+full map.
+
+To answer the questions, once the full map is in memory, there's a
+simple breadth-first search routine to compute distances to all
+(non-wall, reachable) tiles from a given starting point. Part 1 answer
+is just the origin-to-target distance, while part 2 is the maximum
+distance to any tile from the target square.
