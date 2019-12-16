@@ -287,3 +287,57 @@ simple breadth-first search routine to compute distances to all
 (non-wall, reachable) tiles from a given starting point. Part 1 answer
 is just the origin-to-target distance, while part 2 is the maximum
 distance to any tile from the target square.
+
+## Day 16
+
+The topic of the day was the Flawed Frequency Transmission
+algorithm. Denoting the `i`'th (1-based) digit of the original signal
+by `s(i)` and the output signal by `t(i)`, one phase (step) of the FFT
+algorithm is represented by the equations:
+
+    t(j) = |sum_(i=1..N) s(i) * W(⌊i / j⌋ mod 4)| mod 10
+    W(0..3) = {0, 1, 0, -1}
+
+### Part 1
+
+Part 1 asked for the first 8 digits after 100 phases of FFT on the
+puzzle input. There are no immediately obvious speed-ups for this: the
+first digits are affected in a somewhat complex manner by the entire
+sequence. The solution implements the FFT as a simple translation of
+the above equations.
+
+### Part 2
+
+Part 2 required extracting an 8-digit substring after 100 phases
+iterated on the puzzle input repeated 10000 times. This is probably
+not computationally reasonable by the simple method.
+
+The solution here uses a trick, based on the sequence of values of `W`
+used for the digits of the latter half of the signal in the FFT phase.
+Note how the expression `W(⌊i / j⌋ mod 4)` behaves when `j` is large
+compared to `i`:
+
+    0 <= i < j:   ⌊i / j⌋ = 0  |  W(⌊i / j⌋ mod 4) = 0
+    j <= i < 2j:  ⌊i / j⌋ = 1  |  W(⌊i / j⌋ mod 4) = 1
+
+What this means is, for the latter half of the signal (where `i < 2j`
+for all digits), we can simplify the algorithm to:
+
+    t(j) = |sum_(i=1..N) s(i) * W(⌊i / j⌋ mod 4)| mod 10
+         = |sum_(i=1..j-1) s(i) * 0 + sum_(i=j..N) s(i) * 1| mod 10
+         = |sum_(i=j..N) s(i)| mod 10
+         = (sum_(i=j..N) s(i)) mod 10
+
+In other words, the `j`'th output digit in the latter half is simply
+the sum of all the input digits from its own position to the end of
+the signal, and is not affected by the earlier digits at all. This
+means that, as long as the message we want to extract is in the latter
+half, we can ignore all digits before the message, and further do the
+update of the remaining signal in linear time simply by maintaining a
+running count of the sum of digits.
+
+By a strange coincidence, all the examples and the puzzle input asked
+for values in the latter half of the signal. So the solution
+constructs only the relevant part of the 10000-fold repeated signal
+(in reverse order, for convenience), and then updates it in-place for
+100 phases to obtain the answer.
