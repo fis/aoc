@@ -372,3 +372,9 @@ the robot could take (basically, crossing each intersection straight
 through), and when that path was written as a linear program, it was
 easy to spot reoccurring substrings and add line breaks to break it
 down to functions. See comments of `day17.py` for that breakdown.
+
+Just for the pretty pictures, the finished drawing is also available.
+See `day17-plan.png`, or `day17-plan.svgz` for the Inkscape source
+image. Mind the
+[Inkscape bug](https://bugs.launchpad.net/inkscape/+bug/1462051) I
+kept hitting when editing it.
