@@ -334,10 +334,41 @@ the signal, and is not affected by the earlier digits at all. This
 means that, as long as the message we want to extract is in the latter
 half, we can ignore all digits before the message, and further do the
 update of the remaining signal in linear time simply by maintaining a
-running count of the sum of digits.
+running sum of the digits from right to left.
 
 By a strange coincidence, all the examples and the puzzle input asked
 for values in the latter half of the signal. So the solution
 constructs only the relevant part of the 10000-fold repeated signal
 (in reverse order, for convenience), and then updates it in-place for
 100 phases to obtain the answer.
+
+## Day 17
+
+We'll all be so weirded out when day 25 rolls out and *isn't* related
+to Intcode. However, today is not that day.
+
+That being said, the interactions with the Intcode program today were
+quite limited. The puzzle input, when executed as-is, simply produced
+a map (as an ASCII image) of a (self-intersecting) path. For part 1,
+it was enough to look up coordinates of all the intersections.
+
+The program could also be modified to start running a simulation for
+moving a robot along that path, accepting as input a very simple
+program for the robot: one main function consisting of calls to three
+functions A, B and C, together with definitions for those functions as
+turtle graphics instructions (90-degree turns, N units forward).
+
+The (not so challenging) challenge was to fit the required movement
+rules within the 20-character length limits of the main program and
+each of the functions.
+
+Initially, I was planning to identify repeating patterns visually, by
+copying the map into a vector graphics program, and producing linked
+(optionally rotated) duplicates of the functions that could then be
+manipulated to fit the path.
+
+"Unfortunately," it turned out there was a very obvious single path
+the robot could take (basically, crossing each intersection straight
+through), and when that path was written as a linear program, it was
+easy to spot reoccurring substrings and add line breaks to break it
+down to functions. See comments of `day17.py` for that breakdown.
