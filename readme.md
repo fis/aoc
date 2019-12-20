@@ -378,3 +378,20 @@ See `day17-plan.png`, or `day17-plan.svgz` for the Inkscape source
 image. Mind the
 [Inkscape bug](https://bugs.launchpad.net/inkscape/+bug/1462051) I
 kept hitting when editing it.
+
+## Day 19
+
+Intcode, the gift that keeps on giving. Although the day 19 puzzle was
+again remarkably simple.
+
+The provided input program could be used to query whether grid squares
+were part of a beam or not. Part 1 asked for the number of points that
+were, out of the top-left 50x50 square. This was trivial to calculate
+simply by probing all the squares, in a reasonable amount of time.
+
+The answer to part 2 was based on when a 100x100 square first fit
+within the beam. A full scan would probably have been too slow, but it
+was quite easy to follow the beam just by tracing the left/right edges
+down, keep a history of the beam edges for 100 most recent rows, and
+then compare whether a box of that size with its lower-left corner at
+the beam's left edge would fit.

@@ -4,19 +4,22 @@ import os.path
 import subprocess
 import sys
 
+def output_file(cmd):
+    base = os.path.splitext(cmd)[0]
+    return base + '-output.txt'
+
 if len(sys.argv) > 1:
     tests = sys.argv[1:]
 else:
     tests = []
     for day in range(1, 26):
         cmd = './day{:02}.py'.format(day)
-        if not os.path.exists(cmd):
-            break
+        if not os.path.exists(cmd) or not os.path.exists(output_file(cmd)):
+            continue
         tests.append(cmd)
 
 for cmd in tests:
-    cmd_base, ext = os.path.splitext(cmd)
-    want_file = cmd_base + '-output.txt'
+    want_file = output_file(cmd)
     if not os.path.exists(want_file):
         raise RuntimeError('no known good output: ' + want_file)
     with open(want_file) as f:
