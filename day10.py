@@ -27,7 +27,7 @@ def angle(start, end):
 asteroids = set()
 with open('day10-input.txt' if len(sys.argv) < 2 else sys.argv[1]) as f:
     for y, row in enumerate(f.readlines()):
-        for x, c in enumerate(row.strip()):
+        for x, c in enumerate(row.rstrip()):
             if c == '#':
                 asteroids.add((x, y))
 

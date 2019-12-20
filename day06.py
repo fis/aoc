@@ -8,9 +8,9 @@ orbits = dict()
 
 with open('day06-input.txt' if len(sys.argv) < 2 else sys.argv[1]) as f:
     for ln in f.readlines():
-        parent, child = ln.strip().split(')')
+        parent, child = ln.rstrip().split(')')
         orbits.setdefault(parent, []).append(child)
-    modules = [int(ln.strip()) for ln in f.readlines()]
+    modules = [int(ln.rstrip()) for ln in f.readlines()]
 
 def count_orbits(parent, depth=1):
     orbs = 0

@@ -5,8 +5,8 @@ import sys
 # part 1
 
 with open('day03-input.txt' if len(sys.argv) < 2 else sys.argv[1]) as f:
-    line_a = f.readline().strip().split(',')
-    line_b = f.readline().strip().split(',')
+    line_a = f.readline().rstrip().split(',')
+    line_b = f.readline().rstrip().split(',')
 
 def to_segs(line):
     segs = []

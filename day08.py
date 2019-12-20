@@ -3,7 +3,7 @@
 import sys
 
 with open('day08-input.txt' if len(sys.argv) < 2 else sys.argv[1]) as f:
-    data = f.readline().strip()
+    data = f.readline().rstrip()
 
 W = 25 if len(sys.argv) < 3 else int(sys.argv[2])
 H = 6 if len(sys.argv) < 4 else int(sys.argv[3])

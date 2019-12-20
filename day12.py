@@ -10,7 +10,7 @@ def parse(line):
     return [int(m.group(1)), int(m.group(2)), int(m.group(3))]
 
 with open('day12-input.txt' if len(sys.argv) < 2 else sys.argv[1]) as f:
-    moons_init = [dict(pos=parse(line.strip()), vel=[0,0,0]) for line in f.readlines()]
+    moons_init = [dict(pos=parse(line.rstrip()), vel=[0,0,0]) for line in f.readlines()]
 
 # part 1
 

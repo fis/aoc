@@ -3,7 +3,7 @@
 import sys
 
 with open('day16-input.txt') as f:
-    sig = f.readline().strip()
+    sig = f.readline().rstrip()
 
 # examples part 1
 #sig = '12345678'

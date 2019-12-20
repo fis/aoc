@@ -12,7 +12,7 @@ def pspec(spec):
 deps, quanta = {}, {}
 with open('day14-input.txt' if len(sys.argv) < 2 else sys.argv[1]) as f:
     for line in f.readlines():
-        inspecs, outspec = line.strip().split(' => ')
+        inspecs, outspec = line.rstrip().split(' => ')
         outchem, outq = pspec(outspec)
         deps[outchem] = dict(pspec(inspec) for inspec in inspecs.split(', '))
         quanta[outchem] = outq
