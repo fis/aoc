@@ -395,3 +395,46 @@ was quite easy to follow the beam just by tracing the left/right edges
 down, keep a history of the beam edges for 100 most recent rows, and
 then compare whether a box of that size with its lower-left corner at
 the beam's left edge would fit.
+
+## Day 20
+
+A graph puzzle with a twist.
+
+### Part 1
+
+Part 1 was straightforward. The solution here parses the input ASCII
+map, locates all portal labels, and for each label computes which
+other labels are reachable along the normal paths. Since this is done
+with a breadth-first search, it also gives the distance of the
+shortest path to each reachable label.
+
+Next, a weighted undirected graph is built, with labels as vertices
+and edges between all reachable labels with the distances as weights.
+Adding an edge of weight 1 between the matching inner and outer labels
+makes the graph a complete description of the first part labyrinth.
+
+The shortest path from `AA` to `ZZ` is now just the shortest path in
+the grahp. The solution here uses
+[Dijkstra's algorithm](https://doi.org/10.1007%2FBF01386390).
+
+### Part 2
+
+The twist in part 2 is that the inner portals, instead of leading
+directly to the corresponding outer portal, leads to a recursive copy
+of the maze. Only the outermost level contains the `AA` and `ZZ`
+portals.
+
+While this makes the graph technically infinite, the existing
+description can still be used. We just need to add a level adjustment
+value to each edge: `0` for following a regular path, `+1` for
+stepping from an inner portal to an outer one, and `-1` for the
+inverse operation.
+
+Since we're stopping early, Dijkstra's algorithm can run on the new
+graph almost unmodified. We just keep track of the recursion level in
+addition to the node, and ignore edges that would lead to a negative
+level.
+
+The solution also uses a maximum distance limit to terminate in case
+(as in example 2) there's no path to the exit node at all, but a cycle
+that can be used to recurse forever.
