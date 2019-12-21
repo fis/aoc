@@ -438,3 +438,52 @@ level.
 The solution also uses a maximum distance limit to terminate in case
 (as in example 2) there's no path to the exit node at all, but a cycle
 that can be used to recurse forever.
+
+## Day 21
+
+These puzzles are getting to be Intcode-related in name only. It's
+probably all just a crafty way of offloading the work from validating
+the solution from the puzzle site to the user's computer.
+
+### Part 1
+
+In part 1, the Intcode computer was controlling a *springdroid*, which
+could read whether there's ground in front of it in the next four
+squares (sensors `A` through `D`), do a sequence of boolean operations
+(up to 15), and based on the results either decide to jump (a distance
+of 4 steps) or continue walking.
+
+The solution implements the logic of "jump as soon as you detect a
+hole in the next three squares, but only if there's ground ahead":
+
+    J = !(A & B & C) & D
+
+This works well for simple holes: the eager jump is delayed until it's
+safe.
+
+### Part 2
+
+Unfortunately, the simple logic doesn't work in the presence of traps:
+
+       ---v
+    --^   -v
+    #####.#.##.#####
+      1  234  5
+
+We eagerly jump on square 1, because there's a hole (sensor `C`
+reports square 2 is missing), and it seems safe (sensor `D` reports
+square 3 is present). Unfortunately, it's a trap: there was a hole
+immediately after (square 4), but also four steps in (square 5).  The
+program from part 1 considers the jump unsafe and walks into the hole.
+
+Fortunately, the springdroid also has an extended sensor mode, which
+allows it to see up to nine tiles ahead (sensors `A` through `I`).
+
+The logic for the part 2 solution starts identical to part 1, but adds
+a further check: it also inhibits jumping if the square it landed on
+looks like a trap. It detects a trap by checking whether it would be
+forced to jump (sensor `E` reporting a hole), but the jump would be
+unsafe (sensor `H` reporting a hole as well):
+
+    J = !(A & B & C) & D & !(!E & !H)
+      = !(A & B & C) & D & (E | H)
