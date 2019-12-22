@@ -487,3 +487,93 @@ unsafe (sensor `H` reporting a hole as well):
 
     J = !(A & B & C) & D & !(!E & !H)
       = !(A & B & C) & D & (E | H)
+
+## Day 22
+
+Similarly to day 16, today's puzzle had a part 1 with an obvious
+answer (just apply the specified operations), and part 2 where the
+simple way was obviously computationally infeasible.
+
+The puzzle input was a sequence of operations to shuffle a deck of *N*
+cards, consisting of the following operations:
+
+* `deal`: reverse the order of the cards
+* `cut K`: move the first *K* (or all but the last |*K*| if *K* is
+  negative) cards from the top to the bottom of the deck in same order
+* `interleave K`: place each original card *K* steps apart, wrapping
+  around from the end of the deck
+
+The task of part 1 was to find the location of card 2019, after
+shuffling a deck of 10007 cards. The solution here simply applies the
+shuffling operations in order, then finds the card in the result.
+
+For part 2, the deck was upgraded to 119315717514047 cards, and the
+task was to apply the shuffle 101741582076661 times, then tell which
+card ended up in location 2020.
+
+The key insights for the solution here are:
+
+* Since only the card that ends up in location 2020 is important, we
+  can just trace backwards through the shuffling operations where that
+  card came from. This makes the first big number (size of deck)
+  irrelevant.
+* The effect of any of the (inverted) shuffling operations on a card's
+  location `x` can be represented as `f(x) = (A*x + B) % N`,
+  where the parameters `A` and `B` are in `[0, N)`.
+* The composition of two such operations can be represented in the
+  same form. This means we can turn the entire shuffle into one
+  operation, and then decompose the repetitions into successive
+  "squarings" (figuring out the effect of repeating the original
+  shuffle 1, 2, 4, 8, ... times) and "multiplications" (applying the
+  current inverse operation to the current position), making also the
+  second big number (number of repetitions) irrelevant.
+
+The reverse operations of the shuffle steps on a single location `x`
+are:
+
+```
+deal(x)          = N-1 - x
+cut(x, K)        = (x + K) % N
+interleave(x, K) = (x * K^-1) % N
+```
+
+For the last operation, `K^-1` denotes the
+*[modular inverse](http://mathworld.wolfram.com/ModularInverse.html)*
+of `K` (modulo `N`).
+
+The required compositions of transformations are therefore:
+
+```
+Let f(x) = (A*x + B) % N and g(x) = (C*x + D) % N be arbitrary transformations.
+
+deal(f(x))
+= N-1 - (A*x + B) % N
+= (((-A) % N)*x + N-1 - B) % N
+
+cut(f(x), K)
+= ((A*x + B) % N + K) % N
+= (A*x + (B + K) % N) % N
+
+interleave(f(x), K)
+= ((A*x + B) % N * K^-1) % N
+= ((A * K^-1 % N)*x + (B * K^-1) % N) % N
+
+g(f(x))
+= (C*((A*x + B) % N) + D) % N
+= ((C * A % N)*x + (C * B + D) % N) % N
+
+f(f(x))
+= ((A * A % N)*x + (A * B + B) % N) % N
+= ((A^2 % N)*x + ((A + 1) * B) % N) % N
+```
+
+Or in terms of the updates to the parameters:
+
+```
+               A                B
+deal           (-A) % N         B
+cut K          A                (B + K) % N
+interleave K   (A * K^-1) % N   (B * K^-1) % N
+f . g          (A * C) % N      (B * C + D) % N
+f^2            A^2 % N          ((A + 1) * B) % N
+```
