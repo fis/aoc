@@ -380,6 +380,54 @@ image. Mind the
 [Inkscape bug](https://bugs.launchpad.net/inkscape/+bug/1462051) I
 kept hitting when editing it.
 
+## [Day 18](https://adventofcode.com/2019/day/18)
+
+Ah, the famous traveling burglar problem.
+
+More seriously, today's problem (of finding the shortest path to
+collect a set of keys, with constraints that some keys are needed to
+reach others) is very close to the *sequential ordering problem*
+(SOP), also known as the *(asymmetric) traveling salesman problem with
+precedence constraints* (TSP-PC, PCATSP, ...). In the general case,
+it's an [NP-hard](http://mathworld.wolfram.com/NP-HardProblem.html)
+problem. While the instances in the puzzle are small enough for exact
+solvers, it could still be relatively expensive.
+
+Fortunately the scenarios in the puzzle are quite constrained. The
+solution here first does a breadth-first search from each key (and the
+entry points), figuring out the shortest (mostly, the only) path, as
+well as which keys and doors are on that path. This is used to build a
+graph of connections between keys (and from the start nodes to each
+key).
+
+To find the shortest path to collect all the keys, the solution
+performs what's essentially Dijkstra's algorithm on a graph that has a
+vertex for every possible *N*-tuple of vertices and subset of keys,
+and an edge where it's possible to follow an edge of the original
+graph, given the keys and doors involved.
+
+Formally:
+
+```
+Let G = (V, E) be the graph of keys and entry points, where for each
+edge e = (u, v) ∈ E there are associated values:
+- W(e), a positive integer weight
+- K(e), the set of keys that will be collected by following that edge
+- D(e), the set of keys that are needed to unlock all doors on the way
+
+Now define G' = (V', E') and a modified W'(e) where:
+- V' = V^N × 2^K.
+- e' = ((u_1 .. u_n, K_u), (v_1 .. v_n, K_v)) ∈ E' if and only if:
+  - there is an i ∈ [0, N) s.t. e = (u_i, v_i) ∈ E, u_j = v_j ∀j≠i
+  - K_v = K_u ∪ K(e)
+  - K_v ⊆ D(e)
+- W'(e') = W(e)
+
+The shortest path to collect all keys in G is the same as the shortest
+path in G' from (e_1 .. e_n, ∅) to any node (v_1 .. v_n, K), where
+(e_1 .. e_n) is the set of entry points of G and K is the set of keys.
+```
+
 ## [Day 19](https://adventofcode.com/2019/day/19)
 
 Intcode, the gift that keeps on giving. Although the day 19 puzzle was
