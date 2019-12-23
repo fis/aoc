@@ -117,6 +117,11 @@ func (vm *VM) Mem(offset int) *int64 {
 	return &vm.data[offset]
 }
 
+// Dump returns a copy of the computer's memory.
+func (vm *VM) Dump() []int64 {
+	return append([]int64{}, vm.data...)
+}
+
 func (vm *VM) execute(steps int) {
 	var args [maxArgs]arg
 	for steps != 0 {
