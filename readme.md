@@ -1,12 +1,12 @@
 # Notes on the solutions
 
-## Day 1
+## [Day 1](https://adventofcode.com/2019/day/1)
 
 Not much to say here. Part 1 involved evaluating a simple expression
 on a list of values and printing the sum. Part 2 had a recurrence
 relation of sorts.
 
-## Day 2
+## [Day 2](https://adventofcode.com/2019/day/2)
 
 Second day introduced the first dialect of the
 [Intcode](https://esolangs.org/wiki/Intcode) programming
@@ -18,7 +18,7 @@ out of just 10000 possibilities.
 The solution here uses a standalone Intcode interpreter, only
 supporting the opcodes 1, 2 and 99.
 
-## Day 3
+## [Day 3](https://adventofcode.com/2019/day/3)
 
 Day 3 considered the intersections of two wires, described as a
 sequence of movement instructions (right 75, down 30, ...).
@@ -42,13 +42,13 @@ segments. So instead part 2 is solved the boring way, by just looping
 over each wire step and keeping track of the delay, then locating the
 position with the lowest combined delay.
 
-## Day 4
+## [Day 4](https://adventofcode.com/2019/day/4)
 
 For some reason, day 4 was surprisingly simple. Both parts simply
 asked how many numbers (from a range of around half a million)
 satisfied certain simple properties about their digits.
 
-## Day 5
+## [Day 5](https://adventofcode.com/2019/day/5)
 
 Day 5 was mostly about Intcode extensions. This day's solution is the
 first to use the shared Intcode interpreter.
@@ -59,7 +59,7 @@ just asked for the output of the program given the input.
 Second part extended that with conditional jumps and comparison and
 equality operations, then asked for the output given another input.
 
-## Day 6
+## [Day 6](https://adventofcode.com/2019/day/6)
 
 Sixth day was another surprisingly simple one, involving what were in
 the narrative described as orbits, but really it was just an arbitrary
@@ -81,7 +81,7 @@ solution just finds the unique paths from the root to both nodes by
 walking the tree, then trims them by removing their common prefix and
 pastes them together.
 
-## Day 7
+## [Day 7](https://adventofcode.com/2019/day/7)
 
 Back to the land of Intcode, though with no new instructions.
 
@@ -107,7 +107,7 @@ pipes. It's highly likely there's hardly any actual parallelism (and
 4/5 interpreters will just be blocking for input at any one time), but
 still.
 
-## Day 8
+## [Day 8](https://adventofcode.com/2019/day/8)
 
 Another simple day, decoding images sent as layers of three-state
 pixels: white, black, or transparent.
@@ -118,7 +118,7 @@ straightforward. The image renderer writes back-to-front ignoring
 transparent pixels, instead of searching front-to-back for the first
 non-transparent one.
 
-## Day 9
+## [Day 9](https://adventofcode.com/2019/day/9)
 
 The "Intcode every other day" pattern continues. Day 9 introduced
 allegedly the final missing Intcode features: a relative addressing
@@ -128,7 +128,7 @@ opcode to set the base register for the relative mode.
 The tasks involved no other work than finishing the interpreter. The
 answers were simply program outputs for inputs 1 and 2.
 
-## Day 10
+## [Day 10](https://adventofcode.com/2019/day/10)
 
 Day 10 resists classification, though both parts were related to a
 kind of a line-of-sight computation for ideal, dimensionless asteroids
@@ -155,7 +155,7 @@ asteroids, then sorting them based on the angle of the line connecting
 them. After removing the visible set, the cycle repeats until no
 asteroids remain.
 
-## Day 11
+## [Day 11](https://adventofcode.com/2019/day/11)
 
 More Intcode again, this time controlling a simple robot capable of
 reading the color of its current cell in a 2D grid (through the input
@@ -169,7 +169,7 @@ when started on a single white pixel on a black background.
 The solution uses a callback-based I/O mechanism for the Intcode
 interpreter to drive the robot, but is otherwise very straightforward.
 
-## Day 12
+## [Day 12](https://adventofcode.com/2019/day/12)
 
 Today's tasks were on the topic of simulating a discrete, rather
 non-physical universe, with interesting laws of gravity and motion.
@@ -197,7 +197,7 @@ independently for each of the dimensions how many steps their cycle
 is. The full solution is then just the least common multiple of all
 three.
 
-## Day 13
+## [Day 13](https://adventofcode.com/2019/day/13)
 
 It's an odd day, and we all know what that means: more Intcode!
 
@@ -217,7 +217,7 @@ There are three parts to the solution this time:
   halts, using a simple controller that makes the paddle attempt to
   follow the ball.
 
-## Day 14
+## [Day 14](https://adventofcode.com/2019/day/14)
 
 The solution here approaches day 14 as a graph problem.
 
@@ -256,7 +256,7 @@ Check out the `day14-*.png` files to see the dependency graphs. They
 were created by the `day14-dot.py` script, which writes the graph in
 Graphviz .dot file format.
 
-## Day 15
+## [Day 15](https://adventofcode.com/2019/day/15)
 
 Odd is still the new Intcode.
 
@@ -289,7 +289,7 @@ simple breadth-first search routine to compute distances to all
 is just the origin-to-target distance, while part 2 is the maximum
 distance to any tile from the target square.
 
-## Day 16
+## [Day 16](https://adventofcode.com/2019/day/16)
 
 The topic of the day was the Flawed Frequency Transmission
 algorithm. Denoting the `i`'th (1-based) digit of the original signal
@@ -343,7 +343,7 @@ constructs only the relevant part of the 10000-fold repeated signal
 (in reverse order, for convenience), and then updates it in-place for
 100 phases to obtain the answer.
 
-## Day 17
+## [Day 17](https://adventofcode.com/2019/day/17)
 
 We'll all be so weirded out when day 25 rolls out and *isn't* related
 to Intcode. However, today is not that day.
@@ -380,7 +380,7 @@ image. Mind the
 [Inkscape bug](https://bugs.launchpad.net/inkscape/+bug/1462051) I
 kept hitting when editing it.
 
-## Day 19
+## [Day 19](https://adventofcode.com/2019/day/19)
 
 Intcode, the gift that keeps on giving. Although the day 19 puzzle was
 again remarkably simple.
@@ -397,7 +397,7 @@ down, keep a history of the beam edges for 100 most recent rows, and
 then compare whether a box of that size with its lower-left corner at
 the beam's left edge would fit.
 
-## Day 20
+## [Day 20](https://adventofcode.com/2019/day/20)
 
 A graph puzzle with a twist.
 
@@ -440,7 +440,7 @@ The solution also uses a maximum distance limit to terminate in case
 (as in example 2) there's no path to the exit node at all, but a cycle
 that can be used to recurse forever.
 
-## Day 21
+## [Day 21](https://adventofcode.com/2019/day/21)
 
 These puzzles are getting to be Intcode-related in name only. It's
 probably all just a crafty way of offloading the work from validating
@@ -489,7 +489,7 @@ unsafe (sensor `H` reporting a hole as well):
     J = !(A & B & C) & D & !(!E & !H)
       = !(A & B & C) & D & (E | H)
 
-## Day 22
+## [Day 22](https://adventofcode.com/2019/day/22)
 
 Similarly to day 16, today's puzzle had a part 1 with an obvious
 answer (just apply the specified operations), and part 2 where the
@@ -579,7 +579,7 @@ f . g          (A * C) % N      (B * C + D) % N
 f^2            A^2 % N          ((A + 1) * B) % N
 ```
 
-## Day 23
+## [Day 23](https://adventofcode.com/2019/day/23)
 
 Nothing to say, really. The solution here is pretty crummy: it just
 starts each Intcode interpreter as a separate thread, and in the main
@@ -587,8 +587,8 @@ thread runs a switch process. The threads communicate by message
 passing.
 
 There is a certain amount of non-determinism involved in the exact
-sequence of messages, and especially in the idleness detection, which
-takes a conservative approach of requiring five unsuccessful receive
-attempts without an intervening send before considering a machine
-idle. I imagine a coöperative multitasking approach (for example,
-yielding on send/receive) could be better.
+sequence of messages, and especially in the idle network detection,
+which takes a conservative approach of requiring five unsuccessful
+receive attempts without an intervening send before considering a
+machine idle. I imagine a coöperative multitasking approach (for
+example, yielding on send/receive) could be better.
