@@ -8,7 +8,8 @@ relation of sorts.
 
 ## Day 2
 
-Second day introduced the first dialect of the Intcode programming
+Second day introduced the first dialect of the
+[Intcode](https://esolangs.org/wiki/Intcode) programming
 language. Part 1 asked to run the example program with a specific
 initial state, and report which value was left when it halted. Part 2
 required finding a specific pair of inputs to yield a given output,
@@ -577,3 +578,17 @@ interleave K   (A * K^-1) % N   (B * K^-1) % N
 f . g          (A * C) % N      (B * C + D) % N
 f^2            A^2 % N          ((A + 1) * B) % N
 ```
+
+## Day 23
+
+Nothing to say, really. The solution here is pretty crummy: it just
+starts each Intcode interpreter as a separate thread, and in the main
+thread runs a switch process. The threads communicate by message
+passing.
+
+There is a certain amount of non-determinism involved in the exact
+sequence of messages, and especially in the idleness detection, which
+takes a conservative approach of requiring five unsuccessful receive
+attempts without an intervening send before considering a machine
+idle. I imagine a coöperative multitasking approach (for example,
+yielding on send/receive) could be better.
