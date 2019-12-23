@@ -7,7 +7,7 @@ import (
 
 // A Level models a two-dimensional map of ASCII character cells, similar to a roguelike level.
 type Level struct {
-	data       map[[2]int]byte
+	data       map[P]byte
 	empty      byte
 	maxX, maxY int
 }
@@ -24,7 +24,7 @@ func ReadLevel(path string, empty byte) (*Level, error) {
 
 // ParseLevel parses a byte array into a level. See ReadLevel.
 func ParseLevel(data []byte, empty byte) *Level {
-	level := make(map[[2]int]byte)
+	level := make(map[P]byte)
 	x, y, maxX, maxY := 0, 0, 0, 0
 	for _, b := range data {
 		if b == '\n' {
@@ -33,7 +33,7 @@ func ParseLevel(data []byte, empty byte) *Level {
 			continue
 		}
 		if b != empty {
-			level[[2]int{x, y}] = b
+			level[P{x, y}] = b
 		}
 		if x > maxX {
 			maxX = x
@@ -61,14 +61,43 @@ func (l *Level) At(x, y int) byte {
 	if x < 0 || y < 0 || x > l.maxX || y > l.maxY {
 		return l.empty
 	}
-	if b, ok := l.data[[2]int{x, y}]; ok {
+	if b, ok := l.data[P{x, y}]; ok {
 		return b
 	}
 	return l.empty
+}
+
+// Set sets the byte at the given coordinates.
+func (l *Level) Set(x, y int, b byte) {
+	if b == l.empty {
+		delete(l.data, P{x, y})
+	} else {
+		l.data[P{x, y}] = b
+	}
 }
 
 // InBounds returns true if the given coordinates are within the bounding box of the source file of
 // the level.
 func (l *Level) InBounds(x, y int) bool {
 	return x >= 0 && y >= 0 && x <= l.maxX && y <= l.maxY
+}
+
+// Range calls the callback function for all non-empty cells in the level.
+func (l *Level) Range(cb func(x, y int, b byte)) {
+	for p, b := range l.data {
+		cb(p.X, p.Y, b)
+	}
+}
+
+// Find locates the coordinates of a byte, which must be unique on the level.
+func (l *Level) Find(key byte) (x, y int, found bool) {
+	for p, b := range l.data {
+		if b == key {
+			if found {
+				return 0, 0, false
+			}
+			x, y, found = p.X, p.Y, true
+		}
+	}
+	return
 }

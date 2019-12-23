@@ -38,3 +38,12 @@ func ReadIntRows(path string) ([]int, error) {
 	}
 	return ints, nil
 }
+
+// P represents a two-dimensional integer-valued coordinate.
+type P struct {
+	X, Y int
+}
+
+func (p P) Neigh() [4]P {
+	return [4]P{{p.X, p.Y - 1}, {p.X, p.Y + 1}, {p.X - 1, p.Y}, {p.X + 1, p.Y}}
+}
