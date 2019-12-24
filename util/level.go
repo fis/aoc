@@ -7,9 +7,9 @@ import (
 
 // A Level models a two-dimensional map of ASCII character cells, similar to a roguelike level.
 type Level struct {
-	data       map[P]byte
-	empty      byte
-	maxX, maxY int
+	data     map[P]byte
+	empty    byte
+	min, max P
 }
 
 // ReadLevel reads the contents of a text file into a level. Character cells outside the contents of
@@ -46,8 +46,8 @@ func ParseLevel(data []byte, empty byte) *Level {
 	return &Level{
 		data:  level,
 		empty: empty,
-		maxX:  maxX,
-		maxY:  maxY,
+		min:   P{0, 0},
+		max:   P{maxX, maxY},
 	}
 }
 
@@ -58,7 +58,7 @@ func ParseLevelString(data string, empty byte) *Level {
 
 // At returns the byte at the given coordinates.
 func (l *Level) At(x, y int) byte {
-	if x < 0 || y < 0 || x > l.maxX || y > l.maxY {
+	if x < l.min.X || y < l.min.Y || x > l.max.X || y > l.max.Y {
 		return l.empty
 	}
 	if b, ok := l.data[P{x, y}]; ok {
@@ -73,13 +73,33 @@ func (l *Level) Set(x, y int, b byte) {
 		delete(l.data, P{x, y})
 	} else {
 		l.data[P{x, y}] = b
+		if x < l.min.X {
+			l.min.X = x
+		}
+		if y < l.min.Y {
+			l.min.Y = y
+		}
+		if x > l.max.X {
+			l.max.X = x
+		}
+		if y > l.max.Y {
+			l.max.Y = y
+		}
 	}
 }
 
-// InBounds returns true if the given coordinates are within the bounding box of the source file of
-// the level.
+// Bounds returns the top-left and bottom-right corners of the level's bounding box. See InBounds
+// for the definition.
+func (l *Level) Bounds() (min P, max P) {
+	min, max = l.min, l.max
+	return
+}
+
+// InBounds returns true if the given coordinates are within the bounding box of the level. The
+// bounds will grow to accommodate new non-empty characters, but will never shrink even if those
+// characters are later overwritten to be empty.
 func (l *Level) InBounds(x, y int) bool {
-	return x >= 0 && y >= 0 && x <= l.maxX && y <= l.maxY
+	return x >= l.min.X && y >= l.min.Y && x <= l.max.X && y <= l.max.Y
 }
 
 // Range calls the callback function for all non-empty cells in the level.

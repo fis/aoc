@@ -49,9 +49,11 @@ type Writer interface {
 }
 
 type opcode struct {
-	act  func(vm *VM, args []arg)
-	narg int
-	jump bool
+	act    func(vm *VM, args []arg)
+	narg   int
+	jump   bool
+	input  bool
+	output bool
 }
 
 type arg struct {
@@ -222,8 +224,8 @@ func (vm *VM) page(i int) {
 var opcodes = map[uint64]*opcode{
 	1: &opcode{act: (*VM).opAdd, narg: 3},
 	2: &opcode{act: (*VM).opMul, narg: 3},
-	3: &opcode{act: (*VM).opIn, narg: 1},
-	4: &opcode{act: (*VM).opOut, narg: 1},
+	3: &opcode{act: (*VM).opIn, narg: 1, input: true},
+	4: &opcode{act: (*VM).opOut, narg: 1, output: true},
 	5: &opcode{act: (*VM).opJNZ, narg: 2, jump: true},
 	6: &opcode{act: (*VM).opJZ, narg: 2, jump: true},
 	7: &opcode{act: (*VM).opSetLt, narg: 3},
@@ -316,3 +318,91 @@ func (*interactiveReaderWriter) Write(val int64) {
 }
 
 var interactive = interactiveReaderWriter{}
+
+// Walk executes the current program up to the first halt, input or output instruction. For the
+// initial call, pass in nil as the walk token. If the return value is nil, the computer has
+// halted. Otherwise, the computer is requesting either input or output: inspect the walk token to
+// learn which, and to either provide the input or deal with the output, as required. Then call Walk
+// again with the token to continue operation. This is intended for coöperative multitasking or
+// other interleaving of Intcode operation and surrounding logic.
+func (vm *VM) Walk(token WalkToken) WalkToken {
+	if it, ok := token.(*inputWalkToken); ok {
+		vm.write(it.dst, it.val)
+		vm.ip += 2
+	} else if _, ok := token.(*outputWalkToken); ok {
+		vm.ip += 2
+	}
+
+	var args [maxArgs]arg
+	for {
+		op := vm.fetch(&args)
+		switch {
+		case op == nil:
+			return nil
+		case op.input:
+			return &inputWalkToken{dst: args[0]}
+		case op.output:
+			return &outputWalkToken{val: vm.read(args[0])}
+		}
+		op.act(vm, args[0:op.narg])
+		if !op.jump {
+			vm.ip += 1 + op.narg
+		}
+	}
+}
+
+type WalkToken interface {
+	IsInput() bool
+	IsOutput() bool
+	ProvideInput(val int64)
+	GetOutput() int64
+}
+
+type inputWalkToken struct {
+	val int64
+	dst arg
+}
+
+func (t *inputWalkToken) IsInput() bool {
+	return true
+}
+
+func (t *inputWalkToken) IsOutput() bool {
+	return false
+}
+
+func (t *inputWalkToken) ProvideInput(val int64) {
+	t.val = val
+}
+
+func (t *inputWalkToken) GetOutput() int64 {
+	return 0
+}
+
+func (t *inputWalkToken) String() string {
+	return fmt.Sprintf("<in:%d@{%d,%d}>", t.val, t.dst.val, t.dst.mode)
+}
+
+type outputWalkToken struct {
+	val int64
+}
+
+func (t *outputWalkToken) IsInput() bool {
+	return false
+}
+
+func (t *outputWalkToken) IsOutput() bool {
+	return true
+}
+
+func (t *outputWalkToken) ProvideInput(val int64) {
+	// ignored
+}
+
+func (t *outputWalkToken) GetOutput() int64 {
+	return t.val
+}
+
+func (t *outputWalkToken) String() string {
+	return fmt.Sprintf("<out:%d>", t.val)
+}

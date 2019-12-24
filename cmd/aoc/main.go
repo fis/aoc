@@ -19,12 +19,12 @@ func main() {
 	}
 	day, err := strconv.Atoi(flag.Arg(0))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Not a number: %q: %v", flag.Arg(0), err)
+		fmt.Fprintf(os.Stderr, "Not a number: %q: %v\n", flag.Arg(0), err)
 		os.Exit(1)
 	}
 	out, err := days.Solve(day, flag.Arg(1))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Solution failed: %v", err)
+		fmt.Fprintf(os.Stderr, "Solution failed: %v\n", err)
 		os.Exit(1)
 	}
 	for _, s := range out {
