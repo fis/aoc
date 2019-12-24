@@ -640,3 +640,65 @@ which takes a conservative approach of requiring five unsuccessful
 receive attempts without an intervening send before considering a
 machine idle. I imagine a coöperative multitasking approach (for
 example, yielding on send/receive) could be better.
+
+## [Day 24](https://adventofcode.com/2019/day/24)
+
+The puzzle for day 24 involved a two-dimensional
+[totalistic cellular automaton](http://mathworld.wolfram.com/TotalisticCellularAutomaton.html),
+quite similar to the well-known (Conway's)
+[Game of Life](http://mathworld.wolfram.com/GameofLife.html),
+though with slightly different rules.
+
+Let `c` be the current state of the cell (0/1), and `|n|` be the
+number of live cells in the surrounding 4-neighborhood. After one
+step:
+
+```
+  c  |n|  new state
+  0  0    0 - no change
+  0  1-2  1 - becomes live
+  0  3-4  0 - no change
+  1  0    0 - dies
+  1  1    1 - no change
+  1  2-4  0 - dies
+```
+
+Or, represented graphically:
+
+```
+ .    .    #    .    .    #    .    .    #    #    .    #    #    .    #    #
+...  ..#  ...  #..  ...  ..#  #.#  ..#  #..  ...  #..  #.#  ..#  #.#  #..  #.#
+ .    .    .    .    #    .    .    #    .    #    #    .    #    #    #    #
+
+ .    #    #    #    #    #    #    #    #    #    #    .    .    .    .    .
+
+
+ .    .    #    .    .    #    .    .    #    #    .    #    #    .    #    #
+.#.  .##  .#.  ##.  .#.  .##  ###  .##  ##.  .#.  ##.  ###  .##  ###  ##.  ###
+ .    .    .    .    #    .    .    #    .    #    #    .    #    #    #    #
+
+ .    #    #    #    #    .    .    .    .    .    .    .    .    .    .    .
+```
+
+Or in [B/S notation](https://conwaylife.com/wiki/Rulestring),
+`B12/S1V`.
+
+Part 1 simply asked for the first repeating state when the initial
+state (puzzle input) was simulated on a regular 5x5 grid, with cells
+outside the grid considered permanently empty.
+
+Part 2 was more interesting: the 5x5 grid was swapped with an infinite
+construction, where the middle cell was replaced by another 5x5 grid,
+and so forth. For a single grid, its border cells were considered
+adjacent to (one or two of) the four cells surrounding the (missing)
+middle one in the containing level. Correspondingly, each of those
+four cells in this grid were adjacent to all five of the relevant
+border cells. The task was to simulate a modest number of steps (200)
+and report the total number of live cells.
+
+The solution here does not go for anything fancy. States are
+represented naturally by 25-bit integers, and the simulation uses a
+pre-generated list of neighbors for each cell. For part 2, the list
+also contains a value (-1, 0, 1) to indicate which level they're
+referring to, and new levels are added to the state list when they
+become nonzero.
