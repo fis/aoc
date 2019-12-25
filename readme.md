@@ -702,3 +702,16 @@ pre-generated list of neighbors for each cell. For part 2, the list
 also contains a value (-1, 0, 1) to indicate which level they're
 referring to, and new levels are added to the state list when they
 become nonzero.
+
+## [Day 25](https://adventofcode.com/2019/day/25)
+
+Surprisingly, day 25 wasn't surprising: it did feature Intcode.
+
+Only in a very minor way, though. It wasn't really a programming
+puzzle as such, but a text adventure implemented in Intcode. The
+"solution" here contains a way to run the program interactively, as
+well as a quick and dirty loop to get through the door with a sensor
+by trying all possible combinations of items.
+
+You might also have a look at `day25-map.png`, which is the map of the
+adventure game level.

@@ -34,6 +34,7 @@ class VM:
         self._prog = list(prog)
         self._stdin = None
         self._stdout = None
+        self._stdin_buf = []
 
     def run(self, stdin=None, stdout=None, trace=False):
         self._stdin = stdin
@@ -110,7 +111,15 @@ class VM:
         if self._stdin is None:
             return int(input('? '))
         elif self._stdin:
-            if type(self._stdin) == queue.Queue:
+            if self._stdin == 'ascii':
+                if not self._stdin_buf:
+                    self._stdin_buf = [ord(c) for c in input()]
+                    self._stdin_buf.append(10)
+                if not self._stdin_buf:
+                    n = -1
+                else:
+                    n = self._stdin_buf.pop(0)
+            elif type(self._stdin) == queue.Queue:
                 n = self._stdin.get()
             elif callable(self._stdin):
                 n = self._stdin()
@@ -136,6 +145,8 @@ class VM:
         n = self._read(a)
         if self._stdout is None:
             print(n)
+        elif self._stdout == 'ascii':
+            print(chr(n), end='')
         elif type(self._stdout) == queue.Queue:
             self._stdout.put(n)
         elif callable(self._stdout):
