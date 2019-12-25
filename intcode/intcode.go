@@ -320,16 +320,17 @@ func (*interactiveReaderWriter) Write(val int64) {
 var interactive = interactiveReaderWriter{}
 
 // Walk executes the current program up to the first halt, input or output instruction. For the
-// initial call, pass in nil as the walk token. If the return value is nil, the computer has
-// halted. Otherwise, the computer is requesting either input or output: inspect the walk token to
-// learn which, and to either provide the input or deal with the output, as required. Then call Walk
-// again with the token to continue operation. This is intended for coöperative multitasking or
-// other interleaving of Intcode operation and surrounding logic.
-func (vm *VM) Walk(token WalkToken) WalkToken {
-	if it, ok := token.(*inputWalkToken); ok {
-		vm.write(it.dst, it.val)
+// initial call, pass in an empty walk token (the zero value). If the function returns with the
+// token empty, the computer has halted. Otherwise, the computer is requesting either input or
+// output: inspect the walk token to learn which, and to either provide the input or deal with the
+// output, as required. Then call Walk again with the same token to continue operation. This is
+// intended for coöperative multitasking or other complex interleaving of Intcode operation with
+// surrounding logic.
+func (vm *VM) Walk(token *WalkToken) {
+	if token.kind == inputWalkToken {
+		vm.write(token.dst, token.val)
 		vm.ip += 2
-	} else if _, ok := token.(*outputWalkToken); ok {
+	} else if token.kind == outputWalkToken {
 		vm.ip += 2
 	}
 
@@ -338,11 +339,14 @@ func (vm *VM) Walk(token WalkToken) WalkToken {
 		op := vm.fetch(&args)
 		switch {
 		case op == nil:
-			return nil
+			*token = WalkToken{}
+			return
 		case op.input:
-			return &inputWalkToken{dst: args[0]}
+			*token = WalkToken{kind: inputWalkToken, dst: args[0]}
+			return
 		case op.output:
-			return &outputWalkToken{val: vm.read(args[0])}
+			*token = WalkToken{kind: outputWalkToken, val: vm.read(args[0])}
+			return
 		}
 		op.act(vm, args[0:op.narg])
 		if !op.jump {
@@ -351,58 +355,47 @@ func (vm *VM) Walk(token WalkToken) WalkToken {
 	}
 }
 
-type WalkToken interface {
-	IsInput() bool
-	IsOutput() bool
-	ProvideInput(val int64)
-	GetOutput() int64
+// WalkToken is used for holding invokation state when running Intcode via the Walk() API.
+type WalkToken struct {
+	kind int
+	val  int64
+	dst  arg
 }
 
-type inputWalkToken struct {
-	val int64
-	dst arg
+const (
+	emptyWalkToken  = 0
+	inputWalkToken  = 1
+	outputWalkToken = 2
+)
+
+func (t *WalkToken) IsEmpty() bool {
+	return t.kind == emptyWalkToken
 }
 
-func (t *inputWalkToken) IsInput() bool {
-	return true
+func (t *WalkToken) IsInput() bool {
+	return t.kind == inputWalkToken
 }
 
-func (t *inputWalkToken) IsOutput() bool {
-	return false
+func (t *WalkToken) IsOutput() bool {
+	return t.kind == outputWalkToken
 }
 
-func (t *inputWalkToken) ProvideInput(val int64) {
+func (t *WalkToken) ProvideInput(val int64) {
 	t.val = val
 }
 
-func (t *inputWalkToken) GetOutput() int64 {
-	return 0
-}
-
-func (t *inputWalkToken) String() string {
-	return fmt.Sprintf("<in:%d@{%d,%d}>", t.val, t.dst.val, t.dst.mode)
-}
-
-type outputWalkToken struct {
-	val int64
-}
-
-func (t *outputWalkToken) IsInput() bool {
-	return false
-}
-
-func (t *outputWalkToken) IsOutput() bool {
-	return true
-}
-
-func (t *outputWalkToken) ProvideInput(val int64) {
-	// ignored
-}
-
-func (t *outputWalkToken) GetOutput() int64 {
+func (t *WalkToken) ReadOutput() int64 {
 	return t.val
 }
 
-func (t *outputWalkToken) String() string {
-	return fmt.Sprintf("<out:%d>", t.val)
+func (t *WalkToken) String() string {
+	switch t.kind {
+	case emptyWalkToken:
+		return "<empty>"
+	case inputWalkToken:
+		return fmt.Sprintf("<in:%d@{%d,%d}>", t.val, t.dst.val, t.dst.mode)
+	case outputWalkToken:
+		return fmt.Sprintf("<out:%d>", t.val)
+	}
+	return "<invalid>"
 }
