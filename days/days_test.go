@@ -101,8 +101,24 @@ func TestAllDays(t *testing.T) {
 			want: []string{"692", "8314"},
 		},
 		{
+			day:  21,
+			want: []string{"19352864", "1142488337"},
+		},
+		{
 			day:  22,
 			want: []string{"5169", "74258074061935"},
+		},
+		{
+			day:  23,
+			want: []string{"22650", "17298"},
+		},
+		{
+			day:  24,
+			want: []string{"27777901", "2047"},
+		},
+		{
+			day:  25,
+			want: []string{"134227456"},
 		},
 	}
 
