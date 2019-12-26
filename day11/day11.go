@@ -48,11 +48,7 @@ func run(prog []int64, level *util.Level) {
 
 	x, y, dx, dy := 0, 0, 0, -1
 	var t intcode.WalkToken
-	for {
-		vm.Walk(&t)
-		if t.IsEmpty() {
-			return
-		}
+	for vm.Walk(&t) {
 		if level.At(x, y) == '#' {
 			t.ProvideInput(1)
 		} else {

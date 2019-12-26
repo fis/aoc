@@ -320,13 +320,13 @@ func (*interactiveReaderWriter) Write(val int64) {
 var interactive = interactiveReaderWriter{}
 
 // Walk executes the current program up to the first halt, input or output instruction. For the
-// initial call, pass in an empty walk token (the zero value). If the function returns with the
-// token empty, the computer has halted. Otherwise, the computer is requesting either input or
-// output: inspect the walk token to learn which, and to either provide the input or deal with the
-// output, as required. Then call Walk again with the same token to continue operation. This is
-// intended for coöperative multitasking or other complex interleaving of Intcode operation with
-// surrounding logic.
-func (vm *VM) Walk(token *WalkToken) {
+// initial call, pass in an empty walk token (the zero value). If the function returns false, the
+// computer has halted (and the token will be empty). Otherwise, the computer is requesting either
+// input or output: inspect the walk token to learn which, and to either provide the input or deal
+// with the output, as required. Then call Walk again with the same token to continue
+// operation. This is intended for coöperative multitasking or other complex interleaving of Intcode
+// operation with surrounding logic.
+func (vm *VM) Walk(token *WalkToken) bool {
 	if token.kind == inputWalkToken {
 		vm.write(token.dst, token.val)
 		vm.ip += 2
@@ -340,13 +340,13 @@ func (vm *VM) Walk(token *WalkToken) {
 		switch {
 		case op == nil:
 			*token = WalkToken{}
-			return
+			return false
 		case op.input:
 			*token = WalkToken{kind: inputWalkToken, dst: args[0]}
-			return
+			return true
 		case op.output:
 			*token = WalkToken{kind: outputWalkToken, val: vm.read(args[0])}
-			return
+			return true
 		}
 		op.act(vm, args[0:op.narg])
 		if !op.jump {
