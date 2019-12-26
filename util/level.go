@@ -67,6 +67,19 @@ func (l *Level) At(x, y int) byte {
 	return l.empty
 }
 
+// Lines returns the contents of a part of the level as a list of strings.
+func (l *Level) Lines(min, max P) []string {
+	lines := make([]string, max.Y-min.Y+1)
+	for y, yi := min.Y, 0; y <= max.Y; y, yi = y+1, yi+1 {
+		line := make([]byte, max.X-min.X+1)
+		for x, xi := min.X, 0; x <= max.X; x, xi = x+1, xi+1 {
+			line[xi] = l.At(x, y)
+		}
+		lines[yi] = string(line)
+	}
+	return lines
+}
+
 // Set sets the byte at the given coordinates.
 func (l *Level) Set(x, y int, b byte) {
 	if b == l.empty {
@@ -90,7 +103,7 @@ func (l *Level) Set(x, y int, b byte) {
 
 // Bounds returns the top-left and bottom-right corners of the level's bounding box. See InBounds
 // for the definition.
-func (l *Level) Bounds() (min P, max P) {
+func (l *Level) Bounds() (min, max P) {
 	min, max = l.min, l.max
 	return
 }
