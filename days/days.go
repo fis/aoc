@@ -12,6 +12,7 @@ import (
 	"github.com/fis/aoc2019-go/day06"
 	"github.com/fis/aoc2019-go/day07"
 	"github.com/fis/aoc2019-go/day08"
+	"github.com/fis/aoc2019-go/day09"
 	"github.com/fis/aoc2019-go/day11"
 	"github.com/fis/aoc2019-go/day18"
 	"github.com/fis/aoc2019-go/day19"
@@ -27,6 +28,7 @@ var solvers = map[int]func(string) ([]string, error){
 	6:  day06.Solve,
 	7:  day07.Solve,
 	8:  day08.Solve,
+	9:  day09.Solve,
 	11: day11.Solve,
 	18: day18.Solve,
 	19: day19.Solve,
