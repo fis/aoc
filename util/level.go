@@ -24,11 +24,16 @@ func ReadLevel(path string, empty byte) (*Level, error) {
 
 // ParseLevel parses a byte array into a level. See ReadLevel.
 func ParseLevel(data []byte, empty byte) *Level {
+	return ParseLevelAt(data, empty, P{0,0})
+}
+
+// ParseLevelAt parses a byte array into a level using a specified offset.
+func ParseLevelAt(data []byte, empty byte, min P) *Level {
 	level := make(map[P]byte)
-	x, y, maxX, maxY := 0, 0, 0, 0
+	x, y, maxX, maxY := min.X, min.Y, 0, 0
 	for _, b := range data {
 		if b == '\n' {
-			x = 0
+			x = min.X
 			y++
 			continue
 		}
@@ -46,7 +51,7 @@ func ParseLevel(data []byte, empty byte) *Level {
 	return &Level{
 		data:  level,
 		empty: empty,
-		min:   P{0, 0},
+		min:   min,
 		max:   P{maxX, maxY},
 	}
 }
@@ -54,6 +59,11 @@ func ParseLevel(data []byte, empty byte) *Level {
 // ParseLevelString parses a string into a level. See ReadLevel.
 func ParseLevelString(data string, empty byte) *Level {
 	return ParseLevel([]byte(data), empty)
+}
+
+// ParseLevelStringAt parses a string into a level using a specified offset.
+func ParseLevelStringAt(data string, empty byte, min P) *Level {
+	return ParseLevelAt([]byte(data), empty, min)
 }
 
 // At returns the byte at the given coordinates.
