@@ -48,9 +48,7 @@ func Solve(path string) ([]string, error) {
 }
 
 func run(prog []int64, input []string) int64 {
-	vm := intcode.VM{}
-	vm.Load(prog)
-	out := vm.Run(unlines(input))
+	out, _ := intcode.Run(prog, unlines(input))
 	return out[len(out)-1]
 }
 

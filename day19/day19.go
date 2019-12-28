@@ -73,9 +73,7 @@ func part2(start, size int, probe func(x, y int) bool) int {
 
 func prober(prog []int64) func(x, y int) bool {
 	return func(x, y int) bool {
-		vm := intcode.VM{}
-		vm.Load(prog)
-		out := vm.Run([]int64{int64(x), int64(y)})
+		out, _ := intcode.Run(prog, []int64{int64(x), int64(y)})
 		return out[0] != 0
 	}
 }

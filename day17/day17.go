@@ -34,9 +34,7 @@ func Solve(path string) ([]string, error) {
 }
 
 func capture(prog []int64) *util.Level {
-	vm := intcode.VM{}
-	vm.Load(prog)
-	out := vm.Run([]int64{})
+	out, _ := intcode.Run(prog, nil)
 	level := util.ParseLevelString("", '.')
 	x, y := 0, 0
 	for _, v := range out {

@@ -7,11 +7,9 @@ import (
 )
 
 func TestEx1(t *testing.T) {
-	vm := intcode.VM{}
-	vm.Use([]int64{1002, 4, 3, 4, 33})
-	vm.Run(nil)
-	if op := *vm.Mem(4); op != 99 {
-		t.Errorf("Last instruction not set to halt: %d", op)
+	_, mem := intcode.Run([]int64{1002, 4, 3, 4, 33}, nil)
+	if mem[4] != 99 {
+		t.Errorf("Last instruction not set to halt: %d", mem[4])
 	}
 }
 
@@ -37,11 +35,9 @@ func TestEx2(t *testing.T) {
 			specs: []testSpec{{6, 1}, {7, 1}, {8, 0}, {9, 0}},
 		},
 	}
-	vm := intcode.VM{}
 	for _, test := range tests {
 		for _, spec := range test.specs {
-			vm.Load(test.prog)
-			got := vm.Run([]int64{spec.input})
+			got, _ := intcode.Run(test.prog, []int64{spec.input})
 			if len(got) != 1 {
 				t.Errorf("%v / %d: invalid output: %v", test.prog, spec.input, got)
 			} else if n := got[0]; n != spec.want {
@@ -57,11 +53,9 @@ func TestEx3(t *testing.T) {
 		{3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1},
 	}
 	specs := []testSpec{{-1, 1}, {0, 0}, {1, 1}, {2, 1}}
-	vm := intcode.VM{}
 	for _, prog := range progs {
 		for _, spec := range specs {
-			vm.Load(prog)
-			got := vm.Run([]int64{spec.input})
+			got, _ := intcode.Run(prog, []int64{spec.input})
 			if len(got) != 1 {
 				t.Errorf("%v / %d: invalid output: %v", prog, spec.input, got)
 			} else if n := got[0]; n != spec.want {
@@ -77,11 +71,9 @@ func TestEx4(t *testing.T) {
 		{3, 3, 1105, -1, 9, 1101, 0, 0, 12, 4, 12, 99, 1},
 	}
 	specs := []testSpec{{-1, 1}, {0, 0}, {1, 1}, {2, 1}}
-	vm := intcode.VM{}
 	for _, prog := range progs {
 		for _, spec := range specs {
-			vm.Load(prog)
-			got := vm.Run([]int64{spec.input})
+			got, _ := intcode.Run(prog, []int64{spec.input})
 			if len(got) != 1 {
 				t.Errorf("%v / %d: invalid output: %v", prog, spec.input, got)
 			} else if n := got[0]; n != spec.want {
@@ -98,10 +90,8 @@ func TestEx5(t *testing.T) {
 		999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99,
 	}
 	specs := []testSpec{{6, 999}, {7, 999}, {8, 1000}, {9, 1001}, {10, 1001}}
-	vm := intcode.VM{}
 	for _, spec := range specs {
-		vm.Load(prog)
-		got := vm.Run([]int64{spec.input})
+		got, _ := intcode.Run(prog, []int64{spec.input})
 		if len(got) != 1 {
 			t.Errorf("%v / %d: invalid output: %v", prog, spec.input, got)
 		} else if n := got[0]; n != spec.want {

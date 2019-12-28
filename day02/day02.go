@@ -39,6 +39,6 @@ func run(noun, verb int, prog []int64) int64 {
 	vm.Load(prog)
 	*vm.Mem(1) = int64(noun)
 	*vm.Mem(2) = int64(verb)
-	vm.Run([]int64{})
+	vm.Run(nil)
 	return *vm.Mem(0)
 }

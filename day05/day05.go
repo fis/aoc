@@ -20,9 +20,7 @@ func Solve(path string) ([]string, error) {
 }
 
 func part1(prog []int64) int64 {
-	vm := intcode.VM{}
-	vm.Load(prog)
-	out := vm.Run([]int64{1})
+	out, _ := intcode.Run(prog, []int64{1})
 	for _, i := range out {
 		util.Diagf("out: %d\n", i)
 	}
@@ -30,8 +28,6 @@ func part1(prog []int64) int64 {
 }
 
 func part2(prog []int64) int64 {
-	vm := intcode.VM{}
-	vm.Load(prog)
-	out := vm.Run([]int64{5})
+	out, _ := intcode.Run(prog, []int64{5})
 	return out[0]
 }

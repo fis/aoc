@@ -33,11 +33,8 @@ func TestExamples(t *testing.T) {
 			want: []int64{30, 1, 1, 4, 2, 5, 6, 0, 99},
 		},
 	}
-	vm := intcode.VM{}
 	for _, test := range tests {
-		vm.Load(test.prog)
-		vm.Run([]int64{})
-		got := vm.Dump()
+		_, got := intcode.Run(test.prog, nil)
 		if !cmp.Equal(got, test.want) {
 			t.Errorf("%v -> %v, want %v", test.prog, got, test.want)
 		}

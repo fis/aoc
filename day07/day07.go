@@ -42,9 +42,8 @@ func findBest(prog []int64, phases *[ampCount]int64, runner func([]int64, *[ampC
 func run(prog []int64, phases *[ampCount]int64) int64 {
 	sig := int64(0)
 	for i := 0; i < ampCount; i++ {
-		amp := intcode.VM{}
-		amp.Load(prog)
-		sig = amp.Run([]int64{phases[i], sig})[0]
+		out, _ := intcode.Run(prog, []int64{phases[i], sig})
+		sig = out[0]
 	}
 	return sig
 }

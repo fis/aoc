@@ -26,9 +26,7 @@ func TestExamples(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		vm := intcode.VM{}
-		vm.Load(test.prog)
-		got := vm.Run([]int64{})
+		got, _ := intcode.Run(test.prog, nil)
 		if !cmp.Equal(got, test.want) {
 			t.Errorf("%v -> %v, want %v", test.prog, got, test.want)
 		}

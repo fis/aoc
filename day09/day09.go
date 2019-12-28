@@ -13,11 +13,8 @@ func Solve(path string) ([]string, error) {
 		return nil, err
 	}
 
-	vm := intcode.VM{}
-	vm.Load(prog)
-	p1 := vm.Run([]int64{1})
-	vm.Load(prog)
-	p2 := vm.Run([]int64{2})
+	p1, _ := intcode.Run(prog, []int64{1})
+	p2, _ := intcode.Run(prog, []int64{2})
 
 	return []string{
 		strconv.FormatInt(p1[len(p1)-1], 10),

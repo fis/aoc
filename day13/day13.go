@@ -19,17 +19,10 @@ func Solve(path string) ([]string, error) {
 }
 
 func part1(prog []int64) int {
-	var (
-		vm  intcode.VM
-		tok intcode.WalkToken
-	)
+	out, _ := intcode.Run(prog, nil)
 	blocks := 0
-	vm.Load(prog)
-	for vm.Walk(&tok) {
-		// ignore two first outputs (X, Y position)
-		vm.Walk(&tok)
-		vm.Walk(&tok)
-		if tok.ReadOutput() == 2 {
+	for i := 2; i < len(out); i += 3 {
+		if out[i] == 2 {
 			blocks++
 		}
 	}

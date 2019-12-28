@@ -29,6 +29,16 @@ func Load(path string) ([]int64, error) {
 	return p, nil
 }
 
+// Run executes an Intcode program with the given input, and returns the output and the resulting
+// state of the computer memory.
+func Run(prog, input []int64) (output, mem []int64) {
+	vm := VM{}
+	vm.Load(prog)
+	output = vm.Run(input)
+	mem = vm.Dump()
+	return
+}
+
 // An Intcode VM represents the state of an Intcode computer.
 type VM struct {
 	data   []int64
