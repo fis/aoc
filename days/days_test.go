@@ -125,8 +125,11 @@ func TestAllDays(t *testing.T) {
 			want: []string{"27777901", "2047"},
 		},
 		{
-			day:  25,
-			want: []string{"134227456"},
+			day: 25,
+			want: []string{
+				`Santa notices your small droid, looks puzzled for a moment, realizes what has happened, and radios your ship directly.`,
+				`"Oh, hello! You should be able to get in by typing 134227456 on the keypad at the main airlock."`,
+			},
 		},
 	}
 
