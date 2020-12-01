@@ -1,5 +1,5 @@
-module github.com/fis/aoc2019-go
+module github.com/fis/aoc-go
 
-go 1.13
+go 1.15
 
-require github.com/google/go-cmp v0.3.1
+require github.com/google/go-cmp v0.5.4

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/fis/aoc2019-go/util"
+	"github.com/fis/aoc-go/util"
 )
 
 // Load will read an Intcode program in the standard format (comma-separated integers) from a text
