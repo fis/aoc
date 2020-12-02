@@ -4,7 +4,7 @@ This repository contains my solutions for the 2019 iteration of
 [Advent of Code](https://adventofcode.com/). See below for extended
 notes.
 
-The sibling repository [aoc2019-go](https://github.com/fis/aoc2019-go)
+The sibling repository [aoc-go](https://github.com/fis/aoc-go)
 contains versions in Go, if that's more up your alley.
 
 ## [Day 1](https://adventofcode.com/2019/day/1)
@@ -649,7 +649,7 @@ machine idle.
 
 A coöperative multitasking approach is probably the better option
 here. You can check out the corresponding
-[Go solution](https://github.com/fis/aoc2019-go/blob/master/day23/day23.go)
+[Go solution](https://github.com/fis/aoc-go/blob/master/2019/day23/day23.go)
 for an approach where each of the Intcode machines is executed in
 round-robin order until they next request input. In that scheme, the
 NAT can determine the network is idle as soon as a single full loop
