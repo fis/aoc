@@ -1,6 +1,7 @@
 import collections
 import enum
 import queue
+import sys
 
 def load(path):
     with open(path) as f:
@@ -187,3 +188,23 @@ class VM:
         9:  Opcode(name='setb',  nargs=1, action=_op_setb),
         99: Opcode(name='halt'),
     }
+
+def main(args):
+    if len(args) == 0 or len(args) > 2:
+        sys.exit('usage: python3 intcode.py <run|disas> [prog.txt]')
+
+    prog = load(args[1] if len(args) > 1 else '/dev/stdin')
+    vm = VM(prog)
+
+    cmd = args[0]
+    if cmd == 'disas':
+        vm._ip = 0
+        while vm._ip < len(prog):
+            opcode, args = vm._fetch(vm._ip)
+            vm._trace(opcode, args)
+            vm._ip += 1 + opcode.nargs
+    else:
+        sys.exit('unknown command: ' + cmd)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
