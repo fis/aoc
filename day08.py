@@ -9,7 +9,7 @@ W = 25 if len(sys.argv) < 3 else int(sys.argv[2])
 H = 6 if len(sys.argv) < 4 else int(sys.argv[3])
 
 if len(data) % (W*H) != 0:
-    raise RuntimeError('image size {} not a multiple of {}*{}'.format(len(data), W, H))
+    raise RuntimeError(f'image size {len(data)} not a multiple of {W}*{H}')
 
 layers = [data[i*W*H:(i+1)*W*H] for i in range(len(data) // (W*H))]
 

@@ -24,7 +24,7 @@ class FakeDroid:
 
     def try_move(self, coord):
         if abs(coord[0]-self.pos[0]) + abs(coord[1]-self.pos[1]) != 1:
-            raise RuntimeError('bad try_move: {} to {}'.format(self.pos, coord))
+            raise RuntimeError(f'bad try_move: {self.pos} to {coord}')
         if coord in self.walls:
             return Tile.WALL
         else:
@@ -34,7 +34,7 @@ class FakeDroid:
     def must_move(self, coords):
         for coord in coords:
             if self.try_move(coord) == Tile.WALL:
-                raise RuntimeError('bad must_move: {} to {}: hit wall'.format(self.pos, coord))
+                raise RuntimeError(f'bad must_move: {self.pos} to {coord}: hit wall')
 
 class RealDroid:
     def __init__(self):
@@ -46,10 +46,10 @@ class RealDroid:
         elif coord[0] == self.pos[0]   and coord[1] == self.pos[1]+1: cmd = 2
         elif coord[0] == self.pos[0]-1 and coord[1] == self.pos[1]:   cmd = 3
         elif coord[0] == self.pos[0]+1 and coord[1] == self.pos[1]:   cmd = 4
-        else: raise RuntimeError('bad try_move: {} to {}'.format(self.pos, coord))
+        else: raise RuntimeError(f'bad try_move: {self.pos} to {coord}')
         res = self.vm.step_out(stdin=[cmd])
         if type(res) is not int or res < 0 or res > 2:
-            raise RuntimeError('bad try_move: {} to {}: out {}'.format(self.pos, coord, res))
+            raise RuntimeError(f'bad try_move: {self.pos} to {coord}: out {res}')
         res = Tile(res)
         if res != Tile.WALL: self.pos = coord
         return res
@@ -57,7 +57,7 @@ class RealDroid:
     def must_move(self, coords):
         for coord in coords:
             if self.try_move(coord) == Tile.WALL:
-                raise RuntimeError('bad must_move: {} to {}: hit wall'.format(self.pos, coord))
+                raise RuntimeError(f'bad must_move: {self.pos} to {coord}: hit wall')
 
 Droid = RealDroid if len(sys.argv) < 2 or sys.argv[1] != 'test' else FakeDroid
 

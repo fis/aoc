@@ -62,5 +62,5 @@ while end - start >= 2:
     else:
         start = mid
 
-print('{} -> {}'.format(start, ore(start)))
-print('{} -> {}'.format(end, ore(end)))
+print(f'{start} -> {ore(start)}')
+print(f'{end} -> {ore(end)}')

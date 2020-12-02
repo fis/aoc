@@ -53,4 +53,4 @@ while asteroids:
     shot.extend(see)
     asteroids -= set(see)
 
-print('shot[199] = {}'.format(shot[199]))
+print(f'shot[199] = {shot[199]}')

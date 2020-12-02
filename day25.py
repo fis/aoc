@@ -111,16 +111,16 @@ for size in range(1, len(items)+1):
     for attempt in itertools.combinations(items, size):
         for item in items:
             if item in have and item not in attempt:
-                comp.write('drop {}'.format(item))
+                comp.write(f'drop {item}')
                 comp.read_until('Command?')
                 have.remove(item)
             elif item not in have and item in attempt:
-                comp.write('take {}'.format(item))
+                comp.write(f'take {item}')
                 comp.read_until('Command?')
                 have.add(item)
         comp.write('east')
         result = comp.read_until('Command?')
         if '== Security Checkpoint ==' not in result:
             print('\n'.join(result))
-            print('items:\n{}'.format(', '.join(attempt)))
+            print('items:\n' + ', '.join(attempt))
             sys.exit(0)

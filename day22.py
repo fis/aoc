@@ -38,7 +38,7 @@ for op, arg in prog:
         for i, c in enumerate(odeck):
             deck[arg*i % N] = c
         continue
-    raise RuntimeError('{} {}'.format(op, arg))
+    raise RuntimeError(f'{op} {arg}')
 
 print(deck.index(2019))
 
@@ -80,7 +80,7 @@ for op, arg in prog[::-1]:
         inv = modinv(arg, N)
         mul, off = (mul * inv) % N, (off * inv) % N
         continue
-    raise RuntimeError('{} {}'.format(op, arg))
+    raise RuntimeError(f'{op} {arg}')
 
 pmul, poff = mul, off
 mul, off, bit = 1, 0, 1
@@ -107,6 +107,6 @@ for _ in range(reps):
             inv = modinv(arg, N)
             pos = (pos * inv) % N
             continue
-        raise RuntimeError('{} {}'.format(op, arg))
+        raise RuntimeError(f'{op} {arg}')
 
 print(pos)

@@ -69,7 +69,7 @@ class Switch:
         self._recvq[0].append(self._nat_packet)
         self._recv_count = [0 for _ in self._recv_count]
         if self._nat_send_history[1] == self._nat_packet[1]:
-            print('{}, {}'.format(self._nat_send_history, self._nat_packet))
+            print(f'{self._nat_send_history}, {self._nat_packet}')
             self._shutdown = [False for _ in self._recvq]
         self._nat_send_history = self._nat_packet
 

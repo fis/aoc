@@ -56,7 +56,7 @@ for i in range(9, 24, 5): neigh[i].append((-1, [13]))
 for i in range(21, 24): neigh[i].append((-1, [17]))
 
 state = [initial_state]
-total_bugs = '{:b}'.format(initial_state).count('1')
+total_bugs = f'{initial_state:b}'.count('1')
 
 for _ in range(steps):
     new, add_below, add_above = state.copy(), None, None

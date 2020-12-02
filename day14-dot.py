@@ -20,9 +20,9 @@ with open('day14-input.txt' if len(sys.argv) < 2 else sys.argv[1]) as f:
 print('digraph reactions {')
 
 for chem, q in quanta.items():
-    print('  {0} [label="{0}\\n{1}"];'.format(chem, q))
+    print(f'  {chem} [label="{chem}\\n{q}"];')
 for chem, chemdeps in deps.items():
     for dchem, dq in chemdeps.items():
-        print('  {} -> {} [label="{}"];'.format(chem, dchem, dq))
+        print(f'  {chem} -> {dchem} [label="{dq}"];')
 
 print('}')

@@ -22,7 +22,7 @@ if True:
         if sig >= max_sig:
             max_sig, max_phases = sig, tuple(phases)
 
-    print('{} -> {}'.format(max_phases, max_sig))
+    print(f'{max_phases} -> {max_sig}')
 
 # part 2
 
@@ -48,4 +48,4 @@ if True:
         if sig >= max_sig:
             max_sig, max_phases = sig, tuple(phases)
 
-    print('{} -> {}'.format(max_phases, max_sig))
+    print(f'{max_phases} -> {max_sig}')

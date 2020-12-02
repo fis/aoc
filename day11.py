@@ -18,13 +18,13 @@ def robot(prog, white=set()):
             painted.add(p)
             if n == 0:   white.discard(p)
             elif n == 1: white.add(p)
-            else: raise RuntimeError('bad paint: {}'.format(n))
+            else: raise RuntimeError(f'bad paint: {n}')
         else:
             cycle[0] = 'paint'
             dx, dy = rdir[0], rdir[1]
             if n == 0:   dx, dy = dy, -dx
             elif n == 1: dx, dy = -dy, dx
-            else: raise RuntimeError('bad turn: {}'.format(n))
+            else: raise RuntimeError(f'bad turn: {n}')
             rpos[0] += dx
             rpos[1] += dy
             rdir[0] = dx
