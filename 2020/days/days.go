@@ -19,10 +19,12 @@ import (
 	"fmt"
 
 	"github.com/fis/aoc-go/2020/day01"
+	"github.com/fis/aoc-go/2020/day02"
 )
 
 var solvers = map[int]func(string) ([]string, error){
 	1: day01.Solve,
+	2: day02.Solve,
 }
 
 func Solve(day int, path string) ([]string, error) {
