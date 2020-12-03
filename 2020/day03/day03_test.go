@@ -12,40 +12,46 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+package day03
 
 import (
-	"fmt"
+	"strings"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/fis/aoc-go/util"
 )
 
-func TestAllDays(t *testing.T) {
-	tests := []struct {
-		day  int
-		want []string
-	}{
-		{
-			day:  1,
-			want: []string{"970816", "96047280"},
-		},
-		{
-			day:  2,
-			want: []string{"506", "443"},
-		},
-		{
-			day:  3,
-			want: []string{"151", "7540141059"},
-		},
-	}
+const example = `
+..##.......
+#...#...#..
+.#....#..#.
+..#.#...#.#
+.#...##..#.
+..#.##.....
+.#.#.#....#
+.#........#
+#.##...#...
+#...##....#
+.#..#...#.#
+`
 
+func TestCountTrees(t *testing.T) {
+	level := util.ParseLevelString(strings.TrimPrefix(example, "\n"), '.')
+
+	tests := []struct {
+		slope util.P
+		want  int
+	}{
+		{slope: util.P{1, 1}, want: 2},
+		{slope: util.P{3, 1}, want: 7},
+		{slope: util.P{5, 1}, want: 3},
+		{slope: util.P{7, 1}, want: 4},
+		{slope: util.P{1, 2}, want: 2},
+	}
 	for _, test := range tests {
-		got, err := Solve(test.day, fmt.Sprintf("testdata/day%02d.txt", test.day))
-		if err != nil {
-			t.Errorf("Day %d failed: %v", test.day, err)
-		} else if diff := cmp.Diff(test.want, got); diff != "" {
-			t.Errorf("Day %d mismatch (-want +got):\n%s", test.day, diff)
+		got := countTrees(level, test.slope)
+		if got != test.want {
+			t.Errorf("countTrees(..., %v) = %d, want %d", test.slope, got, test.want)
 		}
 	}
 }
