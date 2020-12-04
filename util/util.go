@@ -72,11 +72,6 @@ func ReadIntRows(path string) ([]int, error) {
 	return ints, nil
 }
 
-// P represents a two-dimensional integer-valued coordinate.
-type P struct {
-	X, Y int
-}
-
 // ScanChunks implements a bufio.SplitFunc for scanning paragraphs delimited by a blank line
 // (i.e., two consecutive '\n' bytes).
 func ScanChunks(data []byte, atEOF bool) (advance int, token []byte, err error) {
@@ -92,6 +87,11 @@ func ScanChunks(data []byte, atEOF bool) (advance int, token []byte, err error) 
 		return len(data), data, nil
 	}
 	return 0, nil, nil
+}
+
+// P represents a two-dimensional integer-valued coordinate.
+type P struct {
+	X, Y int
 }
 
 func (p P) Neigh() [4]P {
