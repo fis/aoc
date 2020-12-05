@@ -16,11 +16,7 @@
 package day04
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
-	"io"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -29,12 +25,16 @@ import (
 )
 
 func Solve(path string) ([]string, error) {
-	data, err := readPassportsFromFile(path)
+	data, err := util.ReadChunks(path)
 	if err != nil {
 		return nil, err
 	}
-	valid := countValid(data, passport.valid)
-	strict := countValid(data, passport.strictlyValid)
+	passes, err := parsePassports(data)
+	if err != nil {
+		return nil, err
+	}
+	valid := countValid(passes, passport.valid)
+	strict := countValid(passes, passport.strictlyValid)
 	return []string{strconv.Itoa(valid), strconv.Itoa(strict)}, nil
 }
 
@@ -110,21 +110,9 @@ func numBetween(s string, min, max int) bool {
 	return err == nil && n >= min && n <= max
 }
 
-func readPassportsFromFile(path string) ([]passport, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	return readPassports(f)
-}
-
-func readPassports(f io.Reader) ([]passport, error) {
-	var out []passport
-	s := bufio.NewScanner(f)
-	s.Split(util.ScanChunks)
-	for s.Scan() {
-		p, err := parsePassport(s.Bytes())
+func parsePassports(data []string) (out []passport, err error) {
+	for _, text := range data {
+		p, err := parsePassport(text)
 		if err != nil {
 			return nil, err
 		}
@@ -133,14 +121,12 @@ func readPassports(f io.Reader) ([]passport, error) {
 	return out, nil
 }
 
-func parsePassport(data []byte) (passport, error) {
+func parsePassport(data string) (passport, error) {
 	p := make(passport)
-	s := bufio.NewScanner(bytes.NewReader(data))
-	s.Split(bufio.ScanWords)
-	for s.Scan() {
-		kv := strings.SplitN(s.Text(), ":", 2)
+	for _, word := range util.Words(data) {
+		kv := strings.SplitN(word, ":", 2)
 		if len(kv) < 2 {
-			return nil, fmt.Errorf("invalid datum: %q", s.Text())
+			return nil, fmt.Errorf("invalid datum: %q", word)
 		}
 		p[kv[0]] = kv[1]
 	}

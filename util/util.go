@@ -25,6 +25,19 @@ import (
 	"strings"
 )
 
+// Words returns the list of all nonempty contiguous sequences of non-whitespace characters
+// in the input string. In other words, this is the list of tokens defined by the standard
+// bufio.ScanWords function.
+func Words(s string) []string {
+	var words []string
+	sc := bufio.NewScanner(strings.NewReader(s))
+	sc.Split(bufio.ScanWords)
+	for sc.Scan() {
+		words = append(words, sc.Text())
+	}
+	return words
+}
+
 // ReadLines returns the contents of a text file as a slice of strings representing the lines. The
 // newline separators are not kept. The last line need not have a newline character at the end.
 func ReadLines(path string) ([]string, error) {

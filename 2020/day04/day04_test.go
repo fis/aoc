@@ -15,67 +15,56 @@
 package day04
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
 
-const (
-	part1 = `
+var (
+	part1 = []string{`
 ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
-byr:1937 iyr:2017 cid:147 hgt:183cm
-
+byr:1937 iyr:2017 cid:147 hgt:183cm`, `
 iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
-hcl:#cfa07d byr:1929
-
+hcl:#cfa07d byr:1929`, `
 hcl:#ae17e1 iyr:2013
 eyr:2024
 ecl:brn pid:760753108 byr:1931
-hgt:179cm
-
+hgt:179cm`, `
 hcl:#cfa07d eyr:2025 pid:166559648
-iyr:2011 ecl:brn hgt:59in
-`
-	part2valid = `
+iyr:2011 ecl:brn hgt:59in`}
+
+	part2valid = []string{`
 pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
-hcl:#623a2f
-
+hcl:#623a2f`, `
 eyr:2029 ecl:blu cid:129 byr:1989
-iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm
-
+iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm`, `
 hcl:#888785
 hgt:164cm byr:2001 iyr:2015 cid:88
 pid:545766238 ecl:hzl
-eyr:2022
+eyr:2022`, `
+iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719`}
 
-iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
-`
-	part2invalid = `
+	part2invalid = []string{`
 eyr:1972 cid:100
-hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
-
+hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926`, `
 iyr:2019
 hcl:#602927 eyr:1967 hgt:170cm
-ecl:grn pid:012533040 byr:1946
-
+ecl:grn pid:012533040 byr:1946`, `
 hcl:dab227 iyr:2012
-ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277
-
+ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277`, `
 hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
-pid:3556412378 byr:2007
-`
+pid:3556412378 byr:2007`}
 )
 
-func TestReadPassports(t *testing.T) {
+func TestParsePassports(t *testing.T) {
 	want := []passport{
 		{"ecl": "gry", "pid": "860033327", "eyr": "2020", "hcl": "#fffffd", "byr": "1937", "iyr": "2017", "cid": "147", "hgt": "183cm"},
 		{"iyr": "2013", "ecl": "amb", "cid": "350", "eyr": "2023", "pid": "028048884", "hcl": "#cfa07d", "byr": "1929"},
 		{"hcl": "#ae17e1", "iyr": "2013", "eyr": "2024", "ecl": "brn", "pid": "760753108", "byr": "1931", "hgt": "179cm"},
 		{"hcl": "#cfa07d", "eyr": "2025", "pid": "166559648", "iyr": "2011", "ecl": "brn", "hgt": "59in"},
 	}
-	if got, err := readPassports(strings.NewReader(part1)); err != nil {
+	if got, err := parsePassports(part1); err != nil {
 		t.Errorf("readPassports: %v", err)
 	} else if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("readPassports mismatch (-want +got):\n%s", diff)
@@ -85,7 +74,7 @@ func TestReadPassports(t *testing.T) {
 func TestCountValid(t *testing.T) {
 	tests := []struct {
 		name      string
-		input     string
+		input     []string
 		validator func(passport) bool
 		want      int
 	}{
@@ -94,7 +83,7 @@ func TestCountValid(t *testing.T) {
 		{name: "part 2, invalid", input: part2invalid, validator: passport.strictlyValid, want: 0},
 	}
 	for _, test := range tests {
-		data, err := readPassports(strings.NewReader(test.input))
+		data, err := parsePassports(test.input)
 		if err != nil {
 			t.Errorf("%s: readPassports: %v", test.name, err)
 		} else if got := countValid(data, test.validator); got != test.want {
