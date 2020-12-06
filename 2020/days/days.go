@@ -23,6 +23,7 @@ import (
 	"github.com/fis/aoc-go/2020/day03"
 	"github.com/fis/aoc-go/2020/day04"
 	"github.com/fis/aoc-go/2020/day05"
+	"github.com/fis/aoc-go/2020/day06"
 )
 
 var solvers = map[int]func(string) ([]string, error){
@@ -31,6 +32,7 @@ var solvers = map[int]func(string) ([]string, error){
 	3: day03.Solve,
 	4: day04.Solve,
 	5: day05.Solve,
+	6: day06.Solve,
 }
 
 func Solve(day int, path string) ([]string, error) {
