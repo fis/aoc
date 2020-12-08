@@ -19,6 +19,7 @@ type Graph struct {
 	verts     map[string]int
 	vertNames []string
 	edges     [][]bool
+	w         [][]int
 }
 
 // Len returns the number of vertices in the graph.
@@ -41,6 +42,12 @@ func (g *Graph) V(name string) int {
 		g.edges[i] = append(g.edges[i], false)
 	}
 	g.edges = append(g.edges, make([]bool, len(g.verts)))
+	if g.w != nil {
+		for i := range g.w {
+			g.w[i] = append(g.w[i], 0)
+		}
+		g.w = append(g.w, make([]int, len(g.verts)))
+	}
 	return v
 }
 
@@ -68,6 +75,24 @@ func (g *Graph) AddEdgeV(fromV, toV int) {
 	g.edges[fromV][toV] = true
 }
 
+// AddEdgeW adds a weighted edge between from and to, creating the vertices if necessary.
+// If an edge already existed, its weight is updated.
+func (g *Graph) AddEdgeW(from, to string, w int) {
+	g.AddEdgeWV(g.V(from), g.V(to), w)
+}
+
+// AddEdgeWV adds a weighted edge between from and to. If an edge already existed, its weight is updated.
+func (g *Graph) AddEdgeWV(fromV, toV, w int) {
+	g.AddEdgeV(fromV, toV)
+	if g.w == nil {
+		g.w = make([][]int, len(g.verts))
+		for i := range g.w {
+			g.w[i] = make([]int, len(g.verts))
+		}
+	}
+	g.w[fromV][toV] = w
+}
+
 // DelEdge removes an edge between from and to (if it existed), creating the vertices if necessary.
 func (g *Graph) DelEdge(from, to string) {
 	g.DelEdgeV(g.V(from), g.V(to))
@@ -76,6 +101,11 @@ func (g *Graph) DelEdge(from, to string) {
 // DelEdgeV removes an edge between from and to (if it existed).
 func (g *Graph) DelEdgeV(fromV, toV int) {
 	g.edges[fromV][toV] = false
+}
+
+// W returns the weight of an edge between two vertices. The call is valid only if your graph does have weights.
+func (g *Graph) W(fromV, toV int) int {
+	return g.w[fromV][toV]
 }
 
 // Range calls the callback for each of the graph's vertex names.

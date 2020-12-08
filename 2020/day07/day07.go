@@ -30,14 +30,14 @@ func Solve(path string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	g, w, err := parseRules(rules)
+	g, err := parseRules(rules)
 	if err != nil {
 		return nil, err
 	}
 
 	bag := "shiny gold"
 	part1 := countAncestors(g, bag)
-	part2 := countDescendants(g, w, bag)
+	part2 := countDescendants(g, bag)
 
 	return []string{strconv.Itoa(part1), strconv.Itoa(part2)}, nil
 }
@@ -47,14 +47,13 @@ var (
 	bagPattern  = regexp.MustCompile(`^(\d+) (\w+ \w+) bags?$`)
 )
 
-func parseRules(rules []string) (g *util.Graph, w map[[2]int]int, err error) {
+func parseRules(rules []string) (g *util.Graph, err error) {
 	g = &util.Graph{}
-	w = make(map[[2]int]int)
 
 	for _, rule := range rules {
 		m := rulePattern.FindStringSubmatch(rule)
 		if m == nil {
-			return nil, nil, fmt.Errorf("invalid rule: %s", rule)
+			return nil, fmt.Errorf("invalid rule: %s", rule)
 		}
 		from, contents := m[1], m[2]
 		fromV := g.V(from)
@@ -62,17 +61,16 @@ func parseRules(rules []string) (g *util.Graph, w map[[2]int]int, err error) {
 			for _, content := range strings.Split(contents, ", ") {
 				m = bagPattern.FindStringSubmatch(content)
 				if m == nil {
-					return nil, nil, fmt.Errorf("invalid content: %s", content)
+					return nil, fmt.Errorf("invalid content: %s", content)
 				}
 				toW, _ := strconv.Atoi(m[1])
 				toV := g.V(m[2])
-				g.AddEdgeV(fromV, toV)
-				w[[2]int{fromV, toV}] = toW
+				g.AddEdgeWV(fromV, toV, toW)
 			}
 		}
 	}
 
-	return g, w, nil
+	return g, nil
 }
 
 func countAncestors(g *util.Graph, node string) int {
@@ -96,7 +94,7 @@ func countAncestors(g *util.Graph, node string) int {
 	return dfs(g.V(node)) - 1
 }
 
-func countDescendants(g *util.Graph, w map[[2]int]int, node string) int {
+func countDescendants(g *util.Graph, node string) int {
 	var (
 		memo map[int]int
 		dfs  func(int) int
@@ -108,7 +106,7 @@ func countDescendants(g *util.Graph, w map[[2]int]int, node string) int {
 		}
 		count := 0
 		g.RangeSuccV(at, func(next int) bool {
-			n := w[[2]int{at, next}]
+			n := g.W(at, next)
 			count += n * (1 + dfs(next))
 			return true
 		})
@@ -119,7 +117,7 @@ func countDescendants(g *util.Graph, w map[[2]int]int, node string) int {
 }
 
 func PrintRules(out io.Writer, rules []string, node string) error {
-	g, w, err := parseRules(rules)
+	g, err := parseRules(rules)
 	if err != nil {
 		return err
 	}
@@ -154,7 +152,7 @@ func PrintRules(out io.Writer, rules []string, node string) error {
 	})
 	g.RangeV(func(v int) {
 		g.RangeSuccV(v, func(v2 int) bool {
-			fmt.Fprintf(out, "  n%d -> n%d [label=\"%d\"];\n", v, v2, w[[2]int{v, v2}])
+			fmt.Fprintf(out, "  n%d -> n%d [label=\"%d\"];\n", v, v2, g.W(v, v2))
 			return true
 		})
 	})

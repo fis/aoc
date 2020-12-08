@@ -43,7 +43,7 @@ var ex2 = []string{
 func TestCountAncestors(t *testing.T) {
 	bag := "shiny gold"
 	want := 4
-	if g, _, err := parseRules(ex1); err != nil {
+	if g, err := parseRules(ex1); err != nil {
 		t.Errorf("parseRules: %v", err)
 	} else if got := countAncestors(g, bag); got != want {
 		t.Errorf("countAncestors(%s) = %d, want %d", bag, got, want)
@@ -61,9 +61,9 @@ func TestCountDescendants(t *testing.T) {
 		{"ex2", ex2, 126},
 	}
 	for _, test := range tests {
-		if g, w, err := parseRules(test.rules); err != nil {
+		if g, err := parseRules(test.rules); err != nil {
 			t.Errorf("parseRules(%s): %v", test.name, err)
-		} else if got := countDescendants(g, w, bag); got != test.want {
+		} else if got := countDescendants(g, bag); got != test.want {
 			t.Errorf("countDescendants(%s, %s) = %d, want %d", test.name, bag, got, test.want)
 		}
 	}
