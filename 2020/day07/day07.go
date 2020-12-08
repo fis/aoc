@@ -17,6 +17,7 @@ package day07
 
 import (
 	"fmt"
+	"io"
 	"regexp"
 	"strconv"
 	"strings"
@@ -115,4 +116,49 @@ func countDescendants(g *util.Graph, w map[[2]int]int, node string) int {
 		return count
 	}
 	return dfs(g.V(node))
+}
+
+func PrintRules(out io.Writer, rules []string, node string) error {
+	g, w, err := parseRules(rules)
+	if err != nil {
+		return err
+	}
+
+	var (
+		colors   map[int]string
+		colorize func(int, func(*util.Graph, int, func(int) bool), string)
+	)
+	colors = make(map[int]string)
+	colorize = func(at int, ranger func(*util.Graph, int, func(int) bool), color string) {
+		colors[at] = color
+		ranger(g, at, func(next int) bool {
+			if _, ok := colors[next]; !ok {
+				colorize(next, ranger, color)
+			}
+			return true
+		})
+	}
+
+	nodeV := g.V(node)
+	colorize(nodeV, (*util.Graph).RangePredV, "#1e8e3e")
+	colorize(nodeV, (*util.Graph).RangeSuccV, "#1a73e8")
+	colors[nodeV] = "#d93025"
+
+	fmt.Fprint(out, "digraph bags {\n")
+	g.RangeV(func(v int) {
+		fg, bg := "black", "white"
+		if c, ok := colors[v]; ok {
+			fg, bg = "white", c
+		}
+		fmt.Fprintf(out, "  n%d [label=\"%s\", fillcolor=\"%s\", fontcolor=\"%s\", style=\"filled\"];\n", v, g.Name(v), bg, fg)
+	})
+	g.RangeV(func(v int) {
+		g.RangeSuccV(v, func(v2 int) bool {
+			fmt.Fprintf(out, "  n%d -> n%d [label=\"%d\"];\n", v, v2, w[[2]int{v, v2}])
+			return true
+		})
+	})
+	fmt.Fprint(out, "}\n")
+
+	return nil
 }
