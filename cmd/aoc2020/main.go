@@ -18,18 +18,16 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/fis/aoc-go/2020/day07"
+	"github.com/fis/aoc-go/2020/day08"
 	"github.com/fis/aoc-go/2020/days"
 )
-
-var specials = map[string]func(){
-	"dot7": dot7,
-}
 
 func main() {
 	flag.Parse()
@@ -60,8 +58,13 @@ func main() {
 	}
 }
 
-func dot7() {
-	examples := map[string][]string{
+var specials = map[string]func(){
+	"dot7": func() { processLines(day07.PrintRules, examples["dot7"]) },
+	"dot8": func() { processLines(day08.PrintGraph, examples["dot8"]) },
+}
+
+var examples = map[string]map[string][]string{
+	"dot7": map[string][]string{
 		"ex1": []string{
 			"light red bags contain 1 bright white bag, 2 muted yellow bags.",
 			"dark orange bags contain 3 bright white bags, 4 muted yellow bags.",
@@ -82,12 +85,27 @@ func dot7() {
 			"dark blue bags contain 2 dark violet bags.",
 			"dark violet bags contain no other bags.",
 		},
-	}
+	},
+	"dot8": map[string][]string{
+		"ex": []string{
+			"nop +0",
+			"acc +1",
+			"jmp +4",
+			"acc +3",
+			"jmp -3",
+			"acc -99",
+			"acc +1",
+			"jmp -4",
+			"acc +6",
+		},
+	},
+}
 
-	var rules []string
+func processLines(printer func(out io.Writer, data []string) error, examples map[string][]string) {
+	var lines []string
 	if flag.NArg() >= 2 {
 		var ok bool
-		rules, ok = examples[flag.Arg(1)]
+		lines, ok = examples[flag.Arg(1)]
 		if !ok {
 			fmt.Fprintf(os.Stderr, "Unknown example: %q\n", flag.Arg(1))
 			os.Exit(1)
@@ -98,8 +116,10 @@ func dot7() {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			os.Exit(1)
 		}
-		rules = strings.Split(strings.TrimSpace(string(data)), "\n")
+		lines = strings.Split(strings.TrimSpace(string(data)), "\n")
 	}
-
-	day07.PrintRules(os.Stdout, rules, "shiny gold")
+	if err := printer(os.Stdout, lines); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
 }

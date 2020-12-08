@@ -116,7 +116,7 @@ func countDescendants(g *util.Graph, node string) int {
 	return dfs(g.V(node))
 }
 
-func PrintRules(out io.Writer, rules []string, node string) error {
+func PrintRules(out io.Writer, rules []string) error {
 	g, err := parseRules(rules)
 	if err != nil {
 		return err
@@ -137,7 +137,7 @@ func PrintRules(out io.Writer, rules []string, node string) error {
 		})
 	}
 
-	nodeV := g.V(node)
+	nodeV := g.V("shiny gold")
 	colorize(nodeV, (*util.Graph).RangePredV, "#1e8e3e")
 	colorize(nodeV, (*util.Graph).RangeSuccV, "#1a73e8")
 	colors[nodeV] = "#d93025"

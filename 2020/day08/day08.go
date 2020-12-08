@@ -17,6 +17,7 @@ package day08
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -107,4 +108,55 @@ func repair(code []instruction) int {
 		code[at].op = flip[code[at].op]
 	}
 	panic("this code is unfixable")
+}
+
+func PrintGraph(out io.Writer, lines []string) error {
+	var mnemonics = map[opcode]string{opAcc: "acc", opJmp: "jmp", opNop: "nop"}
+
+	code, err := parseCode(lines)
+	if err != nil {
+		return err
+	}
+
+	g := &util.Graph{}
+	verts := make([]int, len(code)+1)
+	for i, inst := range code {
+		verts[i] = g.V(fmt.Sprintf("%d: %s %+d", i, mnemonics[inst.op], inst.arg))
+	}
+	verts[len(code)] = g.V("halt")
+
+	for i, inst := range code {
+		switch inst.op {
+		case opAcc:
+			g.AddEdgeWV(verts[i], verts[i+1], 0)
+		case opJmp:
+			g.AddEdgeWV(verts[i], verts[i+inst.arg], 0)
+			g.AddEdgeWV(verts[i], verts[i+1], 1)
+		case opNop:
+			g.AddEdgeWV(verts[i], verts[i+1], 0)
+			g.AddEdgeWV(verts[i], verts[i+inst.arg], 1)
+		}
+	}
+
+	fmt.Fprint(out, "digraph prog {\n")
+	g.RangeV(func(v int) {
+		per := ""
+		if v == verts[0] || v == verts[len(verts)-1] {
+			per = ", peripheries=2"
+		}
+		fmt.Fprintf(out, "  n%d [label=\"%s\"%s];\n", v, g.Name(v), per)
+	})
+	g.RangeV(func(v int) {
+		g.RangeSuccV(v, func(v2 int) bool {
+			color := ""
+			if g.W(v, v2) == 1 {
+				color = ` [color="red"]`
+			}
+			fmt.Fprintf(out, "  n%d -> n%d%s;\n", v, v2, color)
+			return true
+		})
+	})
+	fmt.Fprint(out, "}\n")
+
+	return nil
 }
