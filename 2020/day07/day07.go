@@ -74,16 +74,13 @@ func parseRules(rules []string) (g *util.Graph, err error) {
 }
 
 func countAncestors(g *util.Graph, node string) int {
-	var (
-		seen map[int]struct{}
-		dfs  func(int) int
-	)
-	seen = make(map[int]struct{})
+	seen := make([]bool, g.Len())
+	var dfs func(int) int
 	dfs = func(at int) int {
-		if _, ok := seen[at]; ok {
+		if seen[at] {
 			return 0
 		}
-		seen[at] = struct{}{}
+		seen[at] = true
 		count := 1
 		g.RangePredV(at, func(next int) bool {
 			count += dfs(next)
@@ -95,13 +92,10 @@ func countAncestors(g *util.Graph, node string) int {
 }
 
 func countDescendants(g *util.Graph, node string) int {
-	var (
-		memo map[int]int
-		dfs  func(int) int
-	)
-	memo = make(map[int]int)
+	memo := make([]int, g.Len())
+	var dfs func(int) int
 	dfs = func(at int) int {
-		if c, ok := memo[at]; ok {
+		if c := memo[at]; c > 0 {
 			return c
 		}
 		count := 0
