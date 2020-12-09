@@ -162,4 +162,24 @@ exist. Uncovering those is also left as an exercise.
 ## [Day 9](https://adventofcode.com/2020/day/9)
 
 In the [advent calendar](https://adventofcode.com/2020), day 9 is
-separated from the preceding 8 days by a blank line...
+separated from the preceding 8 days by a blank line. Could this mean
+change is afoot, and the next set of puzzles is going to be all
+different? In a word, no. (And day 10 is separated by a much larger
+gap, but of course that was not visible until later.)
+
+Both parts of day 9 can be solved using a sliding window.
+
+In part 1, the task is to find the first number that's *not* the sum
+of one of the preceding 25 numbers. This is simply a matter of keeping
+a map of the 25*24 = 600 valid sums, and testing each number against
+it in turn. If the number is valid, the map of sums can be updated by
+removing all sums of the outgoing number with the 24 remaining, and
+adding the new ones with the incoming number.
+
+Part 2, on the other hand, asks to find the contiguous range that sums
+up to a given target value. Since the numbers are nonnegative, this
+can be done simply by maintaining the bounds and sum of a candidate
+window. If its sum is too low, new numbers are included by moving the
+right edge forward. If too high, old numbers are dropped by moving the
+left edge forward instead. The proof that this is a valid algorithm is
+left as an exercise for the reader.

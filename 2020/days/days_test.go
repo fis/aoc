@@ -58,10 +58,14 @@ func TestAllDays(t *testing.T) {
 			day:  8,
 			want: []string{"1749", "515"},
 		},
+		{
+			day:  9,
+			want: []string{"32321523", "4794981"},
+		},
 	}
 
 	for _, test := range tests {
-		t.Run(fmt.Sprintf("Day=%02d", test.day), func(t *testing.T) {
+		t.Run(fmt.Sprintf("day=%02d", test.day), func(t *testing.T) {
 			got, err := Solve(test.day, fmt.Sprintf("testdata/day%02d.txt", test.day))
 			if err != nil {
 				t.Errorf("Solve: %v", err)
