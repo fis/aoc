@@ -96,17 +96,48 @@ func loopCheck(code []instruction) (loop bool, acc int) {
 }
 
 func repair(code []instruction) int {
-	var flip = [...]opcode{opJmp: opNop, opNop: opJmp}
-	for at := range code {
-		if code[at].op == opAcc {
-			continue
+	type branch struct{ to, acc int }
+	var branches []branch
+
+	seen := make([]bool, len(code))
+
+	for at, acc := 0, 0; !seen[at]; {
+		seen[at] = true
+		switch code[at].op {
+		case opAcc:
+			acc += code[at].arg
+			at++
+		case opJmp:
+			branches = append(branches, branch{to: at + 1, acc: acc})
+			at += code[at].arg
+		case opNop:
+			branches = append(branches, branch{to: at + code[at].arg, acc: acc})
+			at++
 		}
-		code[at].op = flip[code[at].op]
-		if loop, acc := loopCheck(code); !loop {
-			return acc
-		}
-		code[at].op = flip[code[at].op]
 	}
+
+	for _, branch := range branches {
+		at, acc := branch.to, branch.acc
+		for {
+			if at >= len(code) {
+				return acc
+			}
+			if seen[at] {
+				break
+			}
+			seen[at] = true
+			switch code[at].op {
+			case opAcc:
+				acc += code[at].arg
+				at++
+			case opJmp:
+				at += code[at].arg
+			case opNop:
+				at++
+			}
+		}
+	}
+
 	panic("this code is unfixable")
 }
 

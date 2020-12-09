@@ -121,19 +121,20 @@ instruction is encountered a second time), then figure out which
 single `jmp` can be changed to `nop` (or vice versa) to make the
 program halt properly (by reaching the end of the program).
 
-The Go solution takes the path of least resistance. Part 1 is solved
-simply by executing the instructions (with a bitmap to detect cycles),
-while part 2 just attempts to modify each relevant instruction in
-turn, re-executing the program a second time. This is clearly an
-`O(n^2)` operation, since there is at most `n` instructions to change,
-and each execution will simulate at most `n` instructions as well.
+Part 1 is solved simply by executing the instructions (with a bitmap
+to detect cycles). It would be perfectly reasonable to solve part 2 in
+`O(n^2)` time, by just attempting to modify each `jmp`/`nop`
+instruction (at most `n`) in turn, and then executing the program
+(`O(n)` steps) to see if it now halts or loops. In fact, the initial
+Go version (see history of `2020/day08/day08.go` if curious) did
+this. However, we can do better.
 
-More as an excuse to get GraphViz out again, the Go solution also
-contains a utility to show the full potential control flow. The common
-example is rendered into `2020-day08-ex.png` in this directory. Black
-edges are those of the unmodified program, while red edges denote the
-alternative control flow if that instruction was to be flipped.
-GraphViz is again useless on the full puzzle input.
+Let's trot GraphViz out again. The Go solution has a utility to show
+the full potential control flow (via the `dot8` option to the runner
+binary). The common example is rendered into `2020-day08-ex.png` in
+this directory. Black edges are those of the unmodified program, while
+red edges denote the alternative control flow if that instruction was
+to be flipped. GraphViz is again useless on the full puzzle input.
 
 The graph form makes it clear that asymptotically faster solutions
 exist. In particular, by treating the graph as a weighted digraph and
@@ -152,12 +153,50 @@ This means finding the shortest path in the resulting graph (and then
 summing up all `acc` instructions on that path) solves the problem.
 Since the number of vertices is `n`, and the number of edges can be at
 most `2n` (for a program that contains only `jmp`/`nop` instructions),
-Dijkstra's algorithm can solve the problem in `O(n log n)` time. Doing
-this is left as an exercise for the reader.
+a naïve implementation of Dijkstra's algorithm with a binary heap can
+solve the problem in `O(n log n)` time.
 
-Given the special structure of the graph, even better solutions may
-exist. Uncovering those is also left as an exercise.
+Further, considering what Dijkstra's algorithm would do on a graph
+with this specific structure in more detail will show the same
+behavior can be implemented without the need for the conventional
+priority queue, leading to an `O(n)` algorithm.
 
+Since Dijkstra's algorithm explores the nodes of the graph in the
+order of the lowest tentative distance, and since all the relevant
+distances in this case are either 0 or 1, an execution of the
+algorithm will have the following stages:
+
+- Starting from the initial node, the algorithm will follow all the
+  weight 0 (black) edges, i.e., the unmodified opcodes, marking all
+  the instructions the initial execution would touch with a tentative
+  distance of 0.
+- For every `jmp`/`nop` instruction, it will also include their
+  alternative interpretations as unvisited nodes with a tentative
+  distance of 1. Since they all share the same distance, the order
+  does not matter. Of course if the initial execution reaches one of
+  these nodes, it will get a lower tentative distance of 0, meaning
+  that path will be fruitless to examine.
+- After the initial marking, it will arbitrarily pick one of the
+  possible unvisited nodes with a distance of 1. It will again follow
+  the black edges (execute the instructions), but this time we can
+  ignore the alternative edges, since they would have a distance of 2,
+  and by definition a shorter path to the halt node exists.
+- If at any point the subsequent execution would encounter a node that
+  has already been visited (with a tentative distance of either 0 or
+  1), it will give up this path, since it would be no better than what
+  has already been considered. It would then pick the next unvisited
+  node with a distance of 1, and repeat the process.
+- The algorithm would terminate when it reaches the halt node during
+  one of these executions, and the path taken would then indicate the
+  solution.
+
+Since the algorithm visits at most `n` nodes, and for every node it
+performs only `O(1)` operations, this yields an `O(n)` solution. The
+Go code implements this algorithm directly using the program code as
+the data structure, without explicitly constructing the graph. It
+simply uses a bitmap of seen instructions, and a list of potential
+branching points (along with the accumulator state), exploring from
+each branch only the new unvisited instructions.
 
 ## [Day 9](https://adventofcode.com/2020/day/9)
 
