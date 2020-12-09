@@ -216,9 +216,25 @@ removing all sums of the outgoing number with the 24 remaining, and
 adding the new ones with the incoming number.
 
 Part 2, on the other hand, asks to find the contiguous range that sums
-up to a given target value. Since the numbers are nonnegative, this
-can be done simply by maintaining the bounds and sum of a candidate
-window. If its sum is too low, new numbers are included by moving the
-right edge forward. If too high, old numbers are dropped by moving the
-left edge forward instead. The proof that this is a valid algorithm is
-left as an exercise for the reader.
+up to a given target value. Since the numbers are all positive
+integers, this can be done simply by maintaining the bounds and sum of
+a candidate window. If its sum is too low, new numbers are included by
+moving the right edge forward. If too high, old numbers are dropped by
+moving the left edge forward instead.
+
+To show that this algorithm is correct, first observe that the left
+edge of the window is moved right at most one step at a time. Further,
+no matter what the array values, if the left edge is not yet at the
+correct location, it will eventually move: if not before, then at the
+latest when the right edge has reached the target range's boundary,
+because then the sum will definitely be larger than the target. This
+means no matter where the correct range is, eventually the left edge
+will be at the right location. At this time, if the right edge should
+happen to be too far advanced, the sum of the contained values will
+also be larger than the target, so the algorithm will move the right
+edge back until it finds the solution. Conversely, if the right edge
+is not yet far enough, the sum will be below the target, and the
+algorithm will expand the window until it is the right size.
+
+(The algorithm will crash and burn violently if the sum of all values
+in the array is less than the target value. So don't do it.)
