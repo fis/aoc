@@ -252,3 +252,20 @@ not the left.
 
 (The Go implementation will crash and burn violently if the sum of all
 values in the array is less than the target value. So don't do that.)
+
+## [Day 10](https://adventofcode.com/2020/day/10)
+
+The biggest challenge on day 10 is to wade through the problem
+description. The actual task is in fact quite simple, since the only
+ways to connect all these adapters together are in ascending order.
+
+The Go solution for part 1 boils down to just sorting the list of
+numbers, and counting how many differences of 1 and 3 there are
+between two consecutive numbers.
+
+For part 2, there's the obvious dynamic programming approach to the
+recursive definition. The number of ways one adapter can be plugged in
+to the device is the sum of ways one, two or three higher-joltage
+adapters can be connected, depending on how many of those three can be
+plugged into it. So we can just iterate backwards and sum them up. Or
+the other way around, since the problem is completely symmetric.
