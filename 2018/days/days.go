@@ -20,6 +20,7 @@ import (
 
 	_ "github.com/fis/aoc-go/2018/day01"
 	_ "github.com/fis/aoc-go/2018/day02"
+	_ "github.com/fis/aoc-go/2018/day03"
 )
 
 func Solve(day int, path string) ([]string, error) {
