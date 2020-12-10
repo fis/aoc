@@ -17,23 +17,20 @@ package day20
 
 import (
 	"container/heap"
-	"strconv"
 	"unicode"
 
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	level, err := util.ReadLevel(path, ' ')
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(20, util.LevelSolver{Solver: solve, Empty: ' '})
+}
 
+func solve(level *util.Level) ([]int, error) {
 	dist := distances(level)
 	p1 := shortest(label{name: "AA", outer: true}, label{name: "ZZ", outer: true}, dist)
 	p2 := recursive(label{name: "AA", outer: true}, label{name: "ZZ", outer: true}, dist)
-
-	return []string{strconv.Itoa(p1), strconv.Itoa(p2)}, nil
+	return []int{p1, p2}, nil
 }
 
 type label struct {

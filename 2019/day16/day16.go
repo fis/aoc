@@ -19,7 +19,11 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
+func init() {
+	util.RegisterSolver(16, util.GenericSolver(solve))
+}
+
+func solve(path string) ([]string, error) {
 	lines, err := util.ReadLines(path)
 	if err != nil {
 		return nil, err

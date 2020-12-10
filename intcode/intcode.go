@@ -23,6 +23,35 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
+// Solver wraps a solution that wants an Intcode program in the standard format as input.
+type Solver func([]int64) ([]int64, error)
+
+// SolverS wraps a solution that wants an Intcode program in the standard format as input, outputting arbitrary strings.
+type SolverS func([]int64) ([]string, error)
+
+func (s Solver) Solve(path string) (out []string, err error) {
+	prog, err := Load(path)
+	if err != nil {
+		return nil, err
+	}
+	ints, err := s(prog)
+	if err != nil {
+		return nil, err
+	}
+	for _, i := range ints {
+		out = append(out, strconv.FormatInt(i, 10))
+	}
+	return out, nil
+}
+
+func (s SolverS) Solve(path string) ([]string, error) {
+	prog, err := Load(path)
+	if err != nil {
+		return nil, err
+	}
+	return s(prog)
+}
+
 // Load will read an Intcode program in the standard format (comma-separated integers) from a text
 // file.
 func Load(path string) ([]int64, error) {

@@ -16,25 +16,24 @@
 package day13
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/intcode"
+	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(13, intcode.Solver(solve))
+}
+
+func solve(prog []int64) ([]int64, error) {
 	p1 := part1(prog)
 	prog[0] = 2
 	p2 := part2(prog)
-	return []string{strconv.Itoa(p1), strconv.Itoa(p2)}, nil
+	return []int64{p1, p2}, nil
 }
 
-func part1(prog []int64) int {
+func part1(prog []int64) int64 {
 	out, _ := intcode.Run(prog, nil)
-	blocks := 0
+	var blocks int64
 	for i := 2; i < len(out); i += 3 {
 		if out[i] == 2 {
 			blocks++
@@ -43,7 +42,7 @@ func part1(prog []int64) int {
 	return blocks
 }
 
-func part2(prog []int64) int {
+func part2(prog []int64) int64 {
 	var (
 		vm  intcode.VM
 		tok intcode.WalkToken
@@ -76,5 +75,5 @@ func part2(prog []int64) int {
 			ball = x
 		}
 	}
-	return int(score)
+	return score
 }

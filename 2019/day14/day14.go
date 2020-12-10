@@ -23,27 +23,27 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	lines, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(14, util.LineSolver(solve))
+}
+
+func solve(lines []string) ([]int, error) {
 	reactions := parseReactions(lines)
 
 	part1 := ore(1, reactions)
 	part2 := maxFuel(1000000000000, reactions)
 
-	return []string{strconv.Itoa(part1), strconv.Itoa(part2)}, nil
+	return []int{part1, part2}, nil
 }
 
 type pile struct {
 	name string
-	q int
+	q    int
 }
 
 type reaction struct {
 	out pile
-	in []pile
+	in  []pile
 }
 
 func ore(wantFuel int, reactions map[string]reaction) int {
@@ -55,8 +55,8 @@ func ore(wantFuel int, reactions map[string]reaction) int {
 func maxFuel(ore int, reactions map[string]reaction) int {
 	order := reactionOrder(reactions)
 	start, end := 1, ore+1
-	for end - start >= 2 {
-		mid := start + (end - start) / 2
+	for end-start >= 2 {
+		mid := start + (end-start)/2
 		got := oreFor(map[string]int{"FUEL": mid}, order, reactions)
 		if got > ore {
 			end = mid

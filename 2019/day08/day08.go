@@ -23,12 +23,16 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
+func init() {
+	util.RegisterSolver(8, util.GenericSolver(solve))
+}
+
 const (
 	imgW = 25
 	imgH = 6
 )
 
-func Solve(path string) ([]string, error) {
+func solve(path string) ([]string, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err

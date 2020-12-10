@@ -18,21 +18,18 @@ package day10
 import (
 	"math"
 	"sort"
-	"strconv"
 
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	level, err := util.ReadLevel(path, '.')
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(10, util.LevelSolver{Solver: solve, Empty: '.'})
+}
 
+func solve(level *util.Level) ([]int, error) {
 	at, vis := findBest(level)
 	nth := findNth(at, 200, level)
-
-	return []string{strconv.Itoa(vis), strconv.Itoa(nth.X*100 + nth.Y)}, nil
+	return []int{vis, nth.X*100 + nth.Y}, nil
 }
 
 func findBest(level *util.Level) (util.P, int) {

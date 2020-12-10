@@ -19,18 +19,16 @@ import (
 	"container/heap"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	level, err := util.ReadLevel(path, '#')
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(18, util.LevelSolver{Solver: solve, Empty: '#'})
+}
 
+func solve(level *util.Level) ([]int, error) {
 	part1 := solveLevel(level)
 
 	x, y, ok := level.Find('@')
@@ -46,10 +44,7 @@ func Solve(path string) ([]string, error) {
 
 	part2 := solveLevel(level)
 
-	return []string{
-		strconv.Itoa(part1),
-		strconv.Itoa(part2),
-	}, nil
+	return []int{part1, part2}, nil
 }
 
 func solveLevel(level *util.Level) int {

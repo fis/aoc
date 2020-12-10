@@ -17,22 +17,19 @@ package day24
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	lines, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(24, util.LineSolver(solve))
+}
 
+func solve(lines []string) ([]int, error) {
 	initial := parseState(lines)
 	p1 := findRepeating(initial)
 	p2 := countBugs(initial, 200)
-
-	return []string{strconv.FormatUint(uint64(p1), 10), strconv.Itoa(p2)}, nil
+	return []int{int(p1), p2}, nil
 }
 
 type state uint32

@@ -16,29 +16,27 @@
 package day19
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/intcode"
 	"github.com/fis/aoc-go/util"
 )
 
+func init() {
+	util.RegisterSolver(19, intcode.Solver(solve))
+}
+
 const N = 50
 const M = 100
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
+func solve(prog []int64) ([]int64, error) {
 	probe := prober(prog)
-	return []string{
-		strconv.Itoa(part1(50, probe)),
-		strconv.Itoa(part2(50, 100, probe)),
+	return []int64{
+		part1(50, probe),
+		part2(50, 100, probe),
 	}, nil
 }
 
-func part1(size int, probe func(x, y int) bool) int {
-	count := 0
+func part1(size int, probe func(x, y int) bool) int64 {
+	var count int64
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
 			c := " "
@@ -53,7 +51,7 @@ func part1(size int, probe func(x, y int) bool) int {
 	return count
 }
 
-func part2(start, size int, probe func(x, y int) bool) int {
+func part2(start, size int, probe func(x, y int) bool) int64 {
 	left := 0
 	for !probe(left, start) {
 		left++
@@ -80,7 +78,7 @@ func part2(start, size int, probe func(x, y int) bool) int {
 		prev := history[(y-size+1)%size]
 		if left >= prev.left && left+size-1 <= prev.right {
 			bx, by := left, y-size+1
-			return 10000*bx + by
+			return int64(10000*bx + by)
 		}
 	}
 }

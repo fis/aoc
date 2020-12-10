@@ -16,22 +16,18 @@
 package day23
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/intcode"
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(23, intcode.Solver(solve))
+}
 
+func solve(prog []int64) ([]int64, error) {
 	var sw netSwitch
 	p1, p2 := sw.run(prog)
-
-	return []string{strconv.FormatInt(p1, 10), strconv.FormatInt(p2, 10)}, nil
+	return []int64{p1, p2}, nil
 }
 
 const netSize = 50

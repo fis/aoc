@@ -16,10 +16,13 @@
 package day21
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/intcode"
+	"github.com/fis/aoc-go/util"
 )
+
+func init() {
+	util.RegisterSolver(21, intcode.Solver(solve))
+}
 
 var input1 = []string{
 	// jump if hole in any next three cells
@@ -49,16 +52,10 @@ var input2 = []string{
 	"RUN",
 }
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
-
+func solve(prog []int64) ([]int64, error) {
 	p1 := run(prog, input1)
 	p2 := run(prog, input2)
-
-	return []string{strconv.FormatInt(p1, 10), strconv.FormatInt(p2, 10)}, nil
+	return []int64{p1, p2}, nil
 }
 
 func run(prog []int64, input []string) int64 {

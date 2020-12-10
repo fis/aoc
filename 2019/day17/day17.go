@@ -16,11 +16,13 @@
 package day17
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/intcode"
 	"github.com/fis/aoc-go/util"
 )
+
+func init() {
+	util.RegisterSolver(17, intcode.Solver(solve))
+}
 
 var input = []string{
 	"A,A,B,C,B,C,B,C,C,A",
@@ -30,12 +32,7 @@ var input = []string{
 	"n",
 }
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
-
+func solve(prog []int64) ([]int64, error) {
 	level := capture(prog)
 	p1 := crosses(level)
 
@@ -44,7 +41,7 @@ func Solve(path string) ([]string, error) {
 	vm.Load(prog)
 	out := vm.Run(unlines(input))
 
-	return []string{strconv.Itoa(p1), strconv.FormatInt(out[len(out)-1], 10)}, nil
+	return []int64{int64(p1), out[len(out)-1]}, nil
 }
 
 func capture(prog []int64) *util.Level {

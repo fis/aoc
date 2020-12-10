@@ -17,23 +17,22 @@ package day06
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	lines, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(6, util.LineSolver(solve))
+}
+
+func solve(lines []string) ([]int, error) {
 	orbits := parseOrbits(lines)
 
 	p1 := orbits.countOrbits()
 	p2 := orbits.transfers("YOU", "SAN")
 
-	return []string{strconv.Itoa(p1), strconv.Itoa(p2)}, nil
+	return []int{p1, p2}, nil
 }
 
 func parseOrbits(lines []string) *orbitMap {

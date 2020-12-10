@@ -17,18 +17,16 @@ package day15
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/fis/aoc-go/intcode"
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(15, intcode.Solver(solve))
+}
 
+func solve(prog []int64) ([]int64, error) {
 	dr := realDroid{}
 	dr.vm.Load(prog)
 	level := explore(&dr)
@@ -36,10 +34,8 @@ func Solve(path string) ([]string, error) {
 	p1, target := distance(level, util.P{0, 0}, 'O')
 	p2, _ := distance(level, target, ' ')
 
-	return []string{strconv.Itoa(p1), strconv.Itoa(p2)}, nil
+	return []int64{p1, p2}, nil
 }
-
-type tile byte
 
 type droid interface {
 	tryMove(to util.P) byte
@@ -69,10 +65,10 @@ func explore(dr droid) *util.Level {
 	return level
 }
 
-func distance(level *util.Level, from util.P, toTile byte) (int, util.P) {
+func distance(level *util.Level, from util.P, toTile byte) (int64, util.P) {
 	seen := make(map[util.P]struct{})
 	fringe := []util.P{from}
-	d := 0
+	d := int64(0)
 	for len(fringe) > 0 {
 		d++
 		var newFringe []util.P

@@ -22,11 +22,11 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	inputRange, err := util.ReadIntRows(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(4, util.IntSolver(solve))
+}
+
+func solve(inputRange []int) ([]int, error) {
 	if len(inputRange) != 2 {
 		return nil, fmt.Errorf("expected [low, high], got %v", inputRange)
 	}
@@ -42,7 +42,7 @@ func Solve(path string) ([]string, error) {
 		}
 	}
 
-	return []string{strconv.Itoa(a1), strconv.Itoa(a2)}, nil
+	return []int{a1, a2}, nil
 }
 
 func validate1(digits []byte) bool {

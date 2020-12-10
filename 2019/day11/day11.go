@@ -22,11 +22,11 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(11, intcode.SolverS(solve))
+}
+
+func solve(prog []int64) ([]string, error) {
 	return append(
 		[]string{strconv.Itoa(part1(prog))},
 		part2(prog)...), nil

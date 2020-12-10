@@ -16,21 +16,16 @@
 package day02
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/intcode"
+	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(2, intcode.Solver(solve))
+}
 
-	return []string{
-		strconv.FormatInt(part1(prog), 10),
-		strconv.FormatInt(part2(prog), 10),
-	}, nil
+func solve(prog []int64) ([]int64, error) {
+	return []int64{part1(prog), part2(prog)}, nil
 }
 
 func part1(prog []int64) int64 {

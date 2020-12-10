@@ -23,17 +23,18 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	ops, err := readShuffle(path)
+func init() {
+	util.RegisterSolver(22, util.LineSolver(solve))
+}
+
+func solve(lines []string) ([]int, error) {
+	ops, err := parseShuffle(lines)
 	if err != nil {
 		return nil, err
 	}
 	p1 := shuffleForward(2019, 10007, ops)
 	p2 := shuffleBackward(2020, 119315717514047, 101741582076661, ops)
-	return []string{
-		strconv.FormatInt(p1, 10),
-		strconv.FormatInt(p2, 10),
-	}, nil
+	return []int{int(p1), int(p2)}, nil
 }
 
 type shuffleTrick int
@@ -47,14 +48,6 @@ const (
 type shuffleOp struct {
 	trick shuffleTrick
 	val   int64
-}
-
-func readShuffle(path string) ([]shuffleOp, error) {
-	lines, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
-	return parseShuffle(lines)
 }
 
 func parseShuffle(lines []string) ([]shuffleOp, error) {

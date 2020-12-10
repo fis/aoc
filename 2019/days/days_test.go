@@ -148,11 +148,13 @@ func TestAllDays(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got, err := Solve(test.day, fmt.Sprintf("testdata/day%02d.txt", test.day))
-		if err != nil {
-			t.Errorf("Day %d failed: %v", test.day, err)
-		} else if diff := cmp.Diff(test.want, got); diff != "" {
-			t.Errorf("Day %d mismatch (-want +got):\n%s", test.day, diff)
-		}
+		t.Run(fmt.Sprintf("day=%02d", test.day), func(t *testing.T) {
+			got, err := Solve(test.day, fmt.Sprintf("testdata/day%02d.txt", test.day))
+			if err != nil {
+				t.Errorf("Solve: %v", err)
+			} else if diff := cmp.Diff(test.want, got); diff != "" {
+				t.Errorf("Solve mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
 }

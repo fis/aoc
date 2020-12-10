@@ -23,16 +23,16 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	lines, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(3, util.LineSolver(solve))
+}
+
+func solve(lines []string) ([]int, error) {
 	if len(lines) != 2 {
 		return nil, fmt.Errorf("unexpected amount of lines: %v", lines)
 	}
 	p1, p2 := compute(lines[0], lines[1])
-	return []string{strconv.Itoa(p1), strconv.Itoa(p2)}, nil
+	return []int{p1, p2}, nil
 }
 
 func compute(w1, w2 string) (closest, best int) {

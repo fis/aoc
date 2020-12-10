@@ -20,7 +20,12 @@ import (
 	"strings"
 
 	"github.com/fis/aoc-go/intcode"
+	"github.com/fis/aoc-go/util"
 )
+
+func init() {
+	util.RegisterSolver(25, intcode.SolverS(solve))
+}
 
 // TODO: Write a generalized solver for this puzzle.
 
@@ -36,12 +41,7 @@ var motions = []string{
 	"north", "north", // at checkpoint
 }
 
-func Solve(path string) ([]string, error) {
-	prog, err := intcode.Load(path)
-	if err != nil {
-		return nil, err
-	}
-
+func solve(prog []int64) ([]string, error) {
 	term := terminal{}
 	term.vm.Load(prog)
 
