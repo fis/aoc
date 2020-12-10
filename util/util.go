@@ -16,8 +16,11 @@
 package util
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -34,6 +37,22 @@ func ReadLines(path string) ([]string, error) {
 		lines = lines[:len(lines)-1]
 	}
 	return lines, nil
+}
+
+// ReadChunks returns the contents of a text file as a slice of strings representing all paragraphs,
+// as defined by text separated by a blank line (two consecutive newlines).
+func ReadChunks(path string) (chunks []string, err error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	s := bufio.NewScanner(f)
+	s.Split(ScanChunks)
+	for s.Scan() {
+		chunks = append(chunks, s.Text())
+	}
+	return chunks, nil
 }
 
 // ReadIntRows parses a text file formatted as one integer per line.
@@ -56,6 +75,23 @@ func ReadIntRows(path string) ([]int, error) {
 // P represents a two-dimensional integer-valued coordinate.
 type P struct {
 	X, Y int
+}
+
+// ScanChunks implements a bufio.SplitFunc for scanning paragraphs delimited by a blank line
+// (i.e., two consecutive '\n' bytes).
+func ScanChunks(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	delim := []byte{'\n', '\n'}
+
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	if i := bytes.Index(data, delim); i >= 0 {
+		return i + 2, data[0:i], nil
+	}
+	if atEOF {
+		return len(data), data, nil
+	}
+	return 0, nil, nil
 }
 
 func (p P) Neigh() [4]P {
