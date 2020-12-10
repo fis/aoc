@@ -215,26 +215,40 @@ it in turn. If the number is valid, the map of sums can be updated by
 removing all sums of the outgoing number with the 24 remaining, and
 adding the new ones with the incoming number.
 
-Part 2, on the other hand, asks to find the contiguous range that sums
-up to a given target value. Since the numbers are all positive
+Part 2, on the other hand, asks to find the contiguous interval that
+sums up to a given target value. Since the numbers are all positive
 integers, this can be done simply by maintaining the bounds and sum of
-a candidate window. If its sum is too low, new numbers are included by
-moving the right edge forward. If too high, old numbers are dropped by
-moving the left edge forward instead.
+a candidate interval. If its sum is too low, numbers are added to it
+by moving the right edge forward. If too high, numbers are instead
+removed from it by moving the left edge forward.
 
-To show that this algorithm is correct, first observe that the left
-edge of the window is moved right at most one step at a time. Further,
-no matter what the array values, if the left edge is not yet at the
-correct location, it will eventually move: if not before, then at the
-latest when the right edge has reached the target range's boundary,
-because then the sum will definitely be larger than the target. This
-means no matter where the correct range is, eventually the left edge
-will be at the right location. At this time, if the right edge should
-happen to be too far advanced, the sum of the contained values will
-also be larger than the target, so the algorithm will move the right
-edge back until it finds the solution. Conversely, if the right edge
-is not yet far enough, the sum will be below the target, and the
-algorithm will expand the window until it is the right size.
+To show that this algorithm finds the target region, we can rely on
+the following invariant, maintained by every step of the algorithm:
+both the left and right edges of the candidate interval are never
+advanced past the true edges of the target interval. Since each step
+of the algorithm increments one of the two edges, it's clear that
+after `O(n)` steps, the algorithm must have converged to the solution.
 
-(The algorithm will crash and burn violently if the sum of all values
-in the array is less than the target value. So don't do it.)
+First, let's look at the left edge. If it has not yet reached the true
+position, it doesn't matter whether we increment it or not, so the
+only situation we need to consider is when the edge is at the true
+location. Since we know that the right edge is currently either before
+or at its true location, the sum of the candidate interval is not
+larger than the target value: this is because the target interval is a
+superset of the candidate. So we will never increment the left edge in
+this case.
+
+The situation for the right edge is essentially symmetric. If it
+hasn't reached the final location yet, we may increment it or not, as
+we please.  If it has, we know that the left edge is again before or
+at its true location, and in this case the sum can not be less than
+the target (because the target interval in this case is a subset). So
+we will never increment the right edge past its true location either.
+
+We can also show that the edges never cross. If it should happen that
+they're ever co-located, the sum of the candidate interval is zero.
+This is always below the target, so we will increment the right edge,
+not the left.
+
+(The Go implementation will crash and burn violently if the sum of all
+values in the array is less than the target value. So don't do that.)
