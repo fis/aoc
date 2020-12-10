@@ -25,11 +25,11 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	rules, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(7, util.LineSolver(solve))
+}
+
+func solve(rules []string) ([]int, error) {
 	g, err := parseRules(rules)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func Solve(path string) ([]string, error) {
 	part1 := countAncestors(g, bag)
 	part2 := countDescendants(g, bag)
 
-	return []string{strconv.Itoa(part1), strconv.Itoa(part2)}, nil
+	return []int{part1, part2}, nil
 }
 
 var (

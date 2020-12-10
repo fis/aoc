@@ -16,17 +16,16 @@
 package day06
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	data, err := util.ReadChunks(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(6, util.ChunkSolver(solve))
+}
+
+func solve(data []string) ([]int, error) {
 	answers := make([][]answerSet, len(data))
 	for i, chunk := range data {
 		lines := strings.Split(strings.TrimSpace(chunk), "\n")
@@ -39,7 +38,7 @@ func Solve(path string) ([]string, error) {
 		all += countMerged(a, mergeAll)
 	}
 
-	return []string{strconv.Itoa(any), strconv.Itoa(all)}, nil
+	return []int{any, all}, nil
 }
 
 type answerSet [26]bool

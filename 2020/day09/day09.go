@@ -16,21 +16,17 @@
 package day09
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	data, err := util.ReadIntRows(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(9, util.IntSolver(solve))
+}
 
+func solve(data []int) ([]int, error) {
 	invalid := validate(data, 25)
 	min, max := findSum(data, invalid)
-
-	return []string{strconv.Itoa(invalid), strconv.Itoa(min + max)}, nil
+	return []int{invalid, min + max}, nil
 }
 
 func validate(data []int, win int) int {

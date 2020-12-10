@@ -24,18 +24,18 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	data, err := util.ReadChunks(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(4, util.ChunkSolver(solve))
+}
+
+func solve(data []string) ([]int, error) {
 	passes, err := parsePassports(data)
 	if err != nil {
 		return nil, err
 	}
 	valid := countValid(passes, passport.valid)
 	strict := countValid(passes, passport.strictlyValid)
-	return []string{strconv.Itoa(valid), strconv.Itoa(strict)}, nil
+	return []int{valid, strict}, nil
 }
 
 func countValid(data []passport, validator func(passport) bool) (valid int) {

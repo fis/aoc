@@ -24,11 +24,11 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	passes, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(5, util.LineSolver(solve))
+}
+
+func solve(passes []string) ([]int, error) {
 	decoded, err := decodePasses(passes)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func Solve(path string) ([]string, error) {
 		}
 	}
 
-	return []string{strconv.Itoa(max), strconv.Itoa(gap)}, nil
+	return []int{max, gap}, nil
 }
 
 var passPattern = regexp.MustCompile(`^[FB]{7}[LR]{3}$`)

@@ -16,17 +16,14 @@
 package day03
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	level, err := util.ReadLevel(path, '.')
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(3, util.LevelSolver{Solver: solve, Empty: '.'})
+}
 
+func solve(level *util.Level) ([]int, error) {
 	trees := countTrees(level, util.P{3, 1})
 
 	allTrees := trees
@@ -34,7 +31,7 @@ func Solve(path string) ([]string, error) {
 		allTrees *= countTrees(level, slope)
 	}
 
-	return []string{strconv.Itoa(trees), strconv.Itoa(allTrees)}, nil
+	return []int{trees, allTrees}, nil
 }
 
 func countTrees(level *util.Level, slope util.P) int {

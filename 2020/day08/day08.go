@@ -24,11 +24,11 @@ import (
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	lines, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(8, util.LineSolver(solve))
+}
+
+func solve(lines []string) ([]int, error) {
 	code, err := parseCode(lines)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func Solve(path string) ([]string, error) {
 	_, part1 := loopCheck(code)
 	part2 := repair(code)
 
-	return []string{strconv.Itoa(part1), strconv.Itoa(part2)}, nil
+	return []int{part1, part2}, nil
 }
 
 type opcode int

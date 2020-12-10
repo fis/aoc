@@ -16,35 +16,19 @@
 package days
 
 import (
-	"fmt"
+	"github.com/fis/aoc-go/util"
 
-	"github.com/fis/aoc-go/2020/day01"
-	"github.com/fis/aoc-go/2020/day02"
-	"github.com/fis/aoc-go/2020/day03"
-	"github.com/fis/aoc-go/2020/day04"
-	"github.com/fis/aoc-go/2020/day05"
-	"github.com/fis/aoc-go/2020/day06"
-	"github.com/fis/aoc-go/2020/day07"
-	"github.com/fis/aoc-go/2020/day08"
-	"github.com/fis/aoc-go/2020/day09"
+	_ "github.com/fis/aoc-go/2020/day01"
+	_ "github.com/fis/aoc-go/2020/day02"
+	_ "github.com/fis/aoc-go/2020/day03"
+	_ "github.com/fis/aoc-go/2020/day04"
+	_ "github.com/fis/aoc-go/2020/day05"
+	_ "github.com/fis/aoc-go/2020/day06"
+	_ "github.com/fis/aoc-go/2020/day07"
+	_ "github.com/fis/aoc-go/2020/day08"
+	_ "github.com/fis/aoc-go/2020/day09"
 )
 
-var solvers = map[int]func(string) ([]string, error){
-	1: day01.Solve,
-	2: day02.Solve,
-	3: day03.Solve,
-	4: day04.Solve,
-	5: day05.Solve,
-	6: day06.Solve,
-	7: day07.Solve,
-	8: day08.Solve,
-	9: day09.Solve,
-}
-
 func Solve(day int, path string) ([]string, error) {
-	solver, ok := solvers[day]
-	if !ok {
-		return nil, fmt.Errorf("unknown day: %d", day)
-	}
-	return solver(path)
+	return util.CallSolver(day, path)
 }

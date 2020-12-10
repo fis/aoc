@@ -17,18 +17,17 @@ package day02
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	lines, err := util.ReadLines(path)
-	if err != nil {
-		return nil, err
-	}
+func init() {
+	util.RegisterSolver(2, util.LineSolver(solve))
+}
+
+func solve(lines []string) ([]int, error) {
 	p1, err := countValid(lines, policy.validateSled)
 	if err != nil {
 		return nil, err
@@ -37,7 +36,7 @@ func Solve(path string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return []string{strconv.Itoa(p1), strconv.Itoa(p2)}, nil
+	return []int{p1, p2}, nil
 }
 
 func countValid(lines []string, validator func(policy, string) bool) (int, error) {

@@ -16,20 +16,15 @@
 package day01
 
 import (
-	"strconv"
-
 	"github.com/fis/aoc-go/util"
 )
 
-func Solve(path string) ([]string, error) {
-	expenses, err := util.ReadIntRows(path)
-	if err != nil {
-		return nil, err
-	}
-	return []string{
-		strconv.Itoa(part1(expenses)),
-		strconv.Itoa(part2(expenses)),
-	}, nil
+func init() {
+	util.RegisterSolver(1, util.IntSolver(solve))
+}
+
+func solve(expenses []int) ([]int, error) {
+	return []int{part1(expenses), part2(expenses)}, nil
 }
 
 func part1(expenses []int) int {
