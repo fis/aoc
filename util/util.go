@@ -110,3 +110,11 @@ type P struct {
 func (p P) Neigh() [4]P {
 	return [4]P{{p.X, p.Y - 1}, {p.X, p.Y + 1}, {p.X - 1, p.Y}, {p.X + 1, p.Y}}
 }
+
+func (p P) Neigh8() [8]P {
+	return [8]P{
+		{p.X - 1, p.Y - 1}, {p.X, p.Y - 1}, {p.X + 1, p.Y - 1},
+		{p.X - 1, p.Y}, {p.X + 1, p.Y},
+		{p.X - 1, p.Y + 1}, {p.X, p.Y + 1}, {p.X + 1, p.Y + 1},
+	}
+}

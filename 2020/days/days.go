@@ -28,6 +28,7 @@ import (
 	_ "github.com/fis/aoc-go/2020/day08"
 	_ "github.com/fis/aoc-go/2020/day09"
 	_ "github.com/fis/aoc-go/2020/day10"
+	_ "github.com/fis/aoc-go/2020/day11"
 )
 
 func Solve(day int, path string) ([]string, error) {

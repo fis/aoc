@@ -269,3 +269,23 @@ to the device is the sum of ways one, two or three higher-joltage
 adapters can be connected, depending on how many of those three can be
 plugged into it. So we can just iterate backwards and sum them up. Or
 the other way around, since the problem is completely symmetric.
+
+## [Day 11](https://adventofcode.com/2020/day/11)
+
+Ooh, it's the first obvious cellular automaton of the year.
+
+In [B/S terms](https://conwaylife.com/wiki/Rulestring), part 1 is
+called `B0/S0123`, while part 2 is `B0/S01234`. But of course this
+description omits the most interesting part of the puzzle, which is
+how the neighbourhood is defined.  While part 1 is in a sense the
+standard
+[Moore neighbourhood](https://conwaylife.com/wiki/Moore_neighbourhood),
+it also has the special floor tiles that are always empty, so a seat
+may in practice have less than 8 neighbours.  Part 2 is even more
+unconventional, as it uses a line-of-sight algorithm, so the
+neighbours can be very non-local.
+
+The Go solution doesn't do anything fancy. It parses the level into a
+map of every seat's neighbours, and then updates the occupancy state
+vector (which has one element per seat) based on the rules, and counts
+what's left when it no longer changes.
