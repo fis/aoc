@@ -12,16 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2018 days.
-package days
+package day08
 
-import (
-	_ "github.com/fis/aoc-go/2018/day01" // solvers
-	_ "github.com/fis/aoc-go/2018/day02" // solvers
-	_ "github.com/fis/aoc-go/2018/day03" // solvers
-	_ "github.com/fis/aoc-go/2018/day04" // solvers
-	_ "github.com/fis/aoc-go/2018/day05" // solvers
-	_ "github.com/fis/aoc-go/2018/day06" // solvers
-	_ "github.com/fis/aoc-go/2018/day07" // solvers
-	_ "github.com/fis/aoc-go/2018/day08" // solvers
-)
+import "testing"
+
+var example = []int{2, 3, 0, 3, 10, 11, 12, 1, 1, 0, 1, 99, 2, 1, 1, 2}
+
+func TestChecksum(t *testing.T) {
+	n, _ := parseLicense(example)
+	want := 138
+	got := n.checksum()
+	if got != want {
+		t.Errorf("checksum = %d, want %d", got, want)
+	}
+}
+
+func TestValue(t *testing.T) {
+	n, _ := parseLicense(example)
+	want := 66
+	got := n.value()
+	if got != want {
+		t.Errorf("value = %d, want %d", got, want)
+	}
+}

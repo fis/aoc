@@ -32,7 +32,7 @@ type LineSolver func([]string) ([]int, error)
 // ChunkSolver wraps a solution that wants the blank-line-separated paragraphs of the input as strings.
 type ChunkSolver func([]string) ([]int, error)
 
-// IntSolver wraps a solution that wants the lines of the input converted to integers.
+// IntSolver wraps a solution that wants the input read in as whitespace-separated decimal integers.
 type IntSolver func([]int) ([]int, error)
 
 // LevelSolver wraps a solution that wants the lines of the input converted to a 2D level structure.
@@ -74,7 +74,7 @@ func (s ChunkSolver) Solve(input io.Reader) ([]string, error) {
 
 // Solve implements the Solver interface.
 func (s IntSolver) Solve(input io.Reader) ([]string, error) {
-	rawData, err := util.ScanAll(input, bufio.ScanLines)
+	rawData, err := util.ScanAll(input, bufio.ScanWords)
 	if err != nil {
 		return nil, err
 	}
