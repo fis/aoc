@@ -29,6 +29,7 @@ type Solver func([]int64) ([]int64, error)
 // SolverS wraps a solution that wants an Intcode program in the standard format as input, outputting arbitrary strings.
 type SolverS func([]int64) ([]string, error)
 
+// Solve implements the Solver interface for an Intcode-based problem.
 func (s Solver) Solve(path string) (out []string, err error) {
 	prog, err := Load(path)
 	if err != nil {
@@ -44,6 +45,7 @@ func (s Solver) Solve(path string) (out []string, err error) {
 	return out, nil
 }
 
+// Solve implements the Solver interface for an Intcode-based problem generating non-numeric output.
 func (s SolverS) Solve(path string) ([]string, error) {
 	prog, err := Load(path)
 	if err != nil {
@@ -82,7 +84,7 @@ func Run(prog, input []int64) (output, mem []int64) {
 	return
 }
 
-// An Intcode VM represents the state of an Intcode computer.
+// A VM represents the state of an Intcode computer.
 type VM struct {
 	data   []int64
 	ip     int
@@ -275,15 +277,15 @@ func (vm *VM) page(i int) {
 }
 
 var opcodes = map[uint64]*opcode{
-	1: &opcode{act: (*VM).opAdd, narg: 3},
-	2: &opcode{act: (*VM).opMul, narg: 3},
-	3: &opcode{act: (*VM).opIn, narg: 1, input: true},
-	4: &opcode{act: (*VM).opOut, narg: 1, output: true},
-	5: &opcode{act: (*VM).opJNZ, narg: 2, jump: true},
-	6: &opcode{act: (*VM).opJZ, narg: 2, jump: true},
-	7: &opcode{act: (*VM).opSetLt, narg: 3},
-	8: &opcode{act: (*VM).opSetEq, narg: 3},
-	9: &opcode{act: (*VM).opSetB, narg: 1},
+	1: {act: (*VM).opAdd, narg: 3},
+	2: {act: (*VM).opMul, narg: 3},
+	3: {act: (*VM).opIn, narg: 1, input: true},
+	4: {act: (*VM).opOut, narg: 1, output: true},
+	5: {act: (*VM).opJNZ, narg: 2, jump: true},
+	6: {act: (*VM).opJZ, narg: 2, jump: true},
+	7: {act: (*VM).opSetLt, narg: 3},
+	8: {act: (*VM).opSetEq, narg: 3},
+	9: {act: (*VM).opSetB, narg: 1},
 }
 
 func (vm *VM) opAdd(args []arg) {
@@ -408,7 +410,7 @@ func (vm *VM) Walk(token *WalkToken) bool {
 	}
 }
 
-// WalkToken is used for holding invokation state when running Intcode via the Walk() API.
+// WalkToken is used for holding invocation state when running Intcode via the Walk() API.
 type WalkToken struct {
 	kind int
 	val  int64
@@ -421,22 +423,27 @@ const (
 	outputWalkToken = 2
 )
 
+// IsEmpty returns true if the walk token is empty (requests no input or contains no output).
 func (t *WalkToken) IsEmpty() bool {
 	return t.kind == emptyWalkToken
 }
 
+// IsInput returns true if the walk token requests input from the host.
 func (t *WalkToken) IsInput() bool {
 	return t.kind == inputWalkToken
 }
 
+// IsOutput returns true if the walk token provides output to the host.
 func (t *WalkToken) IsOutput() bool {
 	return t.kind == outputWalkToken
 }
 
+// ProvideInput is used to set the input on an input-requesting walk token.
 func (t *WalkToken) ProvideInput(val int64) {
 	t.val = val
 }
 
+// ReadOutput returns the output contained in this output-providing walk token.
 func (t *WalkToken) ReadOutput() int64 {
 	return t.val
 }

@@ -35,7 +35,7 @@ func sum(changes []int) (final int) {
 }
 
 func findRep(changes []int) int {
-	cur, seen := 0, map[int]struct{}{0: struct{}{}}
+	cur, seen := 0, map[int]struct{}{0: {}}
 	for {
 		for _, c := range changes {
 			cur += c

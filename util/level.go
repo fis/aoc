@@ -38,7 +38,7 @@ func ReadLevel(path string, empty byte) (*Level, error) {
 
 // ParseLevel parses a byte array into a level. See ReadLevel.
 func ParseLevel(data []byte, empty byte) *Level {
-	return ParseLevelAt(data, empty, P{0,0})
+	return ParseLevelAt(data, empty, P{0, 0})
 }
 
 // ParseLevelAt parses a byte array into a level using a specified offset.

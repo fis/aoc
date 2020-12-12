@@ -19,12 +19,16 @@ import (
 	"strconv"
 )
 
+// Solver represents a function capable of solving one of the AoC puzzles.
 type Solver interface {
+	// Solves the puzzle by reading input from the given path, and producing a set of output lines.
 	Solve(path string) ([]string, error)
 }
 
 var solvers map[int]Solver
 
+// RegisterSolver makes a solver known to the standard glue code as the nominated solver of the given day.
+// This function is expected to be called from an `init` func.
 func RegisterSolver(day int, s Solver) {
 	if solvers == nil {
 		solvers = make(map[int]Solver)
@@ -35,6 +39,7 @@ func RegisterSolver(day int, s Solver) {
 	solvers[day] = s
 }
 
+// CallSolver solves the given AoC puzzle using the provided input.
 func CallSolver(day int, path string) ([]string, error) {
 	s, ok := solvers[day]
 	if !ok {
@@ -61,10 +66,12 @@ type LevelSolver struct {
 	Empty  byte
 }
 
+// Solve implements the Solver interface.
 func (s GenericSolver) Solve(path string) ([]string, error) {
 	return s(path)
 }
 
+// Solve implements the Solver interface.
 func (s LineSolver) Solve(path string) ([]string, error) {
 	data, err := ReadLines(path)
 	if err != nil {
@@ -77,6 +84,7 @@ func (s LineSolver) Solve(path string) ([]string, error) {
 	return itoas(ints), nil
 }
 
+// Solve implements the Solver interface.
 func (s ChunkSolver) Solve(path string) ([]string, error) {
 	data, err := ReadChunks(path)
 	if err != nil {
@@ -89,6 +97,7 @@ func (s ChunkSolver) Solve(path string) ([]string, error) {
 	return itoas(ints), nil
 }
 
+// Solve implements the Solver interface.
 func (s IntSolver) Solve(path string) ([]string, error) {
 	data, err := ReadIntRows(path)
 	if err != nil {
@@ -101,6 +110,7 @@ func (s IntSolver) Solve(path string) ([]string, error) {
 	return itoas(ints), nil
 }
 
+// Solve implements the Solver interface.
 func (s LevelSolver) Solve(path string) ([]string, error) {
 	level, err := ReadLevel(path, s.Empty)
 	if err != nil {

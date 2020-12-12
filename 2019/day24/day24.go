@@ -42,7 +42,7 @@ const (
 
 func findRepeating(s state) state {
 	neigh := neighbors()
-	seen := map[state]struct{}{s: struct{}{}}
+	seen := map[state]struct{}{s: {}}
 	for {
 		ps := s
 		for i, bits := range neigh {

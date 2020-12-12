@@ -79,7 +79,7 @@ func recursive(from, to label, edges map[label]map[label]distance) int {
 		at    label
 		depth int
 	}
-	dist := map[node]int{node{at: from, depth: 0}: 0}
+	dist := map[node]int{{at: from, depth: 0}: 0}
 	fringe := pathq{{at: from, depth: 0, d: 0}}
 	for len(fringe) > 0 {
 		p := heap.Pop(&fringe).(path)

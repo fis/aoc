@@ -24,9 +24,6 @@ func init() {
 	util.RegisterSolver(19, intcode.Solver(solve))
 }
 
-const N = 50
-const M = 100
-
 func solve(prog []int64) ([]int64, error) {
 	probe := prober(prog)
 	return []int64{

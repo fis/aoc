@@ -18,33 +18,34 @@ package days
 import (
 	"github.com/fis/aoc-go/util"
 
-	_ "github.com/fis/aoc-go/2019/day01"
-	_ "github.com/fis/aoc-go/2019/day02"
-	_ "github.com/fis/aoc-go/2019/day03"
-	_ "github.com/fis/aoc-go/2019/day04"
-	_ "github.com/fis/aoc-go/2019/day05"
-	_ "github.com/fis/aoc-go/2019/day06"
-	_ "github.com/fis/aoc-go/2019/day07"
-	_ "github.com/fis/aoc-go/2019/day08"
-	_ "github.com/fis/aoc-go/2019/day09"
-	_ "github.com/fis/aoc-go/2019/day10"
-	_ "github.com/fis/aoc-go/2019/day11"
-	_ "github.com/fis/aoc-go/2019/day12"
-	_ "github.com/fis/aoc-go/2019/day13"
-	_ "github.com/fis/aoc-go/2019/day14"
-	_ "github.com/fis/aoc-go/2019/day15"
-	_ "github.com/fis/aoc-go/2019/day16"
-	_ "github.com/fis/aoc-go/2019/day17"
-	_ "github.com/fis/aoc-go/2019/day18"
-	_ "github.com/fis/aoc-go/2019/day19"
-	_ "github.com/fis/aoc-go/2019/day20"
-	_ "github.com/fis/aoc-go/2019/day21"
-	_ "github.com/fis/aoc-go/2019/day22"
-	_ "github.com/fis/aoc-go/2019/day23"
-	_ "github.com/fis/aoc-go/2019/day24"
-	_ "github.com/fis/aoc-go/2019/day25"
+	_ "github.com/fis/aoc-go/2019/day01" // solvers
+	_ "github.com/fis/aoc-go/2019/day02" // solvers
+	_ "github.com/fis/aoc-go/2019/day03" // solvers
+	_ "github.com/fis/aoc-go/2019/day04" // solvers
+	_ "github.com/fis/aoc-go/2019/day05" // solvers
+	_ "github.com/fis/aoc-go/2019/day06" // solvers
+	_ "github.com/fis/aoc-go/2019/day07" // solvers
+	_ "github.com/fis/aoc-go/2019/day08" // solvers
+	_ "github.com/fis/aoc-go/2019/day09" // solvers
+	_ "github.com/fis/aoc-go/2019/day10" // solvers
+	_ "github.com/fis/aoc-go/2019/day11" // solvers
+	_ "github.com/fis/aoc-go/2019/day12" // solvers
+	_ "github.com/fis/aoc-go/2019/day13" // solvers
+	_ "github.com/fis/aoc-go/2019/day14" // solvers
+	_ "github.com/fis/aoc-go/2019/day15" // solvers
+	_ "github.com/fis/aoc-go/2019/day16" // solvers
+	_ "github.com/fis/aoc-go/2019/day17" // solvers
+	_ "github.com/fis/aoc-go/2019/day18" // solvers
+	_ "github.com/fis/aoc-go/2019/day19" // solvers
+	_ "github.com/fis/aoc-go/2019/day20" // solvers
+	_ "github.com/fis/aoc-go/2019/day21" // solvers
+	_ "github.com/fis/aoc-go/2019/day22" // solvers
+	_ "github.com/fis/aoc-go/2019/day23" // solvers
+	_ "github.com/fis/aoc-go/2019/day24" // solvers
+	_ "github.com/fis/aoc-go/2019/day25" // solvers
 )
 
+// Solve delegates the specified day's solver.
 func Solve(day int, path string) ([]string, error) {
 	return util.CallSolver(day, path)
 }

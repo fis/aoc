@@ -98,11 +98,11 @@ func TestStrictRules(t *testing.T) {
 		want  bool
 	}
 	tests := map[string][]testCase{
-		"byr": []testCase{{"2002", true}, {"2003", false}},
-		"hgt": []testCase{{"60in", true}, {"190cm", true}, {"190in", false}, {"190", false}},
-		"hcl": []testCase{{"#123abc", true}, {"#123abz", false}, {"123abc", false}},
-		"ecl": []testCase{{"brn", true}, {"wat", false}},
-		"pid": []testCase{{"000000001", true}, {"0123456789", false}},
+		"byr": {{"2002", true}, {"2003", false}},
+		"hgt": {{"60in", true}, {"190cm", true}, {"190in", false}, {"190", false}},
+		"hcl": {{"#123abc", true}, {"#123abz", false}, {"123abc", false}},
+		"ecl": {{"brn", true}, {"wat", false}},
+		"pid": {{"000000001", true}, {"0123456789", false}},
 	}
 	for _, rule := range strictRules {
 		for _, test := range tests[rule.key] {

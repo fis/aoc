@@ -19,11 +19,11 @@ import (
 )
 
 var example = [][]string{
-	[]string{"abc"},
-	[]string{"a", "b", "c"},
-	[]string{"ab", "ac"},
-	[]string{"a", "a", "a", "a"},
-	[]string{"b"},
+	{"abc"},
+	{"a", "b", "c"},
+	{"ab", "ac"},
+	{"a", "a", "a", "a"},
+	{"b"},
 }
 
 func TestCountMerged(t *testing.T) {

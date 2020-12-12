@@ -18,19 +18,20 @@ package days
 import (
 	"github.com/fis/aoc-go/util"
 
-	_ "github.com/fis/aoc-go/2020/day01"
-	_ "github.com/fis/aoc-go/2020/day02"
-	_ "github.com/fis/aoc-go/2020/day03"
-	_ "github.com/fis/aoc-go/2020/day04"
-	_ "github.com/fis/aoc-go/2020/day05"
-	_ "github.com/fis/aoc-go/2020/day06"
-	_ "github.com/fis/aoc-go/2020/day07"
-	_ "github.com/fis/aoc-go/2020/day08"
-	_ "github.com/fis/aoc-go/2020/day09"
-	_ "github.com/fis/aoc-go/2020/day10"
-	_ "github.com/fis/aoc-go/2020/day11"
+	_ "github.com/fis/aoc-go/2020/day01" // solvers
+	_ "github.com/fis/aoc-go/2020/day02" // solvers
+	_ "github.com/fis/aoc-go/2020/day03" // solvers
+	_ "github.com/fis/aoc-go/2020/day04" // solvers
+	_ "github.com/fis/aoc-go/2020/day05" // solvers
+	_ "github.com/fis/aoc-go/2020/day06" // solvers
+	_ "github.com/fis/aoc-go/2020/day07" // solvers
+	_ "github.com/fis/aoc-go/2020/day08" // solvers
+	_ "github.com/fis/aoc-go/2020/day09" // solvers
+	_ "github.com/fis/aoc-go/2020/day10" // solvers
+	_ "github.com/fis/aoc-go/2020/day11" // solvers
 )
 
+// Solve delegates the specified day's solver.
 func Solve(day int, path string) ([]string, error) {
 	return util.CallSolver(day, path)
 }

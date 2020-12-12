@@ -63,10 +63,10 @@ func compute(w1, w2 string) (closest, best int) {
 }
 
 var dir = map[byte]util.P{
-	'L': util.P{-1, 0},
-	'R': util.P{1, 0},
-	'U': util.P{0, -1},
-	'D': util.P{0, 1},
+	'L': {-1, 0},
+	'R': {1, 0},
+	'U': {0, -1},
+	'D': {0, 1},
 }
 
 func walk(w string, cb func(x, y, s int)) {

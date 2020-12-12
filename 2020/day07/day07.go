@@ -110,6 +110,7 @@ func countDescendants(g *util.Graph, node string) int {
 	return dfs(g.V(node))
 }
 
+// PrintRules outputs a dot graph of the ruleset.
 func PrintRules(out io.Writer, rules []string) error {
 	g, err := parseRules(rules)
 	if err != nil {

@@ -141,6 +141,7 @@ func repair(code []instruction) int {
 	panic("this code is unfixable")
 }
 
+// PrintGraph outputs a dot graph of the program's possible control flow.
 func PrintGraph(out io.Writer, lines []string) error {
 	var mnemonics = map[opcode]string{opAcc: "acc", opJmp: "jmp", opNop: "nop"}
 
