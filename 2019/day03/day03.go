@@ -20,11 +20,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(3, util.LineSolver(solve))
+	glue.RegisterSolver(2019, 3, glue.LineSolver(solve))
 }
 
 func solve(lines []string) ([]int, error) {

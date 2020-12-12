@@ -12,44 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package glue
 
 import (
-	"fmt"
+	"bufio"
+	"io"
+	"io/ioutil"
 	"strconv"
+
+	"github.com/fis/aoc-go/util"
 )
 
-// Solver represents a function capable of solving one of the AoC puzzles.
-type Solver interface {
-	// Solves the puzzle by reading input from the given path, and producing a set of output lines.
-	Solve(path string) ([]string, error)
-}
-
-var solvers map[int]Solver
-
-// RegisterSolver makes a solver known to the standard glue code as the nominated solver of the given day.
-// This function is expected to be called from an `init` func.
-func RegisterSolver(day int, s Solver) {
-	if solvers == nil {
-		solvers = make(map[int]Solver)
-	}
-	if _, ok := solvers[day]; ok {
-		panic(fmt.Sprintf("duplicate solvers: %d", day))
-	}
-	solvers[day] = s
-}
-
-// CallSolver solves the given AoC puzzle using the provided input.
-func CallSolver(day int, path string) ([]string, error) {
-	s, ok := solvers[day]
-	if !ok {
-		return nil, fmt.Errorf("unknown day: %d", day)
-	}
-	return s.Solve(path)
-}
-
 // GenericSolver wraps a solution function that does all the work itself.
-type GenericSolver func(string) ([]string, error)
+type GenericSolver func(io.Reader) ([]string, error)
 
 // LineSolver wraps a solution that wants the lines of the input as strings.
 type LineSolver func([]string) ([]int, error)
@@ -62,18 +37,18 @@ type IntSolver func([]int) ([]int, error)
 
 // LevelSolver wraps a solution that wants the lines of the input converted to a 2D level structure.
 type LevelSolver struct {
-	Solver func(*Level) ([]int, error)
+	Solver func(*util.Level) ([]int, error)
 	Empty  byte
 }
 
 // Solve implements the Solver interface.
-func (s GenericSolver) Solve(path string) ([]string, error) {
-	return s(path)
+func (s GenericSolver) Solve(input io.Reader) ([]string, error) {
+	return s(input)
 }
 
 // Solve implements the Solver interface.
-func (s LineSolver) Solve(path string) ([]string, error) {
-	data, err := ReadLines(path)
+func (s LineSolver) Solve(input io.Reader) ([]string, error) {
+	data, err := util.ScanAll(input, bufio.ScanLines)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +60,8 @@ func (s LineSolver) Solve(path string) ([]string, error) {
 }
 
 // Solve implements the Solver interface.
-func (s ChunkSolver) Solve(path string) ([]string, error) {
-	data, err := ReadChunks(path)
+func (s ChunkSolver) Solve(input io.Reader) ([]string, error) {
+	data, err := util.ScanAll(input, util.ScanChunks)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +73,12 @@ func (s ChunkSolver) Solve(path string) ([]string, error) {
 }
 
 // Solve implements the Solver interface.
-func (s IntSolver) Solve(path string) ([]string, error) {
-	data, err := ReadIntRows(path)
+func (s IntSolver) Solve(input io.Reader) ([]string, error) {
+	rawData, err := util.ScanAll(input, bufio.ScanLines)
+	if err != nil {
+		return nil, err
+	}
+	data, err := atois(rawData)
 	if err != nil {
 		return nil, err
 	}
@@ -111,16 +90,28 @@ func (s IntSolver) Solve(path string) ([]string, error) {
 }
 
 // Solve implements the Solver interface.
-func (s LevelSolver) Solve(path string) ([]string, error) {
-	level, err := ReadLevel(path, s.Empty)
+func (s LevelSolver) Solve(input io.Reader) ([]string, error) {
+	data, err := ioutil.ReadAll(input)
 	if err != nil {
 		return nil, err
 	}
+	level := util.ParseLevel(data, s.Empty)
 	ints, err := s.Solver(level)
 	if err != nil {
 		return nil, err
 	}
 	return itoas(ints), nil
+}
+
+func atois(in []string) (out []int, err error) {
+	for _, s := range in {
+		i, err := strconv.Atoi(s)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, i)
+	}
+	return out, nil
 }
 
 func itoas(in []int) (out []string) {

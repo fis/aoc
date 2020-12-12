@@ -21,11 +21,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(8, util.LineSolver(solve))
+	glue.RegisterSolver(2020, 8, glue.LineSolver(solve))
+	glue.RegisterPlotter(2020, 8, glue.LinePlotter(plotFlow), map[string]string{"ex": example})
 }
 
 func solve(lines []string) ([]int, error) {
@@ -141,8 +143,18 @@ func repair(code []instruction) int {
 	panic("this code is unfixable")
 }
 
-// PrintGraph outputs a dot graph of the program's possible control flow.
-func PrintGraph(out io.Writer, lines []string) error {
+var example = `nop +0
+acc +1
+jmp +4
+acc +3
+jmp -3
+acc -99
+acc +1
+jmp -4
+acc +6
+`
+
+func plotFlow(lines []string, out io.Writer) error {
 	var mnemonics = map[opcode]string{opAcc: "acc", opJmp: "jmp", opNop: "nop"}
 
 	code, err := parseCode(lines)

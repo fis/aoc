@@ -19,7 +19,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -28,28 +28,27 @@ import (
 // Words returns the list of all nonempty contiguous sequences of non-whitespace characters
 // in the input string. In other words, this is the list of tokens defined by the standard
 // bufio.ScanWords function.
-func Words(s string) []string {
-	var words []string
-	sc := bufio.NewScanner(strings.NewReader(s))
-	sc.Split(bufio.ScanWords)
-	for sc.Scan() {
-		words = append(words, sc.Text())
-	}
+func Words(s string) (words []string) {
+	words, _ = ScanAll(strings.NewReader(s), bufio.ScanWords)
 	return words
+}
+
+// Lines splits the input string by newlines as if by bufio.ScanLines. In other words, it
+// will not return an empty string even if the input has a trailing newline.
+func Lines(s string) (lines []string) {
+	lines, _ = ScanAll(strings.NewReader(s), bufio.ScanLines)
+	return lines
 }
 
 // ReadLines returns the contents of a text file as a slice of strings representing the lines. The
 // newline separators are not kept. The last line need not have a newline character at the end.
 func ReadLines(path string) ([]string, error) {
-	data, err := ioutil.ReadFile(path)
+	f, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("reading lines: %v", err)
+		return nil, err
 	}
-	lines := strings.Split(string(data), "\n")
-	for len(lines) > 0 && lines[len(lines)-1] == "" {
-		lines = lines[:len(lines)-1]
-	}
-	return lines, nil
+	defer f.Close()
+	return ScanAll(f, bufio.ScanLines)
 }
 
 // ReadChunks returns the contents of a text file as a slice of strings representing all paragraphs,
@@ -60,16 +59,11 @@ func ReadChunks(path string) (chunks []string, err error) {
 		return nil, err
 	}
 	defer f.Close()
-	s := bufio.NewScanner(f)
-	s.Split(ScanChunks)
-	for s.Scan() {
-		chunks = append(chunks, s.Text())
-	}
-	return chunks, nil
+	return ScanAll(f, ScanChunks)
 }
 
-// ReadIntRows parses a text file formatted as one integer per line.
-func ReadIntRows(path string) ([]int, error) {
+// ReadInts parses a text file formatted as one integer per line.
+func ReadInts(path string) ([]int, error) {
 	lines, err := ReadLines(path)
 	if err != nil {
 		return nil, err
@@ -83,6 +77,16 @@ func ReadIntRows(path string) ([]int, error) {
 		ints = append(ints, i)
 	}
 	return ints, nil
+}
+
+// ScanAll runs a scanner on a reader with the given split function, and returns all tokens.
+func ScanAll(r io.Reader, split bufio.SplitFunc) (tokens []string, err error) {
+	s := bufio.NewScanner(r)
+	s.Split(split)
+	for s.Scan() {
+		tokens = append(tokens, s.Text())
+	}
+	return tokens, s.Err()
 }
 
 // ScanChunks implements a bufio.SplitFunc for scanning paragraphs delimited by a blank line

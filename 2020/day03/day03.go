@@ -16,11 +16,12 @@
 package day03
 
 import (
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(3, util.LevelSolver{Solver: solve, Empty: '.'})
+	glue.RegisterSolver(2020, 3, glue.LevelSolver{Solver: solve, Empty: '.'})
 }
 
 func solve(level *util.Level) ([]int, error) {

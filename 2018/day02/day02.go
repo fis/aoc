@@ -16,17 +16,20 @@
 package day02
 
 import (
+	"bufio"
+	"io"
 	"strconv"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(2, util.GenericSolver(solve))
+	glue.RegisterSolver(2018, 2, glue.GenericSolver(solve))
 }
 
-func solve(path string) ([]string, error) {
-	lines, err := util.ReadLines(path)
+func solve(input io.Reader) ([]string, error) {
+	lines, err := util.ScanAll(input, bufio.ScanLines)
 	if err != nil {
 		return nil, err
 	}

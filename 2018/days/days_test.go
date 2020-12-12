@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -50,8 +51,7 @@ func TestAllDays(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("day=%02d", test.day), func(t *testing.T) {
-			got, err := Solve(test.day, fmt.Sprintf("testdata/day%02d.txt", test.day))
-			if err != nil {
+			if got, err := glue.SolveFile(2018, test.day, fmt.Sprintf("testdata/day%02d.txt", test.day)); err != nil {
 				t.Errorf("Solve: %v", err)
 			} else if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("Solve mismatch (-want +got):\n%s", diff)

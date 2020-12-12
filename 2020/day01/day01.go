@@ -16,11 +16,11 @@
 package day01
 
 import (
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc-go/glue"
 )
 
 func init() {
-	util.RegisterSolver(1, util.IntSolver(solve))
+	glue.RegisterSolver(2020, 1, glue.IntSolver(solve))
 }
 
 func solve(expenses []int) ([]int, error) {

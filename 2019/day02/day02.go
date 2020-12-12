@@ -16,12 +16,12 @@
 package day02
 
 import (
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/intcode"
-	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(2, intcode.Solver(solve))
+	glue.RegisterSolver(2019, 2, intcode.Solver(solve))
 }
 
 func solve(prog []int64) ([]int64, error) {

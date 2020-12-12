@@ -16,12 +16,13 @@
 package day17
 
 import (
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/intcode"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(17, intcode.Solver(solve))
+	glue.RegisterSolver(2019, 17, intcode.Solver(solve))
 }
 
 var input = []string{

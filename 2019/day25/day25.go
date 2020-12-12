@@ -19,12 +19,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/intcode"
-	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(25, intcode.SolverS(solve))
+	glue.RegisterSolver(2019, 25, intcode.SolverS(solve))
 }
 
 // TODO: Write a generalized solver for this puzzle.

@@ -16,8 +16,6 @@
 package days
 
 import (
-	"github.com/fis/aoc-go/util"
-
 	_ "github.com/fis/aoc-go/2019/day01" // solvers
 	_ "github.com/fis/aoc-go/2019/day02" // solvers
 	_ "github.com/fis/aoc-go/2019/day03" // solvers
@@ -44,8 +42,3 @@ import (
 	_ "github.com/fis/aoc-go/2019/day24" // solvers
 	_ "github.com/fis/aoc-go/2019/day25" // solvers
 )
-
-// Solve delegates the specified day's solver.
-func Solve(day int, path string) ([]string, error) {
-	return util.CallSolver(day, path)
-}

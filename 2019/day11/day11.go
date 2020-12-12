@@ -18,12 +18,13 @@ package day11
 import (
 	"strconv"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/intcode"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(11, intcode.SolverS(solve))
+	glue.RegisterSolver(2019, 11, intcode.SolverS(solve))
 }
 
 func solve(prog []int64) ([]string, error) {

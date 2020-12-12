@@ -18,11 +18,11 @@ package day05
 import (
 	"fmt"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc-go/glue"
 )
 
 func init() {
-	util.RegisterSolver(5, util.LineSolver(solve))
+	glue.RegisterSolver(2018, 5, glue.LineSolver(solve))
 }
 
 func solve(lines []string) ([]int, error) {

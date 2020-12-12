@@ -12,36 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc2018 runs the AoC 2018 puzzle solutions.
+// Binary aoc provides all the supported AoC actions (solving, plotting, ...).
 package main
 
 import (
-	"flag"
-	"fmt"
-	"os"
-	"strconv"
+	"github.com/fis/aoc-go/glue"
 
-	"github.com/fis/aoc-go/2018/days"
+	_ "github.com/fis/aoc-go/2018/days" // solvers
+	_ "github.com/fis/aoc-go/2019/days" // solvers
+	_ "github.com/fis/aoc-go/2020/days" // solvers
 )
 
 func main() {
-	flag.Parse()
-
-	if flag.NArg() != 2 {
-		fmt.Fprintln(os.Stderr, "Usage: aoc2019 [flags] N input.txt")
-		os.Exit(1)
-	}
-	day, err := strconv.Atoi(flag.Arg(0))
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Not a number: %q: %v\n", flag.Arg(0), err)
-		os.Exit(1)
-	}
-	out, err := days.Solve(day, flag.Arg(1))
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Solution failed: %v\n", err)
-		os.Exit(1)
-	}
-	for _, s := range out {
-		fmt.Println(s)
-	}
+	glue.Main()
 }

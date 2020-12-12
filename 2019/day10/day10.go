@@ -19,11 +19,12 @@ import (
 	"math"
 	"sort"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(10, util.LevelSolver{Solver: solve, Empty: '.'})
+	glue.RegisterSolver(2019, 10, glue.LevelSolver{Solver: solve, Empty: '.'})
 }
 
 func solve(level *util.Level) ([]int, error) {

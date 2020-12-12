@@ -19,11 +19,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc-go/glue"
 )
 
 func init() {
-	util.RegisterSolver(4, util.IntSolver(solve))
+	glue.RegisterSolver(2019, 4, glue.IntSolver(solve))
 }
 
 func solve(inputRange []int) ([]int, error) {

@@ -17,14 +17,16 @@ package day08
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"strconv"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(8, util.GenericSolver(solve))
+	glue.RegisterSolver(2019, 8, glue.GenericSolver(solve))
 }
 
 const (
@@ -32,8 +34,8 @@ const (
 	imgH = 6
 )
 
-func solve(path string) ([]string, error) {
-	data, err := ioutil.ReadFile(path)
+func solve(input io.Reader) ([]string, error) {
+	data, err := ioutil.ReadAll(input)
 	if err != nil {
 		return nil, err
 	}

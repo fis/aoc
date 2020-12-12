@@ -16,7 +16,9 @@
 package intcode
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -30,8 +32,8 @@ type Solver func([]int64) ([]int64, error)
 type SolverS func([]int64) ([]string, error)
 
 // Solve implements the Solver interface for an Intcode-based problem.
-func (s Solver) Solve(path string) (out []string, err error) {
-	prog, err := Load(path)
+func (s Solver) Solve(input io.Reader) (out []string, err error) {
+	prog, err := Load(input)
 	if err != nil {
 		return nil, err
 	}
@@ -46,18 +48,17 @@ func (s Solver) Solve(path string) (out []string, err error) {
 }
 
 // Solve implements the Solver interface for an Intcode-based problem generating non-numeric output.
-func (s SolverS) Solve(path string) ([]string, error) {
-	prog, err := Load(path)
+func (s SolverS) Solve(input io.Reader) ([]string, error) {
+	prog, err := Load(input)
 	if err != nil {
 		return nil, err
 	}
 	return s(prog)
 }
 
-// Load will read an Intcode program in the standard format (comma-separated integers) from a text
-// file.
-func Load(path string) ([]int64, error) {
-	lines, err := util.ReadLines(path)
+// Load will read an Intcode program in the standard format (comma-separated integers) from a stream.
+func Load(input io.Reader) ([]int64, error) {
+	lines, err := util.ScanAll(input, bufio.ScanLines)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +67,7 @@ func Load(path string) ([]int64, error) {
 		for _, num := range strings.Split(line, ",") {
 			val, err := strconv.ParseInt(num, 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("parsing Intcode from %q: %v", path, err)
+				return nil, fmt.Errorf("parsing Intcode: %v", err)
 			}
 			p = append(p, val)
 		}
@@ -125,16 +126,6 @@ const (
 )
 
 const maxArgs = 3
-
-// LoadFile resets the computer and loads a program from the named file to its memory.
-func (vm *VM) LoadFile(path string) error {
-	p, err := Load(path)
-	if err != nil {
-		return err
-	}
-	vm.Use(p)
-	return nil
-}
 
 // Load resets the computer and initializes its memory to be a copy of the program.
 func (vm *VM) Load(p []int64) {

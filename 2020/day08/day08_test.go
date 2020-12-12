@@ -16,23 +16,13 @@ package day08
 
 import (
 	"testing"
-)
 
-var example = []string{
-	"nop +0",
-	"acc +1",
-	"jmp +4",
-	"acc +3",
-	"jmp -3",
-	"acc -99",
-	"acc +1",
-	"jmp -4",
-	"acc +6",
-}
+	"github.com/fis/aoc-go/util"
+)
 
 func TestLoopCheck(t *testing.T) {
 	want := 5
-	if prog, err := parseCode(example); err != nil {
+	if prog, err := parseCode(util.Lines(example)); err != nil {
 		t.Errorf("parseCode: %v", err)
 	} else if loop, acc := loopCheck(prog); !loop || acc != want {
 		t.Errorf("loopCheck = %v, %d, want true, %d", loop, acc, want)
@@ -41,7 +31,7 @@ func TestLoopCheck(t *testing.T) {
 
 func TestRepair(t *testing.T) {
 	want := 8
-	if prog, err := parseCode(example); err != nil {
+	if prog, err := parseCode(util.Lines(example)); err != nil {
 		t.Errorf("parseCode: %v", err)
 	} else if got := repair(prog); got != want {
 		t.Errorf("repair = %d, want %d", got, want)

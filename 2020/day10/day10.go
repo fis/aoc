@@ -18,11 +18,11 @@ package day10
 import (
 	"sort"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc-go/glue"
 )
 
 func init() {
-	util.RegisterSolver(10, util.IntSolver(solve))
+	glue.RegisterSolver(2020, 10, glue.IntSolver(solve))
 }
 
 func solve(adapters []int) ([]int, error) {

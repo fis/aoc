@@ -20,11 +20,11 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc-go/glue"
 )
 
 func init() {
-	util.RegisterSolver(2, util.LineSolver(solve))
+	glue.RegisterSolver(2020, 2, glue.LineSolver(solve))
 }
 
 func solve(lines []string) ([]int, error) {

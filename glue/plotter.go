@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,36 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc2019 runs the AoC 2019 puzzle solutions.
-package main
+package glue
 
 import (
-	"flag"
-	"fmt"
-	"os"
-	"strconv"
+	"bufio"
+	"io"
 
-	"github.com/fis/aoc-go/2019/days"
+	"github.com/fis/aoc-go/util"
 )
 
-func main() {
-	flag.Parse()
+// LinePlotter wraps a plotter that wants the lines of the input as strings.
+type LinePlotter func([]string, io.Writer) error
 
-	if flag.NArg() != 2 {
-		fmt.Fprintln(os.Stderr, "Usage: aoc2019 [flags] N input.txt")
-		os.Exit(1)
-	}
-	day, err := strconv.Atoi(flag.Arg(0))
+// Plot implements the Plotter interface.
+func (p LinePlotter) Plot(r io.Reader, w io.Writer) error {
+	data, err := util.ScanAll(r, bufio.ScanLines)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Not a number: %q: %v\n", flag.Arg(0), err)
-		os.Exit(1)
+		return err
 	}
-	out, err := days.Solve(day, flag.Arg(1))
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Solution failed: %v\n", err)
-		os.Exit(1)
-	}
-	for _, s := range out {
-		fmt.Println(s)
-	}
+	return p(data, w)
 }

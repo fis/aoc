@@ -18,11 +18,11 @@ package day06
 import (
 	"strings"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc-go/glue"
 )
 
 func init() {
-	util.RegisterSolver(6, util.ChunkSolver(solve))
+	glue.RegisterSolver(2020, 6, glue.ChunkSolver(solve))
 }
 
 func solve(data []string) ([]int, error) {

@@ -22,11 +22,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
 
 func init() {
-	util.RegisterSolver(7, util.LineSolver(solve))
+	glue.RegisterSolver(2020, 7, glue.LineSolver(solve))
+	glue.RegisterPlotter(2020, 7, glue.LinePlotter(plotRules), map[string]string{"ex1": ex1, "ex2": ex2})
 }
 
 func solve(rules []string) ([]int, error) {
@@ -110,8 +112,28 @@ func countDescendants(g *util.Graph, node string) int {
 	return dfs(g.V(node))
 }
 
-// PrintRules outputs a dot graph of the ruleset.
-func PrintRules(out io.Writer, rules []string) error {
+var (
+	ex1 = `light red bags contain 1 bright white bag, 2 muted yellow bags.
+dark orange bags contain 3 bright white bags, 4 muted yellow bags.
+bright white bags contain 1 shiny gold bag.
+muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
+shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
+dark olive bags contain 3 faded blue bags, 4 dotted black bags.
+vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+faded blue bags contain no other bags.
+dotted black bags contain no other bags.
+`
+	ex2 = `shiny gold bags contain 2 dark red bags.
+dark red bags contain 2 dark orange bags.
+dark orange bags contain 2 dark yellow bags.
+dark yellow bags contain 2 dark green bags.
+dark green bags contain 2 dark blue bags.
+dark blue bags contain 2 dark violet bags.
+dark violet bags contain no other bags.
+`
+)
+
+func plotRules(rules []string, out io.Writer) error {
 	g, err := parseRules(rules)
 	if err != nil {
 		return err
