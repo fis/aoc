@@ -124,3 +124,35 @@ func (p P) Neigh8() [8]P {
 		{p.X - 1, p.Y + 1}, {p.X, p.Y + 1}, {p.X + 1, p.Y + 1},
 	}
 }
+
+// DistM returns the Manhattan distance between two points.
+func DistM(a, b P) int {
+	return abs(a.X-b.X) + abs(a.Y-b.Y)
+}
+
+// Bounds returns the bounding box of a list of points.
+func Bounds(points []P) (min, max P) {
+	min, max = points[0], points[0]
+	for _, p := range points[1:] {
+		if p.X < min.X {
+			min.X = p.X
+		}
+		if p.Y < min.Y {
+			min.Y = p.Y
+		}
+		if p.X > max.X {
+			max.X = p.X
+		}
+		if p.Y > max.Y {
+			max.Y = p.Y
+		}
+	}
+	return min, max
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}

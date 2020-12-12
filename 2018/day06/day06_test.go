@@ -12,15 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2018 days.
-package days
+package day06
 
 import (
-	_ "github.com/fis/aoc-go/2018/day01" // solvers
-	_ "github.com/fis/aoc-go/2018/day02" // solvers
-	_ "github.com/fis/aoc-go/2018/day03" // solvers
-	_ "github.com/fis/aoc-go/2018/day04" // solvers
-	_ "github.com/fis/aoc-go/2018/day05" // solvers
-	_ "github.com/fis/aoc-go/2018/day06" // solvers
-	_ "github.com/fis/aoc-go/2018/day07" // solvers
+	"testing"
+
+	"github.com/fis/aoc-go/util"
 )
+
+var example = []util.P{{1, 1}, {1, 6}, {8, 3}, {3, 4}, {5, 5}, {8, 9}}
+
+func TestMaxArea(t *testing.T) {
+	want := 17
+	got := maxArea(example)
+	if got != want {
+		t.Errorf("maxArea = %d, want %d", got, want)
+	}
+}
+
+func TestSafeArea(t *testing.T) {
+	want := 16
+	got := safeArea(example, 32)
+	if got != want {
+		t.Errorf("safeArea = %d, want %d", got, want)
+	}
+}
