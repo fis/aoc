@@ -14,6 +14,11 @@
 
 package util
 
+import (
+	"fmt"
+	"io"
+)
+
 // Graph models a dense directed graph of string-labeled nodes.
 type Graph struct {
 	verts     map[string]int
@@ -213,4 +218,71 @@ func (g *Graph) TopoSortV() []int {
 		})
 	}
 	return order
+}
+
+// WriteDOT writes the graph out in GraphViz format. The `nodeAttr` and `edgeAttr` callback
+// functions are optional, and can be used to add extra attributes to the node. If the callback
+// returns a "label" attribute, it takes precedence over the usual node name / edge weight.
+func (g *Graph) WriteDOT(w io.Writer, name string, nodeAttr func(v int) map[string]string, edgeAttr func(fromV, toV int) map[string]string) (err error) {
+	fmt.Fprintf(w, "digraph %s {\n", name)
+	g.RangeV(func(v int) {
+		var attrs map[string]string
+		if nodeAttr != nil {
+			attrs = nodeAttr(v)
+		}
+		fmt.Fprintf(w, "  n%d [", v)
+		writeAttrs(w, attrs, "label", fmt.Sprintf(`"%s"`, g.Name(v)))
+		fmt.Fprintf(w, "];\n")
+	})
+	g.RangeV(func(fromV int) {
+		g.RangeSuccV(fromV, func(toV int) bool {
+			var attrs map[string]string
+			if edgeAttr != nil {
+				attrs = edgeAttr(fromV, toV)
+			}
+			fmt.Fprintf(w, "  n%d -> n%d [", fromV, toV)
+			if g.w != nil {
+				writeAttrs(w, attrs, "label", fmt.Sprintf(`"%d"`, g.W(fromV, toV)))
+			} else {
+				writeAttrs(w, attrs)
+			}
+			fmt.Fprintf(w, "];\n")
+			return true
+		})
+	})
+	_, err = fmt.Fprintln(w, "}")
+	return err
+}
+
+func writeAttrs(w io.Writer, attr map[string]string, xattr ...string) error {
+	i := 0
+	for k, v := range attr {
+		if err := writeAttr(w, k, v, i); err != nil {
+			return err
+		}
+		i++
+	}
+	for x := 0; x+1 < len(xattr); x += 2 {
+		if _, ok := attr[xattr[x]]; ok {
+			continue
+		}
+		if err := writeAttr(w, xattr[x], xattr[x+1], i); err != nil {
+			return err
+		}
+		i++
+	}
+	return nil
+}
+
+func writeAttr(w io.Writer, k, v string, i int) error {
+	if i > 0 {
+		_, err := fmt.Fprint(w, ",")
+		return err
+	}
+	// TODO: better marshalling
+	_, err := fmt.Fprintf(w, "%s=%s", k, v)
+	if err != nil {
+		return err
+	}
+	return nil
 }
