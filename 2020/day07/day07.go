@@ -155,25 +155,15 @@ func plotRules(rules []string, out io.Writer) error {
 	}
 
 	nodeV := g.V("shiny gold")
-	colorize(nodeV, (*util.Graph).RangePredV, "#1e8e3e")
-	colorize(nodeV, (*util.Graph).RangeSuccV, "#1a73e8")
-	colors[nodeV] = "#d93025"
+	colorize(nodeV, (*util.Graph).RangePredV, `"#1e8e3e"`)
+	colorize(nodeV, (*util.Graph).RangeSuccV, `"#1a73e8"`)
+	colors[nodeV] = `"#d93025"`
 
-	fmt.Fprint(out, "digraph bags {\n")
-	g.RangeV(func(v int) {
-		fg, bg := "black", "white"
+	return g.WriteDOT(out, "bags", func(v int) map[string]string {
+		fg, bg := `"black"`, `"white"`
 		if c, ok := colors[v]; ok {
-			fg, bg = "white", c
+			fg, bg = `"white"`, c
 		}
-		fmt.Fprintf(out, "  n%d [label=\"%s\", fillcolor=\"%s\", fontcolor=\"%s\", style=\"filled\"];\n", v, g.Name(v), bg, fg)
-	})
-	g.RangeV(func(v int) {
-		g.RangeSuccV(v, func(v2 int) bool {
-			fmt.Fprintf(out, "  n%d -> n%d [label=\"%d\"];\n", v, v2, g.W(v, v2))
-			return true
-		})
-	})
-	fmt.Fprint(out, "}\n")
-
-	return nil
+		return map[string]string{"fillcolor": bg, "fontcolor": fg, "style": `"filled"`}
+	}, nil)
 }

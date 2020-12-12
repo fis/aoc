@@ -182,25 +182,16 @@ func plotFlow(lines []string, out io.Writer) error {
 		}
 	}
 
-	fmt.Fprint(out, "digraph prog {\n")
-	g.RangeV(func(v int) {
-		per := ""
+	return g.WriteDOT(out, "prog", func(v int) map[string]string {
 		if v == verts[0] || v == verts[len(verts)-1] {
-			per = ", peripheries=2"
+			return map[string]string{"peripheries": `2`}
 		}
-		fmt.Fprintf(out, "  n%d [label=\"%s\"%s];\n", v, g.Name(v), per)
+		return nil
+	}, func(fromV, toV int) map[string]string {
+		attrs := map[string]string{"label": `""`}
+		if g.W(fromV, toV) == 1 {
+			attrs["color"] = `"red"`
+		}
+		return attrs
 	})
-	g.RangeV(func(v int) {
-		g.RangeSuccV(v, func(v2 int) bool {
-			color := ""
-			if g.W(v, v2) == 1 {
-				color = ` [color="red"]`
-			}
-			fmt.Fprintf(out, "  n%d -> n%d%s;\n", v, v2, color)
-			return true
-		})
-	})
-	fmt.Fprint(out, "}\n")
-
-	return nil
 }

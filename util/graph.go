@@ -277,7 +277,9 @@ func writeAttrs(w io.Writer, attr map[string]string, xattr ...string) error {
 func writeAttr(w io.Writer, k, v string, i int) error {
 	if i > 0 {
 		_, err := fmt.Fprint(w, ",")
-		return err
+		if err != nil {
+			return err
+		}
 	}
 	// TODO: better marshalling
 	_, err := fmt.Fprintf(w, "%s=%s", k, v)
