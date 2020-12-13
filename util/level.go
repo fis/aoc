@@ -16,6 +16,7 @@ package util
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 )
 
@@ -157,4 +158,25 @@ func (l *Level) Find(key byte) (x, y int, found bool) {
 		}
 	}
 	return
+}
+
+// Write prints out the bytes in-bounds area of the level.
+func (l *Level) Write(w io.Writer) error {
+	min, max := l.Bounds()
+	return l.WriteRect(w, min, max)
+}
+
+// WriteRect prints out the specified rectangle of the level.
+func (l *Level) WriteRect(w io.Writer, min, max P) error {
+	row := make([]byte, max.X-min.X+2)
+	row[max.X-min.X+1] = '\n'
+	for y := min.Y; y <= max.Y; y++ {
+		for x := min.X; x <= max.X; x++ {
+			row[x-min.X] = l.At(x, y)
+		}
+		if _, err := w.Write(row); err != nil {
+			return err
+		}
+	}
+	return nil
 }
