@@ -270,3 +270,39 @@ Day 12 feels like
 [Logo](https://en.wikipedia.org/wiki/Logo_(programming_language)) to me.
 Unfortunately, there's nothing particularly puzzling about the task. We just go
 through the motions.
+
+## [Day 13](https://adventofcode.com/2020/day/13)
+
+Without checking yet, I expect day 13 to score reasonably well on the twistiness
+scale. TODO: explain twistiness
+
+Part 1 is trivial: given a timestamp, we just need to round it up to the next
+multiple of each interval, and see which one yields the shortest wait.
+
+Part 2 requires a little more thought. The task is to find the first time `T`
+such that the `N`th bus in the schedule (starting from index 0), if it's in
+service at all, departs at time `T+N`.
+
+A little more formally, if we number all buses in service (let's call them
+constraints) with index `i`, we have a system of congruences for the desired
+time `T`:
+
+```
+T + N_i ≡ 0 (mod p_i),  or equivalently
+T ≡ k_i (mod p_i),      where k_i = -N_i mod p_i,
+```
+
+and `p_i` are the bus IDs, which all coincidentally happen to be prime numbers.
+This is a
+[Chinese remainder problem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem),
+for which there are several algorithms. The one used here is on the simple end
+of the scale, and basically repeatedly merges two congruences (modulo `a` and
+`b`) into a single one (modulo `a*b`), until only a single congruence
+remains (and gives the solution). The merging is done by simply iterating over
+the possible values given by the first (larger) congruence, and selecting the
+first one that satisfies the other.
+
+Merging the constraints could be done more efficiently, with the extended
+Euclidean algorithm. But the simple solution already only takes `0.002s` for my
+puzzle input (`go test -count 1 -run TestAllDays/day=13 ./2020/days`), so it
+hardly seems necessary.
