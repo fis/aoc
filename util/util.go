@@ -111,6 +111,16 @@ type P struct {
 	X, Y int
 }
 
+// Add returns the point with coordinates corresponding to the sum of the receiver and the other point.
+func (p P) Add(q P) P {
+	return P{p.X + q.X, p.Y + q.Y}
+}
+
+// Scale returns the point multiplied by a scalar. Useful for points representing vectors.
+func (p P) Scale(n int) P {
+	return P{n * p.X, n * p.Y}
+}
+
 // Neigh returns a point's von Neumann neighbourhood (the 4 orthogonally adjacent elements).
 func (p P) Neigh() [4]P {
 	return [4]P{{p.X, p.Y - 1}, {p.X, p.Y + 1}, {p.X - 1, p.Y}, {p.X + 1, p.Y}}
