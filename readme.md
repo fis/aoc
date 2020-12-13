@@ -7,6 +7,7 @@ Here's a map of what's in this repository.
 
 - Documentation
   - Overly verbose notes on the puzzle solutions:
+    - [2019 notes](docs/2019-notes.md)
     - [2020 notes](docs/2020-notes.md)
 - Go packages
   - `2018/*`, `2019/*`, `2020/*`: Individual AoC puzzle solutions. If there's
@@ -21,3 +22,6 @@ Here's a map of what's in this repository.
   - `util`: Utility code useful for solutions across years. Of special note are
     the types `util.Level` (for 2D roguelike style data) and `util.Graph` (for
     labeled digraphs).
+- Python code
+  - `2019-py`: The initial 2019 solutions I wrote in Python, before starting
+    this whole Go adventure. May contain assorted odds and ends as well.
