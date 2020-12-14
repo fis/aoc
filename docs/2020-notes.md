@@ -41,7 +41,7 @@ parts 1 and 2 is the set of validation rules, with those of part 2 being much
 more extensive. As a result, this ends up being the first day to score highly on
 the twistiness scale, close to 4.
 
-TODO: Provide a link for twistiness.
+(See [/vis/readme.md](../vis/readme.md) for details of how this is measured.)
 
 The Go solution does make a bit of an attempt to represent the rules in a
 relatively compact manner. Some are simply validated using a regular expression
@@ -274,7 +274,8 @@ through the motions.
 ## [Day 13](https://adventofcode.com/2020/day/13)
 
 Without checking yet, I expect day 13 to score reasonably well on the twistiness
-scale. TODO: explain twistiness
+scale. (Again, see [/vis/readme.md](../vis/readme.md) for details of how this is
+measured.)
 
 Part 1 is trivial: given a timestamp, we just need to round it up to the next
 multiple of each interval, and see which one yields the shortest wait.

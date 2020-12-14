@@ -25,3 +25,4 @@ Here's a map of what's in this repository.
 - Python code
   - `2019-py`: The initial 2019 solutions I wrote in Python, before starting
     this whole Go adventure. May contain assorted odds and ends as well.
+  - `vis`: Data visualization code. See [vis/readme.md](vis/readme.md).
