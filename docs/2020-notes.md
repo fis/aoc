@@ -307,3 +307,20 @@ Merging the constraints could be done more efficiently, with the extended
 Euclidean algorithm. But the simple solution already only takes `0.002s` for my
 puzzle input (`go test -count 1 -run TestAllDays/day=13 ./2020/days`), so it
 hardly seems necessary.
+
+## [Day 14](https://adventofcode.com/2020/day/14)
+
+For day 14, there's an instruction set, but not really any more complicated than
+before.
+
+Part 1 is straightforward: just run through the instructions, and sum what was
+set. A mask of the form `0011XX` is turned into two bit-masks, `001100` (having
+a bit set for every `1`) and `001111` (the complement of having a bit set for
+every `0`), which are then OR'd and AND'd, respectively, with the value.
+
+For part 2, the mask semantics change: they now modify the address, and `X` now
+means to propagate the value to all possible combinations. It feels like there
+should be a clever data structure, perhaps some sort of a tree, that can be used
+to represent the contents of the memory without explicitly broadcasting the
+values. Unfortunately, the explicit solution is sufficiently fast (`0.018s`,
+says `go test`) for me to not bother figuring that out.
