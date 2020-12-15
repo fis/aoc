@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package day14 solves AoC 2020 day 13.
+// Package day14 solves AoC 2020 day 14.
 package day14
 
 import (
