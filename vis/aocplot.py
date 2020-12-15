@@ -23,8 +23,8 @@ def plot_leaderboard():
     """Redraws all the plots based on the daily leaderboard data."""
 
     data = aocdata.leaderboard()
-    plot_leaderboard_time(data, 'one_star', 'time.one.html')
-    plot_leaderboard_time(data, 'two_stars', 'time.two.html')
+    plot_leaderboard_time(data, 'one_star', 'out/time.one.html')
+    plot_leaderboard_time(data, 'two_stars', 'out/time.two.html')
     plot_leaderboard_twist(data)
 
 
@@ -68,7 +68,7 @@ def plot_leaderboard_twist(data):
             column=alt.Column('day:O', title='Day of contest')) \
         .mark_bar() \
         .configure_scale(bandPaddingInner=0.2) \
-        .save('twist.html')
+        .save('out/twist.html')
 
     color_scale = alt.Scale(scheme='yelloworangered', type='log')
     alt.Chart(twist) \
@@ -78,4 +78,4 @@ def plot_leaderboard_twist(data):
             color=alt.Color('twist:Q', title='Twistiness (log)', scale=color_scale)) \
         .mark_bar() \
         .configure_scale(bandPaddingInner=0.1) \
-        .save('twist.heat.html')
+        .save('out/twist.heat.html')

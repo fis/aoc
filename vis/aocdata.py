@@ -52,7 +52,7 @@ def leaderboard_update():
     
     if not new_data and os.path.exists(_LEADERBOARD_FILE):
         print('leaderboard: no changes')
-        return
+        return False
     print('leaderboard: regenerating data')
 
     data = pd.DataFrame()
@@ -63,6 +63,7 @@ def leaderboard_update():
         data = data.append(year_frame)
 
     data.to_pickle(_LEADERBOARD_FILE)
+    return True
 
 
 def _leaderboard_fetch(year, day):
@@ -88,6 +89,7 @@ def _leaderboard_fetch(year, day):
     r.raise_for_status()
     with open(out, 'wb') as f:
         f.write(r.content)
+    return True
 
 
 def _leaderboard_parse(year, day):
