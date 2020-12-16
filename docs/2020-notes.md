@@ -384,3 +384,37 @@ should be a clever data structure, perhaps some sort of a tree, that can be used
 to represent the contents of the memory without explicitly broadcasting the
 values. Unfortunately, the explicit solution is sufficiently fast (`0.018s`,
 says `go test`) for me to not bother figuring that out.
+
+## [Day 15](https://adventofcode.com/2020/day/15)
+
+Hmm. I strongly feel like I'm missing a trick on day 15, but the time it takes
+to compute a solution is below the pain threshold (less than a second), so I'm
+not sure I can be bothered to think any longer.
+
+The task for part 1 and part 2 is the same, they just ask for a different index
+in the sequence (2020 and 30 million, respectively). There's is a very simple
+solution for part 1, which is to just simulate the game by following the rules,
+maintaining a map/array that keeps track when a number was previously used. This
+usually means the simple solution is good for part 1, but computationally
+infeasible for part 2. But in this case, as mentioned, it happens to be just on
+the edge of being reasonable for part 2 as well: it's naturally an `O(n)`
+operation.
+
+Apparently, this sequence is [A181391](http://oeis.org/A181391), except for the
+choice of starting values.
+
+## [Day 16](https://adventofcode.com/2020/day/16)
+
+The solution for day 16 reminds me of a sudoku solver I once wrote.
+
+The task is quite similar: given all the possible ways the field names could
+corrsepond to ticket columns, find one (presumably unique) that is consistent
+with all the tickets. The solution here does this by performing a simple
+backtracking search, with the heuristic of assigning names to columns in the
+order that the columns that currently have the lowest possible number of
+alternatives are filled in first. This takes care of creating no unnecessary
+branching points when there's a single choice that could be made.
+
+In fact, it turns out that no backtracking is needed to find the solution. The
+puzzle input appears to be such that at every step, there's at least one column
+that only admits a single possibility.
