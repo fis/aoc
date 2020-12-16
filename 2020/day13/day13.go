@@ -43,7 +43,7 @@ func parseNotes(lines []string) (earliest int, buses []int, err error) {
 		return 0, nil, fmt.Errorf("expected 2 lines, got %d", len(lines))
 	}
 	if earliest, err = strconv.Atoi(lines[0]); err != nil {
-		return 0, nil, fmt.Errorf("earliest timestamp not a number: %q: %v", lines[0], err)
+		return 0, nil, fmt.Errorf("earliest timestamp not a number: %q: %w", lines[0], err)
 	}
 	for _, name := range strings.Split(lines[1], ",") {
 		if name == "x" {

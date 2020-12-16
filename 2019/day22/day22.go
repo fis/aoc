@@ -59,13 +59,13 @@ func parseShuffle(lines []string) ([]shuffleOp, error) {
 		case strings.HasPrefix(line, "cut "):
 			val, err := strconv.ParseInt(line[4:], 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("invalid number in line %q: %v", line, err)
+				return nil, fmt.Errorf("invalid number in line %q: %w", line, err)
 			}
 			ops[i].trick, ops[i].val = shuffleCut, val
 		case strings.HasPrefix(line, "deal with increment "):
 			val, err := strconv.ParseInt(line[20:], 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("invalid number in line %q: %v", line, err)
+				return nil, fmt.Errorf("invalid number in line %q: %w", line, err)
 			}
 			ops[i].trick, ops[i].val = shuffleInterleave, val
 		}

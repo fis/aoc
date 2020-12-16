@@ -46,7 +46,7 @@ func parseClaims(lines []string) (out []claim, err error) {
 	for _, line := range lines {
 		c, err := parseClaim(line)
 		if err != nil {
-			return nil, fmt.Errorf("bad claim: %q: %v", line, err)
+			return nil, fmt.Errorf("bad claim: %q: %w", line, err)
 		}
 		out = append(out, c)
 	}
