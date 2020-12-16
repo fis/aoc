@@ -12,6 +12,9 @@ reason. The 2019 notes can be found in that other repository.
 Now it's December 2020, and this year I'm only doing the Go solutions. Since
 writing the notes was so much fun, here are the notes for this year.
 
+Some of the days also have [Befunge](https://esolangs.org/wiki/Befunge)
+solutions attached in this document, because, well, what reason do you need?
+
 ## [Day 1](https://adventofcode.com/2020/day/1)
 
 As usual, the contest starts very simply. Given the framework has built-in
@@ -21,11 +24,49 @@ property (summing up to 2020).
 
 A more concise language than Go would make this *very* short.
 
+### Befunge
+
+Part 1:
+
+```befunge
+1+:#v&\fp
+   0>$1-:00p>:#v_00g
+               >:fg00gfg+'-:*5--#v_fg00gfg*.@
+            ^                  -1<
+```
+
+Part 2:
+
+```befunge
+1+:#v&:0\ep\fp
+   0>$1-:00p>:#v_00g
+               >:fg00gfg+'-:*5-\-:eg#v_\fg00gfg**.@
+            ^                     -1$<
+```
+
 ## [Day 2](https://adventofcode.com/2020/day/2)
 
 Day 2 involves validating some passwords, another simple implementation task.
 The solution gets a little fancy by defining a `policy` type, with
 `validateSled` / `validateToboggan` methods for the different rules.
+
+### Befunge
+
+Part 1:
+
+```befunge
+>#v&~$:&\-1+\~$~~$~$0\>:~:a-!#v_-#v_\1+\v
+  >.@                 ^           <     <
+^          +1_v#`_v#`0+1:-\$$$<
+^             < $$<
+```
+
+Part 2:
+
+```befunge
+#v&~$:&\-\~$~\~~$$>1-:#v_$:~-#v_\1>\>1-:#v_$\~-!+1-#v_1+>~a-#v_
+ >.@              ^  $~<      >\0 ^ ^  $~<          >   ^    <
+```
 
 ## [Day 3](https://adventofcode.com/2020/day/3)
 
@@ -62,6 +103,25 @@ The Go solution decodes the row and column separately. In the end, part 2 does
 not require that either, so that separation is completely useless, and the
 function could just return the seat ID directly. But since it already had
 independent unit tests...
+
+### Befunge
+
+Part 1:
+
+```befunge
+:0a>\2*4#v~9%`+\1-:#v_$-:0`!*-~$
+   ^                <
+    @.$$$<
+```
+
+Part 2:
+
+```befunge
+a>\2*4#v~9%`+\1-:#v_$fp~$
+ ^    $0          <
+       >:fg#v_>:fg!#v_.@
+       ^  +1< ^   +1<
+```
 
 ## [Day 6](https://adventofcode.com/2020/day/6)
 
