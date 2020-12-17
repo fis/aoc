@@ -12,8 +12,9 @@ reason. The 2019 notes can be found in that other repository.
 Now it's December 2020, and this year I'm only doing the Go solutions. Since
 writing the notes was so much fun, here are the notes for this year.
 
-Some of the days also have [Befunge](https://esolangs.org/wiki/Befunge)
+Some of the days also have [Befunge(-98)](https://esolangs.org/wiki/Befunge)
 solutions attached in this document, because, well, what reason do you need?
+Note though that these are not *good* Befunge examples.
 
 ## [Day 1](https://adventofcode.com/2020/day/1)
 
@@ -128,6 +129,24 @@ a>\2*4#v~9%`+\1-:#v_$fp~$
 It's hard to say anything special about day 6, given its simplicity. The Go
 solution manages to be quite verbose nevertheless.
 
+### Befunge
+
+Part 1:
+
+```befunge
+'z>:'``  #v_$>~:a-#v_$#v~:a-#v_$>'z>:'``   #v_$
+  ^-1pf\1:<  ^ pf\0<         <   >-^-1_v#gf:<@.<
+                       >'v'/0p  ^^1\+1\<
+```
+
+Part 2:
+
+```befunge
+'z>:'``  #v_$0>~:a-   #v_$1+#v~:a-#v_$>01p'z>:'``       #v_$
+  ^-1pf\0:<   ^pf\+1gf:<           <      >-^-1_v#-g10gf:<@.<
+                             >'v'<0p  ^   ^1\+1\<
+```
+
 ## [Day 7](https://adventofcode.com/2020/day/7)
 
 After a long wait, graphs are back!
@@ -238,6 +257,20 @@ this algorithm directly using the program code as the data structure, without
 explicitly constructing the graph. It simply uses a bitmap of seen instructions,
 and a list of potential branching points (along with the accumulator state),
 exploring from each branch only the new unvisited instructions.
+
+### Befunge
+
+Part 1:
+
+```befunge
+:#v~\dp~~~$$$:~4%2-&*\ep~$1+
+  >$$000p>:fg!#v_:0\fp:dg:'a-!#v_'j-#v_:egv
+         ^+1p0;>00g.@;0+g00ge:$<     >   1>+
+```
+
+Note that this program expects the `&` instruction to not consume a newline
+immediately following a number. For an implementation where that newline is in
+fact dropped (such as `cfunge`), you need to do the obvious change to the code.
 
 ## [Day 9](https://adventofcode.com/2020/day/9)
 
@@ -418,3 +451,11 @@ branching points when there's a single choice that could be made.
 In fact, it turns out that no backtracking is needed to find the solution. The
 puzzle input appears to be such that at every step, there's at least one column
 that only admits a single possibility.
+
+## [Day 16](https://adventofcode.com/2020/day/16)
+
+As you might guess, day 16 involves a variant of
+[Conway's Game of Life](https://conwaylife.com/wiki/Conway%27s_Game_of_Life).
+The only difference is in the number of dimensions (3 for part 1, 4 for part 2).
+The task is to simulate a paltry 6 cycles, then count the number of live cells.
+The solution uses a map. What else can you say?
