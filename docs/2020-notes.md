@@ -198,10 +198,12 @@ curious) did this. However, we can do better.
 
 Let's trot GraphViz out again. The Go solution has a utility to show the full
 potential control flow (via the `dot8` option to the runner binary). The common
-example is rendered into `2020-day08-ex.png` in this directory. Black edges are
-those of the unmodified program, while red edges denote the alternative control
-flow if that instruction was to be flipped. GraphViz is again useless on the
-full puzzle input.
+example is rendered into `2020-day08-ex.png` in this directory (and included
+below). Black edges are those of the unmodified program, while red edges denote
+the alternative control flow if that instruction was to be flipped. GraphViz is
+again useless on the full puzzle input.
+
+![day08-ex.png](2020-day08-ex.png)
 
 The graph form makes it clear that asymptotically faster solutions exist. In
 particular, by treating the graph as a weighted digraph and giving each black
