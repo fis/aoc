@@ -16,7 +16,7 @@ Some of the days also have [Befunge(-98)](https://esolangs.org/wiki/Befunge)
 solutions attached in this document, because, well, what reason do you need?
 Note though that these are not *good* Befunge examples.
 
-## [Day 1](https://adventofcode.com/2020/day/1)
+## [Day 1](https://adventofcode.com/2020/day/1): Report Repair
 
 As usual, the contest starts very simply. Given the framework has built-in
 support for processing integer-formatted inputs and outputs, the solution is
@@ -45,7 +45,7 @@ Part 2:
             ^                     -1$<
 ```
 
-## [Day 2](https://adventofcode.com/2020/day/2)
+## [Day 2](https://adventofcode.com/2020/day/2): Password Philosophy
 
 Day 2 involves validating some passwords, another simple implementation task.
 The solution gets a little fancy by defining a `policy` type, with
@@ -69,13 +69,13 @@ Part 2:
  >.@              ^  $~<      >\0 ^ ^  $~<          >   ^    <
 ```
 
-## [Day 3](https://adventofcode.com/2020/day/3)
+## [Day 3](https://adventofcode.com/2020/day/3): Toboggan Trajectory
 
 Third day brings us a first instance of an AoC staple, the two-dimensional
 roguelike-style level. The `util.Level` utilities from last year make short work
 of this. The task just involves counting trees on a given rational-number slope.
 
-## [Day 4](https://adventofcode.com/2020/day/4)
+## [Day 4](https://adventofcode.com/2020/day/4): Passport Processing
 
 Another data validation task. It's been brought to my attention that some people
 actually like the mundanity of it. In this case, the only difference between
@@ -93,7 +93,7 @@ supports two different units, is the most complex of these.
 Day 4 also introduces convenience functions for reading paragraphs separated by
 blank lines in the `util` package.
 
-## [Day 5](https://adventofcode.com/2020/day/5)
+## [Day 5](https://adventofcode.com/2020/day/5): Binary Boarding
 
 On day 5, the description really does its best to obfuscate the simplicity of
 the actual problem. Calling it *binary space partitioning* is a little
@@ -124,7 +124,7 @@ a>\2*4#v~9%`+\1-:#v_$fp~$
        ^  +1< ^   +1<
 ```
 
-## [Day 6](https://adventofcode.com/2020/day/6)
+## [Day 6](https://adventofcode.com/2020/day/6): Custom Customs
 
 It's hard to say anything special about day 6, given its simplicity. The Go
 solution manages to be quite verbose nevertheless.
@@ -147,7 +147,7 @@ Part 2:
                              >'v'<0p  ^   ^1\+1\<
 ```
 
-## [Day 7](https://adventofcode.com/2020/day/7)
+## [Day 7](https://adventofcode.com/2020/day/7): Handy Haversacks
 
 After a long wait, graphs are back!
 
@@ -179,7 +179,7 @@ not really usefully rendered by GraphViz tools, at least without fiddling. A
 scaled-down (20%) version is included as `2020-day07-small.png` anyway, just to
 prove the point. On the other hand, it does have some white nodes as well.
 
-## [Day 8](https://adventofcode.com/2020/day/8)
+## [Day 8](https://adventofcode.com/2020/day/8): Handheld Halting
 
 Hearkening back to the [Intcode](https://esolangs.org/wiki/Intcode) days of
 2019, day 8 introduces a (very) simple instruction set, with just an
@@ -272,7 +272,7 @@ Note that this program expects the `&` instruction to not consume a newline
 immediately following a number. For an implementation where that newline is in
 fact dropped (such as `cfunge`), you need to do the obvious change to the code.
 
-## [Day 9](https://adventofcode.com/2020/day/9)
+## [Day 9](https://adventofcode.com/2020/day/9): Encoding Error
 
 In the [advent calendar](https://adventofcode.com/2020), day 9 is separated from
 the preceding 8 days by a blank line. Could this mean change is afoot, and the
@@ -322,7 +322,7 @@ the target, so we will increment the right edge, not the left.
 (The Go implementation will crash and burn violently if the sum of all values in
 the array is less than the target value. So don't do that.)
 
-## [Day 10](https://adventofcode.com/2020/day/10)
+## [Day 10](https://adventofcode.com/2020/day/10): Adapter Array
 
 The biggest challenge on day 10 is to wade through the problem description. The
 actual task is in fact quite simple, since the only ways to connect all these
@@ -339,7 +339,7 @@ depending on how many of those three can be plugged into it. So we can just
 iterate backwards and sum them up. Or the other way around, since the problem is
 completely symmetric.
 
-## [Day 11](https://adventofcode.com/2020/day/11)
+## [Day 11](https://adventofcode.com/2020/day/11): Seating System
 
 Ooh, it's the first obvious cellular automaton of the year.
 
@@ -357,14 +357,14 @@ every seat's neighbours, and then updates the occupancy state vector (which has
 one element per seat) based on the rules, and counts what's left when it no
 longer changes.
 
-## [Day 12](https://adventofcode.com/2020/day/12)
+## [Day 12](https://adventofcode.com/2020/day/12): Rain Risk
 
 Day 12 feels like
 [Logo](https://en.wikipedia.org/wiki/Logo_(programming_language)) to me.
 Unfortunately, there's nothing particularly puzzling about the task. We just go
 through the motions.
 
-## [Day 13](https://adventofcode.com/2020/day/13)
+## [Day 13](https://adventofcode.com/2020/day/13): Shuttle Search
 
 Without checking yet, I expect day 13 to score reasonably well on the twistiness
 scale. (Again, see [/vis/readme.md](../vis/readme.md) for details of how this is
@@ -401,7 +401,7 @@ Euclidean algorithm. But the simple solution already only takes `0.002s` for my
 puzzle input (`go test -count 1 -run TestAllDays/day=13 ./2020/days`), so it
 hardly seems necessary.
 
-## [Day 14](https://adventofcode.com/2020/day/14)
+## [Day 14](https://adventofcode.com/2020/day/14): Docking Data
 
 For day 14, there's an instruction set, but not really any more complicated than
 before.
@@ -418,7 +418,7 @@ to represent the contents of the memory without explicitly broadcasting the
 values. Unfortunately, the explicit solution is sufficiently fast (`0.018s`,
 says `go test`) for me to not bother figuring that out.
 
-## [Day 15](https://adventofcode.com/2020/day/15)
+## [Day 15](https://adventofcode.com/2020/day/15): Rambunctious Recitation
 
 Hmm. I strongly feel like I'm missing a trick on day 15, but the time it takes
 to compute a solution is below the pain threshold (less than a second), so I'm
@@ -436,7 +436,7 @@ operation.
 Apparently, this sequence is [A181391](http://oeis.org/A181391), except for the
 choice of starting values.
 
-## [Day 16](https://adventofcode.com/2020/day/16)
+## [Day 16](https://adventofcode.com/2020/day/16): Ticket Translation
 
 The solution for day 16 reminds me of a sudoku solver I once wrote.
 
@@ -452,10 +452,18 @@ In fact, it turns out that no backtracking is needed to find the solution. The
 puzzle input appears to be such that at every step, there's at least one column
 that only admits a single possibility.
 
-## [Day 16](https://adventofcode.com/2020/day/16)
+## [Day 17](https://adventofcode.com/2020/day/17): Conway Cubes
 
-As you might guess, day 16 involves a variant of
+As you might guess from the title, day 17 involves a variant of
 [Conway's Game of Life](https://conwaylife.com/wiki/Conway%27s_Game_of_Life).
 The only difference is in the number of dimensions (3 for part 1, 4 for part 2).
 The task is to simulate a paltry 6 cycles, then count the number of live cells.
 The solution uses a map. What else can you say?
+
+## [Day 18](https://adventofcode.com/2020/day/18): Operation Order
+
+It's an expression parsing task, for addition, multiplication and parenthesised
+subexpressions. First with no precedence, then with inverted precedence levels.
+The Go solution here has a conventional handcrafted recursive-descent parser,
+though it takes a bit of a shortcut and flattens lists of operations of the
+same precedence, instead of grouping them to a lopsided tree.
