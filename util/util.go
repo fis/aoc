@@ -111,6 +111,16 @@ type P struct {
 	X, Y int
 }
 
+// String formats the point in the most common (X,Y) style.
+func (p P) String() string {
+	return fmt.Sprintf("(%d,%d)", p.X, p.Y)
+}
+
+// GoString formats the point in the style of a Go structure.
+func (p P) GoString() string {
+	return fmt.Sprintf("util.P{%d,%d}", p.X, p.Y)
+}
+
 // Add returns the point with coordinates corresponding to the sum of the receiver and the other point.
 func (p P) Add(q P) P {
 	return P{p.X + q.X, p.Y + q.Y}

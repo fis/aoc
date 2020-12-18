@@ -81,6 +81,15 @@ func ParseLevelStringAt(data string, empty byte, min P) *Level {
 	return ParseLevelAt([]byte(data), empty, min)
 }
 
+// Copy returns a deep copy of a level.
+func (l *Level) Copy() *Level {
+	c := &Level{data: make(map[P]byte), empty: l.empty, min: l.min, max: l.max}
+	for k, v := range l.data {
+		c.data[k] = v
+	}
+	return c
+}
+
 // At returns the byte at the given coordinates.
 func (l *Level) At(x, y int) byte {
 	if x < l.min.X || y < l.min.Y || x > l.max.X || y > l.max.Y {
