@@ -16,8 +16,9 @@
 package day19
 
 import (
-	"bytes"
 	"fmt"
+	"regexp"
+	"regexp/syntax"
 	"strconv"
 	"strings"
 
@@ -38,18 +39,21 @@ func solve(chunks []string) ([]int, error) {
 		return nil, err
 	}
 
-	part1 := 0
-	rules.cache = nil
-	for _, line := range util.Lines(chunks[1]) {
-		if rules.matches(0, line, false) {
-			part1++
-		}
+	prog1, err := regexp.Compile(rules.toFullRegexp(false).String())
+	if err != nil {
+		return nil, err
+	}
+	prog2, err := regexp.Compile(rules.toFullRegexp(true).String())
+	if err != nil {
+		return nil, err
 	}
 
-	part2 := 0
-	rules.cache = nil
+	part1, part2 := 0, 0
 	for _, line := range util.Lines(chunks[1]) {
-		if rules.matches(0, line, true) {
+		if prog1.MatchString(line) {
+			part1++
+		}
+		if prog2.MatchString(line) {
 			part2++
 		}
 	}
@@ -61,7 +65,6 @@ type ruleSet struct {
 	term   map[int][]byte
 	unary  map[int][]int
 	binary map[int][][2]int
-	cache  ruleCache
 }
 
 func parseRules(lines []string) (rs ruleSet, err error) {
@@ -109,75 +112,62 @@ func parseRules(lines []string) (rs ruleSet, err error) {
 	return rs, nil
 }
 
-func (rs *ruleSet) matches(r int, input string, magic bool) bool {
+func (rs ruleSet) toFullRegexp(magic bool) *syntax.Regexp {
+	return &syntax.Regexp{
+		Op:    syntax.OpConcat,
+		Flags: syntax.Simple,
+		Sub: []*syntax.Regexp{
+			{Op: syntax.OpBeginText, Flags: syntax.Simple},
+			rs.toRegexp(0, magic),
+			{Op: syntax.OpEndText, Flags: syntax.Simple},
+		},
+	}
+}
+
+func (rs ruleSet) toRegexp(r int, magic bool) *syntax.Regexp {
 	if magic && r == 8 {
-		return rs.magic8(input)
-	} else if magic && r == 11 {
-		return rs.magic11(input)
+		ex := &syntax.Regexp{Op: syntax.OpPlus, Sub0: [1]*syntax.Regexp{rs.toRegexp(42, true)}}
+		ex.Sub = ex.Sub0[:1]
+		return ex
 	}
-	for _, alt := range rs.unary[r] {
-		if rs.matches(alt, input, magic) {
-			return rs.cache.put(r, input, true)
+	if magic && r == 11 {
+		r42, r31 := rs.toRegexp(42, true), rs.toRegexp(31, true)
+		subs := make([]*syntax.Regexp, 40)
+		for i := 0; i < 20; i++ {
+			subs[i] = r42
+			subs[20+i] = r31
 		}
-	}
-	if len(input) == 1 {
-		return bytes.IndexByte(rs.term[r], input[0]) >= 0
-	}
-	if out, ok := rs.cache.get(r, input); ok {
-		return out
-	}
-	for _, alt := range rs.binary[r] {
-		for s := 1; s < len(input); s++ {
-			if rs.matches(alt[0], input[:s], magic) && rs.matches(alt[1], input[s:], magic) {
-				return rs.cache.put(r, input, true)
-			}
+		ex := &syntax.Regexp{Op: syntax.OpAlternate}
+		for n := 1; n < 20; n++ {
+			ex.Sub = append(ex.Sub, &syntax.Regexp{Op: syntax.OpConcat, Sub: subs[20-n : 20+n]})
 		}
+		return ex
 	}
-	return rs.cache.put(r, input, false)
-}
 
-func (rs *ruleSet) magic8(input string) bool {
-	if out, ok := rs.cache.get(8, input); ok {
-		return out
+	var alts []*syntax.Regexp
+	for _, c := range rs.term[r] {
+		ex := &syntax.Regexp{Op: syntax.OpLiteral, Rune0: [2]rune{rune(c), 0}}
+		ex.Rune = ex.Rune0[:1]
+		alts = append(alts, ex)
 	}
-	for s := 1; s <= len(input); s++ {
-		head, tail := input[:s], input[s:]
-		if rs.matches(42, head, true) && (tail == "" || rs.magic8(tail)) {
-			return rs.cache.put(8, input, true)
+	for _, u := range rs.unary[r] {
+		alts = append(alts, rs.toRegexp(u, magic))
+	}
+	for _, b := range rs.binary[r] {
+		ex := &syntax.Regexp{
+			Op: syntax.OpConcat,
+			Sub: []*syntax.Regexp{
+				rs.toRegexp(b[0], magic),
+				rs.toRegexp(b[1], magic),
+			},
 		}
+		alts = append(alts, ex)
 	}
-	return rs.cache.put(8, input, false)
-}
-
-func (rs *ruleSet) magic11(input string) bool {
-	if out, ok := rs.cache.get(11, input); ok {
-		return out
+	if len(alts) == 0 {
+		panic(fmt.Sprintf("no rules: %d", r))
 	}
-	for s := 1; s < len(input); s++ {
-		for t := len(input) - 1; t >= s; t-- {
-			head, body, tail := input[:s], input[s:t], input[t:]
-			if rs.matches(42, head, true) && rs.matches(31, tail, true) && (body == "" || rs.magic11(body)) {
-				return rs.cache.put(11, input, true)
-			}
-		}
+	if len(alts) == 1 {
+		return alts[0]
 	}
-	return rs.cache.put(11, input, false)
-}
-
-type ruleCache map[int]map[string]bool
-
-func (c ruleCache) get(r int, input string) (out, ok bool) {
-	out, ok = c[r][input]
-	return out, ok
-}
-
-func (c *ruleCache) put(r int, input string, out bool) bool {
-	if *c == nil {
-		*c = make(ruleCache)
-	}
-	if (*c)[r] == nil {
-		(*c)[r] = make(map[string]bool)
-	}
-	(*c)[r][input] = out
-	return out
+	return &syntax.Regexp{Op: syntax.OpAlternate, Sub: alts}
 }

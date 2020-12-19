@@ -489,8 +489,15 @@ in order of (rule, starting offset, partitioning), and uses existing results of
 earlier rules. The iteration order for rules is topologically sorted, to ensure
 that validity information of the possible partitionings is available.
 
-While this works, the code is far from pleasant. The second -- so far, last --
-version insteads opts for a much simpler backtracking search to directly test
-whether a given input matches a production rule. In practice this turns out to
-run approximately half the time of the previous approach for part 1. Part 2 is
-much slower, unfortunately, so the total runtime does not really change.
+While this works, the code is far from pleasant. The second version insteads
+opts for a much simpler backtracking search to directly test whether a given
+input matches a production rule. In practice this turns out to run approximately
+half the time of the previous approach for part 1. Part 2 is much slower,
+unfortunately, so the total runtime remains at around 2 seconds.
+
+Since 2 seconds is still an annoying wait when running the tests, the third --
+so far, final -- version cheats. It expands the ruleset into the corresponding
+regular expression; the Go `regexp/syntax` package is a nice help here. To cope
+with the non-regular language of part 2, it simply expands the repeated
+iterations of rule 11 up to a depth of 20. The combined solution of parts 1 and
+2 with this approach runs in 0.1 seconds, which is (finally) good enough.

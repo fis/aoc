@@ -15,6 +15,7 @@
 package day19
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 
@@ -122,11 +123,12 @@ func TestMatches(t *testing.T) {
 			t.Errorf("parseRules(%s): %v", test.name, err)
 			continue
 		}
+		rex := regexp.MustCompile(rs.toFullRegexp(false).String())
 		for _, line := range test.inputs {
 			_, want := test.want[line]
-			got := rs.matches(0, line, false)
+			got := rex.MatchString(line)
 			if got != want {
-				t.Errorf("%s.matches(0, %s, false) = %v, want %v", test.name, line, got, want)
+				t.Errorf("%s.MatchString(%s, false) = %v, want %v", test.name, line, got, want)
 			}
 		}
 	}
@@ -152,11 +154,12 @@ func TestMatchesMagic(t *testing.T) {
 		t.Errorf("parseRules: %v", err)
 		return
 	}
+	rex := regexp.MustCompile(rs.toFullRegexp(true).String())
 	for _, line := range util.Lines(strings.TrimSpace(input2)) {
 		_, want := wants[line]
-		got := rs.matches(0, line, true)
+		got := rex.MatchString(line)
 		if got != want {
-			t.Errorf("ex2.matches(0, %s, true) = %v, want %v", line, got, want)
+			t.Errorf("ex2.MatchString(%s, true) = %v, want %v", line, got, want)
 		}
 	}
 }
