@@ -469,3 +469,28 @@ subexpressions. First with no precedence, then with inverted precedence levels.
 The Go solution here has a conventional handcrafted recursive-descent parser,
 though it takes a bit of a shortcut and flattens lists of operations of the
 same precedence, instead of grouping them to a lopsided tree.
+
+## [Day 19](https://adventofcode.com/2020/day/19): Monster Messages
+
+The task for day 19, in its essence, involves validating input against a
+[context-free grammar](https://en.wikipedia.org/wiki/Context-free_grammar). In
+the first part, the grammar contains no cycles, so the language is
+[finite](https://en.wikipedia.org/wiki/Regular_language#Location_in_the_Chomsky_hierarchy);
+and, in fact, the puzzle input's language is not even that large, at around 2M
+unique words, so it's even feasible to just enumerate them and test against the
+list. Part 2 adds the production rule `11 → 42 31 | 42 11 31`, which very
+obviously makes the resulting language not regular.
+
+The solution here has gone through more than one round of iteration. The initial
+one, still in version control history, is a rather unreadable vaguely
+[CYK-ian](https://en.wikipedia.org/wiki/CYK_algorithm) algorithm, though instead
+of iterating in order of (length, starting offset, partition, rule), it iterates
+in order of (rule, starting offset, partitioning), and uses existing results of
+earlier rules. The iteration order for rules is topologically sorted, to ensure
+that validity information of the possible partitionings is available.
+
+While this works, the code is far from pleasant. The second -- so far, last --
+version insteads opts for a much simpler backtracking search to directly test
+whether a given input matches a production rule. In practice this turns out to
+run approximately half the time of the previous approach for part 1. Part 2 is
+much slower, unfortunately, so the total runtime does not really change.

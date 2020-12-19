@@ -16,6 +16,7 @@
 package day19
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -37,12 +38,18 @@ func solve(chunks []string) ([]int, error) {
 		return nil, err
 	}
 
-	part1, part2 := 0, 0
+	part1 := 0
+	rules.cache = nil
 	for _, line := range util.Lines(chunks[1]) {
-		if rules.match(line) {
+		if rules.matches(0, line, false) {
 			part1++
 		}
-		if rules.matchSpecial(line) {
+	}
+
+	part2 := 0
+	rules.cache = nil
+	for _, line := range util.Lines(chunks[1]) {
+		if rules.matches(0, line, true) {
 			part2++
 		}
 	}
@@ -50,222 +57,127 @@ func solve(chunks []string) ([]int, error) {
 	return []int{part1, part2}, nil
 }
 
-type rule struct {
-	c  byte
-	rs [][]int
+type ruleSet struct {
+	term   map[int][]byte
+	unary  map[int][]int
+	binary map[int][][2]int
+	cache  ruleCache
 }
 
-type ruleSet map[int]*rule
-
 func parseRules(lines []string) (rs ruleSet, err error) {
-	rs = make(ruleSet, len(lines))
+	rs.term = make(map[int][]byte)
+	rs.unary = make(map[int][]int)
+	rs.binary = make(map[int][][2]int)
+	free := 1000
 
 	for _, line := range lines {
-		var i int
-		if _, err := fmt.Sscanf(line, "%d:", &i); err != nil {
-			return nil, fmt.Errorf("missing rule number: %s: %w", line, err)
+		var r int
+		if _, err := fmt.Sscanf(line, "%d:", &r); err != nil {
+			return ruleSet{}, fmt.Errorf("missing rule number: %s: %w", line, err)
 		}
-		rs[i] = &rule{}
-		line = strings.TrimSpace(strings.TrimPrefix(line, fmt.Sprintf("%d:", i)))
+		line = strings.TrimSpace(strings.TrimPrefix(line, fmt.Sprintf("%d:", r)))
 
 		if len(line) == 3 && line[0] == '"' && line[2] == '"' {
-			rs[i].c = line[1]
+			rs.term[r] = append(rs.term[r], line[1])
 			continue
 		}
 
 		for _, alt := range strings.Split(line, " | ") {
-			var r []int
-			for _, num := range util.Words(alt) {
-				n, err := strconv.Atoi(num)
+			var nums []int
+			for _, word := range util.Words(alt) {
+				num, err := strconv.Atoi(word)
 				if err != nil {
-					return nil, fmt.Errorf("expected number, got %q", num)
+					return ruleSet{}, fmt.Errorf("expected number, got %q", num)
 				}
-				r = append(r, n)
+				nums = append(nums, num)
 			}
-			rs[i].rs = append(rs[i].rs, r)
+			switch len(nums) {
+			case 1:
+				rs.unary[r] = append(rs.unary[r], nums[0])
+			case 2:
+				rs.binary[r] = append(rs.binary[r], [2]int{nums[0], nums[1]})
+			case 3:
+				rs.binary[r] = append(rs.binary[r], [2]int{nums[0], free})
+				rs.binary[free] = append(rs.binary[free], [2]int{nums[1], nums[2]})
+				free++
+			default:
+				return ruleSet{}, fmt.Errorf("unimplemented: 0 or >3 symbols: %d: %s", r, line)
+			}
 		}
 	}
 
 	return rs, nil
 }
 
-func (rs ruleSet) sort() (order []int) {
-	type node struct {
-		pred, succ map[int]struct{}
+func (rs *ruleSet) matches(r int, input string, magic bool) bool {
+	if magic && r == 8 {
+		return rs.magic8(input)
+	} else if magic && r == 11 {
+		return rs.magic11(input)
 	}
-	edges := make(map[int]*node, len(rs))
-	avail := []int(nil)
-	for i := range rs {
-		edges[i] = &node{make(map[int]struct{}), make(map[int]struct{})}
-	}
-	for to, r := range rs {
-		if r.c != 0 {
-			avail = append(avail, to)
+	for _, alt := range rs.unary[r] {
+		if rs.matches(alt, input, magic) {
+			return rs.cache.put(r, input, true)
 		}
-		for _, alt := range r.rs {
-			for _, from := range alt {
-				edges[from].succ[to] = struct{}{}
-				edges[to].pred[from] = struct{}{}
+	}
+	if len(input) == 1 {
+		return bytes.IndexByte(rs.term[r], input[0]) >= 0
+	}
+	if out, ok := rs.cache.get(r, input); ok {
+		return out
+	}
+	for _, alt := range rs.binary[r] {
+		for s := 1; s < len(input); s++ {
+			if rs.matches(alt[0], input[:s], magic) && rs.matches(alt[1], input[s:], magic) {
+				return rs.cache.put(r, input, true)
 			}
 		}
 	}
-
-	for len(avail) > 0 {
-		n := avail[0]
-		avail = avail[1:]
-		order = append(order, n)
-		for m := range edges[n].succ {
-			delete(edges[m].pred, n)
-			if len(edges[m].pred) == 0 {
-				avail = append(avail, m)
-			}
-		}
-		edges[n].succ = nil
-	}
-	if len(order) != len(rs) {
-		panic("unsortable ruleset")
-	}
-
-	return order
+	return rs.cache.put(r, input, false)
 }
 
-func (rs ruleSet) match(input string) bool {
-	valid := make([]map[int]map[int]struct{}, len(input))
-	for at := 0; at < len(input); at++ {
-		valid[at] = make(map[int]map[int]struct{})
+func (rs *ruleSet) magic8(input string) bool {
+	if out, ok := rs.cache.get(8, input); ok {
+		return out
 	}
-
-	for _, r := range rs.sort() {
-		if c := rs[r].c; c != 0 {
-			for i := 0; i < len(input); i++ {
-				if input[i] == c {
-					if valid[i][r] == nil {
-						valid[i][r] = make(map[int]struct{})
-					}
-					valid[i][r][1] = struct{}{}
-				}
-			}
-			continue
-		}
-
-		for at := 0; at < len(input); at++ {
-			for _, alt := range rs[r].rs {
-				pos := []int{at}
-				for _, s := range alt {
-					var next []int
-					for _, p := range pos {
-						if p >= len(input) {
-							continue
-						}
-						for l := range valid[p][s] {
-							next = append(next, p+l)
-						}
-					}
-					pos = next
-					if len(pos) == 0 {
-						break
-					}
-				}
-				for _, end := range pos {
-					if valid[at][r] == nil {
-						valid[at][r] = make(map[int]struct{})
-					}
-					valid[at][r][end-at] = struct{}{}
-				}
-			}
+	for s := 1; s <= len(input); s++ {
+		head, tail := input[:s], input[s:]
+		if rs.matches(42, head, true) && (tail == "" || rs.magic8(tail)) {
+			return rs.cache.put(8, input, true)
 		}
 	}
-
-	_, ok := valid[0][0][len(input)]
-	return ok
+	return rs.cache.put(8, input, false)
 }
 
-func (rs ruleSet) matchSpecial(input string) bool {
-	valid := make([]map[int]map[int]struct{}, len(input))
-	for at := 0; at < len(input); at++ {
-		valid[at] = make(map[int]map[int]struct{})
-		valid[at][8] = make(map[int]struct{})
-		valid[at][11] = make(map[int]struct{})
+func (rs *ruleSet) magic11(input string) bool {
+	if out, ok := rs.cache.get(11, input); ok {
+		return out
 	}
-
-	for _, r := range rs.sort() {
-		if c := rs[r].c; c != 0 {
-			for i := 0; i < len(input); i++ {
-				if input[i] == c {
-					if valid[i][r] == nil {
-						valid[i][r] = make(map[int]struct{})
-					}
-					valid[i][r][1] = struct{}{}
-				}
-			}
-			continue
-		}
-
-		if r == 8 {
-			for at := 0; at < len(input); at++ {
-				pos := at
-				for pos < len(input) && len(valid[pos][42]) == 1 {
-					for l := range valid[pos][42] {
-						pos += l
-					}
-					valid[at][8][pos-at] = struct{}{}
-				}
-			}
-			continue
-		} else if r == 11 {
-			for at := 0; at < len(input); at++ {
-				pos, c := at, 0
-				for pos < len(input) && len(valid[pos][42]) == 1 {
-					for l := range valid[pos][42] {
-						pos += l
-					}
-					c++
-					rp, rc := pos, 0
-					for rc < c && rp < len(input) && len(valid[rp][31]) == 1 {
-						for l := range valid[rp][31] {
-							rp += l
-						}
-						rc++
-					}
-					if rc == c {
-						valid[at][11][rp-at] = struct{}{}
-					}
-				}
-			}
-			continue
-		}
-
-		for at := 0; at < len(input); at++ {
-			for _, alt := range rs[r].rs {
-				pos := []int{at}
-				for _, s := range alt {
-					var next []int
-					for _, p := range pos {
-						if p >= len(input) {
-							continue
-						}
-						for l := range valid[p][s] {
-							next = append(next, p+l)
-						}
-					}
-					pos = next
-					if len(pos) == 0 {
-						break
-					}
-				}
-				for _, end := range pos {
-					if valid[at][r] == nil {
-						valid[at][r] = make(map[int]struct{})
-					}
-					valid[at][r][end-at] = struct{}{}
-				}
-			}
-			if (r == 31 || r == 42) && len(valid[at][r]) > 1 {
-				panic("TODO: rules 31/42 can match at multiple lengths")
+	for s := 1; s < len(input); s++ {
+		for t := len(input) - 1; t >= s; t-- {
+			head, body, tail := input[:s], input[s:t], input[t:]
+			if rs.matches(42, head, true) && rs.matches(31, tail, true) && (body == "" || rs.magic11(body)) {
+				return rs.cache.put(11, input, true)
 			}
 		}
 	}
+	return rs.cache.put(11, input, false)
+}
 
-	_, ok := valid[0][0][len(input)]
-	return ok
+type ruleCache map[int]map[string]bool
+
+func (c ruleCache) get(r int, input string) (out, ok bool) {
+	out, ok = c[r][input]
+	return out, ok
+}
+
+func (c *ruleCache) put(r int, input string, out bool) bool {
+	if *c == nil {
+		*c = make(ruleCache)
+	}
+	if (*c)[r] == nil {
+		(*c)[r] = make(map[string]bool)
+	}
+	(*c)[r][input] = out
+	return out
 }

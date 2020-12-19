@@ -89,7 +89,7 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
 `
 )
 
-func TestMatch(t *testing.T) {
+func TestMatches(t *testing.T) {
 	tests := []struct {
 		name   string
 		rules  []string
@@ -124,15 +124,15 @@ func TestMatch(t *testing.T) {
 		}
 		for _, line := range test.inputs {
 			_, want := test.want[line]
-			got := rs.match(line)
+			got := rs.matches(0, line, false)
 			if got != want {
-				t.Errorf("%s.match(%s) = %v, want %v", test.name, line, got, want)
+				t.Errorf("%s.matches(0, %s, false) = %v, want %v", test.name, line, got, want)
 			}
 		}
 	}
 }
 
-func TestMatchSpecial(t *testing.T) {
+func TestMatchesMagic(t *testing.T) {
 	wants := map[string]struct{}{
 		"bbabbbbaabaabba":                               {},
 		"babbbbaabbbbbabbbbbbaabaaabaaa":                {},
@@ -154,9 +154,9 @@ func TestMatchSpecial(t *testing.T) {
 	}
 	for _, line := range util.Lines(strings.TrimSpace(input2)) {
 		_, want := wants[line]
-		got := rs.matchSpecial(line)
+		got := rs.matches(0, line, true)
 		if got != want {
-			t.Errorf("matchSpecial(%s) = %v, want %v", line, got, want)
+			t.Errorf("ex2.matches(0, %s, true) = %v, want %v", line, got, want)
 		}
 	}
 }
