@@ -29,6 +29,7 @@ import (
 	_ "github.com/fis/aoc-go/2018/day11" // solvers
 	_ "github.com/fis/aoc-go/2018/day12" // solvers
 	_ "github.com/fis/aoc-go/2018/day13" // solvers
+	_ "github.com/fis/aoc-go/2018/day14" // solvers
 	_ "github.com/fis/aoc-go/2018/day15" // solvers
 	_ "github.com/fis/aoc-go/2018/day16" // solvers
 	_ "github.com/fis/aoc-go/2018/day17" // solvers
