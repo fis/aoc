@@ -501,3 +501,21 @@ regular expression; the Go `regexp/syntax` package is a nice help here. To cope
 with the non-regular language of part 2, it simply expands the repeated
 iterations of rule 11 up to a depth of 20. The combined solution of parts 1 and
 2 with this approach runs in 0.1 seconds, which is (finally) good enough.
+
+## [Day 20](https://adventofcode.com/2020/day/20): Jurassic Jigsaw
+
+Day 20's challenge is more in the implementation than in the figuring out. The
+task is to reassemble a puzzle, where the puzzle pieces can be rotated
+(multiples of π/2 only) or flipped, but crucially the pixels on the edge are
+globally unique, and always match exactly one image (or none, on the edges).
+
+The Go solution is quite verbose, even for Go. It does not do much: it builds
+the mapping between which edges can be paired up, finds an (arbitrary) corner
+piece, puts it into the top-left corner, and then just iteratively lays out the
+remaining pieces based on which tile links up. A lot of code is spent juggling
+image orientations.
+
+As an aside, part 1 can be solved (and I did solve it) without actually
+completing the reassembly, by noting that the four corner tiles are the only
+ones where two of the edges are unmatched. This can be used to pick them up from
+the set without actually figuring out the rest of the puzzle.
