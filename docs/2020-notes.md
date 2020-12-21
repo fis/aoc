@@ -519,3 +519,10 @@ As an aside, part 1 can be solved (and I did solve it) without actually
 completing the reassembly, by noting that the four corner tiles are the only
 ones where two of the edges are unmatched. This can be used to pick them up from
 the set without actually figuring out the rest of the puzzle.
+
+## [Day 21](https://adventofcode.com/2020/day/21): Allergen Assessment
+
+Somewhat surprisingly, day 21's problem involves no backtracking. At each point,
+there's at least one allergen which can only be contained in one specific
+ingredient. As a result, there's not much to say about the solution either: it
+just identifies one of them at a time.
