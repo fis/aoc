@@ -23,6 +23,7 @@ import (
 	"math/bits"
 	"strconv"
 
+	"github.com/fis/aoc-go/2018/cpu"
 	"github.com/fis/aoc-go/glue"
 	"github.com/fis/aoc-go/util"
 )
@@ -64,7 +65,7 @@ func solve(r io.Reader) ([]string, error) {
 
 type sample struct {
 	inst          instruction
-	before, after regState
+	before, after cpu.State
 }
 
 func parseSamples(chunks []string) (out []sample, err error) {
@@ -85,10 +86,10 @@ func parseSample(lines []string) (s sample, err error) {
 	if s.inst, err = parseInst(lines[1]); err != nil {
 		return sample{}, err
 	}
-	if _, err := fmt.Sscanf(lines[0], "Before: [%d, %d, %d, %d]", &s.before[0], &s.before[1], &s.before[2], &s.before[3]); err != nil {
+	if _, err := fmt.Sscanf(lines[0], "Before: [%d, %d, %d, %d]", &s.before.R[0], &s.before.R[1], &s.before.R[2], &s.before.R[3]); err != nil {
 		return sample{}, fmt.Errorf("invalid before state: %s: %w", lines[0], err)
 	}
-	if _, err := fmt.Sscanf(lines[2], "After:  [%d, %d, %d, %d]", &s.after[0], &s.after[1], &s.after[2], &s.after[3]); err != nil {
+	if _, err := fmt.Sscanf(lines[2], "After:  [%d, %d, %d, %d]", &s.after.R[0], &s.after.R[1], &s.after.R[2], &s.after.R[3]); err != nil {
 		return sample{}, fmt.Errorf("invalid after state: %s: %w", lines[2], err)
 	}
 	return s, nil
@@ -117,46 +118,14 @@ func parseInst(line string) (inst instruction, err error) {
 	return inst, nil
 }
 
-type regState [4]int
-
-func (r regState) equal(s regState) bool {
-	return r[0] == s[0] && r[1] == s[1] && r[2] == s[2] && r[3] == s[3]
-}
-
-type opcode int
-
-const (
-	addr opcode = iota
-	addi
-	mulr
-	muli
-	banr
-	bani
-	borr
-	bori
-	setr
-	seti
-	gtir
-	gtri
-	gtrr
-	eqir
-	eqri
-	eqrr
-)
-
-const (
-	firstOp = addr
-	lastOp  = eqrr
-)
-
-func findOpMap(samples []sample) (opMap [16]opcode, multiChoice int, err error) {
+func findOpMap(samples []sample) (opMap [16]cpu.Op, multiChoice int, err error) {
 	possible := [16]uint{}
 	for i := range possible {
-		possible[i] = (uint(1) << (lastOp + 1)) - 1
+		possible[i] = (uint(1) << (cpu.LastOp + 1)) - 1
 	}
 	for _, s := range samples {
 		if s.inst.op < 0 || s.inst.op >= 16 {
-			return [16]opcode{}, 0, fmt.Errorf("invalid opcode: %d", s.inst.op)
+			return [16]cpu.Op{}, 0, fmt.Errorf("invalid opcode: %d", s.inst.op)
 		}
 		valid := validOps(s)
 		if bits.OnesCount(valid) >= 3 {
@@ -164,7 +133,7 @@ func findOpMap(samples []sample) (opMap [16]opcode, multiChoice int, err error) 
 		}
 		possible[s.inst.op] &= valid
 	}
-	unassigned := (uint(1) << (lastOp + 1)) - 1
+	unassigned := (uint(1) << (cpu.LastOp + 1)) - 1
 next:
 	for unassigned > 0 {
 		for i, p := range possible {
@@ -172,9 +141,9 @@ next:
 				continue
 			}
 			if n := bits.OnesCount(p); n == 0 {
-				return [16]opcode{}, 0, fmt.Errorf("impossible: no choices for %d", i)
+				return [16]cpu.Op{}, 0, fmt.Errorf("impossible: no choices for %d", i)
 			} else if n == 1 {
-				opMap[i] = opcode(bits.TrailingZeros(p))
+				opMap[i] = cpu.Op(bits.TrailingZeros(p))
 				unassigned &= ^(uint(1) << i)
 				for i := range possible {
 					possible[i] &= ^p
@@ -182,70 +151,27 @@ next:
 				continue next
 			}
 		}
-		return [16]opcode{}, 0, fmt.Errorf("impossible: ambiguous: %b", possible)
+		return [16]cpu.Op{}, 0, fmt.Errorf("impossible: ambiguous: %b", possible)
 	}
 	return opMap, multiChoice, nil
 }
 
 func validOps(s sample) (mask uint) {
 	a, b, c := s.inst.a, s.inst.b, s.inst.c
-	for op := firstOp; op <= lastOp; op++ {
-		if s.after.equal(execute(op, a, b, c, s.before)) {
+	for op := cpu.FirstOp; op <= cpu.LastOp; op++ {
+		xs := s.before
+		xs.Step(op, a, b, c)
+		if xs.R == s.after.R {
 			mask |= uint(1) << op
 		}
 	}
 	return mask
 }
 
-func executeProg(prog []instruction, opMap [16]opcode) int {
-	var s regState
+func executeProg(prog []instruction, opMap [16]cpu.Op) int {
+	var s cpu.State
 	for _, inst := range prog {
-		s = execute(opMap[inst.op], inst.a, inst.b, inst.c, s)
+		s.Step(opMap[inst.op], inst.a, inst.b, inst.c)
 	}
-	return s[0]
-}
-
-func execute(op opcode, a, b, c int, r regState) regState {
-	switch op {
-	case addr:
-		r[c] = r[a] + r[b]
-	case addi:
-		r[c] = r[a] + b
-	case mulr:
-		r[c] = r[a] * r[b]
-	case muli:
-		r[c] = r[a] * b
-	case banr:
-		r[c] = r[a] & r[b]
-	case bani:
-		r[c] = r[a] & b
-	case borr:
-		r[c] = r[a] | r[b]
-	case bori:
-		r[c] = r[a] | b
-	case setr:
-		r[c] = r[a]
-	case seti:
-		r[c] = a
-	case gtir:
-		r[c] = asInt(a > r[b])
-	case gtri:
-		r[c] = asInt(r[a] > b)
-	case gtrr:
-		r[c] = asInt(r[a] > r[b])
-	case eqir:
-		r[c] = asInt(a == r[b])
-	case eqri:
-		r[c] = asInt(r[a] == b)
-	case eqrr:
-		r[c] = asInt(r[a] == r[b])
-	}
-	return r
-}
-
-func asInt(b bool) int {
-	if b {
-		return 1
-	}
-	return 0
+	return s.R[0]
 }

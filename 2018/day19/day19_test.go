@@ -12,25 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package day16
+package day19
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/fis/aoc-go/2018/cpu"
+	"github.com/fis/aoc-go/util"
 )
 
-var example = []string{
-	"Before: [3, 2, 1, 1]",
-	"9 2 1 2",
-	"After:  [3, 2, 2, 1]",
+var example = `
+#ip 0
+seti 5 0 1
+seti 6 0 2
+addi 0 1 0
+addr 1 2 3
+setr 1 0 0
+seti 8 0 4
+seti 9 0 5
+`
+
+func TestRun(t *testing.T) {
+	prog, err := cpu.ParseProg(util.Lines(strings.TrimPrefix(example, "\n")))
+	if err != nil {
+		t.Fatalf("ParseProg: %v", err)
+	}
+	want := [6]int{6, 5, 6, 0, 0, 99}
+	s := cpu.State{}
+	s.Run(prog)
+	if s.R != want {
+		t.Errorf("Run -> %v, want %v", s.R, want)
+	}
 }
 
-func TestValidOps(t *testing.T) {
-	want := (uint(1) << cpu.AddI) | (uint(1) << cpu.MulR) | (uint(1) << cpu.SetI)
-	if s, err := parseSample(example); err != nil {
-		t.Errorf("parseSample: %v", err)
-	} else if got := validOps(s); got != want {
-		t.Errorf("validOps(%v) = %b, want %b", s, got, want)
+func TestSumDiv(t *testing.T) {
+	got := sumDiv(939)
+	if got != 1256 {
+		t.Errorf("sumDiv(939) = %d, want 1256", got)
 	}
 }
