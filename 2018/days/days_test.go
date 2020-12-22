@@ -114,6 +114,10 @@ func TestAllDays(t *testing.T) {
 			day:  19,
 			want: []string{"1256", "16137576"},
 		},
+		{
+			day:  20,
+			want: []string{"3545", "7838"},
+		},
 	}
 
 	for _, test := range tests {
