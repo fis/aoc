@@ -526,3 +526,16 @@ Somewhat surprisingly, day 21's problem involves no backtracking. At each point,
 there's at least one allergen which can only be contained in one specific
 ingredient. As a result, there's not much to say about the solution either: it
 just identifies one of them at a time.
+
+## [Day 22](https://adventofcode.com/2020/day/22): Crab Combat
+
+Day 22 brings back the *space cards* from
+[2019 day 22](https://adventofcode.com/2019/day/22), which you can also read
+more about in my [2019 notes](2019-notes.md). This year the decks are rather
+more modest in size, which makes sense on a raft.
+
+In any case, the solution here has no clever tricks like last year; perhaps
+there are none to be had. The simple game (part 1) is just simulated directly.
+Array-based circular buffers play the role of the deck. For the recursive game,
+scores are memoized based on the starting decks, though I have not checked
+whether that comes into play much.
