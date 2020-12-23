@@ -539,3 +539,23 @@ there are none to be had. The simple game (part 1) is just simulated directly.
 Array-based circular buffers play the role of the deck. For the recursive game,
 scores are memoized based on the starting decks, though I have not checked
 whether that comes into play much.
+
+## [Day 23](https://adventofcode.com/2020/day/23): Crab Cups
+
+An AoC staple is a game that can be efficiently simulated on the small scale
+just by following the rules (for part 1), but (at least for some special cases,
+including those involving part 2) can also be leapfrogged directly to the
+solution. Day 23 falls annoyingly on a boundary: the direct simulation of 10M
+moves is still pretty feasible, finishing (on this implementation) in 0.57
+seconds. If I come across a better way, I'll update these notes later.
+
+The part 1 solution, for no sensible reason whatsover, represents the ring as an
+unsigned integer, so that it can be rotated and shifted around using bitwise
+operations.
+
+For the straightforward part 2 solution, it's essential that a single move is an
+O(1) operation on the big ring. The obvious easy data structure is a singly
+linked list combined with an array of pointers to the nodes: the former to keep
+track of the ring order so that the three cups can be moved without shifting any
+data around, and the latter for locating the destination cup without scanning
+the whole list.
