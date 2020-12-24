@@ -78,7 +78,7 @@ func bestPos(bots []nanobot) (d int) {
 		min.z = imin(min.z, bot.p.z)
 		max.z = imax(max.z, bot.p.z)
 	}
-	d, _ = findBest(bots, min, max, -1, -1, 0)
+	d, _ = findBest(bots, min, max, 0, -1, -1, 0)
 	return d
 }
 
@@ -87,6 +87,7 @@ const linearSearch = 4
 type subCube struct {
 	min, max p3
 	bots     []nanobot
+	baseN    int
 }
 
 var treeCache = [32]struct {
@@ -94,13 +95,13 @@ var treeCache = [32]struct {
 	cubes [8]subCube
 }{}
 
-func findBest(bots []nanobot, min, max p3, boundD, boundN, level int) (bestD, bestN int) {
+func findBest(bots []nanobot, min, max p3, baseN, boundD, boundN, level int) (bestD, bestN int) {
 	if max.x-min.x < linearSearch && max.y-min.y < linearSearch && max.z-min.z < linearSearch {
 		bestD, bestN = boundD, boundN
 		for z := min.z; z <= max.z; z++ {
 			for y := min.y; y <= max.y; y++ {
 				for x := min.x; x <= max.x; x++ {
-					n := 0
+					n := baseN
 					for _, bot := range bots {
 						if dist(bot.p, p3{x, y, z}) <= bot.r {
 							n++
@@ -145,10 +146,11 @@ func findBest(bots []nanobot, min, max p3, boundD, boundN, level int) (bestD, be
 		}
 	}
 	for i := range cubes {
-		cubes[i].bots = filterBots(bots, cubes[i].min, cubes[i].max, &treeCache[level].bots[i])
+		cubes[i].bots, cubes[i].baseN = filterBots(bots, cubes[i].min, cubes[i].max, &treeCache[level].bots[i])
+		cubes[i].baseN += baseN
 	}
 	sort.Slice(cubes, func(i, j int) bool {
-		li, lj := len(cubes[i].bots), len(cubes[j].bots)
+		li, lj := cubes[i].baseN+len(cubes[i].bots), cubes[j].baseN+len(cubes[j].bots)
 		if li == lj {
 			di := minimumD(cubes[i].min, cubes[i].max, p3{0, 0, 0})
 			dj := minimumD(cubes[j].min, cubes[j].max, p3{0, 0, 0})
@@ -158,27 +160,29 @@ func findBest(bots []nanobot, min, max p3, boundD, boundN, level int) (bestD, be
 	})
 	bestD, bestN = boundD, boundN
 	for _, cube := range cubes {
-		if len(cube.bots) < bestN {
+		if cube.baseN+len(cube.bots) < bestN {
 			break
 		}
 		minD := minimumD(cube.min, cube.max, p3{0, 0, 0})
-		if len(cube.bots) == bestN && minD >= bestD {
+		if cube.baseN+len(cube.bots) == bestN && minD >= bestD {
 			break
 		}
-		bestD, bestN = findBest(cube.bots, cube.min, cube.max, bestD, bestN, level+1)
+		bestD, bestN = findBest(cube.bots, cube.min, cube.max, cube.baseN, bestD, bestN, level+1)
 	}
 	return bestD, bestN
 }
 
-func filterBots(bots []nanobot, min, max p3, cache *[]nanobot) (possible []nanobot) {
+func filterBots(bots []nanobot, min, max p3, cache *[]nanobot) (possible []nanobot, known int) {
 	possible = (*cache)[:0]
 	for _, bot := range bots {
-		if minimumD(min, max, bot.p) <= bot.r {
+		if maximumD(min, max, bot.p) <= bot.r {
+			known++
+		} else if minimumD(min, max, bot.p) <= bot.r {
 			possible = append(possible, bot)
 		}
 	}
 	*cache = possible
-	return possible
+	return possible, known
 }
 
 func minimumD(min, max, p p3) int {
@@ -197,6 +201,20 @@ func minimumD(min, max, p p3) int {
 		dz = p.z - max.z
 	} else if min.z > p.z {
 		dz = min.z - p.z
+	}
+	return dx + dy + dz
+}
+
+func maximumD(min, max, p p3) int {
+	dx, dy, dz := abs(min.x-p.x), abs(min.y-p.y), abs(min.z-p.z)
+	if d := abs(max.x - p.x); d > dx {
+		dx = d
+	}
+	if d := abs(max.y - p.y); d > dy {
+		dy = d
+	}
+	if d := abs(max.z - p.z); d > dz {
+		dz = d
 	}
 	return dx + dy + dz
 }
