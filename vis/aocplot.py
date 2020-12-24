@@ -26,6 +26,7 @@ def plot_leaderboard():
     plot_leaderboard_time(data, 'one_star', 'out/time.one.html')
     plot_leaderboard_time(data, 'two_stars', 'out/time.two.html')
     plot_leaderboard_twist(data)
+    plot_leaderboard_dist(data)
 
 
 def plot_leaderboard_time(data, series, file_name):
@@ -79,3 +80,31 @@ def plot_leaderboard_twist(data):
         .mark_bar() \
         .configure_scale(bandPaddingInner=0.1) \
         .save('out/twist.heat.html')
+
+
+def plot_leaderboard_dist(data):
+    """Plots the distribution of leaderboard entires over time."""
+
+    print('leaderboard_dist')
+
+    data = (data/60).rename(columns={'one_star': 'one star', 'two_stars': 'two stars'}).stack()
+    data = data.rename_axis(index=['year','day','rank','stars'])
+    data = pd.DataFrame({'time_min': data}).reset_index()
+
+    x_scale = alt.Scale(type='log', base=2, domain=[0.25, 256])
+    color_scale = alt.Scale(scheme='redpurple')
+    alt.Chart(data) \
+        .transform_density(
+            'time_min',
+            groupby=['year','day', 'stars'],
+            extent=[0.25, 256],
+            steps=2000) \
+        .mark_line() \
+        .encode(
+            alt.X('value:Q', title='Time to solution (min)', scale=x_scale),
+            alt.Y('density:Q'),
+            alt.Color('day:O', scale=color_scale)) \
+        .properties(width=600, height=250) \
+        .facet(column='stars:N', row='year:O') \
+        .resolve_scale(x='independent', y='independent') \
+        .save('out/time.dist.html')
