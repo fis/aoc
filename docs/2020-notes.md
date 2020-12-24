@@ -559,3 +559,9 @@ linked list combined with an array of pointers to the nodes: the former to keep
 track of the ring order so that the three cups can be moved without shifting any
 data around, and the latter for locating the destination cup without scanning
 the whole list.
+
+## [Day 24](https://adventofcode.com/2020/day/24): Lobby Layout
+
+Day 24 involves a cellular automaton on a hexagonal grid. There isn't really
+anything to say about either the puzzle or the solution. I use a map. It's not
+particularly fast, but for 100 generations it doesn't need to be either.
