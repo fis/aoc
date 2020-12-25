@@ -166,7 +166,7 @@ func possibleFields(tickets [][]int, rules []validationRule) (possible []uint) {
 		for col, v := range ticket {
 			for fi, r := range rules {
 				if (v < r.low.min || v > r.low.max) && (v < r.high.min || v > r.high.max) {
-					possible[col] &= ^(uint(1) << fi)
+					possible[col] &^= uint(1) << fi
 				}
 			}
 		}

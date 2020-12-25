@@ -54,7 +54,7 @@ func findRepeating(s state) state {
 			if !live && (count == 1 || count == 2) {
 				s |= 1 << i
 			} else if live && count != 1 {
-				s &= ^(1 << i)
+				s &^= 1 << i
 			}
 		}
 		if _, ok := seen[s]; ok {
@@ -95,7 +95,7 @@ func countBugs(initial state, steps int) int {
 					s[d] |= 1 << i
 				} else if live && count != 1 {
 					bugs--
-					s[d] &= ^(1 << i)
+					s[d] &^= 1 << i
 				}
 			}
 		}

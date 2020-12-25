@@ -366,7 +366,7 @@ func (ls labelSet) isSubsetOf(other labelSet) bool {
 }
 
 func (ls labelSet) diff(other labelSet) labelSet {
-	return ls & ^other
+	return ls &^ other
 }
 
 func (ls labelSet) single() bool {
@@ -378,7 +378,7 @@ func (ls labelSet) contains(l label) bool {
 }
 
 func (ls labelSet) without(l label) labelSet {
-	return ls & ^labelSet(l)
+	return ls &^ labelSet(l)
 }
 
 func (ls *labelSet) next(l *label) bool {

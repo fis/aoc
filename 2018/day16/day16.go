@@ -144,9 +144,9 @@ next:
 				return [16]cpu.Op{}, 0, fmt.Errorf("impossible: no choices for %d", i)
 			} else if n == 1 {
 				opMap[i] = cpu.Op(bits.TrailingZeros(p))
-				unassigned &= ^(uint(1) << i)
+				unassigned &^= uint(1) << i
 				for i := range possible {
-					possible[i] &= ^p
+					possible[i] &^= p
 				}
 				continue next
 			}
