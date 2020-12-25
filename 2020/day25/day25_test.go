@@ -22,6 +22,7 @@ var algos = []struct {
 }{
 	{name: "trialMultiplication", f: trialMultiplication},
 	{name: "babyStep", f: babyStep},
+	{name: "pohligHellman", f: pohligHellman},
 }
 
 func TestFindKey(t *testing.T) {

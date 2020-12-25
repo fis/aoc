@@ -578,16 +578,19 @@ In the general case, no efficient way of solving the
 it's based on are known. Fortunately for us, the order of the group used here is
 small enough to be solved by brute force even with the most naïve algorithm.
 
-Just for fun, the solution here implements also the second-simplest algorithm,
-known as
-[baby-step giant-step](https://en.wikipedia.org/wiki/Baby-step_giant-step). This
-is completely unnecessary. If I feel like it, I may include Pohlig–Hellman as
-well, later on.
+Just for fun, the solution here implements also the
+[baby-step giant-step](https://en.wikipedia.org/wiki/Baby-step_giant-step) and
+(just barely enough to get the solution) the
+[Pohlig–Hellman](https://en.wikipedia.org/wiki/Pohlig%E2%80%93Hellman_algorithm)
+algorithms. This is completely unnecessary, since even the slowest algorithm
+manages to get the answer in less than 30 milliseconds.
 
 Here are benchmark results for solving the exponent in `7^8927518 = 9232416`
 (modulo 20201227), matching the first public key in my puzzle input:
 
 ```
-BenchmarkAlgos/trialMultiplication-16               2404          29548770 ns/op
-BenchmarkAlgos/babyStep-16                        129487            564722 ns/op
+BenchmarkAlgos/trialMultiplication-16               2437          29553514 ns/op
+BenchmarkAlgos/babyStep-16                        129228            571564 ns/op
+BenchmarkAlgos/pohligHellman-16                  1488993             48461 ns/op
+
 ```

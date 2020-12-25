@@ -30,7 +30,7 @@ func solve(input []int) ([]int, error) {
 	if len(input) != 2 {
 		return nil, fmt.Errorf("expected two numbers, got %d", len(input))
 	}
-	key := findKey(input[0], input[1], babyStep)
+	key := findKey(input[0], input[1], pohligHellman)
 	return []int{key}, nil
 }
 
@@ -50,9 +50,13 @@ func trialMultiplication(b, a, m int) (x int) {
 }
 
 func babyStep(b, a, m int) (x int) {
+	return babyStepWithOrder(b, a, m, m-1)
+}
+
+func babyStepWithOrder(b, a, m, n int) (x int) {
 	logTable := map[int]int{}
 
-	mm := int(math.Ceil(math.Sqrt(float64(m - 1))))
+	mm := int(math.Ceil(math.Sqrt(float64(n))))
 	for j, a := 0, 1; j < mm; j++ {
 		logTable[a] = j
 		a = (a * b) % m
@@ -65,6 +69,33 @@ func babyStep(b, a, m int) (x int) {
 		a = (a * amm) % m
 	}
 	panic("impossible: did not find solution")
+}
+
+func pohligHellman(b, a, m int) (x int) {
+	if m != 20201227 {
+		panic("only implemented for the group modulus 20201227")
+	}
+	n := 20201226
+	pi := []int{116099, 29, 3, 2} // factors of 20201226
+	xi := make([]int, len(pi))
+	for i, p := range pi {
+		bi := pow(b, n/p, m)
+		ai := pow(a, n/p, m)
+		xi[i] = babyStepWithOrder(bi, ai, m, p)
+	}
+	for len(pi) > 1 {
+		xa, xb := xi[0], xi[1]
+		ma, mb := pi[0], pi[1]
+		for ; ; xa += ma {
+			if xa%mb == xb {
+				xi[1] = xa
+				pi[1] = ma * mb
+				xi, pi = xi[1:], pi[1:]
+				break
+			}
+		}
+	}
+	return xi[0]
 }
 
 func pow(b, e, m int) (p int) {
