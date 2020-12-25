@@ -565,3 +565,29 @@ the whole list.
 Day 24 involves a cellular automaton on a hexagonal grid. There isn't really
 anything to say about either the puzzle or the solution. I use a map. It's not
 particularly fast, but for 100 generations it doesn't need to be either.
+
+## [Day 25](https://adventofcode.com/2020/day/25): Combo Breaker
+
+<small>(I see what you did there with the title.)</small>
+
+The puzzle for day 25 involves an actual, honest-to-Santa public-key
+cryptographic algorithm: the
+[Diffie-Hellman key exchange](https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange).
+In the general case, no efficient way of solving the
+[discrete logarithm problem](https://en.wikipedia.org/wiki/Discrete_logarithm)
+it's based on are known. Fortunately for us, the order of the group used here is
+small enough to be solved by brute force even with the most naïve algorithm.
+
+Just for fun, the solution here implements also the second-simplest algorithm,
+known as
+[baby-step giant-step](https://en.wikipedia.org/wiki/Baby-step_giant-step). This
+is completely unnecessary. If I feel like it, I may include Pohlig–Hellman as
+well, later on.
+
+Here are benchmark results for solving the exponent in `7^8927518 = 9232416`
+(modulo 20201227), matching the first public key in my puzzle input:
+
+```
+BenchmarkAlgos/trialMultiplication-16               2404          29548770 ns/op
+BenchmarkAlgos/babyStep-16                        129487            564722 ns/op
+```

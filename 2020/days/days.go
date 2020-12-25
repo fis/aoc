@@ -40,4 +40,5 @@ import (
 	_ "github.com/fis/aoc-go/2020/day22" // solvers
 	_ "github.com/fis/aoc-go/2020/day23" // solvers
 	_ "github.com/fis/aoc-go/2020/day24" // solvers
+	_ "github.com/fis/aoc-go/2020/day25" // solvers
 )
