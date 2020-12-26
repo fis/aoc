@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fis/aoc-go/2019/intcode"
 	"github.com/fis/aoc-go/glue"
-	"github.com/fis/aoc-go/intcode"
 )
 
 func init() {

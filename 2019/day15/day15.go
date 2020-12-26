@@ -18,8 +18,8 @@ package day15
 import (
 	"fmt"
 
+	"github.com/fis/aoc-go/2019/intcode"
 	"github.com/fis/aoc-go/glue"
-	"github.com/fis/aoc-go/intcode"
 	"github.com/fis/aoc-go/util"
 )
 

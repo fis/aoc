@@ -17,7 +17,7 @@ package day05
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/intcode"
+	"github.com/fis/aoc-go/2019/intcode"
 )
 
 func TestEx1(t *testing.T) {
