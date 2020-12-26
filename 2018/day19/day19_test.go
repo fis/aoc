@@ -38,7 +38,7 @@ func TestRun(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseProg: %v", err)
 	}
-	want := [6]int{6, 5, 6, 0, 0, 99}
+	want := [6]int{6, 5, 6, 0, 0, 9}
 	s := cpu.State{}
 	s.Run(prog)
 	if s.R != want {
