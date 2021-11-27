@@ -4,10 +4,10 @@
 
 In December 2019, I spent a while playing around with the Advent of Code
 puzzles, including writing a set of least-effort solutions in Python
-([github.com/fis/aoc-py](https://github.com/fis/aoc-py/)), along the slightly
-more robust (and verbose) Go solutions in this repository. As part of that, I
-wrote occasionally extensive notes about each of the puzzles, for no discernible
-reason. The 2019 notes can be found in that other repository.
+(see the `2019-py` subdirectory), along the slightly more robust (and verbose)
+Go solutions in this repository. As part of that, I wrote occasionally extensive
+notes about each of the puzzles, for no discernible reason. The 2019 notes can
+be found in [2019-notes.md](./2019-notes.md).
 
 Now it's December 2020, and this year I'm only doing the Go solutions. Since
 writing the notes was so much fun, here are the notes for this year.
