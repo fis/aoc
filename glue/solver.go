@@ -20,7 +20,7 @@ import (
 	"io/ioutil"
 	"strconv"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 // GenericSolver wraps a solution function that does all the work itself.

@@ -16,8 +16,8 @@
 package day07
 
 import (
-	"github.com/fis/aoc-go/2019/intcode"
-	"github.com/fis/aoc-go/glue"
+	"github.com/fis/aoc/2019/intcode"
+	"github.com/fis/aoc/glue"
 )
 
 func init() {

@@ -17,7 +17,7 @@ package day10
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 var example = `position=< 9,  1> velocity=< 0,  2>

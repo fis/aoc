@@ -17,7 +17,7 @@ package day16
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/2018/cpu"
+	"github.com/fis/aoc/2018/cpu"
 )
 
 var example = []string{

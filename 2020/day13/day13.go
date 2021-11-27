@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/fis/aoc-go/glue"
+	"github.com/fis/aoc/glue"
 )
 
 func init() {

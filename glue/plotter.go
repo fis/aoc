@@ -18,7 +18,7 @@ import (
 	"bufio"
 	"io"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 // LinePlotter wraps a plotter that wants the lines of the input as strings.

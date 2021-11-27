@@ -21,8 +21,8 @@ import (
 	"hash/fnv"
 	"strconv"
 
-	"github.com/fis/aoc-go/glue"
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util"
 )
 
 func init() {

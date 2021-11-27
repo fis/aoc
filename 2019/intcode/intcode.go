@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 // Solver wraps a solution that wants an Intcode program in the standard format as input.

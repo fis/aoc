@@ -17,7 +17,7 @@ package day07
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 func TestCountAncestors(t *testing.T) {

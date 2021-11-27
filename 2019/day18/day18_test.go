@@ -18,7 +18,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 const ex1 = `

@@ -17,7 +17,7 @@ package day06
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 var example = []util.P{{1, 1}, {1, 6}, {8, 3}, {3, 4}, {5, 5}, {8, 9}}

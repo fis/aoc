@@ -18,8 +18,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fis/aoc-go/2018/cpu"
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/2018/cpu"
+	"github.com/fis/aoc/util"
 )
 
 var example = `

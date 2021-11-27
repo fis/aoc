@@ -17,7 +17,7 @@ package day17
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 var example = `x=495, y=2..7

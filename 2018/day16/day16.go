@@ -23,9 +23,9 @@ import (
 	"math/bits"
 	"strconv"
 
-	"github.com/fis/aoc-go/2018/cpu"
-	"github.com/fis/aoc-go/glue"
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/2018/cpu"
+	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util"
 )
 
 func init() {

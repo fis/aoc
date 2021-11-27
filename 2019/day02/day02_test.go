@@ -17,7 +17,7 @@ package day02
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/2019/intcode"
+	"github.com/fis/aoc/2019/intcode"
 	"github.com/google/go-cmp/cmp"
 )
 

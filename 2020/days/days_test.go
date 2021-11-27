@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/fis/aoc-go/glue"
+	"github.com/fis/aoc/glue"
 	"github.com/google/go-cmp/cmp"
 )
 

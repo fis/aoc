@@ -16,11 +16,11 @@
 package main
 
 import (
-	"github.com/fis/aoc-go/glue"
+	"github.com/fis/aoc/glue"
 
-	_ "github.com/fis/aoc-go/2018/days" // solvers
-	_ "github.com/fis/aoc-go/2019/days" // solvers
-	_ "github.com/fis/aoc-go/2020/days" // solvers
+	_ "github.com/fis/aoc/2018/days" // solvers
+	_ "github.com/fis/aoc/2019/days" // solvers
+	_ "github.com/fis/aoc/2020/days" // solvers
 )
 
 func main() {

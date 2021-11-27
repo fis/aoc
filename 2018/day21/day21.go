@@ -16,8 +16,8 @@
 package day21
 
 import (
-	"github.com/fis/aoc-go/2018/cpu"
-	"github.com/fis/aoc-go/glue"
+	"github.com/fis/aoc/2018/cpu"
+	"github.com/fis/aoc/glue"
 )
 
 func init() {

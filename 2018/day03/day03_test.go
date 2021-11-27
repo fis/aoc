@@ -17,7 +17,7 @@ package day03
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 	"github.com/google/go-cmp/cmp"
 )
 

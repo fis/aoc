@@ -17,7 +17,7 @@ package day08
 import (
 	"testing"
 
-	"github.com/fis/aoc-go/util"
+	"github.com/fis/aoc/util"
 )
 
 func TestLoopCheck(t *testing.T) {
