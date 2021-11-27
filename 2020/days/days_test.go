@@ -15,127 +15,113 @@
 package days
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/fis/aoc/glue"
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestAllDays(t *testing.T) {
-	tests := []struct {
-		day  int
-		want []string
-	}{
+	tests := []glue.TestCase{
 		{
-			day:  1,
-			want: []string{"970816", "96047280"},
+			Day:  1,
+			Want: []string{"970816", "96047280"},
 		},
 		{
-			day:  2,
-			want: []string{"506", "443"},
+			Day:  2,
+			Want: []string{"506", "443"},
 		},
 		{
-			day:  3,
-			want: []string{"151", "7540141059"},
+			Day:  3,
+			Want: []string{"151", "7540141059"},
 		},
 		{
-			day:  4,
-			want: []string{"170", "103"},
+			Day:  4,
+			Want: []string{"170", "103"},
 		},
 		{
-			day:  5,
-			want: []string{"813", "612"},
+			Day:  5,
+			Want: []string{"813", "612"},
 		},
 		{
-			day:  6,
-			want: []string{"6249", "3103"},
+			Day:  6,
+			Want: []string{"6249", "3103"},
 		},
 		{
-			day:  7,
-			want: []string{"289", "30055"},
+			Day:  7,
+			Want: []string{"289", "30055"},
 		},
 		{
-			day:  8,
-			want: []string{"1749", "515"},
+			Day:  8,
+			Want: []string{"1749", "515"},
 		},
 		{
-			day:  9,
-			want: []string{"32321523", "4794981"},
+			Day:  9,
+			Want: []string{"32321523", "4794981"},
 		},
 		{
-			day:  10,
-			want: []string{"2376", "129586085429248"},
+			Day:  10,
+			Want: []string{"2376", "129586085429248"},
 		},
 		{
-			day:  11,
-			want: []string{"2164", "1974"},
+			Day:  11,
+			Want: []string{"2164", "1974"},
 		},
 		{
-			day:  12,
-			want: []string{"362", "29895"},
+			Day:  12,
+			Want: []string{"362", "29895"},
 		},
 		{
-			day:  13,
-			want: []string{"3882", "867295486378319"},
+			Day:  13,
+			Want: []string{"3882", "867295486378319"},
 		},
 		{
-			day:  14,
-			want: []string{"6631883285184", "3161838538691"},
+			Day:  14,
+			Want: []string{"6631883285184", "3161838538691"},
 		},
 		{
-			day:  15,
-			want: []string{"1259", "689"},
+			Day:  15,
+			Want: []string{"1259", "689"},
 		},
 		{
-			day:  16,
-			want: []string{"27802", "279139880759"},
+			Day:  16,
+			Want: []string{"27802", "279139880759"},
 		},
 		{
-			day:  17,
-			want: []string{"230", "1600"},
+			Day:  17,
+			Want: []string{"230", "1600"},
 		},
 		{
-			day:  18,
-			want: []string{"1890866893020", "34646237037193"},
+			Day:  18,
+			Want: []string{"1890866893020", "34646237037193"},
 		},
 		{
-			day:  19,
-			want: []string{"205", "329"},
+			Day:  19,
+			Want: []string{"205", "329"},
 		},
 		{
-			day:  20,
-			want: []string{"28057939502729", "2489"},
+			Day:  20,
+			Want: []string{"28057939502729", "2489"},
 		},
 		{
-			day:  21,
-			want: []string{"2517", "rhvbn,mmcpg,kjf,fvk,lbmt,jgtb,hcbdb,zrb"},
+			Day:  21,
+			Want: []string{"2517", "rhvbn,mmcpg,kjf,fvk,lbmt,jgtb,hcbdb,zrb"},
 		},
 		{
-			day:  22,
-			want: []string{"31809", "32835"},
+			Day:  22,
+			Want: []string{"31809", "32835"},
 		},
 		{
-			day:  23,
-			want: []string{"24987653", "442938711161"},
+			Day:  23,
+			Want: []string{"24987653", "442938711161"},
 		},
 		{
-			day:  24,
-			want: []string{"320", "3777"},
+			Day:  24,
+			Want: []string{"320", "3777"},
 		},
 		{
-			day:  25,
-			want: []string{"1478097"},
+			Day:  25,
+			Want: []string{"1478097"},
 		},
 	}
-
-	for _, test := range tests {
-		t.Run(fmt.Sprintf("day=%02d", test.day), func(t *testing.T) {
-			if got, err := glue.SolveFile(2020, test.day, fmt.Sprintf("testdata/day%02d.txt", test.day)); err != nil {
-				t.Errorf("Solve: %v", err)
-			} else if diff := cmp.Diff(test.want, got); diff != "" {
-				t.Errorf("Solve mismatch (-want +got):\n%s", diff)
-			}
-		})
-	}
+	glue.RunTests(t, tests, 2020)
 }

@@ -12,20 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+package glue
 
 import (
+	"fmt"
 	"testing"
 
-	"github.com/fis/aoc/glue"
+	"github.com/google/go-cmp/cmp"
 )
 
-func TestAllDays(t *testing.T) {
-	tests := []glue.TestCase{
-		{
-			Day:  1,
-			Want: []string{"1044", "1054"},
-		},
+type TestCase struct {
+	Day  int
+	Want []string
+}
+
+func RunTests(t *testing.T, tests []TestCase, year int) {
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("day=%02d", test.Day), func(t *testing.T) {
+			if got, err := SolveFile(year, test.Day, fmt.Sprintf("testdata/day%02d.txt", test.Day)); err != nil {
+				t.Errorf("Solve: %v", err)
+			} else if diff := cmp.Diff(test.Want, got); diff != "" {
+				t.Errorf("Solve mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
-	glue.RunTests(t, tests, 2017)
 }
