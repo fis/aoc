@@ -12,13 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2017 days.
-package days
+package day05
 
 import (
-	_ "github.com/fis/aoc/2017/day01" // solvers
-	_ "github.com/fis/aoc/2017/day02" // solvers
-	_ "github.com/fis/aoc/2017/day03" // solvers
-	_ "github.com/fis/aoc/2017/day04" // solvers
-	_ "github.com/fis/aoc/2017/day05" // solvers
+	"testing"
 )
+
+func TestPart1(t *testing.T) {
+	offsets := []int{0, 3, 0, 1, -3}
+	want := 5
+	if got := part1(offsets); got != want {
+		t.Errorf("part1(%v) = %d, want %d", offsets, got, want)
+	}
+}
+
+func TestPart2(t *testing.T) {
+	offsets := []int{0, 3, 0, 1, -3}
+	want := 10
+	if got := part2(offsets); got != want {
+		t.Errorf("part2(%v) = %d, want %d", offsets, got, want)
+	}
+}
