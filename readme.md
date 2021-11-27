@@ -6,15 +6,17 @@ This repository contains my solutions for
 Here's a map of what's in this repository.
 
 - Documentation
-  - Overly verbose notes on the puzzle solutions:
+  - Puzzle diaries, i.e., notes written during the contests:
     - [2019 notes](docs/2019-notes.md)
     - [2020 notes](docs/2020-notes.md)
+  - Some notes on the earlier puzzles, solved outside the actual contest time:
+    - [2017 notes](docs/2017-notes.md)
 - Go packages
-  - `2018/*`, `2019/*`, `2020/*`: Individual AoC puzzle solutions. If there's
-    any code  shared between multiple puzzles that's still specific to one year,
-    it's also in here. The `days` subpackage for each year serves two functions:
-    it imports all the days, and also contains a unit test to verify each puzzle
-    using the puzzle inputs in `YYYY/days/testdata/`.
+  - `20??/*`: Individual AoC puzzle solutions. If there's any code shared
+    between multiple puzzles that's still specific to one year, it's also in
+    here. The `days` subpackage for each year serves two functions: it imports
+    all the days, and also contains a unit test to verify each puzzle using the
+    puzzle inputs in `YYYY/days/testdata/`.
   - `cmd/aoc`: multipurpose binary to execute any of the puzzles.
   - `glue`: Framework code so that the individual puzzle solutions can register
     solvers (and possibly other related utilities) for the binary via init
