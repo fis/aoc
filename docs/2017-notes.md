@@ -87,3 +87,10 @@ iteration is done in terms of the shells of part 1.
 I don't know why this ended so ugly. It's a hand-written recursive-descent
 parser, which are supposed to look reasonably elegant. Oh well, at least it
 works.
+
+## Day 11
+
+The only slightly unusual thing here is the use of *axial coordinates* for the
+hex grid, which makes the formula for the distance quite elegant. See the
+["Hexagonal Grids" page by Red Blob Games](https://www.redblobgames.com/grids/hexagons/)
+for a good explanation of how this works.
