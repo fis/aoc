@@ -94,3 +94,13 @@ The only slightly unusual thing here is the use of *axial coordinates* for the
 hex grid, which makes the formula for the distance quite elegant. See the
 ["Hexagonal Grids" page by Red Blob Games](https://www.redblobgames.com/grids/hexagons/)
 for a good explanation of how this works.
+
+## Day 15
+
+The solution here is the straight-forward brute-force one. It runs in
+approximately 0.35s on my test system: this is just on the boundary of being
+annoyingly long. But there doesn't seem to be an obvious speedup.
+
+For linear congruential generators with a power-of-two modulus, the low 16 bits
+are known to have a very short period. This would probably allow a much faster
+solution. But the generators here use a prime (2**31-1) as the divisor.
