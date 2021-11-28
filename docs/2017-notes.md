@@ -81,3 +81,9 @@ For part 2, the analytical solution (if one exists) is... harder. The sequence
 of values of the spiral is [OEIS A141481](https://oeis.org/A141481), but only a
 program is given. The solution here simply iterates along the spiral, though the
 iteration is done in terms of the shells of part 1.
+
+## Day 9
+
+I don't know why this ended so ugly. It's a hand-written recursive-descent
+parser, which are supposed to look reasonably elegant. Oh well, at least it
+works.
