@@ -12,16 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2017 days.
-package days
+package day08
 
 import (
-	_ "github.com/fis/aoc/2017/day01" // solvers
-	_ "github.com/fis/aoc/2017/day02" // solvers
-	_ "github.com/fis/aoc/2017/day03" // solvers
-	_ "github.com/fis/aoc/2017/day04" // solvers
-	_ "github.com/fis/aoc/2017/day05" // solvers
-	_ "github.com/fis/aoc/2017/day06" // solvers
-	_ "github.com/fis/aoc/2017/day07" // solvers
-	_ "github.com/fis/aoc/2017/day08" // solvers
+	"testing"
 )
+
+func TestMaxRegs(t *testing.T) {
+	code := []string{
+		"b inc 5 if a > 1",
+		"a inc 1 if b < 5",
+		"c dec -10 if a >= 1",
+		"c inc -20 if c == 10",
+	}
+	wantFinal, wantEver := 1, 10
+	if gotFinal, gotEver, err := maxRegs(code); err != nil {
+		t.Errorf("part1: %v", err)
+	} else if gotFinal != wantFinal || gotEver != wantEver {
+		t.Errorf("part1 = (%d, %d), want (%d, %d)", gotFinal, gotEver, wantFinal, wantEver)
+	}
+}
