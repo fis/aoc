@@ -12,17 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package day10
+package day14
 
 import (
 	"testing"
 )
 
-func TestPart1(t *testing.T) {
-	N := 5
-	lengths := []byte{3, 4, 1, 5}
-	want := 12
-	if got := part1(N, lengths); got != want {
-		t.Errorf("part1(%d, %v) = %d, want %d", N, lengths, got, want)
+func TestHash(t *testing.T) {
+	key := "flqrgnkx"
+	wantUsed, wantRegions := 8108, 1242
+
+	hashes, gotUsed := hash(key)
+	lvl := buildLevel(hashes)
+	gotRegions := countRegions(lvl)
+
+	if gotUsed != wantUsed {
+		t.Errorf("part1(%q) = %d, want %d", key, gotUsed, wantUsed)
+	}
+	if gotRegions != wantRegions {
+		t.Errorf("part2(%q) = %d, want %d", key, gotRegions, wantRegions)
 	}
 }

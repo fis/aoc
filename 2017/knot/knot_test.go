@@ -12,17 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package day10
+package knot
 
 import (
+	"fmt"
 	"testing"
 )
 
-func TestPart1(t *testing.T) {
-	N := 5
-	lengths := []byte{3, 4, 1, 5}
-	want := 12
-	if got := part1(N, lengths); got != want {
-		t.Errorf("part1(%d, %v) = %d, want %d", N, lengths, got, want)
+func TestHash(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string
+	}{
+		{input: ``, want: "a2582a3a0e66e6e86e3812dcb672a272"},
+		{input: `AoC 2017`, want: "33efeb34ea91902bb2f59c9920caa6cd"},
+		{input: `1,2,3`, want: "3efbe78a8d82f29979031a4aa0b16a9d"},
+		{input: `1,2,4`, want: "63960835bcdc130f0b66d7ff4f6a5a8e"},
+	}
+	for _, test := range tests {
+		if got := fmt.Sprintf("%x", Hash(N, Rounds, test.input)); got != test.want {
+			t.Errorf("Hash(%d, %d, %q) = %q, want %q", N, Rounds, test.input, got, test.want)
+		}
 	}
 }
