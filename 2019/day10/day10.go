@@ -27,10 +27,10 @@ func init() {
 	glue.RegisterSolver(2019, 10, glue.LevelSolver{Solver: solve, Empty: '.'})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	at, vis := findBest(level)
 	nth := findNth(at, 200, level)
-	return []int{vis, nth.X*100 + nth.Y}, nil
+	return glue.Ints(vis, nth.X*100+nth.Y), nil
 }
 
 func findBest(level *util.Level) (util.P, int) {

@@ -26,7 +26,7 @@ func init() {
 	glue.RegisterSolver(2019, 12, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	initialState := parseState(lines)
 
 	state := *initialState
@@ -35,7 +35,7 @@ func solve(lines []string) ([]int, error) {
 
 	part2 := cycle(initialState)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 const (

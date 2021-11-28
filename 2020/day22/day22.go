@@ -29,7 +29,7 @@ func init() {
 	glue.RegisterSolver(2020, 22, glue.ChunkSolver(solve))
 }
 
-func solve(chunks []string) ([]int, error) {
+func solve(chunks []string) ([]string, error) {
 	if len(chunks) != 2 {
 		return nil, fmt.Errorf("expected 2 chunks, got %d", len(chunks))
 	}
@@ -48,7 +48,7 @@ func solve(chunks []string) ([]int, error) {
 		part2 = -part2
 	}
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 func game(p1, p2 *deck) (score int) {

@@ -24,7 +24,7 @@ func init() {
 	glue.RegisterSolver(2020, 3, glue.LevelSolver{Solver: solve, Empty: '.'})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	trees := countTrees(level, util.P{3, 1})
 
 	allTrees := trees
@@ -32,7 +32,7 @@ func solve(level *util.Level) ([]int, error) {
 		allTrees *= countTrees(level, slope)
 	}
 
-	return []int{trees, allTrees}, nil
+	return glue.Ints(trees, allTrees), nil
 }
 
 func countTrees(level *util.Level, slope util.P) int {

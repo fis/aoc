@@ -29,7 +29,7 @@ func init() {
 	glue.RegisterSolver(2019, 18, glue.LevelSolver{Solver: solve, Empty: '#'})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	part1 := solveLevel(level)
 
 	x, y, ok := level.Find('@')
@@ -45,7 +45,7 @@ func solve(level *util.Level) ([]int, error) {
 
 	part2 := solveLevel(level)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 func solveLevel(level *util.Level) int {

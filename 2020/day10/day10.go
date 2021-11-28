@@ -25,10 +25,10 @@ func init() {
 	glue.RegisterSolver(2020, 10, glue.IntSolver(solve))
 }
 
-func solve(adapters []int) ([]int, error) {
+func solve(adapters []int) ([]string, error) {
 	d1, d3 := deltas(adapters)
 	arr := arrangements(adapters)
-	return []int{d1 * d3, arr}, nil
+	return glue.Ints(d1*d3, arr), nil
 }
 
 func chain(adapters []int) []int {

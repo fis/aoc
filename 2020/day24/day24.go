@@ -27,7 +27,7 @@ func init() {
 	glue.RegisterSolver(2020, 24, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	paths, err := parsePaths(lines)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func solve(lines []string) ([]int, error) {
 	}
 	part2 := m.countBlack()
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 /*

@@ -26,7 +26,7 @@ func init() {
 	glue.RegisterSolver(2020, 12, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	actions := parseInput(lines)
 
 	t := newTurtle()
@@ -37,7 +37,7 @@ func solve(lines []string) ([]int, error) {
 	s.move(actions)
 	p2 := s.distance()
 
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 type action struct {

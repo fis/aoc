@@ -26,7 +26,7 @@ func init() {
 	glue.RegisterSolver(2017, 11, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	if len(lines) != 1 {
 		return nil, fmt.Errorf("expected 1 line of input, got %d", len(lines))
 	}
@@ -35,7 +35,7 @@ func solve(lines []string) ([]int, error) {
 	if err != nil {
 		return nil, err
 	}
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func distances(steps []string) (lastD, maxD int, err error) {

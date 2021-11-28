@@ -23,10 +23,10 @@ func init() {
 	glue.RegisterSolver(2020, 9, glue.IntSolver(solve))
 }
 
-func solve(data []int) ([]int, error) {
+func solve(data []int) ([]string, error) {
 	invalid := validate(data, 25)
 	min, max := findSum(data, invalid)
-	return []int{invalid, min + max}, nil
+	return glue.Ints(invalid, min+max), nil
 }
 
 func validate(data []int, win int) int {

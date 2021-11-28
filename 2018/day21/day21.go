@@ -24,14 +24,14 @@ func init() {
 	glue.RegisterSolver(2018, 21, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	prog, err := cpu.ParseProg(lines)
 	if err != nil {
 		return nil, err
 	}
 	p1 := part1(prog)
 	p2 := part2()
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func part1(prog cpu.Prog) int {

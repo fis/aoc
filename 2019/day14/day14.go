@@ -28,13 +28,13 @@ func init() {
 	glue.RegisterSolver(2019, 14, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	reactions := parseReactions(lines)
 
 	part1 := ore(1, reactions)
 	part2 := maxFuel(1000000000000, reactions)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 type pile struct {

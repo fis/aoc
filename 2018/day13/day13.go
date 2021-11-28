@@ -17,8 +17,6 @@ package day13
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"sort"
 
 	"github.com/fis/aoc/glue"
@@ -26,16 +24,13 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2018, 13, glue.GenericSolver(solve))
+	glue.RegisterSolver(2018, 13, glue.LevelSolver{
+		Solver: solve,
+		Empty:  ' ',
+	})
 }
 
-func solve(r io.Reader) ([]string, error) {
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	level := util.ParseLevel(data, ' ')
-
+func solve(level *util.Level) ([]string, error) {
 	crashX, crashY := simulate(level.Copy(), false)
 	lastX, lastY := simulate(level.Copy(), true)
 

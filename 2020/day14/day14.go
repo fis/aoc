@@ -25,7 +25,7 @@ func init() {
 	glue.RegisterSolver(2020, 14, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	code, err := parseCode(lines)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func solve(lines []string) ([]int, error) {
 	p1 := sumValues(evaluate1(code))
 	p2 := sumValues(evaluate2(code))
 
-	return []int{int(p1), int(p2)}, nil
+	return glue.Ints(int(p1), int(p2)), nil
 }
 
 type opcode int

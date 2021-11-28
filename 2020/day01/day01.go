@@ -23,8 +23,8 @@ func init() {
 	glue.RegisterSolver(2020, 1, glue.IntSolver(solve))
 }
 
-func solve(expenses []int) ([]int, error) {
-	return []int{part1(expenses), part2(expenses)}, nil
+func solve(expenses []int) ([]string, error) {
+	return glue.Ints(part1(expenses), part2(expenses)), nil
 }
 
 func part1(expenses []int) int {

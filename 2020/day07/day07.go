@@ -31,7 +31,7 @@ func init() {
 	glue.RegisterPlotter(2020, 7, glue.LinePlotter(plotRules), map[string]string{"ex1": ex1, "ex2": ex2})
 }
 
-func solve(rules []string) ([]int, error) {
+func solve(rules []string) ([]string, error) {
 	g, err := parseRules(rules)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func solve(rules []string) ([]int, error) {
 	part1 := countAncestors(g, bag)
 	part2 := countDescendants(g, bag)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 var (

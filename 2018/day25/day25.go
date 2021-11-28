@@ -25,10 +25,10 @@ func init() {
 	glue.RegisterSolver(2018, 25, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	cs := constellationSet{}
 	cs.addAll(lines)
-	return []int{cs.size()}, nil
+	return glue.Ints(cs.size()), nil
 }
 
 type constellationSet struct {

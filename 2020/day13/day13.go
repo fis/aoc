@@ -28,14 +28,14 @@ func init() {
 	glue.RegisterSolver(2020, 13, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	earliest, buses, err := parseNotes(lines)
 	if err != nil {
 		return nil, err
 	}
 	id, wait := nextBus(earliest, buses)
 	best := bestTime(buses)
-	return []int{id * wait, best}, nil
+	return glue.Ints(id*wait, best), nil
 }
 
 func parseNotes(lines []string) (earliest int, buses []int, err error) {

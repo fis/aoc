@@ -27,7 +27,7 @@ func init() {
 	glue.RegisterSolver(2020, 18, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	p1, p2 := 0, 0
 
 	for _, line := range lines {
@@ -44,7 +44,7 @@ func solve(lines []string) ([]int, error) {
 		p2 += e.value()
 	}
 
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 type tokenType int

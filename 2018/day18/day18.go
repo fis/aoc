@@ -26,7 +26,7 @@ func init() {
 	glue.RegisterSolver(2018, 18, glue.LevelSolver{Solver: solve, Empty: ' '})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	part1 := value(evolve(level.Copy(), 10))
 
 	target := 1000000000
@@ -37,7 +37,7 @@ func solve(level *util.Level) ([]int, error) {
 	}
 	part2 := value(level)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 func evolve(level *util.Level, generations int) *util.Level {

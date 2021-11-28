@@ -16,23 +16,14 @@
 package day16
 
 import (
-	"bufio"
-	"io"
-
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
 )
 
 func init() {
-	glue.RegisterSolver(2019, 16, glue.GenericSolver(solve))
+	glue.RegisterSolver(2019, 16, glue.LineSolver(solve))
 }
 
-func solve(input io.Reader) ([]string, error) {
-	lines, err := util.ScanAll(input, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
-
+func solve(lines []string) ([]string, error) {
 	sig := digits(lines[0])
 	fft(sig, 100)
 	p1 := undigits(sig[:8])

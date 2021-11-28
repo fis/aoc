@@ -29,7 +29,7 @@ func init() {
 
 const initialPrefix = "initial state: "
 
-func solve(chunks []string) ([]int, error) {
+func solve(chunks []string) ([]string, error) {
 	if len(chunks) != 2 {
 		return nil, fmt.Errorf("expected 2 chunks, got %d", len(chunks))
 	}
@@ -47,7 +47,7 @@ func solve(chunks []string) ([]int, error) {
 	state.offset += (50000000000 - state.gen) * shift
 	part2 := state.checksum()
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 type stateVector struct {

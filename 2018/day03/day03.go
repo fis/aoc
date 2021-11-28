@@ -26,7 +26,7 @@ func init() {
 	glue.RegisterSolver(2018, 3, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	claims, err := parseClaims(lines)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func solve(lines []string) ([]int, error) {
 
 	overlap, valid := totalOverlap(claims)
 
-	return []int{overlap, valid}, nil
+	return glue.Ints(overlap, valid), nil
 }
 
 type claim struct {

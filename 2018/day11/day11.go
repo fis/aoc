@@ -17,22 +17,20 @@ package day11
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/fis/aoc/glue"
 )
 
 func init() {
-	glue.RegisterSolver(2018, 11, glue.GenericSolver(solve))
+	glue.RegisterSolver(2018, 11, glue.IntSolver(solve))
 }
 
-func solve(r io.Reader) ([]string, error) {
-	var serial int
-	if _, err := fmt.Fscan(r, &serial); err != nil {
-		return nil, fmt.Errorf("expected a single number: %w", err)
+func solve(input []int) ([]string, error) {
+	if len(input) != 1 {
+		return nil, fmt.Errorf("expected a single number, got %d", len(input))
 	}
 
-	g := makeGrid(serial)
+	g := makeGrid(input[0])
 	x, y, _ := sweetSpot(g)
 	x2, y2, s2, _ := sweetSquare(g)
 

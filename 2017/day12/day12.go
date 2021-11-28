@@ -16,7 +16,6 @@
 package day12
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/fis/aoc/glue"
@@ -24,18 +23,18 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2017, 12, glue.LineSolver(solve))
+	glue.RegisterSolver(2017, 12, glue.RegexpSolver{
+		Solver: solve,
+		Regexp: `^(\d+) <-> (\d+(?:, \d+)*)$`,
+	})
 }
 
-func solve(lines []string) ([]int, error) {
-	g, err := parseLines(lines)
-	if err != nil {
-		return nil, err
-	}
+func solve(data [][]string) ([]string, error) {
+	g := buildGraph(data)
 	vertGroup, groupVerts := partition(g)
 	p1 := len(groupVerts[vertGroup[g.V("0")]])
 	p2 := len(groupVerts)
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func partition(g *util.Graph) (vertGroup map[int]int, groupVerts map[int][]int) {
@@ -66,19 +65,15 @@ func partition(g *util.Graph) (vertGroup map[int]int, groupVerts map[int][]int) 
 	return vertGroup, groupVerts
 }
 
-func parseLines(lines []string) (*util.Graph, error) {
+func buildGraph(data [][]string) *util.Graph {
 	g := &util.Graph{}
-	for _, line := range lines {
-		parts := strings.SplitN(line, " ", 3)
-		if len(parts) != 3 || parts[1] != "<->" {
-			return nil, fmt.Errorf("invalid line: %q: expected \"x <-> y, z, ...\"", line)
-		}
-		fromV := g.V(parts[0])
-		for _, to := range strings.Split(parts[2], ", ") {
+	for _, row := range data {
+		fromV := g.V(row[0])
+		for _, to := range strings.Split(row[1], ", ") {
 			toV := g.V(to)
 			g.AddEdgeV(fromV, toV)
 			g.AddEdgeV(toV, fromV)
 		}
 	}
-	return g, nil
+	return g
 }

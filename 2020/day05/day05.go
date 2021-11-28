@@ -28,7 +28,7 @@ func init() {
 	glue.RegisterSolver(2020, 5, glue.LineSolver(solve))
 }
 
-func solve(passes []string) ([]int, error) {
+func solve(passes []string) ([]string, error) {
 	decoded, err := decodePasses(passes)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func solve(passes []string) ([]int, error) {
 		}
 	}
 
-	return []int{max, gap}, nil
+	return glue.Ints(max, gap), nil
 }
 
 var passPattern = regexp.MustCompile(`^[FB]{7}[LR]{3}$`)

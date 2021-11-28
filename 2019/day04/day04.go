@@ -26,7 +26,7 @@ func init() {
 	glue.RegisterSolver(2019, 4, glue.IntSolver(solve))
 }
 
-func solve(inputRange []int) ([]int, error) {
+func solve(inputRange []int) ([]string, error) {
 	if len(inputRange) != 2 {
 		return nil, fmt.Errorf("expected [low, high], got %v", inputRange)
 	}
@@ -42,7 +42,7 @@ func solve(inputRange []int) ([]int, error) {
 		}
 	}
 
-	return []int{a1, a2}, nil
+	return glue.Ints(a1, a2), nil
 }
 
 func validate1(digits []byte) bool {

@@ -26,12 +26,12 @@ func init() {
 	glue.RegisterSolver(2020, 25, glue.IntSolver(solve))
 }
 
-func solve(input []int) ([]int, error) {
+func solve(input []int) ([]string, error) {
 	if len(input) != 2 {
 		return nil, fmt.Errorf("expected two numbers, got %d", len(input))
 	}
 	key := findKey(input[0], input[1], pohligHellman)
-	return []int{key}, nil
+	return glue.Ints(key), nil
 }
 
 func findKey(pub1, pub2 int, log func(b, a, m int) int) (key int) {

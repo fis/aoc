@@ -27,7 +27,7 @@ func init() {
 	glue.RegisterSolver(2020, 20, glue.ChunkSolver(solve))
 }
 
-func solve(chunks []string) ([]int, error) {
+func solve(chunks []string) ([]string, error) {
 	set, err := parseSet(chunks)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func solve(chunks []string) ([]int, error) {
 		return nil, err
 	}
 	part2 := roughness(img, size)
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 /*

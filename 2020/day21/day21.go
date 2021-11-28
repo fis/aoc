@@ -16,9 +16,7 @@
 package day21
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -28,14 +26,10 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2020, 21, glue.GenericSolver(solve))
+	glue.RegisterSolver(2020, 21, glue.LineSolver(solve))
 }
 
-func solve(r io.Reader) ([]string, error) {
-	lines, err := util.ScanAll(r, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
+func solve(lines []string) ([]string, error) {
 	labels, err := parseInput(lines)
 	if err != nil {
 		return nil, err

@@ -19,22 +19,20 @@ import (
 )
 
 func TestPartition(t *testing.T) {
-	lines := []string{
-		`0 <-> 2`,
-		`1 <-> 1`,
-		`2 <-> 0, 3, 4`,
-		`3 <-> 2, 4`,
-		`4 <-> 2, 3, 6`,
-		`5 <-> 6`,
-		`6 <-> 4, 5`,
+	data := [][]string{
+		{"0", "2"},
+		{"1", "1"},
+		{"2", "0, 3, 4"},
+		{"3", "2, 4"},
+		{"4", "2, 3, 6"},
+		{"5", "6"},
+		{"6", "4, 5"},
 	}
-	want := 6
-	if g, err := parseLines(lines); err != nil {
-		t.Errorf("parseLines: %v", err)
-	} else {
-		vertGroup, groupVerts := partition(g)
-		if got := len(groupVerts[vertGroup[g.V("0")]]); got != want {
-			t.Errorf("part1 = %d, want %d", got, want)
-		}
+	want1, want2 := 6, 2
+	g := buildGraph(data)
+	vertGroup, groupVerts := partition(g)
+	got1, got2 := len(groupVerts[vertGroup[g.V("0")]]), len(groupVerts)
+	if got1 != want1 || got2 != want2 {
+		t.Errorf("part1 = %d, want %d; part2 = %d, want %d", got1, want1, got2, want2)
 	}
 }

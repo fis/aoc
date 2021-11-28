@@ -25,7 +25,7 @@ func init() {
 	glue.RegisterSolver(2020, 6, glue.ChunkSolver(solve))
 }
 
-func solve(data []string) ([]int, error) {
+func solve(data []string) ([]string, error) {
 	answers := make([][]answerSet, len(data))
 	for i, chunk := range data {
 		lines := strings.Split(strings.TrimSpace(chunk), "\n")
@@ -38,7 +38,7 @@ func solve(data []string) ([]int, error) {
 		all += countMerged(a, mergeAll)
 	}
 
-	return []int{any, all}, nil
+	return glue.Ints(any, all), nil
 }
 
 type answerSet [26]bool

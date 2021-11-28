@@ -25,7 +25,7 @@ func init() {
 	glue.RegisterSolver(2020, 23, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	if len(lines) != 1 {
 		return nil, fmt.Errorf("expected one line, got %d", len(lines))
 	}
@@ -48,7 +48,7 @@ func solve(lines []string) ([]int, error) {
 	}
 	p2 := r2.key()
 
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 type ring uint64

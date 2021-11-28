@@ -27,11 +27,11 @@ func init() {
 	glue.RegisterSolver(2018, 4, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	log := parseLog(lines)
 	g1, m1 := strategy1(log)
 	g2, m2 := strategy2(log)
-	return []int{g1 * m1, g2 * m2}, nil
+	return glue.Ints(g1*m1, g2*m2), nil
 }
 
 type sleepMask [60]bool

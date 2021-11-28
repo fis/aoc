@@ -27,7 +27,7 @@ func init() {
 	glue.RegisterSolver(2018, 22, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	var depth, tX, tY int
 	if len(lines) != 2 {
 		return nil, fmt.Errorf("expected 2 lines, got %d", len(lines))
@@ -41,7 +41,7 @@ func solve(lines []string) ([]int, error) {
 	part1 := cave.totalRisk()
 	part2 := cave.shortestPath()
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 type cave struct {

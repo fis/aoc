@@ -24,10 +24,10 @@ func init() {
 	glue.RegisterSolver(2020, 11, glue.LevelSolver{Solver: solve, Empty: '.'})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	fp1 := fixedPoint(level, nearMap, 4)
 	fp2 := fixedPoint(level, farMap, 5)
-	return []int{fp1, fp2}, nil
+	return glue.Ints(fp1, fp2), nil
 }
 
 func fixedPoint(level *util.Level, mapper func(*util.Level) [][8]int, tolerance int) (occupied int) {

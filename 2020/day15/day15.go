@@ -23,10 +23,10 @@ func init() {
 	glue.RegisterSolver(2020, 15, glue.IntSolver(solve))
 }
 
-func solve(numbers []int) ([]int, error) {
+func solve(numbers []int) ([]string, error) {
 	p1 := simulate(numbers, 2020)
 	p2 := simulate(numbers, 30000000)
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func simulate(initial []int, upTo int) (num int) {

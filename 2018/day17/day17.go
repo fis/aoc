@@ -27,11 +27,11 @@ func init() {
 	glue.RegisterSolver(2018, 17, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	level, minY, maxY := readScan(lines)
 	fill(level, util.P{500, 0}, make(map[util.P]struct{}))
 	total, pooled := measureWater(level, minY, maxY)
-	return []int{total, pooled}, nil
+	return glue.Ints(total, pooled), nil
 }
 
 func readScan(lines []string) (level *util.Level, minY, maxY int) {

@@ -29,7 +29,7 @@ func init() {
 	glue.RegisterSolver(2020, 16, glue.ChunkSolver(solve))
 }
 
-func solve(chunks []string) ([]int, error) {
+func solve(chunks []string) ([]string, error) {
 	if len(chunks) != 3 {
 		return nil, fmt.Errorf("expected 3 chunks, got %d", len(chunks))
 	}
@@ -74,7 +74,7 @@ func solve(chunks []string) ([]int, error) {
 		}
 	}
 
-	return []int{errorRate, deps}, nil
+	return glue.Ints(errorRate, deps), nil
 }
 
 type interval struct {

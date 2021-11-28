@@ -25,7 +25,7 @@ func init() {
 	glue.RegisterSolver(2018, 9, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	var players, marbles int
 	if _, err := fmt.Sscanf(lines[0], "%d players; last marble is worth %d points", &players, &marbles); err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func solve(lines []string) ([]int, error) {
 	p1 := game(players, marbles)
 	p2 := game(players, 100*marbles)
 
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func game(players, marbles int) (maxScore int) {

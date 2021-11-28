@@ -25,11 +25,11 @@ func init() {
 	glue.RegisterSolver(2019, 24, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	initial := parseState(lines)
 	p1 := findRepeating(initial)
 	p2 := countBugs(initial, 200)
-	return []int{int(p1), p2}, nil
+	return glue.Ints(int(p1), p2), nil
 }
 
 type state uint32

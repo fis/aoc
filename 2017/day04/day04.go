@@ -26,7 +26,7 @@ func init() {
 	glue.RegisterSolver(2017, 4, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	p1, p2 := 0, 0
 	for _, line := range lines {
 		words := util.Words(line)
@@ -37,7 +37,7 @@ func solve(lines []string) ([]int, error) {
 			p2++
 		}
 	}
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func part1(passphrase []string) bool {

@@ -27,11 +27,11 @@ func init() {
 	glue.RegisterSolver(2019, 20, glue.LevelSolver{Solver: solve, Empty: ' '})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	dist := distances(level)
 	p1 := shortest(label{name: "AA", outer: true}, label{name: "ZZ", outer: true}, dist)
 	p2 := recursive(label{name: "AA", outer: true}, label{name: "ZZ", outer: true}, dist)
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 type label struct {

@@ -16,8 +16,10 @@ package glue
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"regexp"
 	"strconv"
 
 	"github.com/fis/aoc/util"
@@ -27,17 +29,25 @@ import (
 type GenericSolver func(io.Reader) ([]string, error)
 
 // LineSolver wraps a solution that wants the lines of the input as strings.
-type LineSolver func([]string) ([]int, error)
+type LineSolver func([]string) ([]string, error)
 
 // ChunkSolver wraps a solution that wants the blank-line-separated paragraphs of the input as strings.
-type ChunkSolver func([]string) ([]int, error)
+type ChunkSolver func([]string) ([]string, error)
 
 // IntSolver wraps a solution that wants the input read in as whitespace-separated decimal integers.
-type IntSolver func([]int) ([]int, error)
+type IntSolver func([]int) ([]string, error)
+
+// RegexpSolver wraps a solution that wants to match a single regular expression to each of the input lines.
+// The solver is called with a slice of slices of all submatches. Note that this excludes the full pattern
+// match that is typically included in regexp match outputs.
+type RegexpSolver struct {
+	Solver func([][]string) ([]string, error)
+	Regexp string
+}
 
 // LevelSolver wraps a solution that wants the lines of the input converted to a 2D level structure.
 type LevelSolver struct {
-	Solver func(*util.Level) ([]int, error)
+	Solver func(*util.Level) ([]string, error)
 	Empty  byte
 }
 
@@ -52,11 +62,11 @@ func (s LineSolver) Solve(input io.Reader) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	ints, err := s(data)
+	out, err := s(data)
 	if err != nil {
 		return nil, err
 	}
-	return itoas(ints), nil
+	return out, nil
 }
 
 // Solve implements the Solver interface.
@@ -65,11 +75,11 @@ func (s ChunkSolver) Solve(input io.Reader) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	ints, err := s(data)
+	out, err := s(data)
 	if err != nil {
 		return nil, err
 	}
-	return itoas(ints), nil
+	return out, nil
 }
 
 // Solve implements the Solver interface.
@@ -82,11 +92,36 @@ func (s IntSolver) Solve(input io.Reader) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	ints, err := s(data)
+	out, err := s(data)
 	if err != nil {
 		return nil, err
 	}
-	return itoas(ints), nil
+	return out, nil
+}
+
+// Solve implements the Solver interface.
+func (s RegexpSolver) Solve(input io.Reader) ([]string, error) {
+	re, err := regexp.Compile(s.Regexp)
+	if err != nil {
+		return nil, err
+	}
+	lines, err := util.ScanAll(input, bufio.ScanLines)
+	if err != nil {
+		return nil, err
+	}
+	parsed := make([][]string, len(lines))
+	for i, line := range lines {
+		parts := re.FindStringSubmatch(line)
+		if parts == nil {
+			return nil, fmt.Errorf("line %q does not match pattern %s", line, s.Regexp)
+		}
+		parsed[i] = parts[1:]
+	}
+	out, err := s.Solver(parsed)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 // Solve implements the Solver interface.
@@ -96,11 +131,11 @@ func (s LevelSolver) Solve(input io.Reader) ([]string, error) {
 		return nil, err
 	}
 	level := util.ParseLevel(data, s.Empty)
-	ints, err := s.Solver(level)
+	out, err := s.Solver(level)
 	if err != nil {
 		return nil, err
 	}
-	return itoas(ints), nil
+	return out, nil
 }
 
 func atois(in []string) (out []int, err error) {
@@ -114,7 +149,8 @@ func atois(in []string) (out []int, err error) {
 	return out, nil
 }
 
-func itoas(in []int) (out []string) {
+// Ints converts a list of ints to a list of strings.
+func Ints(in ...int) (out []string) {
 	for _, i := range in {
 		out = append(out, strconv.Itoa(i))
 	}

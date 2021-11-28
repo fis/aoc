@@ -26,13 +26,13 @@ func init() {
 	glue.RegisterSolver(2017, 3, glue.IntSolver(solve))
 }
 
-func solve(input []int) ([]int, error) {
+func solve(input []int) ([]string, error) {
 	if len(input) != 1 {
 		return nil, fmt.Errorf("expecting only 1 integer of input, got %d", len(input))
 	}
 	p1 := part1(input[0])
 	p2 := part2(input[0])
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func part1(square int) int {

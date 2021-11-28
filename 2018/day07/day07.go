@@ -16,7 +16,6 @@
 package day07
 
 import (
-	"bufio"
 	"container/heap"
 	"fmt"
 	"io"
@@ -28,16 +27,11 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2018, 7, glue.GenericSolver(solve))
+	glue.RegisterSolver(2018, 7, glue.LineSolver(solve))
 	glue.RegisterPlotter(2018, 7, glue.LinePlotter(plotDeps), map[string]string{"ex": example})
 }
 
-func solve(input io.Reader) ([]string, error) {
-	lines, err := util.ScanAll(input, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
-
+func solve(lines []string) ([]string, error) {
 	part1 := strings.Join(toplexSort(parseRules(lines)), "")
 	_, part2 := timedSort(parseRules(lines), 5, 60)
 

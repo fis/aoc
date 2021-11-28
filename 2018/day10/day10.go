@@ -16,9 +16,7 @@
 package day10
 
 import (
-	"bufio"
 	"fmt"
-	"io"
 	"strconv"
 
 	"github.com/fis/aoc/glue"
@@ -26,14 +24,10 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2018, 10, glue.GenericSolver(solve))
+	glue.RegisterSolver(2018, 10, glue.LineSolver(solve))
 }
 
-func solve(input io.Reader) ([]string, error) {
-	lines, err := util.ScanAll(input, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
+func solve(lines []string) ([]string, error) {
 	stars := parseInput(lines)
 
 	t := findConjunction(stars) // not perfect, but close enough

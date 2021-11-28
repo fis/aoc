@@ -26,11 +26,11 @@ func init() {
 	glue.RegisterSolver(2018, 6, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	points := parsePoints(lines)
 	max := maxArea(points)
 	safe := safeArea(points, 10000)
-	return []int{max, safe}, nil
+	return glue.Ints(max, safe), nil
 }
 
 func parsePoints(lines []string) (points []util.P) {

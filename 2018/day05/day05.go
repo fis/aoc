@@ -25,13 +25,13 @@ func init() {
 	glue.RegisterSolver(2018, 5, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	if len(lines) != 1 {
 		return nil, fmt.Errorf("expecting only 1 line of input, got %d", len(lines))
 	}
 	p1 := reducedLen(lines[0])
 	p2 := improve(lines[0])
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func reducedLen(polymer string) int {

@@ -28,7 +28,7 @@ func init() {
 	glue.RegisterSolver(2018, 23, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	bots := []nanobot(nil)
 	for _, line := range lines {
 		bot, err := parseBot(line)
@@ -41,7 +41,7 @@ func solve(lines []string) ([]int, error) {
 	part1 := inRange(bots)
 	part2 := bestPos(bots)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 type p3 struct {

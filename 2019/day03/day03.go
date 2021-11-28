@@ -28,12 +28,12 @@ func init() {
 	glue.RegisterSolver(2019, 3, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	if len(lines) != 2 {
 		return nil, fmt.Errorf("unexpected amount of lines: %v", lines)
 	}
 	p1, p2 := compute(lines[0], lines[1])
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func compute(w1, w2 string) (closest, best int) {

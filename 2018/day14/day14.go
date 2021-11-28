@@ -25,13 +25,13 @@ func init() {
 	glue.RegisterSolver(2018, 14, glue.IntSolver(solve))
 }
 
-func solve(input []int) ([]int, error) {
+func solve(input []int) ([]string, error) {
 	if len(input) != 1 {
 		return nil, fmt.Errorf("expected one int, got %d", len(input))
 	}
 	part1 := asInt(evolve(input[0], 10))
 	part2 := find(asBytes(input[0]))
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 func evolve(skip, keep int) []byte {

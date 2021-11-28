@@ -24,7 +24,7 @@ func init() {
 	glue.RegisterSolver(2020, 17, glue.LevelSolver{Solver: solve, Empty: '.'})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	state3, min3, max3 := loadLevel3(level)
 	for i := 0; i < 6; i++ {
 		state3, min3, max3 = cycle3(state3, min3, max3)
@@ -33,7 +33,7 @@ func solve(level *util.Level) ([]int, error) {
 	for i := 0; i < 6; i++ {
 		state4, min4, max4 = cycle4(state4, min4, max4)
 	}
-	return []int{len(state3), len(state4)}, nil
+	return glue.Ints(len(state3), len(state4)), nil
 }
 
 // P3 is a simple three-dimensional coordinate point.

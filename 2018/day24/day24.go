@@ -30,7 +30,7 @@ func init() {
 	glue.RegisterSolver(2018, 24, glue.ChunkSolver(solve))
 }
 
-func solve(chunks []string) ([]int, error) {
+func solve(chunks []string) ([]string, error) {
 	if len(chunks) != 2 {
 		return nil, fmt.Errorf("expected 2 chunks, got %d", len(chunks))
 	}
@@ -63,7 +63,7 @@ func solve(chunks []string) ([]int, error) {
 		}
 	}
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 type systemState struct {

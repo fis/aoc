@@ -23,8 +23,8 @@ func init() {
 	glue.RegisterSolver(2018, 1, glue.IntSolver(solve))
 }
 
-func solve(input []int) ([]int, error) {
-	return []int{sum(input), findRep(input)}, nil
+func solve(input []int) ([]string, error) {
+	return glue.Ints(sum(input), findRep(input)), nil
 }
 
 func sum(changes []int) (final int) {

@@ -27,7 +27,7 @@ func init() {
 	glue.RegisterSolver(2017, 2, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	sheet := make([][]int, len(lines))
 	for i, line := range lines {
 		words := util.Words(line)
@@ -46,7 +46,7 @@ func solve(lines []string) ([]int, error) {
 	if err != nil {
 		return nil, err
 	}
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func checksumSheet(rows [][]int) (sum int) {

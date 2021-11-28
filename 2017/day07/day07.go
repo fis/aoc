@@ -16,9 +16,6 @@
 package day07
 
 import (
-	"bufio"
-	"fmt"
-	"io"
 	"strconv"
 	"strings"
 
@@ -27,18 +24,14 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2017, 7, glue.GenericSolver(solve))
+	glue.RegisterSolver(2017, 7, glue.RegexpSolver{
+		Solver: solve,
+		Regexp: `^(\w+) \((\d+)\)(?: -> (\w+(?:, \w+)*))?$`,
+	})
 }
 
-func solve(input io.Reader) ([]string, error) {
-	lines, err := util.ScanAll(input, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
-	progs, err := parseLines(lines)
-	if err != nil {
-		return nil, err
-	}
+func solve(lines [][]string) ([]string, error) {
+	progs := parseLines(lines)
 	g := buildGraph(progs)
 	p1 := findRoot(g)
 	_, p2 := fixWeight(p1, progs)
@@ -112,33 +105,20 @@ func buildGraph(progs map[string]*program) *util.Graph {
 	return g
 }
 
-func parseLines(lines []string) (progs map[string]*program, err error) {
+func parseLines(lines [][]string) (progs map[string]*program) {
 	progs = make(map[string]*program)
 	for _, line := range lines {
-		prog, err := parseLine(line)
-		if err != nil {
-			return nil, err
-		}
+		prog := parseLine(line)
 		progs[prog.name] = &prog
 	}
-	return progs, nil
+	return progs
 }
 
-func parseLine(line string) (prog program, err error) {
-	parts := strings.SplitN(line, " ", 4)
-	if n := len(parts); n != 2 && n != 4 {
-		return program{}, fmt.Errorf("unexpected number of parts: want 2 or 4, got %d", n)
+func parseLine(line []string) (prog program) {
+	prog.name = line[0]
+	prog.weight, _ = strconv.Atoi(line[1])
+	if line[2] != "" {
+		prog.subNames = strings.Split(line[2], ", ")
 	}
-	prog.name = parts[0]
-	if _, err = fmt.Sscanf(parts[1], "(%d)", &prog.weight); err != nil {
-		return program{}, fmt.Errorf("unexpected weight: %q: wanted (N)", parts[1])
-	}
-	if len(parts) == 2 {
-		return prog, nil
-	}
-	if parts[2] != "->" {
-		return program{}, fmt.Errorf("unexpected separator: %q: wanted ->", parts[3])
-	}
-	prog.subNames = strings.Split(parts[3], ", ")
-	return prog, nil
+	return prog
 }

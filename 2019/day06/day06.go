@@ -26,13 +26,13 @@ func init() {
 	glue.RegisterSolver(2019, 6, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	orbits := parseOrbits(lines)
 
 	p1 := orbits.countOrbits()
 	p2 := orbits.transfers("YOU", "SAN")
 
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func parseOrbits(lines []string) *orbitMap {

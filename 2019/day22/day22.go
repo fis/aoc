@@ -27,14 +27,14 @@ func init() {
 	glue.RegisterSolver(2019, 22, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	ops, err := parseShuffle(lines)
 	if err != nil {
 		return nil, err
 	}
 	p1 := shuffleForward(2019, 10007, ops)
 	p2 := shuffleBackward(2020, 119315717514047, 101741582076661, ops)
-	return []int{int(p1), int(p2)}, nil
+	return glue.Ints(int(p1), int(p2)), nil
 }
 
 type shuffleTrick int

@@ -21,10 +21,10 @@ func init() {
 	glue.RegisterSolver(2017, 5, glue.IntSolver(solve))
 }
 
-func solve(input []int) ([]int, error) {
+func solve(input []int) ([]string, error) {
 	p1 := part1(append(input[:0:0], input...))
 	p2 := part2(append(input[:0:0], input...))
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func part1(offsets []int) (steps int) {

@@ -21,14 +21,14 @@ func init() {
 	glue.RegisterSolver(2017, 6, glue.IntSolver(solve))
 }
 
-func solve(input []int) ([]int, error) {
+func solve(input []int) ([]string, error) {
 	banks := make([]byte, len(input))
 	for i, n := range input {
 		banks[i] = byte(n)
 	}
 	p1 := loopLength(banks)
 	p2 := loopLength(banks)
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func loopLength(banks []byte) int {

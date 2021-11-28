@@ -26,13 +26,13 @@ func init() {
 	glue.RegisterSolver(2017, 9, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	groups, err := parseStream([]byte(strings.Join(lines, "")))
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
 	}
 	p1, p2 := score(groups, 1)
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 type group struct {

@@ -30,7 +30,7 @@ func init() {
 	glue.RegisterPlotter(2020, 8, glue.LinePlotter(plotFlow), map[string]string{"ex": example})
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	code, err := parseCode(lines)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func solve(lines []string) ([]int, error) {
 	_, part1 := loopCheck(code)
 	part2 := repair(code)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 type opcode int

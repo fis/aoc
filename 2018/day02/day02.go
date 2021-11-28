@@ -16,24 +16,16 @@
 package day02
 
 import (
-	"bufio"
-	"io"
 	"strconv"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
 )
 
 func init() {
-	glue.RegisterSolver(2018, 2, glue.GenericSolver(solve))
+	glue.RegisterSolver(2018, 2, glue.LineSolver(solve))
 }
 
-func solve(input io.Reader) ([]string, error) {
-	lines, err := util.ScanAll(input, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
-
+func solve(lines []string) ([]string, error) {
 	cs := checksum(lines)
 	box := findBox(lines)
 

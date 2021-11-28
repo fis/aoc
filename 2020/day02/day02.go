@@ -27,7 +27,7 @@ func init() {
 	glue.RegisterSolver(2020, 2, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	p1, err := countValid(lines, policy.validateSled)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func solve(lines []string) ([]int, error) {
 	if err != nil {
 		return nil, err
 	}
-	return []int{p1, p2}, nil
+	return glue.Ints(p1, p2), nil
 }
 
 func countValid(lines []string, validator func(policy, string) bool) (int, error) {

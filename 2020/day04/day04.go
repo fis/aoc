@@ -29,14 +29,14 @@ func init() {
 	glue.RegisterSolver(2020, 4, glue.ChunkSolver(solve))
 }
 
-func solve(data []string) ([]int, error) {
+func solve(data []string) ([]string, error) {
 	passes, err := parsePassports(data)
 	if err != nil {
 		return nil, err
 	}
 	valid := countValid(passes, passport.valid)
 	strict := countValid(passes, passport.strictlyValid)
-	return []int{valid, strict}, nil
+	return glue.Ints(valid, strict), nil
 }
 
 func countValid(data []passport, validator func(passport) bool) (valid int) {

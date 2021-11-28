@@ -23,10 +23,10 @@ func init() {
 	glue.RegisterSolver(2018, 8, glue.IntSolver(solve))
 }
 
-func solve(input []int) ([]int, error) {
+func solve(input []int) ([]string, error) {
 	n, _ := parseLicense(input)
 	cs, v := n.checksum(), n.value()
-	return []int{cs, v}, nil
+	return glue.Ints(cs, v), nil
 }
 
 type node struct {

@@ -26,10 +26,10 @@ func init() {
 	glue.RegisterSolver(2018, 15, glue.LevelSolver{Solver: solve, Empty: '#'})
 }
 
-func solve(level *util.Level) ([]int, error) {
+func solve(level *util.Level) ([]string, error) {
 	part1 := combat(level.Copy(), 3, false)
 	part2 := findEdge(level)
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 func findEdge(level *util.Level) int {

@@ -29,7 +29,7 @@ func init() {
 	glue.RegisterSolver(2018, 20, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	if len(lines) != 1 {
 		return nil, fmt.Errorf("expected one line, got %d", len(lines))
 	}
@@ -42,7 +42,7 @@ func solve(lines []string) ([]int, error) {
 	ex.trace([]util.P{{0, 0}}, l)
 	part1, part2 := l.radius()
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 type direction int

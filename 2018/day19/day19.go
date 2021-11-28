@@ -24,7 +24,7 @@ func init() {
 	glue.RegisterSolver(2018, 19, glue.LineSolver(solve))
 }
 
-func solve(lines []string) ([]int, error) {
+func solve(lines []string) ([]string, error) {
 	prog, err := cpu.ParseProg(lines)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func solve(lines []string) ([]int, error) {
 	// For part 2, see the annotated assembly code below, as actually executing it would take too long.
 	part2 := sumDiv(10551339)
 
-	return []int{part1, part2}, nil
+	return glue.Ints(part1, part2), nil
 }
 
 func sumDiv(n int) (sum int) {
