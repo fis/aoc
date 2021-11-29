@@ -104,3 +104,35 @@ annoyingly long. But there doesn't seem to be an obvious speedup.
 For linear congruential generators with a power-of-two modulus, the low 16 bits
 are known to have a very short period. This would probably allow a much faster
 solution. But the generators here use a prime (2**31-1) as the divisor.
+
+## Day 16
+
+A bad case of not remembering to predict the future here.
+
+For part 1, the solution does the obvious: applies each of the dance steps in
+order. The only "trick" applied is to not shuffle data around for the *spin*
+move, by instead adjusting a logical start offset of the line (treating it as a
+ring buffer), and then doing just one swap (if necessary) at the end.
+
+Of course, in part 2 the task was to run the dance a ridiculous number of times,
+so the part 1 solution wasn't really reusable. The key insight here is to notice
+that the dance can be decomposed to two different kinds of operations: those
+that operate on positions in the line (*spin*, *exchange*) and those that are
+based on program names (*partner*). Further, the two kinds of operations can be
+performed entirely independently, without maintaining their relative order: we
+can first do all the shuffling of the line, and then apply all the program name
+swaps.
+
+To repeat the line order operations many times, we can use the usual trick of
+successive squaring. The set of moves is first boiled down into a single
+permutation. To permutation can then be *squared* by applying it on itself: the
+resulting permutation has the same effect as applying the original twice. This
+way we can figure out the permutations that correspond to performing the moves
+1, 2, 4, 8, ... times. Then we simply need to apply those permutations that
+correspond to set bits in the desired iteration count to the initial state.
+
+Finally, because the program name relabeling is always its own inverse (applying
+the same swaps a second time recovers the original labels), applying it `N`
+times is either the same as applying it once (for odd `N`), or not doing it at
+all (for even `N`). So we boil down all the swaps to a single permutation of
+program names, and apply it (once) if the count is odd.
