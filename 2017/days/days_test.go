@@ -90,6 +90,10 @@ func TestAllDays(t *testing.T) {
 			Day:  17,
 			Want: []string{"1306", "20430489"},
 		},
+		{
+			Day:  18,
+			Want: []string{"3188", "7112"},
+		},
 	}
 	glue.RunTests(t, tests, 2017)
 }
