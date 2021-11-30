@@ -137,6 +137,80 @@ times is either the same as applying it once (for odd `N`), or not doing it at
 all (for even `N`). So we boil down all the swaps to a single permutation of
 program names, and apply it (once) if the count is odd.
 
+## Day 20: Particle Swarm
+
+Part 1 has a cheat: since the puzzle asks for the particle that stays closest
+"in the long term", we can observe that asymptotically, a particle with a higher
+magnitude of acceleration will eventually get further than one with lower
+acceleration. Likewise, for particles with equal acceleration, the magnitude of
+the initial velocity dominates. And finally, if both of those are equal, the
+distance of the initial starting position. So the closest-staying particle is
+found by ordering particles by that rule.
+
+As for part 2, the solution here is a good example of bad predictions. Under the
+assumption that simulating to find all collisions would take a long time, the
+(first) solution instead solves all possible collision points analytically, and
+then simply iterates over the potential collisions ordered by time. As it
+happens, all collisions in my sample input were resolved in the first 40 ticks,
+so the straight-forward simulation turns out to be much more performant.
+
+For the record, though, this is how the solution works out. The equations may be
+interpreted as referring to one dimension (as scalars) or to all of them (as
+vectors).
+
+For any particle, its velocity `v(t)` at time `t` is given by:
+
+<!--math:day20-v
+\begin{align*}
+v(t) &= v_0 + \sum_{i=0}^{t-1} a \\
+&= v_0 + t a
+\end{align*}
+\vspace{0bp}
+-->
+![day20-v.png](math/2017-notes-day20-v.png)
+
+As velocities are updated before positions rather than atomically, for the
+position `p(t)` at time `t` we need slightly different summation indices:
+
+<!--math:day20-p
+\begin{align*}
+p(t) &= p_0 + \sum_{i=1}^t v(i) \\
+&= p_0 + \sum_{i=1}^t (v_0 + i a) \\
+&= p_0 + \sum_{i=1}^t v_0 + \sum_{i=1}^t i a \\
+&= p_0 + t v_0 + \frac{(t+1)t}{2} a
+\end{align*}
+\vspace{0bp}
+-->
+![day20-p.png](math/2017-notes-day20-p.png)
+
+To figure out where two particles (let's call them 1 and 2) could possibly
+collide, we can set their positions equal, and solve for `t`. This can be done
+for each dimension independently, and then the results combined; a particle
+collides only if the three dimensions have a common (integer) solution for `t`.
+
+We have:
+
+<!--math:day20-coll
+\begin{align*}
+p_1 + v_1 t + a_1 \frac{(t+1)t}{2} &= p_2 + v_2 t + a_2 \frac{(t+1)t}{2} \\
+(p_1-p_2) + (v_1-v_2) t + (a_1-a_2) \frac{(t+1)t}{2} &= 0 \\
+p_d + v_d t + \frac{a_d}{2} t^2 + \frac{a_d}{2} t &= 0 \\
+a_d t^2 + (2 v_d + a_d) t + 2 p_d &= 0 \\
+A t^2 + B t + C &= 0\ \textrm{where $A=a_d$, $B=2 v_d+a_d$, $C=2 p_d$}
+\end{align*}
+\vspace{0bp}
+-->
+![day20-p.png](math/2017-notes-day20-coll.png)
+
+This is a quadratic equation, which has the following possible solutions:
+
+- If `A == 0 && B == 0 && C == 0`: any value of `t` is a solution.
+- If `A == 0 && B == 0`: there are no solutions.
+- If `A == 0`: there is a single solution: `t = -C/B`.
+- If `B^2 - 4AC < 0`: there are no solutions.
+- If `B^2 - 4AC == 0`: there is a single solution: `t = -B/(2A)`.
+- Otherwise, there are two: `t = (-B ± sqrt(B^2 - 4AC))/(2A)`.
+
 ## Day 23: Coprocessor Conflagration
 
 The day 23 puzzle was less about implementing the ISA than understanding what
