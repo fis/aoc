@@ -44,3 +44,8 @@ func Diagf(format string, a ...interface{}) {
 	}
 	fmt.Printf(format, a...)
 }
+
+// IsDiag tests if verbose output has been requested.
+func IsDiag() bool {
+	return *verbose
+}
