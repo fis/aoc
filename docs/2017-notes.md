@@ -8,7 +8,7 @@ get back in the AoC mindset. Unlike the later years, where the notes are more
 like a diary, here entries will only be added here if there's anything to say
 that's not immediately obvious from the code.
 
-## Day 3
+## Day 3: Spiral Memory
 
 The only thing of note here is that part 1 was solved "analytically", rather
 than iteratively walking the spiral.
@@ -82,20 +82,20 @@ of values of the spiral is [OEIS A141481](https://oeis.org/A141481), but only a
 program is given. The solution here simply iterates along the spiral, though the
 iteration is done in terms of the shells of part 1.
 
-## Day 9
+## Day 9: Stream Processing
 
 I don't know why this ended so ugly. It's a hand-written recursive-descent
 parser, which are supposed to look reasonably elegant. Oh well, at least it
 works.
 
-## Day 11
+## Day 11: Hex Ed
 
 The only slightly unusual thing here is the use of *axial coordinates* for the
 hex grid, which makes the formula for the distance quite elegant. See the
 ["Hexagonal Grids" page by Red Blob Games](https://www.redblobgames.com/grids/hexagons/)
 for a good explanation of how this works.
 
-## Day 15
+## Day 15: Dueling Generators
 
 The solution here is the straight-forward brute-force one. It runs in
 approximately 0.35s on my test system: this is just on the boundary of being
@@ -105,7 +105,7 @@ For linear congruential generators with a power-of-two modulus, the low 16 bits
 are known to have a very short period. This would probably allow a much faster
 solution. But the generators here use a prime (2**31-1) as the divisor.
 
-## Day 16
+## Day 16: Permutation Promenade
 
 A bad case of not remembering to predict the future here.
 
@@ -136,3 +136,83 @@ the same swaps a second time recovers the original labels), applying it `N`
 times is either the same as applying it once (for odd `N`), or not doing it at
 all (for even `N`). So we boil down all the swaps to a single permutation of
 program names, and apply it (once) if the count is odd.
+
+## Day 23: Coprocessor Conflagration
+
+The day 23 puzzle was less about implementing the ISA than understanding what
+the source program was doing. To that end, here's the annotated source code of
+my puzzle input:
+
+```
+  set b 57        // b = 57
+  set c b         // c = 57
+  jnz a 2         // if (a) goto doInit
+  jnz 1 5         // goto loop3
+doInit:
+  mul b 100       // b *= 100 // b = 5700
+  sub b -100000   // b += 100000 // b = 105700
+  set c b         // c = b // c = 105700
+  sub c -17000    // c += 17000 // c = 122700
+loop3:
+  set f 1         // f = 1
+  set d 2         // d = 2
+loop2:
+  set e 2         // e = 2
+loop1:
+  set g d         // g = d
+  mul g e         // g *= e
+  sub g b         // g -= b
+  jnz g 2         // if (g) goto skipF
+  set f 0         // f = 0
+skipF:
+  sub e -1        // e++
+  set g e         // g = e
+  sub g b         // g -= b
+  jnz g -8        // if (g) goto loop1
+  sub d -1        // d++
+  set g d         // g = d
+  sub g b         // g -= b
+  jnz g -13       // if (g) goto loop2
+  jnz f 2         // if (f) goto skipH
+  sub h -1        // h++
+skipH:
+  set g b         // g = b
+  sub g c         // g -= c
+  jnz g 2         // if (g) goto skipExit
+  jnz 1 3         // return
+skipExit:
+  sub b -17       // b += 17
+  jnz 1 -23       // goto loop3
+```
+
+After renaming the registers and converting the jumps into structured loops, the
+program is (functionally, with reasonable inputs) equivalent to the following Go
+code:
+
+```go
+composites := 0
+flag := false
+
+low, high := 57, 57
+if flag {
+  low, high = 105700, 122700
+}
+for n := low; n <= high; n += 17 {
+  prime := true
+  for i := 2; i < n; i++ {
+    for j := 2; j < n; j++ {
+      if i*j == n {
+        prime = false
+      }
+    }
+  }
+  if !prime {
+    composites++
+  }
+}
+```
+
+Part 1 asks how many times a `mul` instruction is executed; this is equivalent
+to asking how often the innermost loop runs, or `(n-2)^2`. The result of part 2
+is simply the number of composite numbers in the set `{low, low+17, ..., high}`.
+The solution uses a trivial trial division primality test.
