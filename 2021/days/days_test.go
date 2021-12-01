@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc provides all the supported AoC actions (solving, plotting, ...).
-package main
+package days
 
 import (
-	"github.com/fis/aoc/glue"
+	"testing"
 
-	_ "github.com/fis/aoc/2017/days" // solvers
-	_ "github.com/fis/aoc/2018/days" // solvers
-	_ "github.com/fis/aoc/2019/days" // solvers
-	_ "github.com/fis/aoc/2020/days" // solvers
-	_ "github.com/fis/aoc/2021/days" // solvers
+	"github.com/fis/aoc/glue"
 )
 
-func main() {
-	glue.Main()
+func TestAllDays(t *testing.T) {
+	tests := []glue.TestCase{
+		{
+			Day:  1,
+			Want: []string{"1529", "1567"},
+		},
+	}
+	glue.RunTests(t, tests, 2021)
 }

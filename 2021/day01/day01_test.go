@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc provides all the supported AoC actions (solving, plotting, ...).
-package main
+package day01
 
 import (
-	"github.com/fis/aoc/glue"
-
-	_ "github.com/fis/aoc/2017/days" // solvers
-	_ "github.com/fis/aoc/2018/days" // solvers
-	_ "github.com/fis/aoc/2019/days" // solvers
-	_ "github.com/fis/aoc/2020/days" // solvers
-	_ "github.com/fis/aoc/2021/days" // solvers
+	"testing"
 )
 
-func main() {
-	glue.Main()
+func TestIncreases(t *testing.T) {
+	depths := []int{199, 200, 208, 210, 200, 207, 240, 269, 260, 263}
+	want1, want2 := 7, 5
+	if got1, got2 := increases(depths); got1 != want1 || got2 != want2 {
+		t.Errorf("increases(%v) = (%d, %d), want (%d, %d)", depths, got1, got2, want1, want2)
+	}
 }
