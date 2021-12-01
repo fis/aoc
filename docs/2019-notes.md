@@ -306,8 +306,17 @@ algorithm. Denoting the `i`'th (1-based) digit of the original signal
 by `s(i)` and the output signal by `t(i)`, one phase (step) of the FFT
 algorithm is represented by the equations:
 
-    t(j) = |sum_(i=1..N) s(i) * W(⌊i / j⌋ mod 4)| mod 10
-    W(0..3) = {0, 1, 0, -1}
+<!--math:day16-p1
+%   t(j) = |sum_(i=1..N) s(i) * W(⌊i / j⌋ mod 4)| mod 10
+%   W(0..3) = {0, 1, 0, -1}
+\vspace*{-2ex}
+\begin{align*}
+t(j) &= \left| \sum_{i=1}^N s(i) * W\left( \lfloor \frac{i}{j} \rfloor \bmod 4 \right)\right| \mod 10 \\
+W(0..3) &= \{0, 1, 0, -1\}
+\end{align*}
+-->
+![day16-p1.png](math/2019-notes-day16-p1.png)
+
 
 ### Part 1
 
@@ -328,16 +337,34 @@ used for the digits of the latter half of the signal in the FFT phase.
 Note how the expression `W(⌊i / j⌋ mod 4)` behaves when `j` is large
 compared to `i`:
 
-    0 <= i < j:   ⌊i / j⌋ = 0  |  W(⌊i / j⌋ mod 4) = 0
-    j <= i < 2j:  ⌊i / j⌋ = 1  |  W(⌊i / j⌋ mod 4) = 1
+<!--math:day16-insight
+%   0 <= i < j:   ⌊i / j⌋ = 0  |  W(⌊i / j⌋ mod 4) = 0
+%   j <= i < 2j:  ⌊i / j⌋ = 1  |  W(⌊i / j⌋ mod 4) = 1
+\vspace*{-3ex}
+\begin{align*}
+0 \leq i < j &:& \lfloor \frac{i}{j}\rfloor &= 0 & W\left( \lfloor \frac{i}{j} \rfloor \bmod 4 \right) &= 0 \\
+j \leq i < 2j &:& \lfloor \frac{i}{j}\rfloor &= 1 & W\left( \lfloor \frac{i}{j} \rfloor \bmod 4 \right) &= 1
+\end{align*}
+-->
+![day16-insight.png](math/2019-notes-day16-insight.png)
 
 What this means is, for the latter half of the signal (where `i < 2j`
 for all digits), we can simplify the algorithm to:
 
-    t(j) = |sum_(i=1..N) s(i) * W(⌊i / j⌋ mod 4)| mod 10
-         = |sum_(i=1..j-1) s(i) * 0 + sum_(i=j..N) s(i) * 1| mod 10
-         = |sum_(i=j..N) s(i)| mod 10
-         = (sum_(i=j..N) s(i)) mod 10
+<!--math:day16-p2
+%   t(j) = |sum_(i=1..N) s(i) * W(⌊i / j⌋ mod 4)| mod 10
+%        = |sum_(i=1..j-1) s(i) * 0 + sum_(i=j..N) s(i) * 1| mod 10
+%        = |sum_(i=j..N) s(i)| mod 10
+%        = (sum_(i=j..N) s(i)) mod 10
+\vspace*{-3ex}
+\begin{align*}
+t(j) &= \left| \sum_{i=1}^N s(i) W\left( \lfloor \frac{i}{j} \rfloor \bmod 4 \right) \right| \mod 10  \\
+&= \left| \sum_{i=1}^{j-1} s(i) \cdot 0 + \sum_{i=j}^N s(i) \cdot 1 \right| \mod 10 \\
+&= \left| \sum_{i=j}^N s(i) \right| \mod 10 \\
+&= \left( \sum_{i=j}^N s(i) \right) \mod 10
+\end{align*}
+-->
+![day16-p2.png](math/2019-notes-day16-p2.png)
 
 In other words, the `j`'th output digit in the latter half is simply
 the sum of all the input digits from its own position to the end of
@@ -419,25 +446,34 @@ graph, given the keys and doors involved.
 
 Formally:
 
-```
-Let G = (V, E) be the graph of keys and entry points, where for each
-edge e = (u, v) ∈ E there are associated values:
-- W(e), a positive integer weight
-- K(e), the set of keys that will be collected by following that edge
-- D(e), the set of keys that are needed to unlock all doors on the way
+<!--math:day18
+Let $G = (V, E)$ be the graph of keys and entry points, where for each
+edge $e = (u, v) \in E$ there are three associated values:
 
-Now define G' = (V', E') and a modified W'(e) where:
-- V' = V^N × 2^K.
-- e' = ((u_1 .. u_n, K_u), (v_1 .. v_n, K_v)) ∈ E' if and only if:
-  - there is an i ∈ [0, N) s.t. e = (u_i, v_i) ∈ E, u_j = v_j ∀j≠i
-  - K_v = K_u ∪ K(e)
-  - K_v ⊆ D(e)
-- W'(e') = W(e)
+\begin{itemize}
+\item $W(e)$, a positive integer weight
+\item $K(e)$, the set of keys that will be collected by following that edge
+\item $D(e)$, the set of keys that are needed to unlock all doors on the way
+\end{itemize}
 
-The shortest path to collect all keys in G is the same as the shortest
-path in G' from (e_1 .. e_n, ∅) to any node (v_1 .. v_n, K), where
-(e_1 .. e_n) is the set of entry points of G and K is the set of keys.
-```
+Now define $G' = (V', E')$ and a modified $W'(e)$ where:
+
+\begin{itemize}
+\item $V' = V^N \times 2^K$
+\item $e' = ((u_1 \ldots u_n, K_u), (v_1 \ldots v_n, K_v)) \in E'$ if and only if:
+\begin{itemize}
+\item there is an $i \in \left[0, N\right)$ s.t. $e = (u_i, v_i) \in E$, $u_j = v_j\ \forall j \neq i$
+\item $K_v = K_u \cup K(e)$
+\item $K_v \subseteq D(e)$
+\end{itemize}
+\item $W'(e') = W(e)$
+\end{itemize}
+
+The shortest path to collect all keys in $G$ is the same as the shortest path in
+$G'$ from $(e_1 \ldots e_n, \emptyset)$ to any node $(v_1 \ldots v_n, K)$, where
+$(e_1 \ldots e_n)$ is the set of entry points of $G$ and $K$ is the set of keys.
+-->
+![day18.png](math/2019-notes-day18.png)
 
 ## [Day 19](https://adventofcode.com/2019/day/19)
 
@@ -591,11 +627,16 @@ The key insights for the solution here are:
 The reverse operations of the shuffle steps on a single location `x`
 are:
 
-```
-deal(x)          = N-1 - x
-cut(x, K)        = (x + K) % N
-interleave(x, K) = (x * K^-1) % N
-```
+<!--math:day22-ops
+\vspace*{-3ex}
+\begin{align*}
+\mathsf{deal}(x) &= (N-1)-x \\
+\mathsf{cut}(x, K) &= x + K \pmod N \\
+\mathsf{interleave}(x, K) &= x K^{-1} \pmod N
+\end{align*}
+-->
+![day22-ops.png](math/2019-notes-day22-ops.png)
+
 
 For the last operation, `K^-1` denotes the
 *[modular inverse](http://mathworld.wolfram.com/ModularInverse.html)*
@@ -603,40 +644,44 @@ of `K` (modulo `N`).
 
 The required compositions of transformations are therefore:
 
-```
-Let f(x) = (A*x + B) % N and g(x) = (C*x + D) % N be arbitrary transformations.
+<!--math:day22-comp
+Let $f(x) = (Ax + B) \bmod N$ and $g(x) = (Cx + D) \bmod N$ be two arbitrary
+transformations.
 
-deal(f(x))
-= N-1 - (A*x + B) % N
-= (((-A) % N)*x + N-1 - B) % N
-
-cut(f(x), K)
-= ((A*x + B) % N + K) % N
-= (A*x + (B + K) % N) % N
-
-interleave(f(x), K)
-= ((A*x + B) % N * K^-1) % N
-= ((A * K^-1 % N)*x + (B * K^-1) % N) % N
-
+\begin{align*}
+\mathsf{deal}(f(x))
+&= (N-1) - (Ax + B) \bmod N \\
+&= (((-A) \bmod N) x + (N-1) - B) \bmod N \\
+\mathsf{cut}(f(x), K)
+&= ((Ax + B) \bmod N + K) \bmod N \\
+&= (Ax + (B+K) \bmod N) \bmod N \\
+\mathsf{interleave}(f(x), K)
+&= ((Ax + B) \bmod N \cdot K^{-1}) \bmod N \\
+&= ((A K^{-1} \bmod N) x + B K^{-1} \bmod N) \bmod N \\
 g(f(x))
-= (C*((A*x + B) % N) + D) % N
-= ((C * A % N)*x + (C * B + D) % N) % N
-
+&= (C((Ax + B) \bmod N) + D) \bmod N \\
+&= ((CA \bmod N)x + (CB+D) \bmod N) \bmod N \\
 f(f(x))
-= ((A * A % N)*x + (A * B + B) % N) % N
-= ((A^2 % N)*x + ((A + 1) * B) % N) % N
-```
+&= ((AA \bmod N)x + (AB+B) \bmod N) \bmod N \\
+&= ((A^2 \bmod N)x + (A+1)B \bmod N) \bmod N
+\end{align*}
+-->
+![day22-comp.png](math/2019-notes-day22-comp.png)
 
-Or in terms of the updates to the parameters:
+Or expressed in terms of the updates to the parameters:
 
-```
-               A                B
-deal           (-A) % N         B
-cut K          A                (B + K) % N
-interleave K   (A * K^-1) % N   (B * K^-1) % N
-f . g          (A * C) % N      (B * C + D) % N
-f^2            A^2 % N          ((A + 1) * B) % N
-```
+<!--math:day22-param
+\vspace*{-3ex}
+\begin{align*}
+& && A && B \\
+& \mathsf{deal} && (-A) \bmod N && B \\
+& \mathsf{cut}\ K && A && (B + K) \bmod N \\
+& \mathsf{interleave}\ K && A K^{-1} \bmod N && B K^{-1} \bmod N \\
+& f \circ g && AC \bmod N && (BC+D) \bmod N \\
+& f^2 && A^2 \bmod N && (A+1)B \bmod N
+\end{align*}
+-->
+![day22-param.png](math/2019-notes-day22-param.png)
 
 ## [Day 23](https://adventofcode.com/2019/day/23)
 

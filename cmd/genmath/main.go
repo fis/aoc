@@ -97,6 +97,7 @@ func extract(path string) (snippets []snippet, err error) {
 const texHeader = `
 \documentclass{article}
 \usepackage[active,pdftext,tightpage]{preview}
+\setlength{\PreviewBorder}{2ex}
 \usepackage{amsmath}
 \begin{document}
 \begin{preview}
