@@ -105,6 +105,15 @@ For linear congruential generators with a power-of-two modulus, the low 16 bits
 are known to have a very short period. This would probably allow a much faster
 solution. But the generators here use a prime (2**31-1) as the divisor.
 
+> Update: Turns out these two generators are famous! Generator A's multiplier of
+> 16807 is that proposed in
+> [Random Number Generators: Good Ones Are Hard To Find](https://dl.acm.org/doi/10.1145/63039.63042)
+> (Park & Miller, Communications of the ACM, vol 31, issue 10, October 1988),
+> while B's 48271 is advocated for in
+> [the authors' later response to criticism](https://dl.acm.org/doi/10.1145/159544.376068)
+> (Communications of the ACM, vol 36, issue 7, July 1993). Not that this really
+> helps in terms of solving the puzzle.
+
 ## Day 16: Permutation Promenade
 
 A bad case of not remembering to predict the future here.
