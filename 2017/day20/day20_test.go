@@ -100,6 +100,7 @@ func BenchmarkAlgos(b *testing.B) {
 		}
 		parsed[i] = parts[1:]
 	}
+	ps := parseInput(parsed)
 	algos := []struct {
 		name string
 		f    func([]particle) int
@@ -108,11 +109,13 @@ func BenchmarkAlgos(b *testing.B) {
 		{name: "calc", f: collideCalc},
 	}
 	for _, algo := range algos {
-		ps := parseInput(parsed)
 		b.Run(algo.name, func(b *testing.B) {
-			want := 574
-			if got := algo.f(ps); got != want {
-				b.Errorf("got %d, want %d", got, want)
+			for i := 0; i < b.N; i++ {
+				ps2 := append([]particle(nil), ps...)
+				want := 574
+				if got := algo.f(ps2); got != want {
+					b.Errorf("got %d, want %d", got, want)
+				}
 			}
 		})
 	}

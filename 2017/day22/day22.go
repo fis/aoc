@@ -29,7 +29,7 @@ func init() {
 
 func solve(l *util.Level) ([]string, error) {
 	p1 := simulateSimple(l.Copy(), 10000)
-	p2 := simulateEvolved(l, 10000000)
+	p2 := simulateEvolvedArray(l, 10000000)
 	return glue.Ints(p1, p2), nil
 }
 
@@ -50,7 +50,7 @@ func simulateSimple(l *util.Level, rounds int) (infected int) {
 	return infected
 }
 
-func simulateEvolved(l *util.Level, rounds int) (infected int) {
+func simulateEvolvedLevel(l *util.Level, rounds int) (infected int) {
 	minP, maxP := l.Bounds()
 	at, d := util.P{(minP.X + maxP.X) / 2, (minP.Y + maxP.Y) / 2}, util.P{0, -1}
 	for round := 0; round < rounds; round++ {
@@ -69,6 +69,48 @@ func simulateEvolved(l *util.Level, rounds int) (infected int) {
 			l.Set(at.X, at.Y, '.')
 		}
 		at = at.Add(d)
+	}
+	return infected
+}
+
+func simulateEvolvedArray(l *util.Level, rounds int) (infected int) {
+	const (
+		X0    = -256
+		Y0    = -185
+		W     = 512
+		Wbits = 9
+		H     = 400
+	)
+	arr := [W * H]byte{}
+
+	minP, maxP := l.Bounds()
+	for y := minP.Y; y <= maxP.Y; y++ {
+		for x := minP.X; x <= maxP.X; x++ {
+			if l.At(x, y) == '#' {
+				arr[((y-Y0)<<Wbits)+(x-X0)] = 2
+			}
+		}
+	}
+	atX, atY, dX, dY := (minP.X+maxP.X)/2, (minP.Y+maxP.Y)/2, 0, -1
+
+	for round := 0; round < rounds; round++ {
+		atI := ((atY - Y0) << Wbits) + (atX - X0)
+		switch c := arr[atI]; c {
+		case 0:
+			dX, dY = dY, -dX
+			arr[atI] = 1
+		case 1:
+			arr[atI] = 2
+			infected++
+		case 2:
+			dX, dY = -dY, dX
+			arr[atI] = 3
+		case 3:
+			dX, dY = -dX, -dY
+			arr[atI] = 0
+		}
+		atX += dX
+		atY += dY
 	}
 	return infected
 }

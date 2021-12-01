@@ -54,9 +54,32 @@ func TestSimulateEvolved(t *testing.T) {
 		{rounds: 10000000, want: 2511944},
 	}
 	for _, test := range tests {
-		level := util.ParseLevelString(strings.TrimPrefix(ex, "\n"), '.')
-		if got := simulateEvolved(level, test.rounds); got != test.want {
-			t.Errorf("simulateEvolved(..., %d) = %d, want %d", test.rounds, got, test.want)
+		for i, f := range []func(*util.Level, int) int{simulateEvolvedLevel, simulateEvolvedArray} {
+			level := util.ParseLevelString(strings.TrimPrefix(ex, "\n"), '.')
+			if got := f(level, test.rounds); got != test.want {
+				t.Errorf("simulateEvolved[%d](..., %d) = %d, want %d", i, test.rounds, got, test.want)
+			}
 		}
+	}
+}
+
+func BenchmarkAlgos(b *testing.B) {
+	algos := []struct {
+		name string
+		f    func(*util.Level, int) int
+	}{
+		{name: "level", f: simulateEvolvedLevel},
+		{name: "array", f: simulateEvolvedArray},
+	}
+	for _, algo := range algos {
+		b.Run(algo.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				level := util.ParseLevelString(strings.TrimPrefix(ex, "\n"), '.')
+				want := 2511944
+				if got := algo.f(level, 10000000); got != want {
+					b.Errorf("got %d, want %d", got, want)
+				}
+			}
+		})
 	}
 }
