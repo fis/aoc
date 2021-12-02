@@ -1,0 +1,59 @@
+>#v&~$:&\-1+\~$~~$~$0\>:~:a-!#v_-#v_\1+\v
+  >.@                 ^           <     <
+^          +1_v#`_v#`0+1:-\$$$<
+^             < $$<
+
+
+                ...invalid
+
+
+hi-lo+1 lo n ref ref in   $$$
+hi-lo+1 lo n              \-
+hi-lo+1 n-lo              :1+
+hi-lo+1 n-lo n-lo+1       0`
+hi-lo+1 n-lo n-lo+1>0     branch
+
+if n-lo+1>0:
+hi-lo+1 n-lo              `
+n-lo>hi-lo+1              branch
+
+if n-lo+1<=0:
+hi-lo+1 n-lo              $$
+
+n >= lo && n <= hi
+n-lo >= 0 && n-lo <= hi-lo
+n-lo+1 > 0 && n-lo < hi-lo+1
+
+
+
+
+lo         :
+lo lo      &
+lo lo hi   \
+lo hi lo   -
+lo hi-lo   \
+hi-lo lo
+
+
+
+lo n+1>hi
+lo n>=hi
+
+
+hi lo n ref          :
+hi lo n ref ref      ~
+hi lo n ref ref in   -
+hi lo n ref eq       _
+
+eq:
+hi lo n ref    \
+hi lo ref n    1
+hi lo ref n 1  +
+hi lo ref n'   \
+hi lo n' ref
+
+neq:
+
+
+
+hi-lo-1 lo-1 ref

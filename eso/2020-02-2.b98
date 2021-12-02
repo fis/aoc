@@ -1,0 +1,68 @@
+#v&~$:&\-\~$~\~~$$>1-:#v_$:~-#v_\1\>1-:#v_$\~-!+1-#v_1+>~a-#v_
+ >.@              ^  $~<      > \0\^  $~<          >   ^    <
+
+
+could be inlined too:
+
+>~a-#v_     0>a#~-# _
+^    <
+
+
+
+#v&~$:&\-\~$~\~~$$>1-:#v_$:~-#v_\1>\>1-:#v_$\~-!+1-#v_1+>~a-#v_
+ >.@              ^  $~<      >\0 ^ ^  $~<          >   ^    <
+
+
+or with some code duplication:
+
+#v&~$:&\-\~$~\~~$$>1-:#v_$:~-#v_\>1# -#$:#~_$~->#v_ >~a-#v_
+ >.@              ^  $~<      >\>1# -#$:#~_$~-!^ >1+^    <
+
+
+hi-lo lo ref     \
+hi-lo ref lo     discard
+hi-lo ref        :
+hi-lo ref ref    
+
+
+eq:
+hi-lo ref      \
+ref hi-lo      0\
+ref 0 hi-lo
+
+neq:
+hi-lo ref      \1\
+ref 1 hi-lo
+
+
+the p/g version:
+
+#v&~$:&\-\~$~99p~~$$>1-:#v_$~99g-!\>1-:#v_$~99g-!+1-#v_1+>~a-#v_
+ >.@                ^  $~<         ^  $~<            >   ^    <
+
+
+could be inlined:
+
+>1-:#v_    >1# -#$:#~_
+^  $~<
+
+
+obsoleted by moving those 1-'ses:
+
+#v&~$:&\-1-\1-~$~99p~~$$>  :#v_$~99g-!\>  :#v_$~99g-!+1-#v_1+>~a-#v_
+ >.@                    ^$~-1<         ^$~-1<            >   ^    <
+
+
+---                  &~$
+lo                   :
+lo lo                &
+lo lo hi             \
+lo hi lo             -
+lo hi-lo             1-
+lo hi-lo-1           \
+hi-lo-1 lo           1-
+hi-lo-1 lo-1
+
+
+hi-lo-1 lo-1      > :#v_
+                  ^~-1<

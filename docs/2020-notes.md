@@ -16,6 +16,9 @@ Some of the days also have [Befunge(-98)](https://esolangs.org/wiki/Befunge)
 solutions attached in this document, because, well, what reason do you need?
 Note though that these are not *good* Befunge examples.
 
+> **Update (2021-12-02)**: I've also added some solutions in
+> [Burlesque](https://esolangs.org/wiki/Burlesque). The same caveat applies.
+
 ## [Day 1](https://adventofcode.com/2020/day/1): Report Repair
 
 As usual, the contest starts very simply. Given the framework has built-in
@@ -45,6 +48,20 @@ Part 2:
             ^                     -1$<
 ```
 
+### Burlesque
+
+Part 1:
+
+```
+psJcp{++2020==}fepd
+```
+
+Part 2:
+
+```
+ps3CB{++2020==}fepd
+```
+
 ## [Day 2](https://adventofcode.com/2020/day/2): Password Philosophy
 
 Day 2 involves validating some passwords, another simple implementation task.
@@ -67,6 +84,20 @@ Part 2:
 ```befunge
 #v&~$:&\-\~$~\~~$$>1-:#v_$:~-#v_\1>\>1-:#v_$\~-!+1-#v_1+>~a-#v_
  >.@              ^  $~<      >\0 ^ ^  $~<          >   ^    <
+```
+
+### Burlesque
+
+Part 1:
+
+```
+ln{wd^pj-]CNJx/psp^x/<=#rng<=&&}ms
+```
+
+Part 2:
+
+```
+ln{wdp^'-;;rix/-.jsij-]CN1==}ms
 ```
 
 ## [Day 3](https://adventofcode.com/2020/day/3): Toboggan Trajectory
@@ -122,6 +153,20 @@ a>\2*4#v~9%`+\1-:#v_$fp~$
  ^    $0          <
        >:fg#v_>:fg!#v_.@
        ^  +1< ^   +1<
+```
+
+### Burlesque
+
+Part 1:
+
+```
+ln{'F'0r~'B'1r~'L'0r~'R'1r~b2}m[>]
+```
+
+Part 2:
+
+```
+ln{'F'0r~'B'1r~'L'0r~'R'1r~b2}m[><2CO{p^+.!=}fe-]+.
 ```
 
 ## [Day 6](https://adventofcode.com/2020/day/6): Custom Customs
