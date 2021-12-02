@@ -22,3 +22,8 @@ s_{j-N} &< s_j
 \end{align*}
 -->
 ![day01.png](math/2021-notes-day01.png)
+
+## [Day 2](https://adventofcode.com/2021/day/2): Dive!
+
+No comment. Other than apparently puzzle titles this year won't have the same
+alliterative appeal they did last year.

@@ -12,24 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+package day02
 
 import (
 	"testing"
 
-	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util"
 )
 
-func TestAllDays(t *testing.T) {
-	tests := []glue.TestCase{
-		{
-			Day:  1,
-			Want: []string{"1529", "1567"},
-		},
-		{
-			Day:  2,
-			Want: []string{"1561344", "1848454425"},
-		},
+var ex = [][]string{
+	{"forward", "5"},
+	{"down", "5"},
+	{"forward", "8"},
+	{"up", "3"},
+	{"down", "8"},
+	{"forward", "2"},
+}
+
+func TestApplyMoves(t *testing.T) {
+	want := util.P{15, 10}
+	if got := applyMoves(util.P{0, 0}, parseInput(ex)); got != want {
+		t.Errorf("applyMoves(0, %v) = %d, want %d", ex, got, want)
 	}
-	glue.RunTests(t, tests, 2021)
+}
+
+func TestApplyMoves2(t *testing.T) {
+	want := util.P{15, 60}
+	if got := applyMoves2(util.P{0, 0}, parseInput(ex)); got != want {
+		t.Errorf("applyMoves2(0, %v) = %d, want %d", ex, got, want)
+	}
 }
