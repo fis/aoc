@@ -59,3 +59,23 @@ Part 2:
 ```
 0Ppln{wd^prijL[J7=={vvJpP.*CL}j{3.-.*PP.+Pp}jie}m[tp{++}mp
 ```
+
+## [Day 3](https://adventofcode.com/2021/day/3): Binary Diagnostic
+
+Continuing with straight-forward tasks. The solution here is more "bitwise" than
+is really reasonable (especially the `keep := (2 * ones / N) ^ keepLCB` thing),
+but sometimes you just have to have a little fun with it.
+
+### Burlesque
+
+Part 1:
+
+```
+ln)XXtpJ)n!j)fcCL{\[b2}mp
+```
+
+Part 2 (quite terrible):
+
+```
+ln)XXtpbc{n!fc}{{JPPJ+.Pp!!JJ.+'1+]{==}j+]fI{si}j+]m[}j11ia0Pp{-~nz}w!}Z]{FL\[b2}mp
+```
