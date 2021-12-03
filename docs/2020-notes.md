@@ -106,6 +106,20 @@ Third day brings us a first instance of an AoC staple, the two-dimensional
 roguelike-style level. The `util.Level` utilities from last year make short work
 of this. The task just involves counting trees on a given rational-number slope.
 
+### Burlesque
+
+Part 1:
+
+```
+lnr0{3.*jJL[x/j.%!!}Z]'#CN
+```
+
+Part 2:
+
+```
+lnJbc105fC1+]{r0?*z[}Z]j[-2enr1z[+]{{JL[x/j.%!!}m^'#CN}mp
+```
+
 ## [Day 4](https://adventofcode.com/2020/day/4): Passport Processing
 
 Another data validation task. It's been brought to my attention that some people
