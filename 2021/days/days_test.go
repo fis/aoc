@@ -20,24 +20,29 @@ import (
 	"github.com/fis/aoc/glue"
 )
 
+var tests = []glue.TestCase{
+	{
+		Day:  1,
+		Want: []string{"1529", "1567"},
+	},
+	{
+		Day:  2,
+		Want: []string{"1561344", "1848454425"},
+	},
+	{
+		Day:  3,
+		Want: []string{"2724524", "2775870"},
+	},
+	{
+		Day:  4,
+		Want: []string{"16716", "4880"},
+	},
+}
+
 func TestAllDays(t *testing.T) {
-	tests := []glue.TestCase{
-		{
-			Day:  1,
-			Want: []string{"1529", "1567"},
-		},
-		{
-			Day:  2,
-			Want: []string{"1561344", "1848454425"},
-		},
-		{
-			Day:  3,
-			Want: []string{"2724524", "2775870"},
-		},
-		{
-			Day:  4,
-			Want: []string{"16716", "4880"},
-		},
-	}
 	glue.RunTests(t, tests, 2021)
+}
+
+func BenchmarkAllDays(b *testing.B) {
+	glue.RunBenchmarks(b, tests, 2021)
 }

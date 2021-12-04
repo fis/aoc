@@ -37,3 +37,17 @@ func RunTests(t *testing.T, tests []TestCase, year int) {
 		})
 	}
 }
+
+func RunBenchmarks(b *testing.B, tests []TestCase, year int) {
+	for _, test := range tests {
+		b.Run(fmt.Sprintf("day=%02d", test.Day), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				if got, err := SolveFile(year, test.Day, fmt.Sprintf("testdata/day%02d.txt", test.Day)); err != nil {
+					b.Errorf("Solve: %v", err)
+				} else if diff := cmp.Diff(test.Want, got); diff != "" {
+					b.Errorf("Solve mismatch (-want +got):\n%s", diff)
+				}
+			}
+		})
+	}
+}
