@@ -79,3 +79,28 @@ Part 2 (quite terrible):
 ```
 ln)XXtpbc{n!fc}{{JPPJ+.Pp!!JJ.+'1+]{==}j+]fI{si}j+]m[}j11ia0Pp{-~nz}w!}Z]{FL\[b2}mp
 ```
+
+## [Day 4](https://adventofcode.com/2021/day/4): Giant Squid
+
+Nothing particularly clever about the Go solution; it just goes through the
+motions. It's probably reasonably efficient, not that it really matters for the
+puzzle input.
+
+### Burlesque
+
+These are particularly bad, but I just can't be bothered, as long as they work.
+
+Part 1:
+
+```
+{#a{{sm}ay}}hd',' r~psJ100.-25co{5coJtp.+}m[hd
+-.{[-J-]#ajbc{{{}r~}j+]m[}Z]`a}{!bayn!}w!-]!bfeFL++.*2./
+```
+
+Part 2:
+
+```
+{}hd',' r~psJ100.-25co{5coJtp.+}m[hd
+-.{[-J-]#ajbc{{{}r~}j+]m[}Z]J`a{{sm}ay}fI#b\\#b.+`b}{#bL[100.<}w!
+-]#a#b-]!!FL++.*2./
+```

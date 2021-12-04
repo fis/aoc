@@ -17,7 +17,6 @@ package day02
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
@@ -30,16 +29,7 @@ func init() {
 func solve(lines []string) ([]string, error) {
 	sheet := make([][]int, len(lines))
 	for i, line := range lines {
-		words := util.Words(line)
-		row := make([]int, len(words))
-		for j, word := range words {
-			n, err := strconv.Atoi(word)
-			if err != nil {
-				return nil, fmt.Errorf("not a number: %q: %w", word, err)
-			}
-			row[j] = n
-		}
-		sheet[i] = row
+		sheet[i] = util.Ints(line)
 	}
 	p1 := checksumSheet(sheet)
 	p2, err := divisibleSheet(sheet)

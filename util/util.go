@@ -40,6 +40,13 @@ func Lines(s string) (lines []string) {
 	return lines
 }
 
+// Ints returns the list of all contiguous sequences of decimal digits parsed as integers,
+// as defined by the ScanInts split function.
+func Ints(s string) (ints []int) {
+	ints, _ = ScanAllInts(strings.NewReader(s))
+	return ints
+}
+
 // ReadLines returns the contents of a text file as a slice of strings representing the lines. The
 // newline separators are not kept. The last line need not have a newline character at the end.
 func ReadLines(path string) ([]string, error) {
@@ -89,6 +96,20 @@ func ScanAll(r io.Reader, split bufio.SplitFunc) (tokens []string, err error) {
 	return tokens, s.Err()
 }
 
+// ScanAllInts extracts all decimal integers from the reader.
+func ScanAllInts(r io.Reader) (ints []int, err error) {
+	s := bufio.NewScanner(r)
+	s.Split(ScanInts)
+	for s.Scan() {
+		n, err := strconv.Atoi(s.Text())
+		if err != nil {
+			return nil, err
+		}
+		ints = append(ints, n)
+	}
+	return ints, s.Err()
+}
+
 // ScanChunks implements a bufio.SplitFunc for scanning paragraphs delimited by a blank line
 // (i.e., two consecutive '\n' bytes).
 func ScanChunks(data []byte, atEOF bool) (advance int, token []byte, err error) {
@@ -104,6 +125,38 @@ func ScanChunks(data []byte, atEOF bool) (advance int, token []byte, err error) 
 		return len(data), data, nil
 	}
 	return 0, nil, nil
+}
+
+// ScanInts implements a bufio.SplitFunc for scanning decimal integers separated by any non-digits.
+// An optional - can also be included as the first character of the token. "123-456" will be split
+// to the two tokens "123", "-456".
+func ScanInts(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	start := -1
+	for i, b := range data {
+		if (b >= '0' && b <= '9') || b == '-' {
+			start = i
+			break
+		}
+	}
+	if start < 0 {
+		return len(data), nil, nil
+	}
+	data = data[start:]
+	advance += start
+	end := 1
+	for end < len(data) && data[end] >= '0' && data[end] <= '9' {
+		end++
+	}
+	if end == len(data) && !atEOF {
+		return advance, nil, nil
+	}
+	if end == 1 && data[0] == '-' {
+		return advance + 1, nil, nil
+	}
+	return advance + end, data[:end], nil
 }
 
 // P represents a two-dimensional integer-valued coordinate.

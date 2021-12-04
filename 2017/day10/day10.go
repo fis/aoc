@@ -18,10 +18,10 @@ package day10
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/fis/aoc/2017/knot"
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util"
 )
 
 func init() {
@@ -32,13 +32,9 @@ func solve(lines []string) ([]string, error) {
 	if len(lines) != 1 {
 		return nil, fmt.Errorf("expected 1 line of input, got %d", len(lines))
 	}
-	parts := strings.Split(lines[0], ",")
-	lengths := make([]byte, len(parts))
-	for i, part := range parts {
-		n, err := strconv.Atoi(part)
-		if err != nil {
-			return nil, fmt.Errorf("not a number: %q: %w", part, err)
-		}
+	ints := util.Ints(lines[0])
+	lengths := make([]byte, len(ints))
+	for i, n := range ints {
 		lengths[i] = byte(n)
 	}
 	p1 := part1(knot.N, lengths)

@@ -34,7 +34,8 @@ type LineSolver func([]string) ([]string, error)
 // ChunkSolver wraps a solution that wants the blank-line-separated paragraphs of the input as strings.
 type ChunkSolver func([]string) ([]string, error)
 
-// IntSolver wraps a solution that wants the input read in as whitespace-separated decimal integers.
+// IntSolver wraps a solution that wants the input read in as a list of decimal integers.
+// The separators can be any non-digit characters.
 type IntSolver func([]int) ([]string, error)
 
 // RegexpSolver wraps a solution that wants to match a single regular expression to each of the input lines.
@@ -84,11 +85,7 @@ func (s ChunkSolver) Solve(input io.Reader) ([]string, error) {
 
 // Solve implements the Solver interface.
 func (s IntSolver) Solve(input io.Reader) ([]string, error) {
-	rawData, err := util.ScanAll(input, bufio.ScanWords)
-	if err != nil {
-		return nil, err
-	}
-	data, err := atois(rawData)
+	data, err := util.ScanAllInts(input)
 	if err != nil {
 		return nil, err
 	}
@@ -134,17 +131,6 @@ func (s LevelSolver) Solve(input io.Reader) ([]string, error) {
 	out, err := s.Solver(level)
 	if err != nil {
 		return nil, err
-	}
-	return out, nil
-}
-
-func atois(in []string) (out []int, err error) {
-	for _, s := range in {
-		i, err := strconv.Atoi(s)
-		if err != nil {
-			return nil, err
-		}
-		out = append(out, i)
 	}
 	return out, nil
 }
