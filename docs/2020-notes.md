@@ -272,6 +272,24 @@ not really usefully rendered by GraphViz tools, at least without fiddling. A
 scaled-down (20%) version is included as `2020-day07-small.png` anyway, just to
 prove the point. On the other hand, it does have some white nodes as well.
 
+### Burlesque
+
+Part 1:
+
+```
+ln{"\\w+ \\w+ bag"~?}m[hd{"shiny gold bag"}
+{bc#az[{^p[-cp{sm}ay}pt^p)[-\[`a)[-\[)-]JPp}{nz}w!
+p\CLFLL[
+```
+
+Part 2:
+
+```
+ln{"s c";;^p',;;{"([0-9]+) ([^ ]+ [^ ]+ bag)"=~}\m2coj+]}m[hd
+0{1"shiny gold bag"}{^p{-]==}[[#ajfe[-jbc{jp^rix/.*CLJPp}Z]p^}{nz}w!
+p\CL)-]++
+```
+
 ## [Day 8](https://adventofcode.com/2020/day/8): Handheld Halting
 
 Hearkening back to the [Intcode](https://esolangs.org/wiki/Intcode) days of
