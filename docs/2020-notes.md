@@ -138,6 +138,25 @@ supports two different units, is the most complex of these.
 Day 4 also introduces convenience functions for reading paragraphs separated by
 blank lines in the `util` package.
 
+### Burlesque
+
+Part 1:
+
+```
+"\n\n";;{"[^c]..:"~?L[7==}ms
+```
+
+Part 2:
+
+(Line-wrapped for convenience on this page, but since it is in the middle of a
+string literal, that'd not strictly speaking valid.)
+
+```
+"\n\n";;{' [+"(byr:(19[2-9][0-9]|200[012])|iyr:20(1[0-9]|20)|eyr:20(2[0-9]|30)|
+hgt:(1([5-8][0-9]|9[0-3])cm|(59|6[0-9]|7[0-6])in)|hcl:#[0-9a-f]{6}|ecl:(amb|blu
+|brn|gry|grn|hzl|oth)|pid:[0-9]{9})\s"~?L[7==}ms
+```
+
 ## [Day 5](https://adventofcode.com/2020/day/5): Binary Boarding
 
 On day 5, the description really does its best to obfuscate the simplicity of
@@ -174,13 +193,13 @@ a>\2*4#v~9%`+\1-:#v_$fp~$
 Part 1:
 
 ```
-ln{'F'0r~'B'1r~'L'0r~'R'1r~b2}m[>]
+ln{@F0r~@B1r~@L0r~@R1r~b2}m[>]
 ```
 
 Part 2:
 
 ```
-ln{'F'0r~'B'1r~'L'0r~'R'1r~b2}m[><2CO{p^+.!=}fe-]+.
+ln{@F0r~@B1r~@L0r~@R1r~b2}m[><2CO{p^+.!=}fe-]+.
 ```
 
 ## [Day 6](https://adventofcode.com/2020/day/6): Custom Customs
@@ -205,6 +224,21 @@ Part 2:
   ^-1pf\0:<   ^pf\+1gf:<           <      >-^-1_v#-g10gf:<@.<
                              >'v'<0p  ^   ^1\+1\<
 ```
+
+### Burlesque
+
+Part 1:
+
+```
+"\n\n";;{ln\[><gl}ms
+```
+
+Part 2:
+
+```
+"\n\n";;{lnJbcj\[><gn{{~[}j+]al}Z]++}ms
+```
+
 
 ## [Day 7](https://adventofcode.com/2020/day/7): Handy Haversacks
 
