@@ -60,7 +60,7 @@ func bingo(seq []int, boards []board) (firstWin, lastWin int) {
 const size = 5
 
 type board struct {
-	data      [size][size]byte
+	totalSum  int
 	positions [][2]int
 	marks     [2][size]int
 }
@@ -69,7 +69,7 @@ func (b *board) initialize(numbers *[size * size]int) {
 	for y, i := 0, 0; y < size; y++ {
 		for x := 0; x < size; x, i = x+1, i+1 {
 			n := numbers[i]
-			b.data[y][x] = byte(n)
+			b.totalSum += n
 			for n >= len(b.positions) {
 				b.positions = append(b.positions, [2]int{-1, -1})
 			}
@@ -86,19 +86,14 @@ func (b *board) mark(n int) (wins bool) {
 	if p[0] < 0 {
 		return false
 	}
-	b.data[p[1]][p[0]] = 0
+	b.totalSum -= n
 	b.marks[0][p[0]]++
 	b.marks[1][p[1]]++
 	return b.marks[0][p[0]] >= size || b.marks[1][p[1]] >= size
 }
 
 func (b *board) sum() (s int) {
-	for y := 0; y < size; y++ {
-		for x := 0; x < size; x++ {
-			s += int(b.data[y][x])
-		}
-	}
-	return s
+	return b.totalSum
 }
 
 func parseInput(chunks []string) (seq []int, boards []board, err error) {
