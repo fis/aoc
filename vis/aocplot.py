@@ -108,3 +108,31 @@ def plot_leaderboard_dist(data):
         .facet(column='stars:N', row='year:O') \
         .resolve_scale(x='independent', y='independent') \
         .save('out/time.dist.html')
+
+
+def plot_gobench():
+    """Redraws all the plots based on the Go benchmark data."""
+
+    data = aocdata.gobench()
+    plot_gobench_time(data)
+
+
+def plot_gobench_time(data):
+    """Plots the times taken by all the solutions."""
+
+    print('gobench_time')
+
+    data = data.reset_index()
+
+    x_title = 'Puzzle day'
+    y_title = 'Time to solve puzzle (s)'
+    y_scale = alt.Scale(type='log')
+
+    alt.Chart(data) \
+        .mark_line() \
+        .encode(
+            alt.X('day:O', title=x_title),
+            alt.Y('runtime', title=y_title, scale=y_scale),
+            alt.Color('year:N')) \
+        .properties(width=800, height=600) \
+        .save('out/gobench.time.html')
