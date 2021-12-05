@@ -106,7 +106,7 @@ func (r ring) key() (n int) {
 
 type bigRing struct {
 	cur  *bigRingCup
-	cups []*bigRingCup
+	cups []bigRingCup
 }
 
 type bigRingCup struct {
@@ -115,23 +115,23 @@ type bigRingCup struct {
 }
 
 func newBigRing(s string) (r *bigRing, err error) {
-	r = &bigRing{cups: make([]*bigRingCup, 1000000)}
+	r = &bigRing{cups: make([]bigRingCup, 1000000)}
 	prev, max := &r.cur, 0
 	for _, b := range s {
 		if b < '1' || b > '9' {
 			return nil, fmt.Errorf("invalid label: %v", b)
 		}
 		i := int(b) - '1'
-		cup := &bigRingCup{label: i}
-		r.cups[i] = cup
+		cup := &r.cups[i]
+		cup.label = i
 		*prev, prev = cup, &cup.next
 		if i > max {
 			max = i
 		}
 	}
 	for i := max + 1; i <= 999999; i++ {
-		cup := &bigRingCup{label: i}
-		r.cups[i] = cup
+		cup := &r.cups[i]
+		cup.label = i
 		*prev, prev = cup, &cup.next
 	}
 	*prev = r.cur
@@ -145,13 +145,13 @@ func (r *bigRing) move() {
 	for dl == p1.label || dl == p2.label || dl == p3.label {
 		dl = (dl - 1 + 1000000) % 1000000
 	}
-	d := r.cups[dl]
+	d := &r.cups[dl]
 	d.next, p3.next = p1, d.next
 	r.cur = r.cur.next
 }
 
 func (r bigRing) key() int {
-	k0 := r.cups[0]
+	k0 := &r.cups[0]
 	k1, k2 := k0.next, k0.next.next
 	return (k1.label + 1) * (k2.label + 1)
 }
