@@ -385,6 +385,15 @@ Note that this program expects the `&` instruction to not consume a newline
 immediately following a number. For an implementation where that newline is in
 fact dropped (such as `cfunge`), you need to do the obvious change to the code.
 
+### Burlesque
+
+Part 1:
+
+```
+lnJ{1}fIhdhd0 0{J#bjbx\\`bJ#aj!!
+J{{"a"~!}{x/.+j}{"n"~!}{vv}{"j"~!}{.+-.}}cnj@+ r~wd[~ri+]e!+.}{#bj~[}w!vv
+```
+
 ## [Day 9](https://adventofcode.com/2020/day/9): Encoding Error
 
 In the [advent calendar](https://adventofcode.com/2020), day 9 is separated from
