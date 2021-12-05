@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -69,21 +70,24 @@ func ReadChunks(path string) (chunks []string, err error) {
 	return ScanAll(f, ScanChunks)
 }
 
-// ReadInts parses a text file formatted as one integer per line.
+// ReadInts parses a text file containing integers separated by any non-digits (see ScanInts).
 func ReadInts(path string) ([]int, error) {
-	lines, err := ReadLines(path)
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	var ints []int
-	for _, line := range lines {
-		i, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, fmt.Errorf("parsing ints from %s: %v", path, err)
-		}
-		ints = append(ints, i)
+	defer f.Close()
+	return ScanAllInts(f)
+}
+
+// ReadRegexp parses a text file using a regular expression; see ScanAllRegexp for details.
+func ReadRegexp(path, pattern string) ([][]string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
 	}
-	return ints, nil
+	defer f.Close()
+	return ScanAllRegexp(f, pattern)
 }
 
 // ScanAll runs a scanner on a reader with the given split function, and returns all tokens.
@@ -108,6 +112,29 @@ func ScanAllInts(r io.Reader) (ints []int, err error) {
 		ints = append(ints, n)
 	}
 	return ints, s.Err()
+}
+
+// ReadRegexp parses a reader's contents using a regular expression. The return value is a list of lists,
+// containing each line's submatches. Note that unlike the usual convention, the match of the entire
+// regular expression is not included.
+func ScanAllRegexp(r io.Reader, pattern string) ([][]string, error) {
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, err
+	}
+	lines, err := ScanAll(r, bufio.ScanLines)
+	if err != nil {
+		return nil, err
+	}
+	parsed := make([][]string, len(lines))
+	for i, line := range lines {
+		parts := re.FindStringSubmatch(line)
+		if parts == nil {
+			return nil, fmt.Errorf("line %q does not match pattern %s", line, pattern)
+		}
+		parsed[i] = parts[1:]
+	}
+	return parsed, nil
 }
 
 // ScanChunks implements a bufio.SplitFunc for scanning paragraphs delimited by a blank line

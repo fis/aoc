@@ -104,3 +104,32 @@ Part 2:
 -.{[-J-]#ajbc{{{}r~}j+]m[}Z]J`a{{sm}ay}fI#b\\#b.+`b}{#bL[100.<}w!
 -]#a#b-]!!FL++.*2./
 ```
+
+## [Day 5](https://adventofcode.com/2021/day/5): Hydrothermal Venture
+
+Is it a coincidence that "Hydrothermal Venture" and "Horizontal & Vertical" have
+the same initial letters? Probably.
+
+Just out of curiosity, I tried out whether doing a "pairwise" overlap test for
+all the lines outperforms the simpler method of just walking every line. In
+theory, if the lines are long enough but mostly just intersect at one point, it
+should. For the puzzle input, though, it doesn't. Here's a representative
+benchmark:
+
+    BenchmarkOverlaps/arrayHV-16       3240      330777 ns/op     966659 B/op       1 allocs/op
+    BenchmarkOverlaps/countingHV-16      86    13436727 ns/op    8209626 B/op    3875 allocs/op
+    BenchmarkOverlaps/pairwiseHV-16     843     1488492 ns/op     348414 B/op     164 allocs/op
+
+### Burlesque
+
+Part 1:
+
+```
+ln{"[0-9]+"~?ri2co}m[{tp{sm}ay}f[{J#r?-J++abj)sn{J?+}[[jE!}m^sg{[-nz}fl
+```
+
+Part 2:
+
+```
+ln{"[0-9]+"~?ri2cop^J#r?-J)ab>]j)sn{J?+}[[jE!}m[sg{[-nz}fl
+```

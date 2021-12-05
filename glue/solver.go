@@ -16,10 +16,8 @@ package glue
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"io/ioutil"
-	"regexp"
 	"strconv"
 
 	"github.com/fis/aoc/util"
@@ -98,21 +96,9 @@ func (s IntSolver) Solve(input io.Reader) ([]string, error) {
 
 // Solve implements the Solver interface.
 func (s RegexpSolver) Solve(input io.Reader) ([]string, error) {
-	re, err := regexp.Compile(s.Regexp)
+	parsed, err := util.ScanAllRegexp(input, s.Regexp)
 	if err != nil {
 		return nil, err
-	}
-	lines, err := util.ScanAll(input, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
-	parsed := make([][]string, len(lines))
-	for i, line := range lines {
-		parts := re.FindStringSubmatch(line)
-		if parts == nil {
-			return nil, fmt.Errorf("line %q does not match pattern %s", line, s.Regexp)
-		}
-		parsed[i] = parts[1:]
 	}
 	out, err := s.Solver(parsed)
 	if err != nil {
