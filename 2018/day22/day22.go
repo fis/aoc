@@ -119,8 +119,9 @@ type state struct {
 }
 
 type path struct {
-	s state
-	d int
+	s  state
+	d  int
+	hd int
 }
 
 type pathq []path
@@ -129,7 +130,7 @@ func (c *cave) shortestPath() int {
 	from := state{at: util.P{0, 0}, equip: torch}
 	to := state{at: util.P{c.tX, c.tY}, equip: torch}
 	dist := map[state]int{from: 0}
-	fringe := pathq{{s: from, d: 0}}
+	fringe := pathq{{s: from, d: 0, hd: util.DistM(from.at, to.at)}}
 	for len(fringe) > 0 {
 		p := heap.Pop(&fringe).(path)
 		if p.s == to {
@@ -142,7 +143,7 @@ func (c *cave) shortestPath() int {
 			if q.X < 0 || q.Y < 0 || !p.s.equip.compatible(c.rType(q.X, q.Y)) {
 				continue
 			}
-			qp := path{s: state{at: q, equip: p.s.equip}, d: p.d + 1}
+			qp := path{s: state{at: q, equip: p.s.equip}, d: p.d + 1, hd: p.d + 1 + util.DistM(q, to.at)}
 			if od, ok := dist[qp.s]; ok && od <= qp.d {
 				continue
 			}
@@ -153,7 +154,7 @@ func (c *cave) shortestPath() int {
 			if !t.compatible(c.rType(p.s.at.X, p.s.at.Y)) {
 				continue
 			}
-			tp := path{s: state{at: p.s.at, equip: t}, d: p.d + 7}
+			tp := path{s: state{at: p.s.at, equip: t}, d: p.d + 7, hd: p.d + 7 + util.DistM(p.s.at, to.at)}
 			if od, ok := dist[tp.s]; ok && od <= tp.d {
 				continue
 			}
@@ -165,7 +166,7 @@ func (c *cave) shortestPath() int {
 }
 
 func (q pathq) Len() int           { return len(q) }
-func (q pathq) Less(i, j int) bool { return q[i].d < q[j].d }
+func (q pathq) Less(i, j int) bool { return q[i].hd < q[j].hd }
 func (q pathq) Swap(i, j int)      { q[i], q[j] = q[j], q[i] }
 
 func (q *pathq) Push(x interface{}) {
