@@ -667,7 +667,7 @@ just by following the rules (for part 1), but (at least for some special cases,
 including those involving part 2, which tends to be computationally less
 feasible for the simple solution) can also be leapfrogged directly to the
 solution. Day 23 falls annoyingly on a boundary: the direct simulation of 10M
-moves is still pretty feasible, finishing (on this implementation) in 0.34
+moves is still pretty feasible, finishing (on this implementation) in 0.19
 seconds. If I come across a better way, I'll update these notes later.
 
 The part 1 solution, for no sensible reason whatsover, represents the ring as an
@@ -679,6 +679,11 @@ O(1) operation on the big ring. The obvious easy data structure is a singly
 linked list combined with an array of the nodes: the former to keep track of the
 ring order so that the three cups can be moved without shifting any data around,
 and the latter for locating the destination cup without scanning the whole list.
+
+Earlier versions of the Go solution explicitly represented it like that. But the
+current version boils it down one step further: since we know in advance how
+many nodes there will be in the list, it's sufficient simply to store the links.
+So the ring is made out of an array of `next` indices.
 
 ## [Day 24](https://adventofcode.com/2020/day/24): Lobby Layout
 

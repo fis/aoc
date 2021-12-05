@@ -105,55 +105,47 @@ func (r ring) key() (n int) {
 }
 
 type bigRing struct {
-	cur  *bigRingCup
-	cups []bigRingCup
-}
-
-type bigRingCup struct {
-	label int
-	next  *bigRingCup
+	cur  int
+	next []int
 }
 
 func newBigRing(s string) (r *bigRing, err error) {
-	r = &bigRing{cups: make([]bigRingCup, 1000000)}
+	r = &bigRing{next: make([]int, 1000000)}
 	prev, max := &r.cur, 0
 	for _, b := range s {
 		if b < '1' || b > '9' {
 			return nil, fmt.Errorf("invalid label: %v", b)
 		}
 		i := int(b) - '1'
-		cup := &r.cups[i]
-		cup.label = i
-		*prev, prev = cup, &cup.next
+		*prev, prev = i, &r.next[i]
 		if i > max {
 			max = i
 		}
 	}
 	for i := max + 1; i <= 999999; i++ {
-		cup := &r.cups[i]
-		cup.label = i
-		*prev, prev = cup, &cup.next
+		*prev, prev = i, &r.next[i]
 	}
 	*prev = r.cur
 	return r, nil
 }
 
 func (r *bigRing) move() {
-	p1, p2, p3 := r.cur.next, r.cur.next.next, r.cur.next.next.next
-	r.cur.next = p3.next
-	dl := (r.cur.label - 1 + 1000000) % 1000000
-	for dl == p1.label || dl == p2.label || dl == p3.label {
+	p1 := r.next[r.cur]
+	p2 := r.next[p1]
+	p3 := r.next[p2]
+	r.next[r.cur] = r.next[p3]
+	dl := (r.cur - 1 + 1000000) % 1000000
+	for dl == p1 || dl == p2 || dl == p3 {
 		dl = (dl - 1 + 1000000) % 1000000
 	}
-	d := &r.cups[dl]
-	d.next, p3.next = p1, d.next
-	r.cur = r.cur.next
+	r.next[dl], r.next[p3] = p1, r.next[dl]
+	r.cur = r.next[r.cur]
 }
 
 func (r bigRing) key() int {
-	k0 := &r.cups[0]
-	k1, k2 := k0.next, k0.next.next
-	return (k1.label + 1) * (k2.label + 1)
+	k1 := r.next[0]
+	k2 := r.next[k1]
+	return (k1 + 1) * (k2 + 1)
 }
 
 /*
