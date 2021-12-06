@@ -30,15 +30,13 @@ func solve(numbers []int) ([]string, error) {
 }
 
 func simulate(initial []int, upTo int) (num int) {
-	lastTurn := []int(nil)
+	lastTurn := make([]int, upTo)
 	for turn, num := range initial[:len(initial)-1] {
-		lastTurn = ensureSize(lastTurn, num)
 		lastTurn[num] = turn + 1
 	}
 	num = initial[len(initial)-1]
 	for turn := len(initial); turn < upTo; turn++ {
 		var next int
-		lastTurn = ensureSize(lastTurn, num)
 		if last := lastTurn[num]; last == 0 {
 			next = 0
 		} else {
@@ -47,11 +45,4 @@ func simulate(initial []int, upTo int) (num int) {
 		lastTurn[num], num = turn, next
 	}
 	return num
-}
-
-func ensureSize(arr []int, num int) []int {
-	if num < len(arr) {
-		return arr
-	}
-	return append(arr, make([]int, num-len(arr)+1)...)
 }

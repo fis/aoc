@@ -36,3 +36,24 @@ func TestSimulate(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkAlgos(b *testing.B) {
+	tests := []struct {
+		name string
+		f    func([]int, int) int
+	}{
+		{name: "current", f: simulate},
+	}
+	initial, upTo := []int{15, 5, 1, 4, 7, 0}, 30000000
+	want := 689
+	for _, test := range tests {
+		b.Run(test.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				got := test.f(initial, upTo)
+				if got != want {
+					b.Errorf("%s = %d, want %d", test.name, got, want)
+				}
+			}
+		})
+	}
+}
