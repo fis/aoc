@@ -12,45 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+package day06
 
 import (
 	"testing"
-
-	"github.com/fis/aoc/glue"
 )
 
-var tests = []glue.TestCase{
-	{
-		Day:  1,
-		Want: []string{"1529", "1567"},
-	},
-	{
-		Day:  2,
-		Want: []string{"1561344", "1848454425"},
-	},
-	{
-		Day:  3,
-		Want: []string{"2724524", "2775870"},
-	},
-	{
-		Day:  4,
-		Want: []string{"16716", "4880"},
-	},
-	{
-		Day:  5,
-		Want: []string{"5576", "18144"},
-	},
-	{
-		Day:  6,
-		Want: []string{"391671", "1754000560399"},
-	},
-}
-
-func TestAllDays(t *testing.T) {
-	glue.RunTests(t, tests, 2021)
-}
-
-func BenchmarkAllDays(b *testing.B) {
-	glue.RunBenchmarks(b, tests, 2021)
+func TestCountFish(t *testing.T) {
+	initial := []int{3, 4, 3, 1, 2}
+	tests := []struct {
+		days int
+		want int
+	}{
+		{days: 1, want: 5},
+		{days: 2, want: 6},
+		{days: 3, want: 7},
+		{days: 4, want: 9},
+		{days: 5, want: 10},
+		{days: 18, want: 26},
+		{days: 80, want: 5934},
+		{days: 256, want: 26984457539},
+	}
+	for _, test := range tests {
+		if got := countFish(initial, test.days); got != test.want {
+			t.Errorf("countFish(%v, %d) = %d, want %d", initial, test.days, got, test.want)
+		}
+	}
 }

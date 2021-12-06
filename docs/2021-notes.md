@@ -133,3 +133,86 @@ Part 2:
 ```
 ln{"[0-9]+"~?ri2cop^J#r?-J)ab>]j)sn{J?+}[[jE!}m[sg{[-nz}fl
 ```
+
+## [Day 6](https://adventofcode.com/2021/day/6): Lanternfish
+
+The trick of the day is to ignore the way the puzzle description is leading you
+towards simulating the school of fish as individuals, and just realize it's
+sufficient to simply track the number of fishes `f_c` that have a specific
+internal counter value `c`. This way, the counts of day `t+1` can be derived
+from the counts of day `t` as:
+
+<!--math:day06
+\vspace*{-3ex}
+\begin{align*}
+f_c^{(t+1)} &= f_{c+1}^{(t)} \quad\textrm{for $c \in \{0, 1, 2, 3, 4, 5, 7\}$} \\
+f_6^{(t+1)} &= f_7^{(t)} + f_0^{(t)} \\
+f_8^{(t+1)} &= f_0^{(t)}
+\end{align*}
+-->
+![day06.png](math/2021-notes-day06.png)
+
+The first equation represents how the fish with non-zero counters will just have
+their counters uniformly decremented by one. There are also two special cases:
+fishes with counter 6 will include both those fish that decremented their
+counter from 7, as well as all the fish who cycled from 0; and fishes with
+counter 8 will be only the newly spawned ones.
+
+The Go solution does one more (entirely unnecessary) optimization: by using an
+offset value to track which field of a circular array represents count 0, the
+cyclic update can be done by incrementing the offset, and the only other action
+needed is to increment the number of the (new) counter 6 by that of the (old)
+counter 0.
+
+Finally, there's one more way of looking at the problem. If we combine all the
+counts from above into a single 9-element column vector `f^(t)`, we can boil
+down the daily update into a single matrix multiplication, and therefore use
+matrix exponentiation to directly get the counts for any given day:
+
+<!--math:day06-mat
+\vspace*{-3ex}
+\begin{align*}
+\mathbf{f}^{(t)} &= \begin{pmatrix}
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}^t \mathbf{f}^{(0)}
+\end{align*}
+-->
+![day06-mat.png](math/2021-notes-day06-mat.png)
+
+This could be used to calculate the result for day `t` in less than `O(t)` time.
+
+As a demonstration, here is Octave calculating the result of the part 1 example,
+where we start with initial fish `3,4,3,1,2`, which represented in the vector
+form is `[0 1 1 2 1 0 0 0 0]` (one `1`, one `2`, two `3`s, one `4`):
+
+```
+octave:1> sum((diag(ones(8,1), 1) + [[0 0 0 0 0 0 1 0 1]' zeros(9,8)])^80 * [0 1 1 2 1 0 0 0 0]')
+ans = 5934
+```
+
+### Burlesque
+
+Part 1:
+
+This one does simulate each fish indepedently, which is slow, but okay for 80
+days and takes less commands.
+
+```
+',;;ri{{Jz?{6.+9}if-.}m[}80E!L[
+```
+
+Part 2:
+
+This one does the count-by-counter-value thing.
+
+```
+',;;ribc8rz{CN}Z]{RTJ[~jJ6!!x/.+6sa}256E!++
+```

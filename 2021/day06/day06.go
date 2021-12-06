@@ -12,45 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+// Package day06 solves AoC 2021 day 6.
+package day06
 
-import (
-	"testing"
+import "github.com/fis/aoc/glue"
 
-	"github.com/fis/aoc/glue"
-)
-
-var tests = []glue.TestCase{
-	{
-		Day:  1,
-		Want: []string{"1529", "1567"},
-	},
-	{
-		Day:  2,
-		Want: []string{"1561344", "1848454425"},
-	},
-	{
-		Day:  3,
-		Want: []string{"2724524", "2775870"},
-	},
-	{
-		Day:  4,
-		Want: []string{"16716", "4880"},
-	},
-	{
-		Day:  5,
-		Want: []string{"5576", "18144"},
-	},
-	{
-		Day:  6,
-		Want: []string{"391671", "1754000560399"},
-	},
+func init() {
+	glue.RegisterSolver(2021, 6, glue.IntSolver(solve))
 }
 
-func TestAllDays(t *testing.T) {
-	glue.RunTests(t, tests, 2021)
+func solve(input []int) ([]string, error) {
+	p1 := countFish(input, 80)
+	p2 := countFish(input, 256)
+	return glue.Ints(p1, p2), nil
 }
 
-func BenchmarkAllDays(b *testing.B) {
-	glue.RunBenchmarks(b, tests, 2021)
+func countFish(initial []int, days int) (total int) {
+	counts := [9]int{}
+	for _, i := range initial {
+		counts[i]++
+	}
+	offset := 0
+	for t := 0; t < days; t++ {
+		counts[(offset+7)%9] += counts[offset]
+		offset = (offset + 1) % 9
+	}
+	for _, c := range counts {
+		total += c
+	}
+	return total
 }
