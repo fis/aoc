@@ -305,8 +305,49 @@ Part 2 (*really* slow):
 ',;;riJ>]rzjbc{?-{abrz++}ms}Z]<]
 ```
 
-Part 2 but summing 1..n as n(n+1)/2 (slightly longer, but more reasonable speed):
+Part 2 but summing 1..n as n(n+1)/2 (longer, but more reasonable speed):
 
 ```
 ',;;riJ>]rzjbc{?-{abJ+..*2./}ms}Z]<]
+```
+
+## [Day 8](https://adventofcode.com/2021/day/8): Seven Segment Search
+
+Not sure what to say about today. The problem is quite solvable without any sort
+of generalized searching and backtracking, by simply hardcoding the
+specific steps needed to infer which segment is which:
+
+- As explained in part 1, the numbers 1, 4, 7 and 8 can be identified in the ten
+  digit sample set by their unique segment counts (2, 4, 3 and 7, respectively).
+- The top segment is the one in sample 7 that's not in sample 1.
+- The top right and bottom right segments are those in sample 1:
+  - The top right is the one that appears in 8 of the 10 samples.
+  - The bottom right is the other one (appears in 9).
+- The top left and middle segments are those in sample 4 that are not in 1:
+  - The top left is the one that appears in 6 of the 10 samples.
+  - The middle one is the other one (appears in 7).
+- The bottom left and bottom segments are the two still remaining:
+  - The bottom left is the one that appears in 4 of the 10 samples.
+  - The bottom one is the other one (appears in 7).
+
+After finding the permutation of the segments, the code numbers can simply be
+decoded and looked up.
+
+There aren't that many permutations (`7! = 5040`), so it would also be possible
+to just test which one produces a valid set of all 10 digits. That's what the
+Burlesque part 2 solution does (very slowly).
+
+### Burlesque
+
+Part 1:
+
+```
+ln{WD11.-)L[42fC4+]INL[}ms
+```
+
+Part 2:
+
+```
+%PM={js2{{g2j!!}m[><}m[}"v#\\l-jz$~n"XX{**+.2dg<-{}fI}m[s0
+ln{WD{XX)**97?-}m[S16rzr@{g110.+PMg0=s}fej11.-PM{g0jFi}m[10ug}ms
 ```
