@@ -216,3 +216,97 @@ This one does the count-by-counter-value thing.
 ```
 ',;;ribc8rz{CN}Z]{RTJ[~jJ6!!x/.+6sa}256E!++
 ```
+
+## [Day 7](https://adventofcode.com/2021/day/7): The Treachery of Whales
+
+Today's puzzle can be very naturally expressed as an optimization problem, where
+the task is to find `x` such that it minimizes either `∑ |c_i - x|` (part 1) or
+`∑ |c_i - x|(|c_i - x| + 1)/2` (part 2).
+
+From the structure of the problem, it's relatively obvious the optimal `x` is
+somewhere between `min c_i` and `max c_i`. Given the modest range of the input
+values, it's computationally perfectly feasible to simply evaluate the above
+functions for the range, and pick the lowest achieved value, in `O(n*m)` time,
+where `n` is the number of crabs and `m` the distance between the bounds of
+their positions. But there are also some shortcuts.
+
+For part 1, denote with `f(x)` the fuel cost to align at point `x`. Let's
+consider the difference `Δf(x) = f(x+1) - f(x)`. Denoting by `C_≤` the set of
+crabs with coordinates `≤x`, and with `C_>` the remaining crabs with
+coordinates `>x`, we know that:
+
+    f(x+1) = f(x) + |C_≤| - |C_>|
+
+    Δf(x) = f(x+1) - f(x)
+          = f(x) + |C_≤| - |C_>| - f(x)
+          = |C_≤| - |C_>|
+
+This is because moving the alignment point from `x` to `x+1` will increase the
+fuel cost of all crabs in the `C_≤` set by one, and decrease those in `C_>` by
+one.
+
+Now, consider the value of `Δf` as we move over the points. When `x < min c_i`,
+all the crabs are in the `C_>` set, and `Δf = -|C|`, the lowest it can go.  As
+we move right, crabs move from `C_>` to `C_≤`, and the value of `Δf` increases
+monotonically, eventually reaching `Δf = |C|` when `x ≥ max c_i`. This also
+tells us how `f` behaves: it will decrease as long as `Δf < 0`, possibly remain
+flat for a while if `Δf = 0` for some coordinates, and then increase for the
+remaining coordinates where `Δf > 0`. The optimal fuel cost is reached at the
+point where `Δf` first changes from negative to positive (or equals zero).
+
+One consequence of this is the following: if an optimal point is ever reached at
+a coordinate that contains no crabs, this is only possible if `|C_≤| = |C_>|`.
+Otherwise moving to either left or right would decrease the fuel cost, which
+contradicts the assumption the point was optimal. But this means any point in
+the interval between the nearest left/right crabs is equally optimal. Since this
+includes the endpoints, we need only consider points that do contain crabs,
+reducing the cost to `O(n*k)`, where `k` is the number of unique crab locations
+in the input. Notably, `k ≤ m`.
+
+We can also take this reasoning further. Consider the median of the input. Let's
+use `C_<`, `C_=` and `C_>` to denote partitioning the crabs to those with
+coordinates left of, exactly at, or right of the median. Because this is the
+median, it must be the case that `|C_<| ≤ |C_>| + |C_=|` (otherwise the median
+would be one of the `C_<` crabs), and likewise `|C_>| ≤ |C_<| + |C_=|`. But this
+also means `Δf(x) = |C_≤(x)| - |C_>(x)| = |C_<| + |C_=| - |C_>| ≥ 0`, On the
+other hand, `Δf(x-1) = |C_≤(x-1)| - |C_>(x-1)| = |C_<| - (|C_>| + |C_=|) ≤ 0`.
+By the above argument, this must mean the median is a point of optimal alignment.
+Using a [selection algorithm](https://en.wikipedia.org/wiki/Selection_algorithm),
+the solution can be found in `O(n)` time.
+
+Along the same lines, optimizing the fuel cost for part 2 can be seen as an
+integer analogue of finding the least-squares fit (`x*(x+1)` being close to
+`x^2`), which in the non-integer case is of course solved by the arithmetic
+mean. And it does happen to be the case for both the example and my puzzle input
+that the true solution is a neighbour of the (integer) mean. This is probably
+true for "well-behaved" inputs and can of course be evaluated in `O(n)` time.
+
+There are likely also some general
+[integer programming](https://en.wikipedia.org/wiki/Integer_programming) methods
+applicable to the problem.
+
+### Burlesque
+
+Part 1:
+
+```
+',;;riJbc{?-)ab++}Z]<]
+```
+
+Part 1 via the median (longer but a lot faster):
+
+```
+',;;ri><JJL[2./!!?-)ab++
+```
+
+Part 2 (*really* slow):
+
+```
+',;;riJ>]rzjbc{?-{abrz++}ms}Z]<]
+```
+
+Part 2 but summing 1..n as n(n+1)/2 (slightly longer, but more reasonable speed):
+
+```
+',;;riJ>]rzjbc{?-{abJ+..*2./}ms}Z]<]
+```
