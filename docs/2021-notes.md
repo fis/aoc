@@ -380,3 +380,29 @@ Part 2 (identical preprocessing/padding):
 lnJL[rojJ-]L[roj{'X+]'X[+XX)**}m[J-]?i+]J[~?i[+s0cp
 {g0jd!57.<{0j{JJ{?+}j+]2rz?dJcp2enjm[j+]{jd!}g0+]<m}{!=}w!it}if}[msg)L[<>3.+pd
 ```
+
+## [Day 10](https://adventofcode.com/2021/day/10): Syntax Scoring
+
+A direct and straight-forward day. You'd think a stack-oriented language like
+Burlesque would be particularly suited for the task (since the delimiters form a
+stack), but it isn't really. Still, at least the solutions are shorter than
+yesterday's.
+
+### Burlesque
+
+Implemetation trick: turn opening delimiters to -1 .. -4 and their paired
+closing delimiters to 1 .. 4 respectively: this makes the matching very easy
+(just negate and compare), but also scoring for part 2: the score is just what
+remains on the stack interpreted in base 5 (`5ug`).
+
+Part 1:
+
+```
+ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nz0[+-]{0 3 57 1197 25137}j!!}ms
+```
+
+Part 2:
+
+```
+ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nznup\CL5ugPP.*}m[:nz><JL[2./!!
+```
