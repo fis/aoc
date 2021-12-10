@@ -351,3 +351,32 @@ Part 2:
 %PM={js2{{g2j!!}m[><}m[}"v#\\l-jz$~n"XX{**+.2dg<-{}fI}m[s0
 ln{WD{XX)**97?-}m[S16rzr@{g110.+PMg0=s}fej11.-PM{g0jFi}m[10ug}ms
 ```
+
+## [Day 9](https://adventofcode.com/2021/day/9): Smoke Basin
+
+Part 2 was surprisingly simple. Given the constraints of the situation, a basin
+is just defined as a 4-connected component of non-`9` tiles, with no need to
+figure out which direction the basin is going to or anything.
+
+The Burlesque part 2 is quite different, as you can see: it actually follows the
+slopes down to identify, for each non-`9` tile, its associated low point. These
+are then grouped to get the basin sizes.
+
+### Burlesque
+
+This 2D thing is awkward to manage in Burlesque. I've not really trimmed these
+down.
+
+Part 1:
+
+```
+lnJL[rojJ-]L[roj{'X+]'X[+XX)**}m[J-]?i+]J[~?i[+s0cp
+{J{?+}j+]2rz?dJcp2enjm[{g0jd!}m[<]jg0jd!J47.-jx/.<.*}ms
+```
+
+Part 2 (identical preprocessing/padding):
+
+```
+lnJL[rojJ-]L[roj{'X+]'X[+XX)**}m[J-]?i+]J[~?i[+s0cp
+{g0jd!57.<{0j{JJ{?+}j+]2rz?dJcp2enjm[j+]{jd!}g0+]<m}{!=}w!it}if}[msg)L[<>3.+pd
+```

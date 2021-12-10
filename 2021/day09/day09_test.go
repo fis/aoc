@@ -12,17 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2017 days.
-package days
+package day09
 
 import (
-	_ "github.com/fis/aoc/2021/day01" // solvers
-	_ "github.com/fis/aoc/2021/day02" // solvers
-	_ "github.com/fis/aoc/2021/day03" // solvers
-	_ "github.com/fis/aoc/2021/day04" // solvers
-	_ "github.com/fis/aoc/2021/day05" // solvers
-	_ "github.com/fis/aoc/2021/day06" // solvers
-	_ "github.com/fis/aoc/2021/day07" // solvers
-	_ "github.com/fis/aoc/2021/day08" // solvers
-	_ "github.com/fis/aoc/2021/day09" // solvers
+	"strings"
+	"testing"
+
+	"github.com/fis/aoc/util"
 )
+
+const ex = `
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+`
+
+func TestRiskLevels(t *testing.T) {
+	level := util.ParseLevelString(strings.TrimPrefix(ex, "\n"), ' ')
+	want := 15
+	if got := riskLevels(level); got != want {
+		t.Errorf("riskLevel = %d, want %d", got, want)
+	}
+}
+
+func TestBasinSizes(t *testing.T) {
+	level := util.ParseLevelString(strings.TrimPrefix(ex, "\n"), ' ')
+	want := 1134
+	if got := basinSizes(level); got != want {
+		t.Errorf("basinSizes = %d, want %d", got, want)
+	}
+}
