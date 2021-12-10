@@ -206,7 +206,7 @@ This one does simulate each fish indepedently, which is slow, but okay for 80
 days and takes less commands.
 
 ```
-',;;ri{{Jz?{6.+9}if-.}m[}80E!L[
+',;;ri{{z?{6.+9}if-.}[m}80E!L[
 ```
 
 Part 2:
