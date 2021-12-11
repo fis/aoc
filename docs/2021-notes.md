@@ -399,6 +399,32 @@ Part 2:
 ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nznup\CL5ugPP.*}m[:nz><JL[2./!!
 ```
 
+## [Day 11](https://adventofcode.com/2021/day/11): Dumbo Octopus
+
+No tricks this time. Go version sets flashing octopi directly to 0 during the
+iteration, and uses a bitset to track flashes that need propagation. The
+Burlesque version instead lets all the counts increment as far as they need to,
+and resets to 0 only after the entire step, so that the same increment code can
+be reused.
+
+### Burlesque
+
+Part 1:
+
+```
+ps)XX{9rzJcpS0{j+]{Jx/Jx/d!J9==#Rj{JPp}ifj+.D!}r[p\CLp\PP{{?-)ab>]1<=}j+]g0jf[
+}\m}{L[}w!vv{{J9<=.*}m[}m[J\[0CNj}100E!vvCL++
+```
+
+Part 2:
+
+Unsurprisingly pretty much the same, except for the termination condition.
+
+```
+ps)XX{9rzJcpS0{j+]{Jx/Jx/d!J9==#Rj{JPp}ifj+.D!}r[p\CLp\PP{{?-)ab>]1<=}j+]g0jf[
+}\m}{L[}w!vv{{J9<=.*}m[}m[J}{\[++ck}w!vvCLL[
+```
+
 <!--math
 
 %: day01
