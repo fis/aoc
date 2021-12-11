@@ -17,15 +17,12 @@ As usual, there isn't much to say about the first day. Although it's maybe worth
 noting that you don't have to explicitly sum up the contents of each overlapping
 window, because (gratuitous use of math):
 
-<!--math:day01
-\vspace*{-3ex}
-\begin{align*}
-\sum_{i=j-N}^{j-1} s_i &< \sum_{i=j-N+1}^j s_i \\
-s_{j-N} + \sum_{i=j-N+1}^{j-1} s_i &< \sum_{i=j-N+1}^{j-1} s_i + s_j \\
-s_{j-N} &< s_j
-\end{align*}
+<!--
+             sum{i=j-N..j-1}   s(i) < sum{i=j-N+1..j}   s(i)
+    s(j-N) + sum{i=j-N+1..j-1} s(i) < sum{i=j-N+1..j-1} s(i) + s(j)
+                             s(j-N) < s(j)
 -->
-![day01.png](math/2021-notes-day01.png)
+![math:day01](math/2021-notes-day01.png)
 
 ### Burlesque
 
@@ -142,15 +139,12 @@ sufficient to simply track the number of fishes `f_c` that have a specific
 internal counter value `c`. This way, the counts of day `t+1` can be derived
 from the counts of day `t` as:
 
-<!--math:day06
-\vspace*{-3ex}
-\begin{align*}
-f_c^{(t+1)} &= f_{c+1}^{(t)} \quad\textrm{for $c \in \{0, 1, 2, 3, 4, 5, 7\}$} \\
-f_6^{(t+1)} &= f_7^{(t)} + f_0^{(t)} \\
-f_8^{(t+1)} &= f_0^{(t)}
-\end{align*}
+<!--
+    f(c, t+1) = f(c+1, t)  for c in {0..5, 7}
+    f(6, t+1) = f(7, t) + f(0, t)
+    f(8, t+1) = f(0, t)
 -->
-![day06.png](math/2021-notes-day06.png)
+![math:day06](math/2021-notes-day06.png)
 
 The first equation represents how the fish with non-zero counters will just have
 their counters uniformly decremented by one. There are also two special cases:
@@ -169,23 +163,18 @@ counts from above into a single 9-element column vector `f^(t)`, we can boil
 down the daily update into a single matrix multiplication, and therefore use
 matrix exponentiation to directly get the counts for any given day:
 
-<!--math:day06-mat
-\vspace*{-3ex}
-\begin{align*}
-\mathbf{f}^{(t)} &= \begin{pmatrix}
-0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
-1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
-1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
-\end{pmatrix}^t \mathbf{f}^{(0)}
-\end{align*}
+<!--
+           / 0 1 0 0 0 0 0 0 0 \ t
+           | 0 0 1 0 0 0 0 0 0 |
+           | 0 0 0 1 0 0 0 0 0 |
+           | 0 0 0 0 1 0 0 0 0 |
+    f(t) = | 0 0 0 0 0 1 0 0 0 |  f(0)
+           | 0 0 0 0 0 0 1 0 0 |
+           | 1 0 0 0 0 0 0 1 0 |
+           | 0 0 0 0 0 0 0 0 1 |
+           \ 1 0 0 0 0 0 0 0 0 /
 -->
-![day06-mat.png](math/2021-notes-day06-mat.png)
+![math:day06-mat](math/2021-notes-day06-mat.png)
 
 This could be used to calculate the result for day `t` in less than `O(t)` time.
 
@@ -235,11 +224,14 @@ consider the difference `Δf(x) = f(x+1) - f(x)`. Denoting by `C_≤` the set of
 crabs with coordinates `≤x`, and with `C_>` the remaining crabs with
 coordinates `>x`, we know that:
 
+<!--
     f(x+1) = f(x) + |C_≤| - |C_>|
 
     Δf(x) = f(x+1) - f(x)
           = f(x) + |C_≤| - |C_>| - f(x)
           = |C_≤| - |C_>|
+-->
+![math:day07](math/2021-notes-day07.png)
 
 This is because moving the alignment point from `x` to `x+1` will increase the
 fuel cost of all crabs in the `C_≤` set by one, and decrease those in `C_>` by
@@ -406,3 +398,52 @@ Part 2:
 ```
 ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nznup\CL5ugPP.*}m[:nz><JL[2./!!
 ```
+
+<!--math
+
+%: day01
+
+\vspace*{-3ex}
+\begin{align*}
+\sum_{i=j-N}^{j-1} s_i &< \sum_{i=j-N+1}^j s_i \\
+s_{j-N} + \sum_{i=j-N+1}^{j-1} s_i &< \sum_{i=j-N+1}^{j-1} s_i + s_j \\
+s_{j-N} &< s_j
+\end{align*}
+
+%: day06
+
+\vspace*{-3ex}
+\begin{align*}
+f_c^{(t+1)} &= f_{c+1}^{(t)} \quad\textrm{for $c \in \{0, 1, 2, 3, 4, 5, 7\}$} \\
+f_6^{(t+1)} &= f_7^{(t)} + f_0^{(t)} \\
+f_8^{(t+1)} &= f_0^{(t)}
+\end{align*}
+
+%: day06-mat
+
+\vspace*{-3ex}
+\begin{align*}
+\mathbf{f}^{(t)} &= \begin{pmatrix}
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{pmatrix}^t \mathbf{f}^{(0)}
+\end{align*}
+
+%: day07
+
+\vspace*{-3ex}
+\begin{align*}
+f(x+1) &= f(x) + \left|\mathbf{C}_\leq\right| - \left|\mathbf{C}_>\right| \\
+\Delta f(x) &= f(x+1) - f(x) \\
+&= f(x) + \left|\mathbf{C}_\leq\right| - \left|\mathbf{C}_>\right| - f(x) \\
+&= \left|\mathbf{C}_\leq\right| - \left|\mathbf{C}_>\right|
+\end{align*}
+
+-->

@@ -169,28 +169,22 @@ vectors).
 
 For any particle, its velocity `v(t)` at time `t` is given by:
 
-<!--math:day20-v
-\vspace*{-3ex}
-\begin{align*}
-v(t) &= v_0 + \sum_{i=0}^{t-1} a \\
-&= v_0 + t a
-\end{align*}
+<!--
+    v(t) = v_0 + sum{i=0..t-1} a
+         = v_0 + t*a
 -->
-![day20-v.png](math/2017-notes-day20-v.png)
+![math:day20-v](math/2017-notes-day20-v.png)
 
 As velocities are updated before positions rather than atomically, for the
 position `p(t)` at time `t` we need slightly different summation indices:
 
-<!--math:day20-p
-\vspace*{-3ex}
-\begin{align*}
-p(t) &= p_0 + \sum_{i=1}^t v(i) \\
-&= p_0 + \sum_{i=1}^t (v_0 + i a) \\
-&= p_0 + \sum_{i=1}^t v_0 + \sum_{i=1}^t i a \\
-&= p_0 + t v_0 + \frac{(t+1)t}{2} a
-\end{align*}
+<!--
+    p(t) = p_0 + sum{i=1..t} v(i)
+         = p_0 + sum{i=1..t} (v_0 + i*a)
+         = p_0 + sum{i=1..t} v_0 + sum{i=1..t} i*a
+         = p_0 + t*v_0 + (t+1)*t/2 * a
 -->
-![day20-p.png](math/2017-notes-day20-p.png)
+![math:day20-p](math/2017-notes-day20-p.png)
 
 To figure out where two particles (let's call them 1 and 2) could possibly
 collide, we can set their positions equal, and solve for `t`. This can be done
@@ -199,17 +193,15 @@ collides only if the three dimensions have a common (integer) solution for `t`.
 
 We have:
 
-<!--math:day20-coll
-\vspace*{-3ex}
-\begin{align*}
-p_1 + v_1 t + a_1 \frac{(t+1)t}{2} &= p_2 + v_2 t + a_2 \frac{(t+1)t}{2} \\
-(p_1-p_2) + (v_1-v_2) t + (a_1-a_2) \frac{(t+1)t}{2} &= 0 \\
-p_d + v_d t + \frac{a_d}{2} t^2 + \frac{a_d}{2} t &= 0 \\
-a_d t^2 + (2 v_d + a_d) t + 2 p_d &= 0 \\
-A t^2 + B t + C &= 0\ \textrm{where $A=a_d$, $B=2 v_d+a_d$, $C=2 p_d$}
-\end{align*}
+<!--
+    p1 + v1*t + a1 * (t+1)*t/2 = p2 + v2*t + a2 * (t+1)*t/2
+    (p1-p2) + (v1-v2)*t + (a1-a2) * (t+1)*t/2 = 0
+    pd + vd*t + ad/2*t^2 + ad/2*t = 0
+    ad*t^2 + (2*vd+ad)*t + 2*pd = 0
+
+    A*t^2 + B*t + C = 0, where A = ad, B = 2*vd + ad, C = 2*pd
 -->
-![day20-p.png](math/2017-notes-day20-coll.png)
+![math:day20-coll](math/2017-notes-day20-coll.png)
 
 This is a quadratic equation, which has the following possible solutions:
 
@@ -299,3 +291,36 @@ Part 1 asks how many times a `mul` instruction is executed; this is equivalent
 to asking how often the innermost loop runs, or `(n-2)^2`. The result of part 2
 is simply the number of composite numbers in the set `{low, low+17, ..., high}`.
 The solution uses a trivial trial division primality test.
+
+<!--math
+
+%: day20
+
+\vspace*{-3ex}
+\begin{align*}
+v(t) &= v_0 + \sum_{i=0}^{t-1} a \\
+&= v_0 + t a
+\end{align*}
+
+%: day20-p
+
+\vspace*{-3ex}
+\begin{align*}
+p(t) &= p_0 + \sum_{i=1}^t v(i) \\
+&= p_0 + \sum_{i=1}^t (v_0 + i a) \\
+&= p_0 + \sum_{i=1}^t v_0 + \sum_{i=1}^t i a \\
+&= p_0 + t v_0 + \frac{(t+1)t}{2} a
+\end{align*}
+
+%: day20-coll
+
+\vspace*{-3ex}
+\begin{align*}
+p_1 + v_1 t + a_1 \frac{(t+1)t}{2} &= p_2 + v_2 t + a_2 \frac{(t+1)t}{2} \\
+(p_1-p_2) + (v_1-v_2) t + (a_1-a_2) \frac{(t+1)t}{2} &= 0 \\
+p_d + v_d t + \frac{a_d}{2} t^2 + \frac{a_d}{2} t &= 0 \\
+a_d t^2 + (2 v_d + a_d) t + 2 p_d &= 0 \\
+A t^2 + B t + C &= 0\ \textrm{where $A=a_d$, $B=2 v_d+a_d$, $C=2 p_d$}
+\end{align*}
+
+-->

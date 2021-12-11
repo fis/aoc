@@ -69,14 +69,25 @@ func extract(path string) (snippets []snippet, err error) {
 		return nil, err
 	}
 
+	for len(lines) > 0 && lines[0] != "<!--math" {
+		lines = lines[1:]
+	}
+	if len(lines) == 0 {
+		return nil, nil
+	}
+
 	for start := 0; start < len(lines); start++ {
-		if !strings.HasPrefix(lines[start], "<!--math:") {
+		if lines[start] == "-->" {
+			break
+		}
+		if !strings.HasPrefix(lines[start], "%: ") {
 			continue
 		}
-		name := lines[start][9:]
+		name := lines[start][3:]
+		start++
 		end := -1
-		for e := start + 1; e < len(lines); e++ {
-			if strings.HasPrefix(lines[e], "-->") {
+		for e := start; e < len(lines); e++ {
+			if lines[e] == "-->" || strings.HasPrefix(lines[e], "%: ") {
 				end = e
 				break
 			}
@@ -84,11 +95,17 @@ func extract(path string) (snippets []snippet, err error) {
 		if end < 0 {
 			return nil, fmt.Errorf("unterminated math block %q", name)
 		}
+		for start < end && lines[start] == "" {
+			start++
+		}
+		for end > start+1 && lines[end-1] == "" {
+			end--
+		}
 		snippets = append(snippets, snippet{
 			name: name,
-			body: strings.Join(lines[start+1:end], "\n") + "\n",
+			body: strings.Join(lines[start:end], "\n") + "\n",
 		})
-		start = end
+		start = end - 1
 	}
 
 	return snippets, nil
