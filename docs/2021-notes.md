@@ -399,6 +399,14 @@ Part 2:
 ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nznup\CL5ugPP.*}m[:nz><JL[2./!!
 ```
 
+Combined:
+
+```
+1:                                                   0[+-]{0 3 57 1197 25137}j!!}ms
+C: ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nz
+2:                                                   nup\CL5ugPP.*}m[:nz><JL[2./!!
+```
+
 ## [Day 11](https://adventofcode.com/2021/day/11): Dumbo Octopus
 
 No tricks this time. Go version sets flashing octopi directly to 0 during the
@@ -423,6 +431,65 @@ Unsurprisingly pretty much the same, except for the termination condition.
 ```
 ps)XX{9rzJcpS0{j+]{Jx/Jx/d!J9==#Rj{JPp}ifj+.D!}r[p\CLp\PP{{?-)ab>]1<=}j+]g0jf[
 }\m}{L[}w!vv{{J9<=.*}m[}m[J}{\[++ck}w!vvCLL[
+```
+
+Combined:
+
+```
+C: ps)XX{9rzJcpS0{j+]{Jx/Jx/d!J9==#Rj{JPp}ifj+.D!}r[p\CLp\PP{{?-)ab>]1<=}j+]g0jf[
+
+1:                            \[0CNj 100E!         ++
+C: }\m}{L[}w!vv{{J9<=.*}m[}m[J      }          vvCL
+2:                                   {\[++ck}w!    L[
+```
+
+## [Day 12](https://adventofcode.com/2021/day/12): Passage Pathing
+
+To honour the first day of graphs this year (even though the actual question was
+not terribly interesting), I've Graphviz'd the examples and my puzzles:
+
+- Example 1: [2021-day12-ex1.png](2021-day12-ex1.png)
+- Example 2: [2021-day12-ex2.png](2021-day12-ex2.png)
+- Example 3: [2021-day12-ex3.png](2021-day12-ex3.png)
+- Puzzle input: [2021-day12-input.png](2021-day12-input.png)
+
+Start and end caves are highlighted with green and red colors, respectively, and
+small (lowercase) caves are shaded with a slight grey fill.
+
+The Go version sees an around 14x performance difference in favour of using the
+`intGraph` structure and the single-word bitmap vs. the `util.Graph`
+hashmap-backed graph structure.
+
+### Burlesque
+
+Feeling a bit of a Burlesque burn-out, not sure I can be bothered to trim these
+down.
+
+Part 1:
+
+```
+ln{'-;;J<-}m[{-]"end"!=}f[s0{{"start"}}
+{J{Jbcj[~{-]==}[[g0jf[)[~{[+}Z]{J)zzINJNB=s}f[}\m}{L[}w!CLFL"end"CN
+```
+
+Part 2:
+
+This one is *incredibly* slow (17 minutes with my puzzle input), but correct.
+
+```
+ln{'-;;J<-}m[{J-]"end"!=j[~"start"!=&&}f[s0{{"start"}}
+{J{Jbcj[~{-]==}[[g0jf[)[~{[+}Z]{J)zzINsg)L[?d++1<=}f[}\m}{L[}w!CLFL"end"CN
+```
+
+Combined:
+
+```
+C: ln{'-;;J<-}m[{ -]"end"!=              }f[s0{{"start"}}
+2:               J         j[~"start"!=&&
+
+1:                                       JNB=s
+C: {J{Jbcj[~{-]==}[[g0jf[)[~{[+}Z]{J)zzIN            }f[}\m}{L[}w!CLFL"end"CN
+2:                                       sg)L[?d++1<=
 ```
 
 <!--math
