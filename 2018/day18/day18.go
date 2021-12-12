@@ -27,84 +27,115 @@ func init() {
 }
 
 func solve(level *util.Level) ([]string, error) {
-	part1 := value(evolve(level.Copy(), 10))
+	data, w, h := convertLevel(level)
+
+	part1 := value(evolve(append([]state(nil), data...), w, h, 10))
 
 	target := 1000000000
-	level, at, period := findCycle(level)
+	data, at, period := findCycle(data, w, h)
 	at += (target - at) / period * period
 	if at < target {
-		level = evolve(level, target-at)
+		data = evolve(data, w, h, target-at)
 	}
-	part2 := value(level)
+	part2 := value(data)
 
 	return glue.Ints(part1, part2), nil
 }
 
-func evolve(level *util.Level, generations int) *util.Level {
-	next := level.Copy()
-	for g := 0; g < generations; g++ {
-		step(level, next)
-		level, next = next, level
-	}
-	return level
-}
+type state = byte
 
-func findCycle(level *util.Level) (out *util.Level, at, period int) {
-	seen := map[uint64]int{}
-	next := level.Copy()
-	for at = 0; ; at++ {
-		h := hashLevel(level)
-		if prev, ok := seen[h]; ok {
-			return level, at, at - prev
+const (
+	stateOpen state = iota
+	stateTrees
+	stateLumber
+)
+
+func convertLevel(level *util.Level) (data []state, w, h int) {
+	min, max := level.Bounds()
+	w, h = max.X-min.X+1, max.Y-min.Y+1
+	data = make([]state, w*h)
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
+			switch level.At(min.X+x, min.Y+y) {
+			case '.':
+				data[y*w+x] = stateOpen
+			case '|':
+				data[y*w+x] = stateTrees
+			case '#':
+				data[y*w+x] = stateLumber
+			}
 		}
-		seen[h] = at
-		step(level, next)
-		level, next = next, level
+	}
+	return data, w, h
+}
+
+func evolve(data []state, w, h, generations int) []state {
+	next := make([]state, len(data))
+	for g := 0; g < generations; g++ {
+		step(data, next, w, h)
+		data, next = next, data
+	}
+	return data
+}
+
+func findCycle(data []state, w, h int) (out []state, at, period int) {
+	seen := map[uint64]int{}
+	next := make([]state, len(data))
+	for at = 0; ; at++ {
+		hash := hashLevel(data)
+		if prev, ok := seen[hash]; ok {
+			return data, at, at - prev
+		}
+		seen[hash] = at
+		step(data, next, w, h)
+		data, next = next, data
 	}
 }
 
-func step(in, out *util.Level) {
-	min, max := in.Bounds()
-	for y := min.Y; y <= max.Y; y++ {
-		for x := min.X; x <= max.X; x++ {
+func step(in, out []state, w, h int) {
+	for y := 0; y < h; y++ {
+		for x := 0; x < w; x++ {
 			nt, nl := 0, 0
 			for _, n := range (util.P{x, y}).Neigh8() {
-				switch in.At(n.X, n.Y) {
-				case '|':
+				if n.X < 0 || n.X >= w || n.Y < 0 || n.Y >= h {
+					continue
+				}
+				switch in[n.Y*w+n.X] {
+				case stateTrees:
 					nt++
-				case '#':
+				case stateLumber:
 					nl++
 				}
 			}
-			v := in.At(x, y)
+			v := in[y*w+x]
 			switch {
-			case v == '.' && nt >= 3:
-				v = '|'
-			case v == '|' && nl >= 3:
-				v = '#'
-			case v == '#' && (nt == 0 || nl == 0):
-				v = '.'
+			case v == stateOpen && nt >= 3:
+				v = stateTrees
+			case v == stateTrees && nl >= 3:
+				v = stateLumber
+			case v == stateLumber && (nt == 0 || nl == 0):
+				v = stateOpen
 			}
-			out.Set(x, y, v)
+			out[y*w+x] = v
 		}
 	}
 }
 
-func value(level *util.Level) int {
+func value(data []state) int {
 	nt, nl := 0, 0
-	level.Range(func(x, y int, v byte) {
+	for _, v := range data {
 		switch v {
-		case '|':
+		case stateTrees:
 			nt++
-		case '#':
+		case stateLumber:
 			nl++
 		}
-	})
+	}
 	return nt * nl
 }
 
-func hashLevel(level *util.Level) uint64 {
+func hashLevel(data []state) uint64 {
 	h := fnv.New64a()
-	level.Write(h)
+	h.Write(data)
 	return h.Sum64()
 }
