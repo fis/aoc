@@ -39,6 +39,13 @@ func TestJudge(t *testing.T) {
 }
 
 func TestJudge2(t *testing.T) {
+	judges := []struct {
+		name string
+		f    func(xA, xB, N int) int
+	}{
+		{name: "judge2", f: judge2},
+		{name: "judge2p", f: judge2p},
+	}
 	tests := []struct {
 		N    int
 		want int
@@ -49,8 +56,37 @@ func TestJudge2(t *testing.T) {
 		{N: 5000000, want: 309},
 	}
 	for _, test := range tests {
-		if got := judge2(xA, xB, test.N); got != test.want {
-			t.Errorf("judge2(..., %d) = %d, want %d", test.N, got, test.want)
+		for _, j := range judges {
+			if got := j.f(xA, xB, test.N); got != test.want {
+				t.Errorf("%s(..., %d) = %d, want %d", j.name, test.N, got, test.want)
+			}
 		}
 	}
+}
+
+func BenchmarkRelative(b *testing.B) {
+	b.Run("judge", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			judge(xA, xB, 40000000)
+		}
+	})
+	b.Run("judge2", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			judge2(xA, xB, 5000000)
+		}
+	})
+	b.Run("judge2p", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			judge2p(xA, xB, 5000000)
+		}
+	})
+}
+
+func BenchmarkParallelism(b *testing.B) {
+	b.Run("judge2", func(b *testing.B) {
+		judge2(xA, xB, b.N)
+	})
+	b.Run("judge2p", func(b *testing.B) {
+		judge2p(xA, xB, b.N)
+	})
 }

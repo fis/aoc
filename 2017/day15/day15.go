@@ -36,7 +36,7 @@ func solve(input [][]string) ([]string, error) {
 	xA, _ := strconv.Atoi(input[0][1])
 	xB, _ := strconv.Atoi(input[1][1])
 	p1 := judge(xA, xB, 40000000)
-	p2 := judge2(xA, xB, 5000000)
+	p2 := judge2p(xA, xB, 5000000)
 	return glue.Ints(p1, p2), nil
 }
 
@@ -61,19 +61,88 @@ func judge2(xA, xB, N int) (matches int) {
 	for i := 0; i < N; i++ {
 		for {
 			xA = (xA * mA) % div
-			if xA%4 == 0 {
+			if xA&3 == 0 {
 				break
 			}
 		}
 		for {
 			xB = (xB * mB) % div
-			if xB%8 == 0 {
+			if xB&7 == 0 {
 				break
 			}
 		}
-		if (xA & 0xffff) == (xB & 0xffff) {
+		if xA&0xffff == xB&0xffff {
 			matches++
 		}
 	}
+	return matches
+}
+
+const blockSize = 16384
+
+func judge2p(ixA, ixB, iN int) (matches int) {
+	var blockA, blockB [blockSize]int32
+	startA, startB := make(chan struct{}), make(chan struct{})
+	waitA, waitB := make(chan struct{}), make(chan struct{})
+
+	go func() {
+		xA, N := ixA, iN
+		bi, i := 0, 0
+		for i < N {
+			xA = (xA * mA) % div
+			if xA&3 != 0 {
+				continue
+			}
+			blockA[bi] = int32(xA)
+			bi++
+			i++
+			if bi == blockSize {
+				waitA <- struct{}{}
+				<-startA
+				bi = 0
+			}
+		}
+		if bi < blockSize {
+			waitA <- struct{}{}
+		}
+	}()
+
+	go func() {
+		xB, N := ixB, iN
+		bi, i := 0, 0
+		for i < N {
+			xB = (xB * mB) % div
+			if xB&7 != 0 {
+				continue
+			}
+			blockB[bi] = int32(xB)
+			bi++
+			i++
+			if bi == blockSize {
+				waitB <- struct{}{}
+				<-startB
+				bi = 0
+			}
+		}
+		if bi < blockSize {
+			waitB <- struct{}{}
+		}
+	}()
+
+	for bi := 0; bi < iN; bi += blockSize {
+		<-waitA
+		<-waitB
+		for i := 0; i < blockSize && bi+i < iN; i++ {
+			xA, xB := blockA[i], blockB[i]
+			if xA&0xffff == xB&0xffff {
+				matches++
+			}
+		}
+		if bi+blockSize < iN {
+			startA <- struct{}{}
+			startB <- struct{}{}
+		}
+	}
+
 	return matches
 }
