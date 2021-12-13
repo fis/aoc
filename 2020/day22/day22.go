@@ -16,7 +16,6 @@
 package day22
 
 import (
-	"encoding/binary"
 	"fmt"
 	"hash/fnv"
 	"strconv"
@@ -43,7 +42,7 @@ func solve(chunks []string) ([]string, error) {
 	}
 
 	part1 := game(p1.copy(p1.len(), p2.len()), p2.copy(p2.len(), p1.len()))
-	part2 := recursive(p1, p2, map[uint64]int{})
+	part2 := recursive(p1, p2)
 	if part2 < 0 {
 		part2 = -part2
 	}
@@ -64,17 +63,14 @@ func game(p1, p2 *deck) (score int) {
 		p1 = p2
 	}
 	n := p1.len()
-	p1.rangeCards(func(i, c int) {
-		score += (n - i) * c
-	})
+	for i := 0; i < p1.size; i++ {
+		c := p1.c[(p1.start+i)%len(p1.c)]
+		score += (n - i) * int(c)
+	}
 	return score
 }
 
-func recursive(p1, p2 *deck, scores map[uint64]int) (score int) {
-	i1, i2 := p1.hash(false), p2.hash(true)
-	if score, ok := scores[i1^i2]; ok {
-		return score
-	}
+func recursive(p1, p2 *deck) (score int) {
 	seen := map[uint64]struct{}{}
 	for p1.len() > 0 && p2.len() > 0 {
 		h1, h2 := p1.hash(false), p2.hash(true)
@@ -83,8 +79,8 @@ func recursive(p1, p2 *deck, scores map[uint64]int) (score int) {
 		}
 		seen[h1^h2] = struct{}{}
 		c1, c2 := p1.pop(), p2.pop()
-		if p1.len() >= c1 && p2.len() >= c2 {
-			s := recursive(p1.copy(c1, c2), p2.copy(c2, c1), scores)
+		if p1.len() >= int(c1) && p2.len() >= int(c2) {
+			s := recursive(p1.copy(int(c1), int(c2)), p2.copy(int(c2), int(c1)))
 			if s > 0 {
 				p1.push2(c1, c2)
 			} else {
@@ -101,21 +97,21 @@ func recursive(p1, p2 *deck, scores map[uint64]int) (score int) {
 		p1, sign = p2, -1
 	}
 	n := p1.len()
-	p1.rangeCards(func(i, c int) {
-		score += (n - i) * c
-	})
+	for i := 0; i < p1.size; i++ {
+		c := p1.c[(p1.start+i)%len(p1.c)]
+		score += (n - i) * int(c)
+	}
 	score *= sign
-	scores[i1^i2] = score
 	return score
 }
 
 type deck struct {
-	c           []int
+	c           []byte
 	start, size int
 }
 
 func (d *deck) copy(cards, space int) *deck {
-	d2 := &deck{c: make([]int, cards+space), start: 0, size: cards}
+	d2 := &deck{c: make([]byte, cards+space), start: 0, size: cards}
 	if d.start+cards > len(d.c) {
 		n := len(d.c) - d.start
 		copy(d2.c[0:n], d.c[d.start:])
@@ -130,7 +126,7 @@ func (d *deck) len() int {
 	return d.size
 }
 
-func (d *deck) pop() int {
+func (d *deck) pop() byte {
 	if d.size == 0 {
 		panic("pop on empty deck")
 	}
@@ -139,7 +135,7 @@ func (d *deck) pop() int {
 	return c
 }
 
-func (d *deck) push(c int) {
+func (d *deck) push(c byte) {
 	if d.size == len(d.c) {
 		panic("push on full deck")
 	}
@@ -147,24 +143,19 @@ func (d *deck) push(c int) {
 	d.size++
 }
 
-func (d *deck) push2(c1, c2 int) {
+func (d *deck) push2(c1, c2 byte) {
 	d.push(c1)
 	d.push(c2)
 }
 
-func (d *deck) rangeCards(cb func(i, c int)) {
-	for i := 0; i < d.size; i++ {
-		cb(i, d.c[(d.start+i)%len(d.c)])
-	}
-}
-
 func (d *deck) hash(flip bool) uint64 {
 	h := fnv.New64a()
-	buf := [4]byte{}
-	d.rangeCards(func(_, c int) {
-		binary.LittleEndian.PutUint32(buf[:], uint32(c))
-		h.Write(buf[:])
-	})
+	if d.start+d.size > len(d.c) {
+		h.Write(d.c[d.start:])
+		h.Write(d.c[:d.start+d.size-len(d.c)])
+	} else {
+		h.Write(d.c[d.start : d.start+d.size])
+	}
 	s := h.Sum64()
 	if flip {
 		s = (s << 32) | (s >> 32)
@@ -178,12 +169,13 @@ func parseDeck(player int, lines []string) (d *deck, err error) {
 		return nil, fmt.Errorf("bad/missing header in deck")
 	}
 	lines = lines[1:]
-	c := make([]int, 2*len(lines))
+	c := make([]byte, 2*len(lines))
 	for i, line := range lines {
-		c[i], err = strconv.Atoi(line)
+		cv, err := strconv.Atoi(line)
 		if err != nil {
 			return nil, err
 		}
+		c[i] = byte(cv)
 	}
 	return &deck{c: c, start: 0, size: len(lines)}, nil
 }

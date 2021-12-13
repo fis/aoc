@@ -660,6 +660,10 @@ Array-based circular buffers play the role of the deck. For the recursive game,
 scores are memoized based on the starting decks, though I have not checked
 whether that comes into play much.
 
+> Update 2021-12-13: it doesn't. It's been removed since then. But a number of
+> other implementation improvements did cut down the runtime to about half of
+> what it used to be.
+
 ## [Day 23](https://adventofcode.com/2020/day/23): Crab Cups
 
 An AoC staple is a game that can be efficiently simulated on the small scale

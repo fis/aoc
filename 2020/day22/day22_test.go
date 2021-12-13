@@ -35,7 +35,7 @@ func TestRecursive(t *testing.T) {
 	p1, _ := parseDeck(1, deck1)
 	p2, _ := parseDeck(2, deck2)
 	want := -291
-	got := recursive(p1, p2, map[uint64]int{})
+	got := recursive(p1, p2)
 	if got != want {
 		t.Errorf("recursive = %d, want %d", got, want)
 	}
