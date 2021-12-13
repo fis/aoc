@@ -38,19 +38,26 @@ func solve(lines []string) ([]string, error) {
 }
 
 func game(players, marbles int) (maxScore int) {
-	m := &marble{num: 0}
-	m.ccw, m.cw = m, m
+	ccw := make([]int, marbles+1)
+	cw := make([]int, marbles+1)
+	m := 0
+	// cw[0] = 0, ccw[0] = 0
 
 	scores := make([]int, players)
 	for turn := 1; turn <= marbles; turn++ {
 		if turn%23 != 0 {
-			m = m.cw.insert(turn)
+			m = cw[m]
+			ccw[turn], cw[turn] = m, cw[m]
+			ccw[cw[m]], cw[m] = turn, turn
+			m = turn
 		} else {
 			pl := turn % players
 			scores[pl] += turn
-			m = m.ccw.ccw.ccw.ccw.ccw.ccw.ccw
-			scores[pl] += m.num
-			m = m.remove()
+			m = ccw[ccw[ccw[ccw[ccw[ccw[ccw[m]]]]]]]
+			scores[pl] += m
+			nm := cw[m]
+			cw[ccw[m]], ccw[cw[m]] = cw[m], ccw[m]
+			m = nm
 		}
 	}
 
@@ -61,23 +68,4 @@ func game(players, marbles int) (maxScore int) {
 		}
 	}
 	return maxScore
-}
-
-type marble struct {
-	num     int
-	ccw, cw *marble
-}
-
-// insert injects a new marble clockwise from the receiver, and returns it.
-func (m *marble) insert(num int) *marble {
-	nm := &marble{num: num, ccw: m, cw: m.cw}
-	nm.ccw.cw, nm.cw.ccw = nm, nm
-	return nm
-}
-
-// remove removes the receiver from the ring, and returns its (former) clockwise neighbour.
-func (m *marble) remove() *marble {
-	nm := m.cw
-	m.ccw.cw, m.cw.ccw = m.cw, m.ccw
-	return nm
 }
