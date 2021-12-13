@@ -26,6 +26,8 @@ def main():
 
     if aocdata.leaderboard_update() or redraw:
         aocplot.plot_leaderboard()
+    if aocdata.stats_update() or redraw:
+        aocplot.plot_stats()
     if aocdata.gobench_update() or redraw:
         aocplot.plot_gobench()
 

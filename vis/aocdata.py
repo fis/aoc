@@ -14,6 +14,7 @@
 
 
 import numpy as np
+import os
 import os.path
 import pandas as pd
 import pytz
@@ -26,6 +27,7 @@ from lxml import html
 
 _FIRST_YEAR = 2015
 _LEADERBOARD_FILE = 'cache/leaderboard.pickle'
+_STATS_FILE = 'cache/stats.pickle'
 _GOBENCH_FILE = 'cache/gobench.pickle'
 
 
@@ -38,6 +40,18 @@ def leaderboard():
     position for the first part or the full puzzle, respectively.
     """
     return pd.read_pickle(_LEADERBOARD_FILE)
+
+
+def stats():
+    """Loads the "solutions over time" statistics data frame.
+
+    The returned frame will have a three-level index consisting of the integer columns `year`, `ts`
+    (nominal timestamp of when the sample was taken) and `day`. There will be records for all 25
+    days for each of the timestamps, though of course puzzles not yet unlocked will contain zeros.
+    It will have two data series, `one_star` and `two_stars`, representing the number of solutions
+    that have obtained only one star, or both stars, respectively.
+    """
+    return pd.read_pickle(_STATS_FILE)
 
 
 def gobench():
@@ -113,9 +127,10 @@ def _leaderboard_parse(year, day):
         day: Contest day, 1 to 25 (unless in the future).
     
     Returns:
-        A Pandas dataframe containing that day's data. It will have one index, `rank`, with values
-        ranging from 1 to 100, and two series, `one_star` and `two_stars`, containing the time (in
-        seconds) that yielded that given ranking, for the first part or both parts respectively.
+        A Pandas dataframe containing that day's data. It will have a three-level index with the
+        columns `year`, `day` and `rank` (the latter with values ranging from 1 to 100), and two
+        series, `one_star` and `two_stars`, containing the time (in seconds) that yielded that given
+        ranking, for the first part or both parts respectively.
     """
     page = html.parse(_cachefile('leaderboard', year, day))
     entries = page.xpath('//div[@class="leaderboard-entry"]')
@@ -132,6 +147,73 @@ def _leaderboard_parse(year, day):
     ranks = pd.MultiIndex.from_product(
         [[year], [day], range(1, 101)], names=('year', 'day', 'rank'))
     return pd.DataFrame({'one_star': times[1,:], 'two_stars': times[0,:]}, index=ranks)
+
+
+def stats_update():
+    """Ensures the stats data is up to date.
+
+    Returns:
+        False, if no changes were detected. True, if the data was regenerated.
+    """
+
+    input_times = []
+    for year, _ in contest_days():
+        src = _stats_source(year)
+        if os.path.exists(src):
+            input_times.append((year, src, os.stat(src).st_mtime))
+    output_time = 0
+    if os.path.exists(_STATS_FILE):
+        output_time = os.stat(_STATS_FILE).st_mtime
+
+    if not input_times or max(it[2] for it in input_times) < output_time:
+        print('stats: no changes')
+        return False
+    print('stats: regenerating data')
+
+    data = pd.DataFrame()
+    for year, src, _ in input_times:
+        year_frame = _stats_parse(year, src)
+        data = data.append(year_frame)
+
+    data.to_pickle(_STATS_FILE)
+    return True
+
+
+def _stats_parse(year, src):
+    """Parses a collected stats file into a dataframe.
+
+    Args:
+        year: Contest year, 2015 to current.
+        src: Source file path to read statistics from.
+
+    Returns:
+        A Pandas dataframe containing that year's statistics. It will have a three-level index with
+        the columns `year`, `ts` (timestamp in seconds) and `day`, and two series, `one_star` and
+        `two_stars`, containing the number of solutions for one or both parts of that day's puzzle.
+    """
+
+    with open(src) as f:
+        lines = list(f)
+
+    ts = [None] * len(lines)
+    counts = np.empty((2, len(lines) * 25))
+    counts.fill(np.nan)
+    for i, line in enumerate(lines):
+        columns = line.split()
+        if len(columns) != 52:
+            raise RuntimeError(f'malformatted statistics: {columns}')
+        ts[i] = np.datetime64(int(float(columns[0])), 's')
+        counts[0, i*25:(i+1)*25] = [int(c) for c in columns[2:27]]
+        counts[1, i*25:(i+1)*25] = [int(c) for c in columns[27:52]]
+
+    tsi = pd.to_datetime(ts).tz_localize('UTC').tz_convert('US/Eastern')
+    index = pd.MultiIndex.from_product([[year], tsi, range(1, 26)], names=('year', 'ts', 'day'))
+    return pd.DataFrame({'one_star': counts[0,:], 'two_stars': counts[1,:]}, index=index)
+
+
+def _stats_source(year):
+    """Returns the path to the stats source file of the given year."""
+    return f'stats/stats.{year}.txt'
 
 
 def gobench_update():
