@@ -492,6 +492,35 @@ C: {J{Jbcj[~{-]==}[[g0jf[)[~{[+}Z]{J)zzIN            }f[}\m}{L[}w!CLFL"end"CN
 2:                                       sg)L[?d++1<=
 ```
 
+## [Day 13](https://adventofcode.com/2021/day/13): Transparent Origami
+
+Hmm. A slightly boring day 13. I was expecting more of a twist.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{""};;^p-]J'y~[s0:><s1{',;;Jg0!!g1|-abg1j|-g0sa}m[NBL[
+```
+
+Part 2:
+
+```
+ln{""};;p^{',;;}m[+]{J'y~[s0:><s1{g0!!g1|-abg1j|-g0sa}[m}r[
+Jtp)>]?ip^' j.*j.*+]{<-'#D!}r[uN
+```
+
+Combined:
+
+```
+1:         ^p-]                      ',;;J                    m[NBL[
+C: ln{""};;             J'y~[s0:><s1{     g0!!g1|-abg1j|-g0sa}
+2:         p^{',;;}m[+]{                                      [m}r[
+
+2: Jtp)>]?ip^' j.*j.*+]{<-'#D!}r[uN
+```
+
 <!--math
 
 %: day01

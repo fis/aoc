@@ -9,6 +9,7 @@ Here's a map of what's in this repository.
   - Puzzle diaries, i.e., notes written during the contests:
     - [2019 notes](docs/2019-notes.md)
     - [2020 notes](docs/2020-notes.md)
+    - [2021 notes](docs/2021-notes.md)
   - Some notes on the earlier puzzles, solved outside the actual contest time:
     - [2017 notes](docs/2017-notes.md)
 - Go packages
