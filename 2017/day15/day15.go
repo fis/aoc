@@ -80,69 +80,67 @@ func judge2(xA, xB, N int) (matches int) {
 
 const blockSize = 16384
 
-func judge2p(ixA, ixB, iN int) (matches int) {
-	var blockA, blockB [blockSize]int32
-	startA, startB := make(chan struct{}), make(chan struct{})
-	waitA, waitB := make(chan struct{}), make(chan struct{})
+func genA2(xA, N int, out chan<- *[blockSize]int32) {
+	var blocks [2][blockSize]int32
+	cur, next := &blocks[0], &blocks[1]
+	bi, i := 0, 0
+	for i < N {
+	redo:
+		xA = (xA * mA) % div
+		if xA&3 != 0 {
+			goto redo
+		}
+		cur[bi] = int32(xA)
+		bi++
+		i++
+		if bi == blockSize {
+			out <- cur
+			cur, next = next, cur
+			bi = 0
+		}
+	}
+	if bi < blockSize {
+		out <- cur
+	}
+}
 
-	go func() {
-		xA, N := ixA, iN
-		bi, i := 0, 0
-		for i < N {
-			xA = (xA * mA) % div
-			if xA&3 != 0 {
-				continue
-			}
-			blockA[bi] = int32(xA)
-			bi++
-			i++
-			if bi == blockSize {
-				waitA <- struct{}{}
-				<-startA
-				bi = 0
-			}
+func genB2(xB, N int, out chan<- *[blockSize]int32) {
+	var blocks [2][blockSize]int32
+	cur, next := &blocks[0], &blocks[1]
+	bi, i := 0, 0
+	for i < N {
+	redo:
+		xB = (xB * mB) % div
+		if xB&7 != 0 {
+			goto redo
 		}
-		if bi < blockSize {
-			waitA <- struct{}{}
+		cur[bi] = int32(xB)
+		bi++
+		i++
+		if bi == blockSize {
+			out <- cur
+			cur, next = next, cur
+			bi = 0
 		}
-	}()
+	}
+	if bi < blockSize {
+		out <- cur
+	}
+}
 
-	go func() {
-		xB, N := ixB, iN
-		bi, i := 0, 0
-		for i < N {
-			xB = (xB * mB) % div
-			if xB&7 != 0 {
-				continue
-			}
-			blockB[bi] = int32(xB)
-			bi++
-			i++
-			if bi == blockSize {
-				waitB <- struct{}{}
-				<-startB
-				bi = 0
-			}
-		}
-		if bi < blockSize {
-			waitB <- struct{}{}
-		}
-	}()
-
-	for bi := 0; bi < iN; bi += blockSize {
-		<-waitA
-		<-waitB
-		for i := 0; i < blockSize && bi+i < iN; i++ {
+func judge2p(xA, xB, N int) (matches int) {
+	inA, inB := make(chan *[blockSize]int32), make(chan *[blockSize]int32)
+	go genA2(xA, N, inA)
+	go genB2(xB, N, inB)
+	for bi := 0; bi < N; bi += blockSize {
+		blockA := <-inA
+		blockB := <-inB
+		for i := 0; i < blockSize && bi+i < N; i++ {
 			xA, xB := blockA[i], blockB[i]
 			if xA&0xffff == xB&0xffff {
 				matches++
 			}
 		}
-		if bi+blockSize < iN {
-			startA <- struct{}{}
-			startB <- struct{}{}
-		}
 	}
-
 	return matches
 }
