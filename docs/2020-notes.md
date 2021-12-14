@@ -111,13 +111,13 @@ of this. The task just involves counting trees on a given rational-number slope.
 Part 1:
 
 ```
-lnr0{3.*jJL[x/j.%!!}Z]'#CN
+lnr0{3.*jsax/j.%!!}Z]'#CN
 ```
 
 Part 2:
 
 ```
-lnJbc105fC1+]{r0?*z[}Z]j[-2enr1z[+]{{JL[x/j.%!!}m^'#CN}mp
+lnJbc105fC1+]{r0?*z[}Z]j[-2enr1z[+]{{sax/j.%!!}m^'#CN}mp
 ```
 
 ## [Day 4](https://adventofcode.com/2020/day/4): Passport Processing
@@ -230,13 +230,13 @@ Part 2:
 Part 1:
 
 ```
-"\n\n";;{ln\[><gl}ms
+ln{""};;{\[><gl}ms
 ```
 
 Part 2:
 
 ```
-"\n\n";;{lnJbcj\[><gn{{~[}j+]al}Z]++}ms
+ln{""};;{Jbcj\[><gn{{~[}j+]al}Z]++}ms
 ```
 
 

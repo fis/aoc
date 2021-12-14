@@ -362,14 +362,14 @@ down.
 Part 1:
 
 ```
-lnJL[rojJ-]L[roj{'X+]'X[+XX)**}m[J-]?i+]J[~?i[+s0cp
+lnsarojJ-]L[roj{'X+]'X[+XX)**}m[J-]?i+]J[~?i[+s0cp
 {J{?+}j+]2rz?dJcp2enjm[{g0jd!}m[<]jg0jd!J47.-jx/.<.*}ms
 ```
 
 Part 2 (identical preprocessing/padding):
 
 ```
-lnJL[rojJ-]L[roj{'X+]'X[+XX)**}m[J-]?i+]J[~?i[+s0cp
+lnsarojJ-]L[roj{'X+]'X[+XX)**}m[J-]?i+]J[~?i[+s0cp
 {g0jd!57.<{0j{JJ{?+}j+]2rz?dJcp2enjm[j+]{jd!}g0+]<m}{!=}w!it}if}[msg)L[<>3.+pd
 ```
 
@@ -396,7 +396,7 @@ ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nz0[+-]{0 3 57 1197 25137}j!!}ms
 Part 2:
 
 ```
-ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nznup\CL5ugPP.*}m[:nz><JL[2./!!
+ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nznup\CL5ugPP.*}m[:nz><sa2./!!
 ```
 
 Combined:
@@ -404,7 +404,7 @@ Combined:
 ```
 1:                                                   0[+-]{0 3 57 1197 25137}j!!}ms
 C: ln{{"<{[(x)]}>"jFi4.-J0.<{ngPp}j{JPP!=.*}jie}m[:nz
-2:                                                   nup\CL5ugPP.*}m[:nz><JL[2./!!
+2:                                                   nup\CL5ugPP.*}m[:nz><sa2./!!
 ```
 
 ## [Day 11](https://adventofcode.com/2021/day/11): Dumbo Octopus
