@@ -521,6 +521,69 @@ C: ln{""};;             J'y~[s0:><s1{     g0!!g1|-abg1j|-g0sa}
 2: Jtp)>]?ip^' j.*j.*+]{<-'#D!}r[uN
 ```
 
+## [Day 14](https://adventofcode.com/2021/day/14): Extended Polymerization
+
+Today follows the traditional AoC trope: a simple operation for part 1, scaled
+up to something unreasonable for part 2. It's easy to see that if `L(0)` is the
+initial length of the polymer, then the length of the polymer after `t` updates
+`L(t) = (L(0)-1) * 2^t + 1`. So the example polymer of four elements grows to
+`3*2^40+1`, or around 3.3 trillion elements.
+
+Two ways of working out the counts of each element after `t` steps, without
+expanding out the polymer explicitly, are included in the Go solutions.
+
+The first approach is to note that for any pair, what it expands into after `t`
+steps does not depend on the rest of the string. So we can define recursively
+the number of elements you get after expanding a single pair `XY` for `t` steps,
+assuming the relevant insertion rule is `XY -> Z`, is:
+
+- If `t = 0`, the only elements are `X` and `Y` (possibly the same).
+- If `t = 1`, the elements are `X` and `Y`, as well as `Z`.
+- For anything else, the elements are those you get from expanding `XZ` for
+  `t-1` steps, plus those from expanding `ZY` for `t-1` steps, minus one `Z`
+  because that got counted twice. (Strictly speaking, this would cover `t = 1`
+  as well.)
+
+For the entire polymer, the result is that of expanding each pair `t` steps,
+minus all the intermediate elements (excluding the two endpoints) that got
+counted twice. With simple memoization, this direct recursive definition solves
+the problem in around half a millisecond, which is already more than sufficient.
+
+Alternatively, we can observe that the order the pairs are in the polymer does
+not really matter, except for the endpoints (which stay unmodified throughout
+the expansion). If a polymer contains some amount `N` instances of the pair `XY`
+anywhere, and the relevant insertion rule is still `XY -> Z`, then the resulting
+polymer after one step of pair insertion will contain `N` instances of the pairs
+`XZ` and `ZY`, plus whatever results from expanding all the other pairs of the
+polymer.
+
+As a consequence, we can solve the puzzle by converting the initial polymer to
+this list of pair counts, apply the update steps to it, and then use the
+following property to count the elements: summing up all the pairs' elements
+will count each element of the polymer exactly twice, except for the endpoints,
+which will be counted just once. Solving part 2 this way takes only around 81
+µs, of which the majority is just parsing the rules.
+
+### Burlesque
+
+Part 1, with direct expansion:
+
+```
+lnJ[-s0-]{J2CO{{~!}j+]g0jfeJ[~j-]}\mj[~[+}10E!f:)-]J>]j<].-
+```
+
+Part 2, with the same count-of-pairs approach:
+
+```
+%mU={{jbxcp}_+\m><{-]j-]==}gb{tp^p++j-]CL}m[}lnJ[-s0-]J2COf:)<-
+{{p^S1g0{g1~!}fe[~[]2CO}mU}40E!jrt2.+bx1[+[+{p^XX}mU)[~J>]j<].-2./
+```
+
+A particularly ugly part of this is the `><{-]j-]==}gb{tp^p++j-]CL}m[` routine
+used to merge lists of counts. Feels like it should be a lot shorter. But the
+`gB` builtin only works for boolean predicates, and the `CM` builtin builds
+comparison functions for SortBy, not GroupBy.
+
 <!--math
 
 %: day01
