@@ -584,6 +584,57 @@ used to merge lists of counts. Feels like it should be a lot shorter. But the
 `gB` builtin only works for boolean predicates, and the `CM` builtin builds
 comparison functions for SortBy, not GroupBy.
 
+## [Day 15](https://adventofcode.com/2021/day/15): Chiton
+
+That's funny. I dusted off my A* search implementation with Manhattan distance
+heuristic (from 2018 day 22), and it really wasn't any better than plain
+Dijkstra's algorithm. I kind of expected it to not make much of a difference
+(since the heuristic of assuming a risk level of 1 throughout is pretty weak),
+but I wasn't expecting it to be actually worse. Of course there might be
+something wrong with the implementation.
+
+For no particular reason, I also tweaked the Dijkstra's algorithm to use a
+simple bucket queue as the priority queue. This relies on two properties: once a
+value with a given priority has been popped, no lower priority values will ever
+be popped again (the queue is
+[monotone](https://en.wikipedia.org/wiki/Monotone_priority_queue)); and the
+maximum priority value that will ever be popped is bounded by the maximum path
+length, which itself has a modest `O(n)` bound (`((W-1)+(H-1)) * 9`). The bucket
+queue implementation is about three times as fast as the standard Go
+`container/heap` for the day (around 21ms vs. 61ms).
+
+### Burlesque
+
+This really isn't the sort of thing that's convenient to do in Burlesque. All
+I've got is an explore-shortest-paths-first solution that can really only do the
+10x10 part 1 example, not the full 100x100 input:
+
+```
+ps)XXS0L[-.s1{}s2{0 0 0}{J[-g2j+]s2J{[-?-)ab++1==}j+]g1rzJcpjf[{g2j~[n!}f[
+{Jg0jd!0.++]}x/-]0jr~m[p^CL([-)sc{[-j[-==}gb{-][-j)-]<]+]}[m><p^}{[-g1J_+!=}w!it-]
+```
+
+There are (at least) two reasons why that's so slow: it uses
+`CL([-)sc{[-j[-==}gb{-][-j)-]<]+]}[m><p^` (collect stack, sort by coordinate
+position, group by coordinate position, keep minimum distance, sort by distance,
+push back on stack) to make the stack a priority queue, and it uses
+`{[-?-)ab++1==}j+]g1rzJcpjf[{g2j~[n!}f[` (generate all 100*100 coordinate pairs,
+filter it down to those with a distance of 1) as the method of generating the
+4-neighbourhood.
+
+The following variant, at the cost of a lot more code, does manage to solve the
+100x100 part 1 in merely 52 seconds:
+
+```
+%rN={J-.0>.j+.g1<.r@}ps)XXS0L[-.s1{}s2{0 0 0}
+{J[-g2j+]s2JJ{[-?-)ab++1==}j+]j[-p^rNjrNcpjf[{g2j~[n!}f[{Jg0jd!0.++]}x/-]0jr~m[
+p^CL([-)sc{[-j[-==}gb{-][-j)-]<]+]}[m><p^}{[-g1J_+!=}w!it-]
+```
+
+Both of these could probably be shaved down by a lot, but honestly that would be
+polishing a turd. We shall see if I'll ever get around to reimplementing a
+sensible algorithm in it.
+
 <!--math
 
 %: day01
