@@ -635,6 +635,30 @@ Both of these could probably be shaved down by a lot, but honestly that would be
 polishing a turd. We shall see if I'll ever get around to reimplementing a
 sensible algorithm in it.
 
+## [Day 16](https://adventofcode.com/2021/day/16): Packet Decoder
+
+Very much a programming task rather than a puzzle task today. Nothing to say.
+
+### Burlesque
+
+Not very compact, but there's just a lot to do here. Conditionals aren't where
+Burlesque shines, anyway. I'm using a "jump table" with `{...}j!!e!` in part 2.
+
+Part 1:
+
+```
+zz'1+]b6 2dg[-{J3.+2ugPp3.-J3.-j3.+2ug4=={{5.-}{-]}w!5.-}j
+{J[-j-]{J11.-j11.+2ug#ajE!}j{J15.-sax/15.+2ug.-{L[!=}[[#ajw!}jie}jie}hd!ap\CL++
+```
+
+Part 2:
+
+```
+zz'1+]b6 2dg[-{J[-4.+x/j_+j5.-}hd{3.-J3.-j3.+2ugJ4!={j{}jJ[-j-]{J11.-j11.+2ug
+{!ax/j[+j}jE!j}j{J15.-sax/15.+2ug.-{L[!=}[[{!ax/j[+j}jw!j}jiex/}if
+{{++}{pd}{<]}{>]}{{}j#b{-]}w!!bj2ug}{^p.>}{^p.<}{^p==}}j!!e!}hd!ait
+```
+
 <!--math
 
 %: day01
