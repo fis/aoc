@@ -192,23 +192,39 @@ def _stats_parse(year, src):
         `two_stars`, containing the number of solutions for one or both parts of that day's puzzle.
     """
 
+    epoch = pd.to_datetime(f'{year}-12-01').tz_localize('US/Eastern').value // 1000000000
+
     with open(src) as f:
         lines = list(f)
 
-    ts = [None] * len(lines)
-    counts = np.empty((2, len(lines) * 25))
-    counts.fill(np.nan)
+    index = []
+    data = []
     for i, line in enumerate(lines):
         columns = line.split()
         if len(columns) != 52:
             raise RuntimeError(f'malformatted statistics: {columns}')
-        ts[i] = np.datetime64(int(float(columns[0])), 's')
-        counts[0, i*25:(i+1)*25] = [int(c) for c in columns[2:27]]
-        counts[1, i*25:(i+1)*25] = [int(c) for c in columns[27:52]]
+        ts = int(float(columns[0]))
+        for day0 in range(25):
+            since = ts - (epoch + day0*86400)
+            if since < 0:
+                continue
+            index.append((year, day0+1, _stats_sampleidx(since), i))
+            data.append((ts, since, int(columns[2+day0]), int(columns[27+day0])))
 
-    tsi = pd.to_datetime(ts).tz_localize('UTC').tz_convert('US/Eastern')
-    index = pd.MultiIndex.from_product([[year], tsi, range(1, 26)], names=('year', 'ts', 'day'))
-    return pd.DataFrame({'one_star': counts[0,:], 'two_stars': counts[1,:]}, index=index)
+    index = pd.MultiIndex.from_tuples(index, names=('year', 'day', 'sidx', 'row'))
+    data = pd.DataFrame(data, index=index, columns=('ts', 'since', 'one_star', 'two_stars'))
+
+    return data.groupby(['year', 'day', 'sidx']).mean()
+
+
+def _stats_sampleidx(since):
+    if since < 86400:
+        return since // 300
+    elif since < 7*86400:
+        return 288 + (since-86400) // 3600
+    else:
+        return 456 + (since-7*86400) // 86400
+
 
 
 def _stats_source(year):

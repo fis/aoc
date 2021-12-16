@@ -115,6 +115,14 @@ def plot_stats():
 
     data = aocdata.stats()
 
+    # Altair has an annoying tendency to localize times, but for the contest it makes sense to show
+    # them as US/Eastern no matter what. It has an even more annoying tendency to, in some browsers,
+    # even render naive (TZ-unaware) times as that. This terrible thing converts the timestamps into
+    # allegedly-UTC timestamps that still show the US/Eastern calendar times. :/
+    utc_times = pd.to_datetime(data.ts*1000000000).dt.tz_localize('UTC')
+    naive_times = utc_times.dt.tz_convert('US/Eastern').dt.tz_localize(None)
+    data['ts_utc'] = naive_times.dt.tz_localize('UTC')
+
     plot_stats_chart(data)
     plot_stats_trajectory(data)
     plot_stats_ratio(data)
@@ -125,15 +133,16 @@ def plot_stats_chart(data):
 
     print('stats_chart')
 
-    data = data.rename(columns={'one_star': 'just one star', 'two_stars': 'two stars'}).stack()
-    data = data.rename_axis(index=['year', 'ts', 'day', 'stars'])
-    data = pd.DataFrame({'count': data}).reset_index()
-    data['ts_utc'] = data['ts'].dt.tz_localize(None).dt.tz_localize('UTC')
+    counts = data.reset_index().drop(columns=['sidx', 'ts'])
+    counts = counts.set_index(['year', 'day', 'ts_utc', 'since'])
+    counts = counts.rename(columns={'one_star': 'just one star', 'two_stars': 'two stars'})
+    counts = counts.stack().rename_axis(index=['year', 'day', 'ts_utc', 'since', 'stars'])
+    counts = pd.DataFrame.from_dict({'count': counts}).reset_index()
 
     selection = alt.selection_multi(fields=['day'], bind='legend')
     hover = alt.selection_single(fields=['day'], on='mouseover')
 
-    alt.Chart(data) \
+    alt.Chart(counts) \
         .mark_line() \
         .encode(
             alt.X('utcyearmonthdatehoursminutes(ts_utc):T', title='Time of stats snapshot'),
@@ -147,14 +156,12 @@ def plot_stats_chart(data):
         .resolve_scale(x='independent', y='independent') \
         .save('out/stats.chart.html')
 
-    start_times = data.apply(lambda row: pd.to_datetime(f'{row.year}-12-{row.day}').tz_localize('US/Eastern'), axis=1)
-    data['since'] = (data['ts'] - start_times) / np.timedelta64(24, 'h')
-    aligned = data.loc[data['since'] > 0]
+    counts['since_d'] = counts.since / 86400
 
-    alt.Chart(aligned) \
+    alt.Chart(counts) \
         .mark_line() \
         .encode(
-            alt.X('since:Q', title='Time since puzzle start (days)'),
+            alt.X('since_d:Q', title='Time since puzzle start (days)', scale=alt.Scale(type='sqrt')),
             alt.Y('count:Q', title='Number of solutions'),
             alt.Color('day:O', scale=_rainbow_day_scale),
             opacity=alt.condition(selection | hover, alt.value(1), alt.value(0.2)),
@@ -200,14 +207,14 @@ def plot_stats_ratio(data):
 
     print('stats_ratio')
 
-    data = pd.DataFrame({'ratio': data['one_star'] / (data['one_star'] + data['two_stars'])}).reset_index()
-    data = data.loc[~data['ratio'].isnull()]
-    data['ts_utc'] = data['ts'].dt.tz_localize(None).dt.tz_localize('UTC')
+    ratios = pd.DataFrame.from_dict({'ts_utc': data.ts_utc, 'since': data.since, 'ratio': data.one_star / (data.one_star + data.two_stars)})
+    ratios = ratios.reset_index()
+    ratios = ratios.loc[~ratios['ratio'].isnull()]
 
     selection = alt.selection_multi(fields=['day'], bind='legend')
     hover = alt.selection_single(fields=['day'], on='mouseover')
 
-    alt.Chart(data) \
+    alt.Chart(ratios) \
         .mark_line() \
         .encode(
             alt.X('utcyearmonthdatehoursminutes(ts_utc):T', title='Time of stats snapshot'),
@@ -221,13 +228,12 @@ def plot_stats_ratio(data):
         .resolve_scale(x='independent', y='independent') \
         .save('out/stats.ratio.html')
 
-    start_times = data.apply(lambda row: pd.to_datetime(f'{row.year}-12-{row.day}').tz_localize('US/Eastern'), axis=1)
-    data['since'] = (data['ts'] - start_times) / np.timedelta64(24, 'h')
+    ratios['since_d'] = ratios.since / 86400
 
-    alt.Chart(data) \
+    alt.Chart(ratios) \
         .mark_line() \
         .encode(
-            alt.X('since:Q', title='Time since puzzle start (days)'),
+            alt.X('since_d:Q', title='Time since puzzle start (days)', scale=alt.Scale(type='sqrt')),
             alt.Y('ratio:Q', title='Fraction of solutions with just one star', scale=alt.Scale(type='log')),
             alt.Color('day:O', scale=_rainbow_day_scale),
             opacity=alt.condition(selection | hover, alt.value(1), alt.value(0.2)),
