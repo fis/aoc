@@ -594,14 +594,14 @@ but I wasn't expecting it to be actually worse. Of course there might be
 something wrong with the implementation.
 
 For no particular reason, I also tweaked the Dijkstra's algorithm to use a
-simple bucket queue as the priority queue. This relies on two properties: once a
-value with a given priority has been popped, no lower priority values will ever
-be popped again (the queue is
-[monotone](https://en.wikipedia.org/wiki/Monotone_priority_queue)); and the
-maximum priority value that will ever be popped is bounded by the maximum path
-length, which itself has a modest `O(n)` bound (`((W-1)+(H-1)) * 9`). The bucket
-queue implementation is about three times as fast as the standard Go
-`container/heap` for the day (around 21ms vs. 61ms).
+bucket queue as the priority queue. A property of the Dijkstra's algorithm is
+that priorities will be extracted in priority order (the queue is
+[monotone](https://en.wikipedia.org/wiki/Monotone_priority_queue)), and further
+the span of priorities in the queue at once will never be greater than the
+longest edge in the graph (9). So it's enough to have just a small number of
+buckets (modulo N), and keep track which held the minimum priority last. It's a
+good chunk faster than the naive use of the Go `container/heap` (around 12ms vs.
+61ms for the day).
 
 ### Burlesque
 

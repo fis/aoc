@@ -115,27 +115,30 @@ func shortestPathDijkstraBQ(w, h int32, level [][]byte, scale int32) int32 {
 	}
 }
 
+const bucketSpan = 16 // a power of 2 that's > than the maximum edge length
+
 type bucketq struct {
-	buckets [][]coord
-	minPrio int32
+	at      int32
+	buckets [bucketSpan]struct {
+		prio   int32
+		coords []coord
+	}
 }
 
 func (bq *bucketq) pop() (p int32, c coord) {
-	for len(bq.buckets[0]) == 0 {
-		bq.buckets = bq.buckets[1:]
-		bq.minPrio++
+	for len(bq.buckets[bq.at].coords) == 0 {
+		bq.at = (bq.at + 1) & (bucketSpan - 1)
 	}
-	c = bq.buckets[0][len(bq.buckets[0])-1]
-	bq.buckets[0] = bq.buckets[0][:len(bq.buckets[0])-1]
-	return bq.minPrio, c
+	coords := bq.buckets[bq.at].coords
+	c = coords[len(coords)-1]
+	bq.buckets[bq.at].coords = coords[:len(coords)-1]
+	return bq.buckets[bq.at].prio, c
 }
 
 func (bq *bucketq) push(p int32, c coord) {
-	i := p - bq.minPrio
-	if int(i) >= len(bq.buckets) {
-		bq.buckets = append(bq.buckets, make([][]coord, int(i)-len(bq.buckets)+1)...)
-	}
-	bq.buckets[i] = append(bq.buckets[i], c)
+	i := p & (bucketSpan - 1)
+	bq.buckets[i].prio = p
+	bq.buckets[i].coords = append(bq.buckets[i].coords, c)
 }
 
 type hpath struct {
