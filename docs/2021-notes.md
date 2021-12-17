@@ -659,6 +659,132 @@ zz'1+]b6 2dg[-{J[-4.+x/j_+j5.-}hd{3.-J3.-j3.+2ugJ4!={j{}jJ[-j-]{J11.-j11.+2ug
 {{++}{pd}{<]}{>]}{{}j#b{-]}w!!bj2ug}{^p.>}{^p.<}{^p==}}j!!e!}hd!ait
 ```
 
+## [Day 17](https://adventofcode.com/2021/day/17): Trick Shot
+
+Let's start by figuring out some bounds for plausible initial velocities `vx0`,
+`vy0`. If we need to hit the target area between `(Tx0, Ty0) .. (Tx1, Ty1)`
+inclusive, the following four things must at least be true:
+
+- If we're launching the probe on a downward angle, we certainly must pick a
+  velocity `vy0 >= Ty0`. Otherwise the probe will be past the target area after
+  the very first time step.
+- If we're launching the probe upwards, in terms of its Y position, it will
+  first (during time steps `t = 0 .. 2*vy0+1`) sail in a graceful parabola,
+  reaching up to `vy0*(vy0+1)/2` at the top of its arch. Then it will start
+  dropping down, and at `t = 2*vy0+1` it will be again back at `y = 0` with a
+  current downwards velocity of `-(vy0+1)`. For the same reasoning, to hit the
+  target area, we must have `-(vy0+1) >= Ty0`, or `vy0 <= -Ty0-1`.
+- For the X position, we must give the probe enough oomph to at least reach the
+  target area before drag stops it short. The highest X coordinate the probe
+  will reach is `vx0*(vx0+1)/2`, and by setting `vx0*(vx0+1)/2 >= Tx0` we can
+  see that `vx0 >= (sqrt(8*Tx0 + 1) - 1)/2`.
+- Likewise, we must not shoot the probe so fast it misses the target completely
+  with its first step. So we must have `vx0 <= Tx1` as well.
+
+In other words, the range of velocities that can possibly hit the target is
+`(sqrt(8*Tx0 + 1) - 1)/2 <= vx0 <= Tx1`, `Ty0 <= vy0 <= -Ty0-1`. This is a
+pretty tiny search space: `25*20 = 500` possibilities for the example, and
+`85*358 = 30430` for the actual puzzle input. It would almost certainly be
+perfectly feasible to just launch all those probes, and just simulate their
+trajectories until they've passed the target area, and see how many happened to
+hit. Let's look a little further analytically, though.
+
+On which time steps will the probe's Y coordinate be in the target area? If
+we've launched the probe up (or straight ahead), we can just wait for it to hit
+zero again, thus reducing the cases we need to consider to those when the
+initial velocity `vy0 < 0`. For nonnegative velocities, we'll just mentally
+substitute the variables `t' = t - (2*vy0+1)` and `vy0' = -(vy0+1)`.
+
+We can easily derive the Y position `y(t)` of the probe at time `t`:
+
+    y(t) = sum{i=0..t-1} (vy0 - i)
+         = t*vy0 - sum{i=0..t-1} i
+         = t*vy0 - (t-1)*t/2
+
+To hit the target area, we must find an integer `t` that falls within the range:
+
+    Ty0 <= y(t) <= Ty1
+    Ty0 <= t*vy0 - (t-1)*t/2 <= Ty1
+    : t >= ((2*vy0+1) + sqrt((2*vy0+1)^2 - 8*Ty1))/2
+    : t <= ((2*vy0+1) + sqrt((2*vy0+1)^2 - 8*Ty0))/2
+
+Conversely, on which time steps will the X coordinate be in the target area?
+Because of the drag, the X coordinate has two distinct ranges of behaviour. For
+time steps `t <= vx0`, we have a very similar equation (though here `vx0` is
+positive):
+
+    x(t) = sum{i=0..t-1} (vx0 - i)
+         = t*vx0 - (t-1)*t/2
+
+On the other hand, for any time steps `t > vx0`, the probe will stay forever at
+position `x = vx0*(vx0+1)/2`.
+
+To hit the target area, we again need `Tx0 <= x(t) <= Tx1` to be true for an
+integer `t`, but this time there are the two different regions to consider. We
+get a lower bound for the time needed to reach the target area in any case:
+
+    x(t) >= Tx0
+    t*vx0 - (t-1)*t/2 >= Tx0
+    t >= ((2*vx0+1) - sqrt((2*vx0+1)^2 - 8*Tx0))/2
+
+For the upper bound, if `vx0*(vx0+1)/2 <= Tx1`, the probe will stop in the
+target area, and any `t` value over the lower bound is fine. Otherwise, we get
+yet one more of these similar equations for when we cross the other edge of the
+target:
+
+    x(t) <= Tx1
+    t*vx0 - (t-1)*t/2 <= Tx1
+    t <= ((2*vx0+1) - sqrt((2*vx0+1)^2 - 8*Tx1))/2
+
+Finally, to *actually* hit the target area, the conditions for the X and Y
+coordinates must be simultaneously true for some `t`. Since both are specified
+in terms of an interval, this is just a matter of checking whether they
+intersect, of course taking into account the time shift (if any).
+
+To avoid any problems with numerical imprecision from the square roots, the Go
+solution derives the bounds from using a simple binary search to find the
+relevant points on the equivalent quadratic polynomials. It's probably not the
+fastest way of doing it, but it works well enough.
+
+FWIW, if we wanted to take this even further, it's quite possible to also
+further constrain the range of possible initial X velocities for each of the
+given initial Y velocities, and iterate much less that way. But I've already
+spent far too much time writing this up.
+
+### Burlesque
+
+Efficiency? Who needs that! Let's just brute-force everything.
+
+These solutions are very similar, because they've got an almost identical core:
+starting from rough bounds on possible velocities, they generate all points on
+the trajectory and the intersect it with the points of the target region. It
+works fine for the toy example, but for the puzzle input runs for 5 minutes.
+
+Part 1:
+
+```
+{><}gB2enriJJ2.+^pr@j2.-ng^pr@cps0p^vvrojJngS1jr@cp/v
+{{Jx/p^-.0>.j-._+Jx/?+}{[~g1>=}w!/vCLJg0INnun!?*)[~>]}[m>]
+
+```
+
+Part 2:
+
+```
+{><}gB2enriJJ2.+^pr@j2.-ng^pr@cps0p^vvrojJngS1jr@cp/v
+{J{Jx/p^-.0>.j-._+Jx/?+}{[~g1>=}w!/vCLg0INnun!}ms
+```
+
+Combined:
+
+```
+C: {><}gB2enriJJ2.+^pr@j2.-ng^pr@cps0p^vvrojJngS1jr@cp/v
+
+1:                                       J        ?*)[~>]}[m>]
+C: { {Jx/p^-.0>.j-._+Jx/?+}{[~g1>=}w!/vCL g0INnun!
+2:  J                                             }ms
+```
+
 <!--math
 
 %: day01
