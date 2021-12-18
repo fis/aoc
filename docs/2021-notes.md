@@ -847,6 +847,48 @@ C: { {Jx/p^-.0>.j-._+Jx/?+}{[~g1>=}w!/vCL g0INnun!
 2:  J                                             }ms
 ```
 
+## [Day 18](https://adventofcode.com/2021/day/18): Snailfish
+
+Not much to say. Since there's a small depth bound, the solution uses small
+arrays to represent the trees: this benchmarked much better than the separately
+allocated nodes. Tree vertices track their subtree's depth and whether a split
+is needed or not, to help reduce know that.
+
+### Burlesque
+
+This is a lot of code, and slow, but at least it works. It uses the direct
+recursive definitions of everything.
+
+Part 1:
+
+```
+%sP={jJL[2==x/{8};;che!}%sD={{p^sDjsD>.+.8vv0}sP}%sL={j{g_x/sL+]8.+}sP}%sR={j{l_jx/sR[+8.+}sP}
+%sX={J{Jx/J-]sD+.x/=={p^x/-.sX3MVjsLx/bxj[+j0}j{^px/-.sX3MVx/sRx/bxj+]j0j}jie}j{vv0j^p}j-.ie}
+%sS={{J~]FL>]9.>{g_sS+]}j{l_jsS[+}jie8J2./j+.2./_+}sP}%sM={{p^sM3.*jsM2.*.+8}sP}
+ln)ra{bxj+]{J{5sXvvvv}j{sS}jsD5==ie}{JsD5==jFL>]9.>||}w!}r[sM
+```
+
+Part 2:
+
+```
+%sP={jJL[2==x/{8};;che!}%sD={{p^sDjsD>.+.8vv0}sP}%sL={j{g_x/sL+]8.+}sP}%sR={j{l_jx/sR[+8.+}sP}
+%sX={J{Jx/J-]sD+.x/=={p^x/-.sX3MVjsLx/bxj[+j0}j{^px/-.sX3MVx/sRx/bxj+]j0j}jie}j{vv0j^p}j-.ie}
+%sS={{J~]FL>]9.>{g_sS+]}j{l_jsS[+}jie8J2./j+.2./_+}sP}%sM={{p^sM3.*jsM2.*.+8}sP}
+ln)raJcp{bxj+]{J{5sXvvvv}j{sS}jsD5==ie}{JsD5==jFL>]9.>||}w!sM}^m>]
+```
+
+Combined:
+
+```
+C: %sP={jJL[2==x/{8};;che!}%sD={{p^sDjsD>.+.8vv0}sP}%sL={j{g_x/sL+]8.+}sP}%sR={j{l_jx/sR[+8.+}sP}
+C: %sX={J{Jx/J-]sD+.x/=={p^x/-.sX3MVjsLx/bxj[+j0}j{^px/-.sX3MVx/sRx/bxj+]j0j}jie}j{vv0j^p}j-.ie}
+C: %sS={{J~]FL>]9.>{g_sS+]}j{l_jsS[+}jie8J2./j+.2./_+}sP}%sM={{p^sM3.*jsM2.*.+8}sP}
+
+1:                                                            }r[sM
+C: ln)ra   {bxj+]{J{5sXvvvv}j{sS}jsD5==ie}{JsD5==jFL>]9.>||}w!
+2:      Jcp                                                   sM}^m>]
+```
+
 <!--math
 
 %: day01

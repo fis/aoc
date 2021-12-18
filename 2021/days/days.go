@@ -33,4 +33,5 @@ import (
 	_ "github.com/fis/aoc/2021/day15" // solvers
 	_ "github.com/fis/aoc/2021/day16" // solvers
 	_ "github.com/fis/aoc/2021/day17" // solvers
+	_ "github.com/fis/aoc/2021/day18" // solvers
 )
