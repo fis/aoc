@@ -98,9 +98,9 @@ func shortestPathDijkstraBQ(w, h int32, level [][]byte, scale int32) int32 {
 		if p == to {
 			return pd
 		}
-		if od := dist[p.y*W+p.x]; od < pd {
-			continue // path no longer relevant
-		}
+		// Normally we'd check this path against the distance, but due to the special property of the graph
+		// that all in-edges have the same weigth, we'll in fact never end up adding redundant elements to
+		// the priority queue.
 		for _, q := range [4]coord{{p.x, p.y - 1}, {p.x, p.y + 1}, {p.x - 1, p.y}, {p.x + 1, p.y}} {
 			if q.x < 0 || q.x >= W || q.y < 0 || q.y >= H {
 				continue

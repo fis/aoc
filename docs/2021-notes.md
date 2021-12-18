@@ -605,35 +605,92 @@ good chunk faster than the naive use of the Go `container/heap` (around 12ms vs.
 
 ### Burlesque
 
-This really isn't the sort of thing that's convenient to do in Burlesque. All
-I've got is an explore-shortest-paths-first solution that can really only do the
-10x10 part 1 example, not the full 100x100 input:
+This really isn't the sort of thing that's convenient to do in Burlesque. After
+trying (and failing) of producing a concise yet computationally feasible
+program, I've opted to write a readable one instead. Here's something that does
+part 1 using a similar bucket queue as the Go code, with comments and all:
+
+```
+ps)XXS0                     "0: level data"vv
+L[J-.s1                     "1: level size (-1)"vv
+JJrox/.*j4**?+s2            "2: distance map, full of big numbers"vv
+{}16.*0[+s3                 "3: bucket list (16) for priority queue"vv
+%f^={                       "f^ ( {d y x} -- ): push to priority queue"vv
+  g3j                         "get old queue"vv
+  J-]15&&J                    "compute index"vv
+  g3j!!                       "fetch old bucket"vv
+  x/+]                        "create new bucket"vv
+  jsas3                       "update queue"vv
+}
+%fv={                       "fv ( -- {d y x} ): pop from priority queue"vv
+  {                           "increment current bucket while empty"vv
+    g3J~]j[~+.15&&[+s3
+  }{g3J[~!!nu}w!
+  g3J[~!!J-]j                 "take head of current bucket"vv
+  [-g3J[~x/jsas3              "save tail into queue"vv
+}
+%N4={                       "N4 ( {y x} -- {{y-1 x} ...} ): generate 4-neighs"vv
+  {?+}j+]                     "create {{y x}?+}"vv
+  2320 3dg?d2co               "load {{0 -1} {-1 0} {0 1} {1 0}}"vv
+  jm[                         "add to {y x}"vv
+  {J<]0>=j>]g1<=&&}f[         "filter to only in-bounds coords"vv
+}
+{0 0 0}                     "initialize current explored node"vv
+{                           "repeat while top of stack not at destination:"vv
+  J[-N4                       "generate neighbours"vv
+  J{g0jd!}m[                  "find neighbour risk levels"vv
+  x/-]?+                      "add to current distance"vv
+  {                           "zip neighbours and distances (ignoring result):"vv
+    +]                          "combine to {d y x} format"vv
+    JJ[-g2jd!j-].>{             "if new distance better than best seen so far:"vv
+      Jg2jJ[-j-]D!s2              "update distance map"vv
+      f^                          "push to priority queue"vv
+    }if
+  }Z]vv
+  fv                          "pop next node from queue"vv
+}{[-g1J_+!=}w!
+-]                          "keep just the distance"vv
+```
+
+After inlining all the only-used-once functions,it does compact down to:
+
+```
+ps)XXS0L[J-.s1JJrox/.*j4**?+s2{}16.*0[+s3{0 0 0}{J[-{?+}j+]2320 3dg?d2cojm[{J<]0>=j
+>]g1<=&&}f[J{g0jd!}m[x/-]?+{+]JJ[-g2jd!j-].>{Jg2jJ[-j-]D!s2g3jJ-]15&&Jg3j!!x/+]jsas3
+}if}Z]vv{g3J~]j[~+.15&&[+s3}{g3J[~!!nu}w!g3J[~!!J-]j[-g3J[~x/jsas3}{[-g1J_+!=}w!-]
+```
+
+Part 2 is solved (slowly) with two small changes. We replace `L[J-.s1` by
+`L[S45.*J-.s1` to scale the logical level size by 5, but still keep track of the
+original level size. And as its counterpart, when computing the distances of
+neighbours, we replace the direct lookup `g0jd!` with the longer expression
+`Jg4?/J++#rg4?*?-g0jd!.+-.9.%+.` (okay, strictly speaking the initial `J` is
+also embedded in the switch from `m[` to `[m`), which computes the block-wide
+adjustment and applies it to the risk level fetched from the original level
+data. Putting it all together:
+
+```
+ps)XXS0L[S45.*J-.s1JJrox/.*j4**?+s2{}16.*0[+s3{0 0 0}{J[-{?+}j+]2320 3dg?d2cojm[
+{J<]0>=j>]g1<=&&}f[J{g4?/J++#rg4?*?-g0jd!.+-.9.%+.}[mx/-]?+{+]JJ[-g2jd!j-].>{Jg2
+jJ[-j-]D!s2g3jJ-]15&&Jg3j!!x/+]jsas3}if}Z]vv{g3J~]j[~+.15&&[+s3}{g3J[~!!nu}w!g3J
+[~!!J-]j[-g3J[~x/jsas3}{[-g1J_+!=}w!-]
+```
+
+In earlier fiddling, I did get a much more rudimentary shortest-path-first
+attempt, which is a lot more concise, but can only really run for part 1 of the
+10x10 toy example:
 
 ```
 ps)XXS0L[-.s1{}s2{0 0 0}{J[-g2j+]s2J{[-?-)ab++1==}j+]g1rzJcpjf[{g2j~[n!}f[
 {Jg0jd!0.++]}x/-]0jr~m[p^CL([-)sc{[-j[-==}gb{-][-j)-]<]+]}[m><p^}{[-g1J_+!=}w!it-]
 ```
 
-There are (at least) two reasons why that's so slow: it uses
-`CL([-)sc{[-j[-==}gb{-][-j)-]<]+]}[m><p^` (collect stack, sort by coordinate
-position, group by coordinate position, keep minimum distance, sort by distance,
-push back on stack) to make the stack a priority queue, and it uses
-`{[-?-)ab++1==}j+]g1rzJcpjf[{g2j~[n!}f[` (generate all 100*100 coordinate pairs,
-filter it down to those with a distance of 1) as the method of generating the
-4-neighbourhood.
-
-The following variant, at the cost of a lot more code, does manage to solve the
-100x100 part 1 in merely 52 seconds:
-
-```
-%rN={J-.0>.j+.g1<.r@}ps)XXS0L[-.s1{}s2{0 0 0}
-{J[-g2j+]s2JJ{[-?-)ab++1==}j+]j[-p^rNjrNcpjf[{g2j~[n!}f[{Jg0jd!0.++]}x/-]0jr~m[
-p^CL([-)sc{[-j[-==}gb{-][-j)-]<]+]}[m><p^}{[-g1J_+!=}w!it-]
-```
-
-Both of these could probably be shaved down by a lot, but honestly that would be
-polishing a turd. We shall see if I'll ever get around to reimplementing a
-sensible algorithm in it.
+It's very slow. For a priority queue, it uses the stack: the segment
+`CL([-)sc{[-j[-==}gb{-][-j)-]<]+]}[m><p^` collects the stack, sorts by position,
+*groups* by position, keeps the shortest distance, sorts by distance, and pushes
+back on stack. It also uses `{[-?-)ab++1==}j+]g1rzJcpjf[{g2j~[n!}f[` to generate
+the neighbours: this generates all 100*100 pairs and then filters to distance of
+one.
 
 ## [Day 16](https://adventofcode.com/2021/day/16): Packet Decoder
 
