@@ -574,13 +574,13 @@ which will be counted just once. Solving part 2 this way takes only around 81
 Part 1, with direct expansion:
 
 ```
-lnJ[-s0-]{J2CO{{~!}j+]g0jfeJ[~j-]}\mj[~[+}10E!f:)-]J>]j<].-
+lng_js0{J2CO{{~!}j+]g0jfeJ[~j-]}\mj[~[+}10E!f:)-]J>]j<].-
 ```
 
 Part 2, with the same count-of-pairs approach:
 
 ```
-%mU={><{-]j-]==}gb{tp^p++j-]CL}m[}lnJ[-s0-]J2COf:)<-
+%mU={><{-]j-]==}gb{tp^p++j-]CL}m[}lng_js0J2COf:)<-
 {{p^S1g0{g1~!}fe[~[]2COjbxcp}\mmU}40E!{p^-]}m[j[~[+1[+2comU)[~J>]j<].-
 ```
 
@@ -629,7 +629,7 @@ JJrox/.*j4**?+s2            "2: distance map, full of big numbers"vv
 }
 %fv={                       "fv ( -- {d y x} ): pop from priority queue"vv
   {                           "increment current bucket while empty"vv
-    g3J~]j[~+.15&&[+s3
+    g3l_j+.15&&[+s3
   }{g3J[~!!nu}w!
   g3J[~!!J-]j                 "take head of current bucket"vv
   [-g3J[~x/jsas3              "save tail into queue"vv
@@ -647,8 +647,8 @@ JJrox/.*j4**?+s2            "2: distance map, full of big numbers"vv
   x/-]?+                      "add to current distance"vv
   {                           "zip neighbours and distances (ignoring result):"vv
     +]                          "combine to {d y x} format"vv
-    JJ[-g2jd!j-].>{             "if new distance better than best seen so far:"vv
-      Jg2jJ[-j-]D!s2              "update distance map"vv
+    Jg_jg2jd!.<{                "if new distance better than best seen so far:"vv
+      Jg2jg_D!s2                  "update distance map"vv
       f^                          "push to priority queue"vv
     }if
   }Z]vv
@@ -660,9 +660,9 @@ JJrox/.*j4**?+s2            "2: distance map, full of big numbers"vv
 After inlining all the only-used-once functions,it does compact down to:
 
 ```
-ps)XXS0L[J-.s1JJrox/.*j4**?+s2{}16.*0[+s3{0 0 0}{J[-{?+}j+]2320 3dg?d2cojm[{J<]0>=j
->]g1<=&&}f[J{g0jd!}m[x/-]?+{+]JJ[-g2jd!j-].>{Jg2jJ[-j-]D!s2g3jJ-]15&&Jg3j!!x/+]jsas3
-}if}Z]vv{g3J~]j[~+.15&&[+s3}{g3J[~!!nu}w!g3J[~!!J-]j[-g3J[~x/jsas3}{[-g1J_+!=}w!-]
+ps)XXS0L[J-.s1JJrox/.*j4**?+s2{}16.*0[+s3{0 0 0}{J[-{?+}j+]2320 3dg?d2cojm[{J<]0
+>=j>]g1<=&&}f[J{g0jd!}m[x/-]?+{+]Jg_jg2jd!.<{Jg2jg_D!s2g3jJ-]15&&Jg3j!!x/+]jsas3
+}if}Z]vv{g3l_j+.15&&[+s3}{g3J[~!!nu}w!g3J[~!!J-]j[-g3J[~x/jsas3}{[-g1J_+!=}w!-]
 ```
 
 Part 2 is solved (slowly) with two small changes. We replace `L[J-.s1` by
@@ -676,9 +676,9 @@ data. Putting it all together:
 
 ```
 ps)XXS0L[S45.*J-.s1JJrox/.*j4**?+s2{}16.*0[+s3{0 0 0}{J[-{?+}j+]2320 3dg?d2cojm[
-{J<]0>=j>]g1<=&&}f[J{g4?/J++#rg4?*?-g0jd!.+-.9.%+.}[mx/-]?+{+]JJ[-g2jd!j-].>{Jg2
-jJ[-j-]D!s2g3jJ-]15&&Jg3j!!x/+]jsas3}if}Z]vv{g3J~]j[~+.15&&[+s3}{g3J[~!!nu}w!g3J
-[~!!J-]j[-g3J[~x/jsas3}{[-g1J_+!=}w!-]
+{J<]0>=j>]g1<=&&}f[J{g4?/J++#rg4?*?-g0jd!.+-.9.%+.}[mx/-]?+{+]Jg_jg2jd!.<{Jg2jg_
+D!s2g3jJ-]15&&Jg3j!!x/+]jsas3}if}Z]vv{g3l_j+.15&&[+s3}{g3J[~!!nu}w!g3J[~!!J-]j[-
+g3J[~x/jsas3}{[-g1J_+!=}w!-]
 ```
 
 In earlier fiddling, I did get a much more rudimentary shortest-path-first
@@ -710,13 +710,13 @@ Part 1:
 
 ```
 zz'1+]b6 2dg[-{J3.+2ugPp3.-J3.-j3.+2ug4=={{5.-}{-]}w!5.-}j
-{J[-j-]{J11.-j11.+2ug#ajE!}j{J15.-sax/15.+2ug.-{L[!=}[[#ajw!}jie}jie}hd!ap\CL++
+{g_{J11.-j11.+2ug#ajE!}j{J15.-sax/15.+2ug.-{L[!=}[[#ajw!}jie}jie}hd!ap\CL++
 ```
 
 Part 2:
 
 ```
-zz'1+]b6 2dg[-{J[-4.+x/j_+j5.-}hd{3.-J3.-j3.+2ugJ4!={j{}jJ[-j-]{J11.-j11.+2ug
+zz'1+]b6 2dg[-{J[-4.+x/j_+j5.-}hd{3.-J3.-j3.+2ugJ4!={j{}jg_{J11.-j11.+2ug
 {!ax/j[+j}jE!j}j{J15.-sax/15.+2ug.-{L[!=}[[{!ax/j[+j}jw!j}jiex/}if
 {{++}{pd}{<]}{>]}{{}j#b{-]}w!!bj2ug}{^p.>}{^p.<}{^p==}}j!!e!}hd!ait
 ```
