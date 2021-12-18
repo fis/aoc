@@ -564,6 +564,11 @@ will count each element of the polymer exactly twice, except for the endpoints,
 which will be counted just once. Solving part 2 this way takes only around 81
 µs, of which the majority is just parsing the rules.
 
+> **Update 2021-12-18**: from
+> [#esolangs](https://logs.esolangs.org/libera-esolangs/2021-12-18.html#loc), a
+> trick: going from pairs to elements can also just count the first letter of
+> each pair (no overcounting) + adding the missing last element.
+
 ### Burlesque
 
 Part 1, with direct expansion:
@@ -575,8 +580,8 @@ lnJ[-s0-]{J2CO{{~!}j+]g0jfeJ[~j-]}\mj[~[+}10E!f:)-]J>]j<].-
 Part 2, with the same count-of-pairs approach:
 
 ```
-%mU={{jbxcp}_+\m><{-]j-]==}gb{tp^p++j-]CL}m[}lnJ[-s0-]J2COf:)<-
-{{p^S1g0{g1~!}fe[~[]2CO}mU}40E!jrt2.+bx1[+[+{p^XX}mU)[~J>]j<].-2./
+%mU={><{-]j-]==}gb{tp^p++j-]CL}m[}lnJ[-s0-]J2COf:)<-
+{{p^S1g0{g1~!}fe[~[]2COjbxcp}\mmU}40E!{p^-]}m[j[~[+1[+2comU)[~J>]j<].-
 ```
 
 A particularly ugly part of this is the `><{-]j-]==}gb{tp^p++j-]CL}m[` routine

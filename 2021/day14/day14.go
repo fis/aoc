@@ -51,13 +51,8 @@ func (rb *pairRuleBook) countElements(pairCounts []int, ends [2]byte) (quants []
 	for p, c := range pairCounts {
 		pe := rb.pairs[p]
 		quants[pe[0]] += c
-		quants[pe[1]] += c
 	}
-	quants[ends[0]]++
 	quants[ends[1]]++
-	for i := range quants {
-		quants[i] /= 2
-	}
 	return quants
 }
 
