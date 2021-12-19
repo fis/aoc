@@ -889,6 +889,31 @@ C: ln)ra   {bxj+]{J{5sXvvvv}j{sS}jsD5==ie}{JsD5==jFL>]9.>||}w!
 2:      Jcp                                                   sM}^m>]
 ```
 
+## [Day 19](https://adventofcode.com/2021/day/19): Beacon Scanner
+
+The solution here is based on the remarkable (and maybe not entirely realistic)
+fact that, if you take the pairwise distance vectors between beacons, and order
+the three components in each `(|X|, |Y|, |Z|)` triple by magnitude (so that the
+distances are invariant to rotation, translation and beacon order), the results
+are pretty much unique, and every valid scanner overlap pair will have exactly
+`12*11/2 = 66` such distance values they have in common.
+
+The structure of (this) solution is therefore:
+
+- For each report, calculate this list of ordered distances, and sort it.
+- Starting from an arbitrary scanner, do a depth-first search:
+  - Transform the positions of the scanner and its beacons with the current
+    transformation.
+  - Among the still remaining scanners, try to find any that have 66 elements in
+    the intersection of the distance lists.
+  - For any such, figure out (from the common distance pairs) the 1:1
+    correspondence of the overlapping points in both scanners' reports.
+  - From any two points in common, figure out the relative transformation and
+    combine it with the global one.
+  - Recurse.
+
+Burlesque solution will come later, if ever. I suspect it will not be pleasant.
+
 <!--math
 
 %: day01

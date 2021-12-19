@@ -114,7 +114,7 @@ func ScanAllInts(r io.Reader) (ints []int, err error) {
 	return ints, s.Err()
 }
 
-// ReadRegexp parses a reader's contents using a regular expression. The return value is a list of lists,
+// ScanAllRegexp parses a reader's contents using a regular expression. The return value is a list of lists,
 // containing each line's submatches. Note that unlike the usual convention, the match of the entire
 // regular expression is not included.
 func ScanAllRegexp(r io.Reader, pattern string) ([][]string, error) {
