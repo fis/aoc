@@ -1010,6 +1010,48 @@ p^{!!~[}[[1+]3MVJx/f[)-]x/{[~~[}[[x/jf[)-]=sn!{l_j<-[+}ifJ{p^?-}m[<-)bx{mm\[}IC(
 x/jmm\[j-]j?-~]1[+jtp~]j[+tp+]}m[jbc{jp^x/jmmbxj+]}Z]_+}{nun!}w!p\CLJcp{?-)ab++}^m>]
 ```
 
+## [Day 20](https://adventofcode.com/2021/day/20): Trench Map
+
+Ooh, sneaky. The example ruleset has the all-zeros rule as zero, so the empty
+space stays empty. But the actual puzzle input has that as one, and conversely
+the all-ones rule as zero, so the infinite expanse of pixels will keep flipping
+on and off every step.
+
+The Go and Burlesque solutions approach this differently. For the Go solution,
+if the rulebook looks like that, the image is considered logically inverted for
+every odd step, by inverting the writes when generating it, and the reads when
+doing the next step. With Burlesque, the actual value of empty space is just
+tracked separately and used to pad the image, then updated for the next step.
+
+The Go version also has both bit-map and byte-map based versions. The bit-map
+one seems to be slightly more efficient.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{{'#==}m[}m[g_s00s1[-{{g1JJJ#r#rCL}m^tp}hd
+{!a!a3CO{{3CO}m[tp{FL2ugg0j!!}m[}m[g0g1511.*!!s1}2E!\[++
+```
+
+Part 2:
+
+```
+ln{{'#==}m[}m[g_s00s1[-{{g1JJJ#r#rCL}m^tp}hd
+{!a!a3CO{{3CO}m[tp{FL2ugg0j!!}m[}m[g0g1511.*!!s1}50E!\[++
+```
+
+Combined (of course):
+
+```
+C: ln{{'#==}m[}m[g_s00s1[-{{g1JJJ#r#rCL}m^tp}hd
+
+1:                                                  2
+C: {!a!a3CO{{3CO}m[tp{FL2ugg0j!!}m[}m[g0g1511.*!!s1}  E!\[++
+2:                                                  50
+```
+
 <!--math
 
 %: day01
