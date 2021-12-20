@@ -912,7 +912,103 @@ The structure of (this) solution is therefore:
     combine it with the global one.
   - Recurse.
 
-Burlesque solution will come later, if ever. I suspect it will not be pleasant.
+### Burlesque
+
+Condensing these down to typical Burlesque style is beyond me. But in order to
+not break the streak, here's a working, commented version:
+
+```
+"SG ( {line1 line2 ...} -- {points dists} ): preprocess a scanner"vv
+%SG={
+  [-                            "drop header"vv
+  {',;;ri1[+}m[                 "generate {x y z 1} points"vv
+  JJcp                          "generate all pairs of points"vv
+  {p^.>}f[                      "keep only ascending pairs"vv
+  {Jp^?-)ab><+]}m[              "turn into d p1 p2 triples"vv
+  bxj+]                         "pair up points and dists"vv
+}
+"SF ( {p2s d2s} {p1s d1s} -- {{d {p1a p1b} {p2a p2b}} ...} ): find all matching distances"vv
+%SF={
+  [~j[~              "keep just distances | d1s d2s"vv
+  cp{p^-]j-]==}f[    "grab all matching pairs | {{{d p1a p1b} {d p2a p2b}}}"vv
+  {J-]-]j)[-j+]}m[   "convert | {{d {p1a p1b} {p2a p2b}} ...}"vv
+}
+"ST ( {{d {p1a p1b} {p2a p2b}} ...} -- tr ): convert overlaps into transformation"vv
+"  the input overlap list must have exactly 66 entries describing 12 matching points"vv
+%ST={
+  J-~                     "grab a point pair | all {{p1a p1b} {p2a p2b}}"vv
+  J)-]p^                  "get one pair of ends | all {{p1a p1b} {p2a p2b}} p2a p1a"vv
+  {!!~[}[[1+]3MVJx/f[)-]  "get other distances of p1a | {{p1a p1b} {p2a p2b}} p2a all p1aDs"vv
+  x/{[~~[}[[x/jf[)-]      "get other distances of p2a | {{p1a p1b} {p2a p2b}} p1aDs p2aDs"vv
+  =sn!{l_j<-[+}if         "swap p2a/p2b if they do not match"vv
+  "at this point, stack is {{p1a p1b} {p2a p2b}} with guaranteed match"vv
+  J{p^?-}m[               "get diffs | {{p1a p1b} {p2a p2b}} {d1 d2}"vv
+  <-)bx{mm\[}IC(==)[+     "make filter | pts {d2 mm\[ d1 ==}"vv
+  100XXiRJng_+3CB{J^pvvRT{.*}Z]RTjp^RT{.*}Z]RTx/j?-==}f[{{0[+}m[8 2dg<-[+}m[
+  jfeJx/^p                "get rotation | rot rot {p1a p1b} {p2a p2b}"vv
+  -]x/jmm\[               "rotate point 2 | rot {p1a p1b} p2ar"vv
+  j-]j?-                  "get translation | rot {tx ty tz 0}"vv
+  ~]1[+jtp~]j[+tp         "combine matrices | tr"vv
+}
+"MG ( {{s1 tr1} ...} -- {{s2 tr2} ...} ): merge scanner points"vv
+"- pops of a single (scanner, transform) pair"vv
+"- adds its points, transformed, to the state stack"vv
+"- finds all overlapping scanners from var0"vv
+"- computes their transformations and adds them to the queue"vv
+%MG={
+  g_                    "pop one off | rest {s1 tr1}"vv
+  Jp^-]tpmmtpPp         "save the transformed set of points"vv
+  p^                    "split scanner | rest tr1 s1"vv
+  bcg0{                 "try pairing with every remaining scanner"vv
+    "stack here | s1 s2"vv
+    Jx/SF                 "find overlaps | s2 overlaps"vv
+    CL
+  }Z]                   "found all overlaps | rest tr1 {{ovX sX} ...}"vv
+  {-]L[66==}pt^p        "split to okay/no | rest tr1 goods bads"vv
+  )[~s0                 "save the bad ones for later | rest tr1 {{ovX sX} ...}"vv
+  {g_ST+]}m[            "replace overlaps with transforms | rest tr1 {{trX sX} ...}"vv
+  jbc{
+    "stack here | {trX sX} tr1"vv
+    jp^x/jmmbxj+]
+  }Z]                   "combine transforms | rest {{sX trX'} ...}"vv
+  _+                    "append to queue"vv
+}
+
+"preprocess the input"vv
+ln{""};;{SG}m[
+"keep just one scanner set to start form, save the rest to var0"vv
+l_s0
+"set up a {{s1 identity4}} item to start the loop on"vv
+8 2dgr@NBbxj+]bx
+"Loop until the list is empty"vv
+{MG}{nun!}w!
+"collect results"vv
+p\CL\[NBL[
+```
+
+It follows the same logic as the Go code. Part 2 is a matter of saving the
+translation rather than the transformed points (`p^-]tpmmtpPp` → `[~tp[~~]Pp`),
+and changing the postprocessing (`\[NBL[` → `Jcp{?-)ab++}^m>]`).
+
+After inlining, part 1:
+
+```
+ln{""};;{[-{',;;ri1[+}m[JJcp{p^.>}{Jp^?-)ab><+]}FMbxj+]}m[l_s08 2dgr@NBbxj+]bx{g_Jp^
+-]tpmmtpPpp^bcg0{Jx/[~j[~cp{p^-]j-]==}f[{J-]-]j)[-j+]}m[CL}Z]{-]L[66==}pt^p)[~s0{g_J
+-~J)-]p^{!!~[}[[1+]3MVJx/f[)-]x/{[~~[}[[x/jf[)-]=sn!{l_j<-[+}ifJ{p^?-}m[<-)bx{mm\[}
+IC(==)[+100XXiRJng_+3CB{J^pvvRT{.*}Z]RTjp^RT{.*}Z]RTx/j?-==}f[{{0[+}m[82dg<-[+}m[j
+feJx/^p-]x/jmm\[j-]j?-~]1[+jtp~]j[+tp+]}m[jbc{jp^x/jmmbxj+]}Z]_+}{nun!}w!p\CL\[NBL[
+```
+
+And part 2:
+
+```
+ln{""};;{[-{',;;ri1[+}m[JJcp{p^.>}{Jp^?-)ab><+]}FMbxj+]}m[l_s08 2dgr@NBbxj+]bx{g_J[~tp
+[~~]Ppp^bcg0{Jx/[~j[~cp{p^-]j-]==}f[{J-]-]j)[-j+]}m[CL}Z]{-]L[66==}pt^p)[~s0{g_J-~J)-]
+p^{!!~[}[[1+]3MVJx/f[)-]x/{[~~[}[[x/jf[)-]=sn!{l_j<-[+}ifJ{p^?-}m[<-)bx{mm\[}IC(==)[+
+100XXiRJng_+3CB{J^pvvRT{.*}Z]RTjp^RT{.*}Z]RTx/j?-==}f[{{0[+}m[8 2dg<-[+}m[jfeJx/^p-]
+x/jmm\[j-]j?-~]1[+jtp~]j[+tp+]}m[jbc{jp^x/jmmbxj+]}Z]_+}{nun!}w!p\CLJcp{?-)ab++}^m>]
+```
 
 <!--math
 
