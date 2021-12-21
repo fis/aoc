@@ -17,6 +17,7 @@ package day20
 
 import (
 	"math/bits"
+	"sync"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
@@ -27,7 +28,7 @@ func init() {
 }
 
 func solve(chunks []string) ([]string, error) {
-	p1, p2 := enhanceBits(chunks[0], util.Lines(chunks[1]))
+	p1, p2 := enhanceBitsPar(chunks[0], util.Lines(chunks[1]), 8)
 	return glue.Ints(p1, p2), nil
 }
 
@@ -172,4 +173,121 @@ func enhanceBits(algoLine string, imgLines []string) (lit2, lit50 int) {
 	}
 
 	return lit2, lit50
+}
+
+func enhanceBitsPar(algoLine string, imgLines []string, workers int) (lit2, lit50 int) {
+	const (
+		steps uint32 = 50
+		bitw  uint32 = 32
+		shift uint32 = 5
+		mask  uint32 = 0b11111
+		//workers        = 8
+	)
+
+	var algo [512]byte
+	for i := 0; i < 512; i++ {
+		if algoLine[i] == '#' {
+			algo[i] = 1
+		}
+	}
+
+	x0, x1 := steps+1, steps+uint32(len(imgLines[0]))
+	y0, y1 := steps+1, steps+uint32(len(imgLines))
+	w, h := (x1+steps+2+bitw-1)&^mask, (y1+steps+2+bitw-1)&^mask
+	wu := w >> shift
+	img, next := make([]uint32, wu*h), make([]uint32, wu*h)
+	for y := y0; y <= y1; y++ {
+		for x := x0; x <= x1; x++ {
+			if imgLines[y-(steps+1)][x-(steps+1)] == '#' {
+				iu, ib := y*wu+(x>>shift), (^x)&mask
+				img[iu] |= 1 << ib
+			}
+		}
+	}
+	step := uint32(0)
+
+	invert1, invert9 := [2]byte{0, 0}, [2]uint32{0, 0}
+	if algo[0] == 1 {
+		if algo[511] != 0 {
+			panic("an infinitude of lit bits will result from this")
+		}
+		invert1[0], invert9[1] = 1, 0b111_111_111
+	}
+
+	type workRequest struct {
+		run    bool
+		y0, y1 uint32
+	}
+	workQueue := make(chan workRequest, workers)
+	var workWait sync.WaitGroup
+	for i := 0; i < workers; i++ {
+		go func() {
+			for {
+				req := <-workQueue
+				if !req.run {
+					return
+				}
+				y0, y1 := req.y0, req.y1
+				for y := y0; y <= y1; y++ {
+					for xu := x0 >> shift; xu < (x1+bitw)>>shift; xu++ {
+						next[y*wu+xu] = 0
+					}
+					for x := x0; x <= x1; x++ {
+						iu, ib := y*wu+(x>>shift), (^x)&mask
+						var neigh uint32
+						switch ib {
+						case 0:
+							neigh = (img[iu-wu]&0b11)<<7 | ((img[iu-wu+1] >> (bitw - 1 - 6)) & 0b1_000_000)
+							neigh |= (img[iu]&0b11)<<4 | ((img[iu+1] >> (bitw - 1 - 3)) & 0b1_000)
+							neigh |= (img[iu+wu]&0b11)<<1 | (img[iu+wu+1] >> (bitw - 1))
+						case bitw - 1:
+							neigh = (img[iu-wu-1]&1)<<8 | ((img[iu-wu] >> (bitw - 2 - 6)) & 0b11_000_000)
+							neigh |= (img[iu-1]&1)<<5 | ((img[iu] >> (bitw - 2 - 3)) & 0b11_000)
+							neigh |= (img[iu+wu-1]&1)<<2 | (img[iu+wu] >> (bitw - 2))
+						default:
+							neigh = ((img[iu-wu] >> (ib - 1)) & 0b111) << 6
+							neigh |= ((img[iu] >> (ib - 1)) & 0b111) << 3
+							neigh |= (img[iu+wu] >> (ib - 1)) & 0b111
+						}
+						neigh ^= invert9[step&1]
+						next[iu] |= uint32((algo[neigh] ^ invert1[step&1])) << ib
+					}
+				}
+				workWait.Done()
+			}
+		}()
+	}
+
+	for step = 0; step < steps; step++ {
+		x0, x1, y0, y1 = x0-1, x1+1, y0-1, y1+1
+		workWait.Add(workers)
+		for w, ws := uint32(0), (y1-y0+uint32(workers))/uint32(workers); w < uint32(workers); w++ {
+			workQueue <- workRequest{run: true, y0: y0 + w*ws, y1: min(y1, y0+(w+1)*ws-1)}
+		}
+		workWait.Wait()
+		img, next = next, img
+		if step == 1 || step == steps-1 {
+			lit := 0
+			for y := y0; y <= y1; y++ {
+				for xu := x0 >> shift; xu < (x1+bitw)>>shift; xu++ {
+					lit += bits.OnesCount32(img[y*wu+xu])
+				}
+			}
+			if step == 1 {
+				lit2 = lit
+			} else {
+				lit50 = lit
+			}
+		}
+	}
+
+	close(workQueue)
+	return lit2, lit50
+}
+
+func min(a, b uint32) uint32 {
+	if a < b {
+		return a
+	}
+	return b
 }

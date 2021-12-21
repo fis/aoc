@@ -40,8 +40,13 @@ var algos = []struct {
 	name string
 	f    func(algoLine string, imgLines []string) (lit2, lit50 int)
 }{
-	{name: "enhanceBits", f: enhanceBits},
 	{name: "enhanceBytes", f: enhanceBytes},
+	{name: "enhanceBits", f: enhanceBits},
+	{name: "enhanceBitsPar-1", f: func(a string, i []string) (int, int) { return enhanceBitsPar(a, i, 1) }},
+	{name: "enhanceBitsPar-2", f: func(a string, i []string) (int, int) { return enhanceBitsPar(a, i, 2) }},
+	{name: "enhanceBitsPar-4", f: func(a string, i []string) (int, int) { return enhanceBitsPar(a, i, 4) }},
+	{name: "enhanceBitsPar-8", f: func(a string, i []string) (int, int) { return enhanceBitsPar(a, i, 8) }},
+	{name: "enhanceBitsPar-16", f: func(a string, i []string) (int, int) { return enhanceBitsPar(a, i, 16) }},
 }
 
 func TestEnhance(t *testing.T) {
