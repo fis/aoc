@@ -1052,6 +1052,26 @@ C: {!a!a3CO{{3CO}m[tp{FL2ugg0j!!}m[}m[g0g1511.*!!s1}  E!\[++
 2:                                                  50
 ```
 
+## [Day 21](https://adventofcode.com/2021/day/21): Dirac Dice
+
+A proper twist today. I approve. Although even part 2 was quite simple, all
+things considered. Consequently nothing to say about the solutions.
+
+### Burlesque
+
+Part 1:
+
+```
+WD5enri{10rocyj-..-}MPPp0 100rocyzi3cop\0{p\g_)[~++jPpx/.-J-]x/.+}{999<=}w!p\FL-].*it
+```
+
+Part 2, with explicit memoization:
+
+```
+{}{22.*}4E!s0%DD={Jg0jd!J{vvJbc3ro3CB{++jg_x/.+[~J#r+]l_#rj+..-J#r[+j{<-rtrtDD<-}j
+{vv1rz<-}j0.>ie}Z]tp)++g0#rJ#rD!s0}j{/v}jnuie}WD5enri?d21J_+_+DD>]
+```
+
 <!--math
 
 %: day01
