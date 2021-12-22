@@ -1072,6 +1072,38 @@ Part 2, with explicit memoization:
 {vv1rz<-}j0.>ie}Z]tp)++g0#rJ#rD!s0}j{/v}jnuie}WD5enri?d21J_+_+DD>]
 ```
 
+## [Day 22](https://adventofcode.com/2021/day/22): Reactor Reboot
+
+The Go solution implements an [octree](https://en.wikipedia.org/wiki/Octree),
+where each leaf node is either fully off or fully on.
+
+The initial implementation used pointers to nodes, but CPU profiling suggested
+most of the time was spent in allocation and GC. The current version uses a
+single chunk of nodes, and tracks indices rather than pointers. As an
+optimization, as new nodes are always allocated in contiguous chunks of 8, a
+node needs to only keep track of the lowest child.
+
+### Burlesque
+
+I will hopefully eventually sort this out. But for now, here's an entirely
+theoretical solution (explicit generation of cubes + union and list difference
+builtins); it can do the tiny example, but not really anything more than that.
+
+```
+ln{:><L[12<=}f[{}+]{"[=., ]"jsrg_j2enri2co{^pr@}m[{cp}r[)FLj{UN}j{\\}jL[2==ie}r[L[
+```
+
+There's also this alternative variant, which should scale a little better --
+it's based on enumerating the `(-50..50)^3` region, and for each cube testing it
+against the input list conditions, keeping the last (on/off) decision, making it
+`O(r^3*n)` in time, where `r` is the region size and `n` the input length. It
+takes 4+ minutes for the smallest toy example...
+
+```
+ln{"[=., ]"jsrg_L[2==j2enri2coj[+}m[s0
+-50 50r@JJcpcp{FL{{jp^x/J#R<=#r<=}Z]r&}j+]g0jf[)[~0+][~}ms
+```
+
 <!--math
 
 %: day01
