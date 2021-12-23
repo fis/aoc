@@ -1104,6 +1104,22 @@ ln{"[=., ]"jsrg_L[2==j2enri2coj[+}m[s0
 -50 50r@JJcpcp{FL{{jp^x/J#R<=#r<=}Z]r&}j+]g0jf[)[~0+][~}ms
 ```
 
+## [Day 23](https://adventofcode.com/2021/day/23): Amphipod
+
+Ug. Since it wasn't obvious what the twist for part 2 will be, went ahead and
+overengineered part 1 by coming up with a compact(-ish) 60-bit state
+representation (one nybble for each of the 7 relevant corridor spots and 8 room
+positions) for the puzzle. Of course this broke down with part 2. Consequently,
+the Go solution basically has two copies of the whole thing.
+
+For the actual finding of the shortest path, again using a plain Dijkstra's
+algorithm with a bucket queue for the priority queue. This time the edge lengths
+are rather more variable, though -- the longest possible edge is for a Desert
+amphipod to move for 11 steps, at a cost of 11000 energy. So the bucket queue
+doesn't outperform `containers/heap` by as large a margin.
+
+Not looking forward to solving this in Burlesque.
+
 <!--math
 
 %: day01
