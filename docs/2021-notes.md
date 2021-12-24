@@ -1068,8 +1068,8 @@ WD5enri{10rocyj-..-}MPPp0 100rocyzi3cop\0{p\g_)[~++jPpx/.-J-]x/.+}{999<=}w!p\FL-
 Part 2, with explicit memoization:
 
 ```
-{}{22.*}4E!s0%DD={Jg0jd!J{vvJbc3ro3CB{++jg_x/.+[~J#r+]l_#rj+..-J#r[+j{<-rtrtDD<-}j
-{vv1rz<-}j0.>ie}Z]tp)++g0#rJ#rD!s0}j{/v}jnuie}WD5enri?d21J_+_+DD>]
+%DD={JgvJ{vvJbc3ro3CB{++jg_x/.+[~J#r+]l_#rj+..-J#r[+j{<-rtrtDD<-}j
+{vv1rz<-}j0.>ie}Z]tp)++J#Rsv}j{/v}jg9==ie}WD5enri?d21J_+_+DD>]
 ```
 
 ## [Day 22](https://adventofcode.com/2021/day/22): Reactor Reboot
