@@ -1120,7 +1120,7 @@ doesn't outperform `containers/heap` by as large a margin.
 
 Not looking forward to solving this in Burlesque.
 
-## Day 24
+## [Day 24](https://adventofcode.com/2021/day/24): Arithmetic Logic Unit
 
 The MONAD program (at least for me) consists of 14 almost identical blocks, of
 the following form, where `A` and `B` are constants specific to each input
@@ -1200,6 +1200,61 @@ Combined:
 1:                                      9j.-9<.       9.+9<.
 C: WD53cozi{J16!!J{vv46!!jPpPp}j{/vPP|+J       PPj_+#r      _+}j-]><ie}^m><)[~im
 2:                                      1j.-1>.       +.1>.
+```
+
+## [Day 25](https://adventofcode.com/2021/day/25): Sea Cucumber
+
+As is tradition, day 25 was mostly just a formality. To drag it out a little,
+the Go solution has three flavors: a bytewise one that uses a second buffer for
+the intermediate state, a variant that's "in-place", and finally a bitwise
+version that stuffs 16 sea cucumbers in a single `uint32`. It manages to be
+appreciably faster, for the 458 steps of my puzzle input:
+
+```
+$ go test -run='^$' -bench=. -benchtime=10s ./2021/day25
+BenchmarkSimulate/byteCopying-16     294    40565925 ns/op
+BenchmarkSimulate/byteInplace-16     334    36052401 ns/op
+BenchmarkSimulate/bits-16           3524    3351204 ns/op
+```
+
+### Burlesque
+
+For completeness.
+
+```
+Jln{{">.v"jFi}m[}m[{J{{RT{J3ug-.{~]1+]}if<-}Z[tp^prt?*}[m2j?-tp}2E!}{!=}w!CL~-L[
+```
+
+## Benchmarks
+
+Final benchmark results for the entire year, at `-benchtime=5s`:
+
+```
+BenchmarkAllDays/day=01-16     43930      138909 ns/op
+BenchmarkAllDays/day=02-16     10000      544439 ns/op
+BenchmarkAllDays/day=03-16     29630      206769 ns/op
+BenchmarkAllDays/day=04-16      9996      584408 ns/op
+BenchmarkAllDays/day=05-16      4064     1501351 ns/op
+BenchmarkAllDays/day=06-16    249991       24444 ns/op
+BenchmarkAllDays/day=07-16     66478       91571 ns/op
+BenchmarkAllDays/day=08-16      3168     1818348 ns/op
+BenchmarkAllDays/day=09-16      1372     4505310 ns/op
+BenchmarkAllDays/day=10-16     29323      207479 ns/op
+BenchmarkAllDays/day=11-16     16080      373449 ns/op
+BenchmarkAllDays/day=12-16      1648     3542489 ns/op
+BenchmarkAllDays/day=13-16      7660      722273 ns/op
+BenchmarkAllDays/day=14-16     69973       81843 ns/op
+BenchmarkAllDays/day=15-16       508    12020580 ns/op
+BenchmarkAllDays/day=16-16    115648       54076 ns/op
+BenchmarkAllDays/day=17-16      8688      682683 ns/op
+BenchmarkAllDays/day=18-16       720     8302785 ns/op
+BenchmarkAllDays/day=19-16       571    10593295 ns/op
+BenchmarkAllDays/day=20-16      2065     2884740 ns/op
+BenchmarkAllDays/day=21-16      6909      816513 ns/op
+BenchmarkAllDays/day=22-16       535    11030218 ns/op
+BenchmarkAllDays/day=23-16        90    62808960 ns/op
+BenchmarkAllDays/day=24-16    164883       35536 ns/op
+BenchmarkAllDays/day=25-16      1683     3540924 ns/op
 ```
 
 <!--math
