@@ -1120,6 +1120,88 @@ doesn't outperform `containers/heap` by as large a margin.
 
 Not looking forward to solving this in Burlesque.
 
+## Day 24
+
+The MONAD program (at least for me) consists of 14 almost identical blocks, of
+the following form, where `A` and `B` are constants specific to each input
+digit `D`, and the value denoted as `1|26` is either 1 or 26, depending on the
+digit index; in my case, 1 for digits 1, 2, 3, 5, 7, 8, 9; 26 for digits 4, 6,
+10, 11, 12, 13, 14.
+
+```
+inp w     // w = D       | w = D
+mul x 0   // x *= 0      | x = 0
+add x z   // x += z      | x = z
+mod x 26    // x %= 26   | x = z%26
+div z 1|26  // z /= 1    | z /= 26, optionally
+add x A   // x += A      | x = z%26 + A
+eql x w   // x = x==w    | x = z%26 + A == D
+eql x 0   // x = x==0    | x = z%26 + A != D
+mul y 0   // y *= 0      | y = 0
+add y 25  // y += 25     | y = 25
+mul y x   // y *= x      | y = 25*(z%26 + A != D)
+add y 1   // y += 1      | y = 25*(z%26 + A != D) + 1
+mul z y   // z *= y      | z *= 25*(z%26 + A != D) + 1
+mul y 0   // y *= 0      | y = 0
+add y w   // y += w      | y = D
+add y B   // y += B      | y = D + B
+mul y x   // y *= x      | y = (D + B) * (z%26 + A != D)
+add z y   // z += y      | z += (D + B) * (z%26 + A != D)
+```
+
+In other words, the processing of each input digit boils down to two or three
+updates to the running accumulator variable `z`:
+
+    flag = z%26 + A != D
+    if i in (4, 6, 10, 11, 12, 13, 14):
+      z /= 26
+    z *= 25*flag + 1
+    z += (D+B) * flag
+
+Or put another way:
+
+    match = z%26 + A == D
+    if i in (4, 6, 10, 11, 12, 13, 14):
+      z /= 26
+    if !match:
+      z = 26*z + D+B
+
+This means every time the input digit isn't the special matching one, the value
+`D+B` is "pushed" into `z`. At the specific steps, a value is also "popped" off.
+A model number is valid iff the stack is "empty" at the end of the program.
+
+It's only possible to avoid a push if `z%26 + A` is between 1 to 9. For the
+puzzle input, it happens that there's exactly 7 of those steps (the same ones
+that have a pop) that have a negative `A` value. To have an empty stack at the
+end, we *must* have a match at each of those 7 digits. On the other hand, the
+value `z%26` that we need to match against on those steps depends only on the
+`D+B` value of the matching push. So we only need to find the largest (or
+smallest) matching pair for each of the digit combinations.
+
+### Burlesque
+
+Feels like this should be more concise, but I think I have Burlesque burnout.
+
+Part 1:
+
+```
+WD53cozi{J16!!J{vv46!!jPpPp}j{/vPP|+J9j.-9<.PPj_+#r9.+9<._+}j-]><ie}^m><)[~im
+```
+
+Part 2:
+
+```
+WD53cozi{J16!!J{vv46!!jPpPp}j{/vPP|+J1j.-1>.PPj_+#r+.1>._+}j-]><ie}^m><)[~im
+```
+
+Combined:
+
+```
+1:                                      9j.-9<.       9.+9<.
+C: WD53cozi{J16!!J{vv46!!jPpPp}j{/vPP|+J       PPj_+#r      _+}j-]><ie}^m><)[~im
+2:                                      1j.-1>.       +.1>.
+```
+
 <!--math
 
 %: day01

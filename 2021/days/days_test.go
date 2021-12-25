@@ -121,6 +121,10 @@ var tests = []glue.TestCase{
 		Day:  23,
 		Want: []string{"14350", "49742"},
 	},
+	{
+		Day:  24,
+		Want: []string{"49917929934999", "11911316711816"},
+	},
 }
 
 func TestAllDays(t *testing.T) {
