@@ -358,5 +358,5 @@ def contest_days():
     for year in range(_FIRST_YEAR, last_date.year+1):
         last_day = 25
         if year == last_date.year and last_date.month == 12:
-            last_day = last_date.day
+            last_day = min(last_day, last_date.day)
         yield year, range(1, last_day+1)

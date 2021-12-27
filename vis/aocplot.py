@@ -23,8 +23,8 @@ def plot_leaderboard():
     """Redraws all the plots based on the daily leaderboard data."""
 
     data = aocdata.leaderboard()
-    plot_leaderboard_time(data, 'one_star', 'out/time.one.html')
-    plot_leaderboard_time(data, 'two_stars', 'out/time.two.html')
+    plot_leaderboard_time(data, 'one_star', 'out/time.one')
+    plot_leaderboard_time(data, 'two_stars', 'out/time.two')
     plot_leaderboard_twist(data)
     plot_leaderboard_dist(data)
 
@@ -35,7 +35,7 @@ def plot_leaderboard_time(data, series, file_name):
     Args:
         data: Leaderboard data frame.
         series: Which series to use; 'one_star' or 'two_stars'.
-        file_name: Output file.
+        file_name: Output file base name.
     """
 
     print(f'leaderboard_time:{series}')
@@ -43,14 +43,22 @@ def plot_leaderboard_time(data, series, file_name):
     quantiles = data.loc[(slice(None), slice(None), [1, 25, 50, 75, 100])].unstack()
     points = (quantiles[series] / 60).rename(columns=lambda r: f'r{r}').reset_index()
 
-    y_title = f'Time to get {series.replace("_", " ")} (min)'
+    y_title = f'Time to get {series.replace("_", " ")} (ranks 25..75, min)'
     y_scale = alt.Scale(type='log')
 
     base = alt.Chart(points).encode(x='year:O', color='year:N')
     rule = base.mark_rule().encode(alt.Y('r1:Q', title=y_title, scale=y_scale), alt.Y2('r100:Q'))
     bar = base.mark_bar().encode(alt.Y('r25:Q'), alt.Y2('r75:Q'))
     faceted = (rule + bar).facet(column=alt.Column('day:O', title='Day of contest'))
-    faceted.configure_scale(bandPaddingInner=0.4).save(file_name)
+    faceted.configure_scale(bandPaddingInner=0.4).save(file_name + '.html')
+
+    points['yday'] = points.day + (points.year - points.year.mean())/(1.5*(points.year.max() - points.year.min()))
+    alt.Chart(points) \
+        .encode(x=alt.X('yday:Q', title='day'), color='year:N') \
+        .mark_rule() \
+        .encode(alt.Y('r25:Q', title=y_title, scale=y_scale), alt.Y2('r75:Q')) \
+        .properties(width=1000, height=600) \
+        .save(file_name + '.byday.html')
 
 
 def plot_leaderboard_twist(data):
@@ -209,7 +217,7 @@ def plot_stats_ratio(data):
 
     ratios = pd.DataFrame.from_dict({'ts_utc': data.ts_utc, 'since': data.since, 'ratio': data.one_star / (data.one_star + data.two_stars)})
     ratios = ratios.reset_index()
-    ratios = ratios.loc[~ratios['ratio'].isnull()]
+    ratios = ratios.loc[ratios.ratio > 0]
 
     selection = alt.selection_multi(fields=['day'], bind='legend')
     hover = alt.selection_single(fields=['day'], on='mouseover')
@@ -269,6 +277,24 @@ def plot_gobench_time(data):
         .configure_scale(bandPaddingInner=0.2) \
         .save('out/gobench.time.html')
 
+    color_scale_lin = alt.Scale(scheme='yelloworangered')
+    color_scale_log = alt.Scale(scheme='yelloworangered', type='log')
+    heat_lin = alt.Chart(data) \
+        .encode(
+            x=alt.X('day:O', title='Day of contest'),
+            y='year:O',
+            color=alt.Color('runtime:Q', title='Time spent (s)', scale=color_scale_lin)) \
+        .mark_bar()
+    heat_log = alt.Chart(data) \
+        .encode(
+            x=alt.X('day:O', title='Day of contest'),
+            y='year:O',
+            color=alt.Color('runtime:Q', title='Time spent (s, log)', scale=color_scale_log)) \
+        .mark_bar()
+    (heat_lin & heat_log) \
+        .configure_scale(bandPaddingInner=0.1) \
+        .resolve_scale(color='independent') \
+        .save('out/gobench.heat.html')
 
 _rainbow_day_domain = list(range(1, 26))
 _rainbow_day_range = [
