@@ -86,7 +86,7 @@ func (ct *cubeTree) set(area r3, state cubeState) {
 
 func (ct *cubeTree) setNode(node uint32, bounds, area r3, state cubeState) {
 	n := &ct.nodes[node]
-	if area.min == bounds.min && area.max == bounds.max {
+	if area == bounds {
 		n.state = state
 		return
 	}
@@ -96,7 +96,7 @@ func (ct *cubeTree) setNode(node uint32, bounds, area r3, state cubeState) {
 		})
 		return
 	}
-	if state == n.state {
+	if n.state == state {
 		return
 	}
 	if area.min != bounds.min {
@@ -151,37 +151,37 @@ func (ct *cubeTree) descend(node uint32, bounds, area r3, f func(child uint32, s
 		subArea := r3{area.min, p3{min(area.max.x, p.x), min(area.max.y, p.y), min(area.max.z, p.z)}}
 		f(child+0, subBounds, subArea)
 	}
-	if area.max.x >= p.x && area.min.y < p.y && area.min.z < p.z {
+	if area.max.x > p.x && area.min.y < p.y && area.min.z < p.z {
 		subBounds := r3{p3{p.x, bounds.min.y, bounds.min.z}, p3{bounds.max.x, p.y, p.z}}
 		subArea := r3{p3{max(area.min.x, p.x), area.min.y, area.min.z}, p3{area.max.x, min(area.max.y, p.y), min(area.max.z, p.z)}}
 		f(child+1, subBounds, subArea)
 	}
-	if area.min.x < p.x && area.max.y >= p.y && area.min.z < p.z {
+	if area.min.x < p.x && area.max.y > p.y && area.min.z < p.z {
 		subBounds := r3{p3{bounds.min.x, p.y, bounds.min.z}, p3{p.x, bounds.max.y, p.z}}
 		subArea := r3{p3{area.min.x, max(area.min.y, p.y), area.min.z}, p3{min(area.max.x, p.x), area.max.y, min(area.max.z, p.z)}}
 		f(child+2, subBounds, subArea)
 	}
-	if area.max.x >= p.x && area.max.y >= p.y && area.min.z < p.z {
+	if area.max.x > p.x && area.max.y > p.y && area.min.z < p.z {
 		subBounds := r3{p3{p.x, p.y, bounds.min.z}, p3{bounds.max.x, bounds.max.y, p.z}}
 		subArea := r3{p3{max(area.min.x, p.x), max(area.min.y, p.y), area.min.z}, p3{area.max.x, area.max.y, min(area.max.z, p.z)}}
 		f(child+3, subBounds, subArea)
 	}
-	if area.min.x < p.x && area.min.y < p.y && area.max.z >= p.z {
+	if area.min.x < p.x && area.min.y < p.y && area.max.z > p.z {
 		subBounds := r3{p3{bounds.min.x, bounds.min.y, p.z}, p3{p.x, p.y, bounds.max.z}}
 		subArea := r3{p3{area.min.x, area.min.y, max(area.min.z, p.z)}, p3{min(area.max.x, p.x), min(area.max.y, p.y), area.max.z}}
 		f(child+4, subBounds, subArea)
 	}
-	if area.max.x >= p.x && area.min.y < p.y && area.max.z >= p.z {
+	if area.max.x > p.x && area.min.y < p.y && area.max.z > p.z {
 		subBounds := r3{p3{p.x, bounds.min.y, p.z}, p3{bounds.max.x, p.y, bounds.max.z}}
 		subArea := r3{p3{max(area.min.x, p.x), area.min.y, max(area.min.z, p.z)}, p3{area.max.x, min(area.max.y, p.y), area.max.z}}
 		f(child+5, subBounds, subArea)
 	}
-	if area.min.x < p.x && area.max.y >= p.y && area.max.z >= p.z {
+	if area.min.x < p.x && area.max.y > p.y && area.max.z > p.z {
 		subBounds := r3{p3{bounds.min.x, p.y, p.z}, p3{p.x, bounds.max.y, bounds.max.z}}
 		subArea := r3{p3{area.min.x, max(area.min.y, p.y), max(area.min.z, p.z)}, p3{min(area.max.x, p.x), area.max.y, area.max.z}}
 		f(child+6, subBounds, subArea)
 	}
-	if area.max.x >= p.x && area.max.y >= p.y && area.max.z >= p.z {
+	if area.max.x > p.x && area.max.y > p.y && area.max.z > p.z {
 		subBounds := r3{p, bounds.max}
 		subArea := r3{p3{max(area.min.x, p.x), max(area.min.y, p.y), max(area.min.z, p.z)}, area.max}
 		f(child+7, subBounds, subArea)

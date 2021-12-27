@@ -1085,9 +1085,11 @@ node needs to only keep track of the lowest child.
 
 ### Burlesque
 
-I will hopefully eventually sort this out. But for now, here's an entirely
-theoretical solution (explicit generation of cubes + union and list difference
-builtins); it can do the tiny example, but not really anything more than that.
+For Burlesque, I have only either sort but unfeasibly slow or feasibly fast but
+uncomfortably long solutions today.
+
+This one-liner explicitly generates the lists of lit cubes, and uses the union
+and list difference builtins to update it as required:
 
 ```
 ln{:><L[12<=}f[{}+]{"[=., ]"jsrg_j2enri2co{^pr@}m[{cp}r[)FLj{UN}j{\\}jL[2==ie}r[L[
@@ -1102,6 +1104,20 @@ takes 4+ minutes for the smallest toy example...
 ```
 ln{"[=., ]"jsrg_L[2==j2enri2coj[+}m[s0
 -50 50r@JJcpcp{FL{{jp^x/J#R<=#r<=}Z]r&}j+]g0jf[)[~0+][~}ms
+```
+
+Finally, here's a tree-based solution for part 2, similar to the Go code's
+octree, though here the tree nodes are `{{{x0 x1} {y0 y1} {z0 z1}} 0/1/2 ...}`,
+where the values 0/1 denote that region of space is fully unlit or lit, while 2
+means a mixture and is followed by a list (at least 2, at most 7) of cuboids
+that fully tile their parent node.
+
+```
+%CS={J1!!{{vv-]==}{vvbxj[+}{2==}{{-]0z[)tptpp^)>]j)<]z[J{^p.<}al{#rjCS0}
+1+]ifvv}x/0jr~x/1jr~jJ2.+j2.-x/[m_+}{3MV==}{/v/v}1{Jx/Jx/p^x/z[{J0j.+)[~
+{j[+}j+]j0j!!tp)><jm[j0j+..-)-]{_+}j+]m[p^}j0jr~2rzj[m{{^p.<}al}f[j{bxj
++]}j+]m[jbx3MV[+[+j~]2[+j_+}}cne!}%CC={J2.+p^{.-}m^pdj2.%.*j2.-{CC}ms.+}
+ln{"[=., ]"jsrg_L[2==j2enri1rzcyz[)++2coj[+}m[JFLJ<]j>]_+3.*bx0[++]{l_x/CS}r[CC
 ```
 
 ## [Day 23](https://adventofcode.com/2021/day/23): Amphipod
@@ -1227,34 +1243,34 @@ Jln{{">.v"jFi}m[}m[{J{{RT{J3ug-.{~]1+]}if<-}Z[tp^prt?*}[m2j?-tp}2E!}{!=}w!CL~-L[
 
 ## Benchmarks
 
-Final benchmark results for the entire year, at `-benchtime=5s`:
+Final benchmark results for the entire year, at `-benchtime=10s`:
 
 ```
-BenchmarkAllDays/day=01-16     43930      138909 ns/op
-BenchmarkAllDays/day=02-16     10000      544439 ns/op
-BenchmarkAllDays/day=03-16     29630      206769 ns/op
-BenchmarkAllDays/day=04-16      9996      584408 ns/op
-BenchmarkAllDays/day=05-16      4064     1501351 ns/op
-BenchmarkAllDays/day=06-16    249991       24444 ns/op
-BenchmarkAllDays/day=07-16     66478       91571 ns/op
-BenchmarkAllDays/day=08-16      3168     1818348 ns/op
-BenchmarkAllDays/day=09-16      1372     4505310 ns/op
-BenchmarkAllDays/day=10-16     29323      207479 ns/op
-BenchmarkAllDays/day=11-16     16080      373449 ns/op
-BenchmarkAllDays/day=12-16      1648     3542489 ns/op
-BenchmarkAllDays/day=13-16      7660      722273 ns/op
-BenchmarkAllDays/day=14-16     69973       81843 ns/op
-BenchmarkAllDays/day=15-16       508    12020580 ns/op
-BenchmarkAllDays/day=16-16    115648       54076 ns/op
-BenchmarkAllDays/day=17-16      8688      682683 ns/op
-BenchmarkAllDays/day=18-16       720     8302785 ns/op
-BenchmarkAllDays/day=19-16       571    10593295 ns/op
-BenchmarkAllDays/day=20-16      2065     2884740 ns/op
-BenchmarkAllDays/day=21-16      6909      816513 ns/op
-BenchmarkAllDays/day=22-16       535    11030218 ns/op
-BenchmarkAllDays/day=23-16        90    62808960 ns/op
-BenchmarkAllDays/day=24-16    164883       35536 ns/op
-BenchmarkAllDays/day=25-16      1683     3540924 ns/op
+BenchmarkAllDays/day=01-16     86300      140444 ns/op
+BenchmarkAllDays/day=02-16     21591      563619 ns/op
+BenchmarkAllDays/day=03-16     59193      198645 ns/op
+BenchmarkAllDays/day=04-16     20665      582047 ns/op
+BenchmarkAllDays/day=05-16      8110     1467356 ns/op
+BenchmarkAllDays/day=06-16    475164       24464 ns/op
+BenchmarkAllDays/day=07-16    129610       93876 ns/op
+BenchmarkAllDays/day=08-16      6465     1808593 ns/op
+BenchmarkAllDays/day=09-16      2602     4409001 ns/op
+BenchmarkAllDays/day=10-16     58803      205522 ns/op
+BenchmarkAllDays/day=11-16     29079      411995 ns/op
+BenchmarkAllDays/day=12-16      3549     3344796 ns/op
+BenchmarkAllDays/day=13-16     16264      730851 ns/op
+BenchmarkAllDays/day=14-16    144465       82962 ns/op
+BenchmarkAllDays/day=15-16       991    11855733 ns/op
+BenchmarkAllDays/day=16-16    204747       56553 ns/op
+BenchmarkAllDays/day=17-16     18918      633932 ns/op
+BenchmarkAllDays/day=18-16      1431     8207278 ns/op
+BenchmarkAllDays/day=19-16      1144    10305675 ns/op
+BenchmarkAllDays/day=20-16      4285     2738294 ns/op
+BenchmarkAllDays/day=21-16     14770      811878 ns/op
+BenchmarkAllDays/day=22-16      2032     5709331 ns/op
+BenchmarkAllDays/day=23-16       190    62832739 ns/op
+BenchmarkAllDays/day=24-16    337002       35626 ns/op
+BenchmarkAllDays/day=25-16      3417     3541138 ns/op
 ```
 
 <!--math
