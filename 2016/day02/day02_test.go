@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc provides all the supported AoC actions (solving, plotting, ...).
-package main
+package day02
 
 import (
-	"github.com/fis/aoc/glue"
-
-	_ "github.com/fis/aoc/2016/days" // solvers
-	_ "github.com/fis/aoc/2017/days" // solvers
-	_ "github.com/fis/aoc/2018/days" // solvers
-	_ "github.com/fis/aoc/2019/days" // solvers
-	_ "github.com/fis/aoc/2020/days" // solvers
-	_ "github.com/fis/aoc/2021/days" // solvers
+	"testing"
 )
 
-func main() {
-	glue.Main()
+func TestDecode(t *testing.T) {
+	sheet := []string{
+		"ULL",
+		"RRDDD",
+		"LURDL",
+		"UUUUD",
+	}
+	tests := []struct {
+		name    string
+		decoder func([]string) string
+		want    string
+	}{
+		{name: "decode", decoder: decode, want: "1985"},
+		{name: "decodeCross", decoder: decodeCross, want: "5DB3"},
+	}
+	for _, test := range tests {
+		got := test.decoder(sheet)
+		if got != test.want {
+			t.Errorf("%s(%v) = %s, want %s", test.name, sheet, got, test.want)
+		}
+	}
 }
