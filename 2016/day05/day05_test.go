@@ -12,41 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+package day05
 
 import (
 	"testing"
-
-	"github.com/fis/aoc/glue"
 )
 
-var tests = []glue.TestCase{
-	{
-		Day:  1,
-		Want: []string{"239", "141"},
-	},
-	{
-		Day:  2,
-		Want: []string{"97289", "9A7DC"},
-	},
-	{
-		Day:  3,
-		Want: []string{"869", "1544"},
-	},
-	{
-		Day:  4,
-		Want: []string{"158835", "993"},
-	},
-	{
-		Day:  5,
-		Want: []string{"f77a0e6e", "999828ec"},
-	},
-}
-
-func TestAllDays(t *testing.T) {
-	glue.RunTests(t, tests, 2016)
-}
-
-func BenchmarkAllDays(b *testing.B) {
-	glue.RunBenchmarks(b, tests, 2016)
+func TestSearch(t *testing.T) {
+	want1, want2 := "18f47a30", "05ace8e3"
+	got1, got2 := search("abc", 8)
+	if got1 != want1 || got2 != want2 {
+		t.Errorf("search(abc, 8) = (%s, %s), want (%s, %s)", got1, got2, want1, want2)
+	}
 }
