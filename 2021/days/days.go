@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2017 days.
+// Package days contains the glue and tests for all AoC 2021 days.
 package days
 
 import (

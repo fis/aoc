@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc provides all the supported AoC actions (solving, plotting, ...).
-package main
+// Package day01 solves AoC 2022 day 1.
+package day01
 
 import (
 	"github.com/fis/aoc/glue"
-
-	_ "github.com/fis/aoc/2016/days" // solvers
-	_ "github.com/fis/aoc/2017/days" // solvers
-	_ "github.com/fis/aoc/2018/days" // solvers
-	_ "github.com/fis/aoc/2019/days" // solvers
-	_ "github.com/fis/aoc/2020/days" // solvers
-	_ "github.com/fis/aoc/2021/days" // solvers
-	_ "github.com/fis/aoc/2022/days" // solvers
+	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/fn"
+	"golang.org/x/exp/slices"
 )
 
-func main() {
-	glue.Main()
+func init() {
+	glue.RegisterSolver(2022, 1, glue.ChunkSolver(solve))
+}
+
+func solve(chunks []string) ([]string, error) {
+	data := fn.Map(chunks, util.Ints)
+	p1, p2 := maxCalories(data)
+	return glue.Ints(p1, p2), nil
+}
+
+func maxCalories(data [][]int) (top, top3 int) {
+	sums := fn.Map(data, fn.Sum[[]int])
+	slices.Sort(sums)
+	n := len(sums)
+	return sums[n-1], sums[n-1] + sums[n-2] + sums[n-3]
 }

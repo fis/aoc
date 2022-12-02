@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc provides all the supported AoC actions (solving, plotting, ...).
-package main
+package day01
 
 import (
-	"github.com/fis/aoc/glue"
-
-	_ "github.com/fis/aoc/2016/days" // solvers
-	_ "github.com/fis/aoc/2017/days" // solvers
-	_ "github.com/fis/aoc/2018/days" // solvers
-	_ "github.com/fis/aoc/2019/days" // solvers
-	_ "github.com/fis/aoc/2020/days" // solvers
-	_ "github.com/fis/aoc/2021/days" // solvers
-	_ "github.com/fis/aoc/2022/days" // solvers
+	"testing"
 )
 
-func main() {
-	glue.Main()
+func TestMaxCalories(t *testing.T) {
+	data := [][]int{
+		{1000, 2000, 3000},
+		{4000},
+		{5000, 6000},
+		{7000, 8000, 9000},
+		{10000},
+	}
+	want1, want2 := 24000, 45000
+	if got1, got2 := maxCalories(data); got1 != want1 || got2 != want2 {
+		t.Errorf("maxCalories(%v) = (%d, %d), want (%d, %d)", data, got1, got2, want1, want2)
+	}
 }
