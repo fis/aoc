@@ -44,7 +44,29 @@ func Lines(s string) (lines []string) {
 // Ints returns the list of all contiguous sequences of decimal digits parsed as integers,
 // as defined by the ScanInts split function.
 func Ints(s string) (ints []int) {
-	ints, _ = ScanAllInts(strings.NewReader(s))
+	cur, in, neg := 0, false, false
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if in && (b < '0' || b > '9') {
+			if neg {
+				cur = -cur
+			}
+			ints = append(ints, cur)
+			cur, in, neg = 0, false, false
+		}
+		if b == '-' {
+			neg = i+1 < len(s) && s[i+1] >= '0' && s[i+1] <= '9'
+		} else if b >= '0' && b <= '9' {
+			in = true
+			cur = cur*10 + int(b-'0')
+		}
+	}
+	if in {
+		if neg {
+			cur = -cur
+		}
+		ints = append(ints, cur)
+	}
 	return ints
 }
 

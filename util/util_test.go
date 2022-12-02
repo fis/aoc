@@ -84,5 +84,8 @@ func TestScanInts(t *testing.T) {
 		} else if !cmp.Equal(got, test.want) {
 			t.Errorf("ScanAllInts(%q) = %#v, want %#v", test.input, got, test.want)
 		}
+		if got := Ints(test.input); !cmp.Equal(got, test.want) {
+			t.Errorf("Ints(%q) = %#v, want %#v", test.input, got, test.want)
+		}
 	}
 }
