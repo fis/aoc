@@ -35,3 +35,37 @@ Combined:
 C: ln{""};;)ri)++
 2:               <>3co-]++y
 ```
+
+## [Day 2](https://adventofcode.com/2022/day/2): Rock Paper Scissors
+
+Oh, we're not doing
+[Added Alliterative Appeal](https://tvtropes.org/pmwiki/pmwiki.php/Main/AddedAlliterativeAppeal)
+(like [in 2020](2020-notes.md)) this year either? A shame.
+
+Nothing interesting to say about today's Go solution. The Burlesque one does a
+trick where it takes the A/B/C and X/Y/Z characters' code points modulo 3 and
+treats them as the digits of a two-digit base-3 number, and uses that to just
+look up the score from a map. This means both parts' solution is essentially the
+same, except for the mapping.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{XXRT[-{**3.%}m[3ug963174528XXj!!}ms
+```
+
+Part 2:
+
+```
+ln{XXRT[-{**3.%}m[3ug978123564XXj!!}ms
+```
+
+Combined:
+
+```
+1:                      963174528
+C: ln{XXRT[-{**3.%}m[3ug         XXj!!}ms
+2:                      978123564
+```

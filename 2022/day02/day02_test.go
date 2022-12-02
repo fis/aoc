@@ -12,10 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2022 days.
-package days
+package day02
 
 import (
-	_ "github.com/fis/aoc/2022/day01" // solvers
-	_ "github.com/fis/aoc/2022/day02" // solvers
+	"testing"
 )
+
+func TestTotalScoreShapes(t *testing.T) {
+	guide := [][2]shape{
+		{rock, paper},
+		{paper, rock},
+		{scissors, scissors},
+	}
+	want := 15
+	if got := totalScoreShapes(guide); got != want {
+		t.Errorf("totalScoreShapes(%v) = %d, want %d", guide, got, want)
+	}
+}
+
+func TestTotalScoreRounds(t *testing.T) {
+	guide := []guideLine{
+		{rock, draw},
+		{paper, loss},
+		{scissors, win},
+	}
+	want := 12
+	if got := totalScoreRounds(guide); got != want {
+		t.Errorf("totalScoreRounds(%v) = %d, want %d", guide, got, want)
+	}
+}
