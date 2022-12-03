@@ -18,4 +18,5 @@ package days
 import (
 	_ "github.com/fis/aoc/2022/day01" // solvers
 	_ "github.com/fis/aoc/2022/day02" // solvers
+	_ "github.com/fis/aoc/2022/day03" // solvers
 )

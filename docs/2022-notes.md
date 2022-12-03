@@ -69,3 +69,38 @@ Combined:
 C: ln{XXRT[-{**3.%}m[3ug         XXj!!}ms
 2:                      978123564
 ```
+
+## [Day 3](https://adventofcode.com/2022/day/3): Rucksack Reorganization
+
+Oh, maybe we're alliterative on alternating days? I may be reading too much into
+this.
+
+The Go version uses an `[2]uint64` as the representation of a rucksack, with the
+i'th bit set if an item with priority i exists in the corresponding compartment.
+This makes finding the intersections real easy with bitwise operations.
+
+Today's problem is a relatively good fit for Burlesque, what with its built-in
+for finding set intersection (`IN`). Item priorities are computed as `b-38 mod
+58`, which avoids needing a conditional.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{sa2./cop^IN-]**38.-58.%}ms
+```
+
+Part 2:
+
+```
+ln3co{p^ININ-]**38.-58.%}ms
+```
+
+Combined:
+
+```
+1:       sa2./co
+C: ln   {       p^IN  -]**38.-58.%}ms
+2:   3co            IN
+```
