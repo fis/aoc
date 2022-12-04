@@ -24,6 +24,26 @@ func TestSum(t *testing.T) {
 	}
 }
 
+func TestCountIf(t *testing.T) {
+	tests := []struct {
+		data []int
+		f    func(int) bool
+		want int
+	}{
+		{
+			data: []int{1, 2, 3, 4, 5, 6, 7},
+			f:    func(x int) bool { return x%2 == 1 },
+			want: 4,
+		},
+	}
+	for _, test := range tests {
+		got := CountIf(test.data, test.f)
+		if got != test.want {
+			t.Errorf("CountIf(%v, ...) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
 func TestMax(t *testing.T) {
 	tests := []struct {
 		data []int

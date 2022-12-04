@@ -104,3 +104,32 @@ Combined:
 C: ln   {       p^IN  -]**38.-58.%}ms
 2:   3co            IN
 ```
+
+## [Day 4](https://adventofcode.com/2022/day/4): Camp Cleanup
+
+Oh, great, now the titles are just actively teasing me.
+
+Anyway, not much to say about the solutions. The Burlesque ones feel inelegant,
+but they're short enough to let pass this time.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{',;;{'-;;ri^pr@}m[Jp^~~j^p~~||}ms
+```
+
+Part 2:
+
+```
+ln{',;;{'-;;ri^pr@}MPINL[nz}ms
+```
+
+Combined:
+
+```
+1:                    m[Jp^~~j^p~~||
+C: ln{',;;{'-;;ri^pr@}              }ms
+2:                    MPINL[nz
+```

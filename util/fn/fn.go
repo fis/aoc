@@ -11,6 +11,16 @@ func Sum[S ~[]E, E constraints.Integer](s S) (result E) {
 	return result
 }
 
+// CountIf returns the number of items in a slice that satisfy a predicate.
+func CountIf[S ~[]E, F ~func(E) bool, E any](s S, f F) (count int) {
+	for _, e := range s {
+		if f(e) {
+			count++
+		}
+	}
+	return count
+}
+
 // Max returns the largest value of a slice of some ordered type.
 func Max[S ~[]E, E constraints.Ordered](s S) (result E) {
 	result = s[0]
