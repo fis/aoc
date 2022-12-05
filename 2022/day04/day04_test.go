@@ -16,6 +16,8 @@ package day04
 
 import (
 	"testing"
+
+	"github.com/fis/aoc/util/fn"
 )
 
 var ex = []string{
@@ -28,7 +30,7 @@ var ex = []string{
 }
 
 func TestPart1(t *testing.T) {
-	pairs := parsePairs(ex)
+	pairs, _ := fn.MapE(ex, parsePair)
 	want := 2
 	if got := part1(pairs); got != want {
 		t.Errorf("part1(%v) = %d, want %d", pairs, got, want)
@@ -36,7 +38,7 @@ func TestPart1(t *testing.T) {
 }
 
 func TestPart2(t *testing.T) {
-	pairs := parsePairs(ex)
+	pairs, _ := fn.MapE(ex, parsePair)
 	want := 4
 	if got := part2(pairs); got != want {
 		t.Errorf("part2(%v) = %d, want %d", pairs, got, want)

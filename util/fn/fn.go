@@ -40,3 +40,23 @@ func Map[S ~[]I, F ~func(I) O, I, O any](in S, f F) (out []O) {
 	}
 	return out
 }
+
+// MapE is a variant of Map that allows the function to fail.
+func MapE[S ~[]I, F ~func(I) (O, error), I, O any](in S, f F) (out []O, err error) {
+	out = make([]O, len(in))
+	for i, x := range in {
+		o, err := f(x)
+		if err != nil {
+			return nil, err
+		}
+		out[i] = o
+	}
+	return out, nil
+}
+
+// ForEach invokes a function (which must not return anything) for each element of a slice in order.
+func ForEach[S ~[]E, F ~func(E), E any](s S, f F) {
+	for _, e := range s {
+		f(e)
+	}
+}

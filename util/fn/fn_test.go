@@ -1,6 +1,7 @@
 package fn
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -79,5 +80,47 @@ func TestMap(t *testing.T) {
 		if !cmp.Equal(got, test.want) {
 			t.Errorf("Map(%v, ...) = %v, want %v", test.data, got, test.want)
 		}
+	}
+}
+
+func TestMapE(t *testing.T) {
+	oddError := errors.New("that's odd")
+	f := func(i int) (int, error) {
+		if i%2 == 1 {
+			return 0, oddError
+		}
+		return i + 1, nil
+	}
+	tests := []struct {
+		data    []int
+		want    []int
+		wantErr error
+	}{
+		{
+			data: []int{2, 4, 6, 8},
+			want: []int{3, 5, 7, 9},
+		},
+		{
+			data:    []int{2, 4, 5, 6, 8},
+			wantErr: oddError,
+		},
+	}
+	for _, test := range tests {
+		got, err := MapE(test.data, f)
+		if err != nil && (test.wantErr == nil || !errors.Is(err, oddError)) {
+			t.Errorf("MapE(%v, f): %v, wanted error %v", test.data, err, oddError)
+		} else if err == nil && !cmp.Equal(got, test.want) {
+			t.Errorf("MapE(%v, f) = %v, want %v", test.data, got, test.want)
+		}
+	}
+}
+
+func TestForEach(t *testing.T) {
+	data := []int{1, 2, 3, 4}
+	want := []int{2, 3, 4, 5}
+	var got []int
+	ForEach(data, func(i int) { got = append(got, i+1) })
+	if !cmp.Equal(got, want) {
+		t.Errorf("ForEach(%v, f) -> %v, want %v", data, got, want)
 	}
 }

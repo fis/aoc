@@ -23,11 +23,13 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2022, 3, glue.LineSolver(solve))
+	glue.RegisterSolver(2022, 3, glue.ParsableLineSolver[rucksack]{
+		Solver: solve,
+		Parser: pack,
+	})
 }
 
-func solve(lines []string) ([]string, error) {
-	sacks := pack(lines)
+func solve(sacks []rucksack) ([]string, error) {
 	p1 := part1(sacks)
 	p2 := part2(sacks)
 	return glue.Ints(p1, p2), nil
@@ -44,23 +46,16 @@ func part2(sacks []rucksack) (sum int) {
 	return sum
 }
 
-func pack(lines []string) (sacks []rucksack) {
-	sacks = make([]rucksack, len(lines))
-	for i, line := range lines {
-		sacks[i].pack(line)
-	}
-	return sacks
-}
-
 type rucksack [2]uint64
 
-func (rs *rucksack) pack(items string) {
+func pack(line string) (rs rucksack, err error) {
 	rs[0], rs[1] = 0, 0
-	n := len(items) / 2
+	n := len(line) / 2
 	for i := 0; i < n; i++ {
-		rs[0] |= 1 << itemPriority(items[i])
-		rs[1] |= 1 << itemPriority(items[n+i])
+		rs[0] |= 1 << itemPriority(line[i])
+		rs[1] |= 1 << itemPriority(line[n+i])
 	}
+	return rs, nil
 }
 
 func (rs rucksack) overlap() int {

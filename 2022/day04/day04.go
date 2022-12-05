@@ -24,11 +24,13 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2022, 4, glue.LineSolver(solve))
+	glue.RegisterSolver(2022, 4, glue.ParsableLineSolver[[2]section]{
+		Solver: solve,
+		Parser: parsePair,
+	})
 }
 
-func solve(lines []string) ([]string, error) {
-	pairs := parsePairs(lines)
+func solve(pairs [][2]section) ([]string, error) {
 	p1 := part1(pairs)
 	p2 := part2(pairs)
 	return glue.Ints(p1, p2), nil
@@ -42,13 +44,9 @@ func part2(pairs [][2]section) int {
 	return fn.CountIf(pairs, func(s [2]section) bool { return s[0].overlaps(s[1]) })
 }
 
-func parsePairs(lines []string) [][2]section {
-	return fn.Map(lines, parsePair)
-}
-
-func parsePair(line string) [2]section {
+func parsePair(line string) ([2]section, error) {
 	comma := strings.IndexByte(line, ',')
-	return [2]section{parseSection(line[:comma]), parseSection(line[comma+1:])}
+	return [2]section{parseSection(line[:comma]), parseSection(line[comma+1:])}, nil
 }
 
 type section struct {

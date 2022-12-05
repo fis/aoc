@@ -29,6 +29,12 @@ type GenericSolver func(io.Reader) ([]string, error)
 // LineSolver wraps a solution that wants the lines of the input as strings.
 type LineSolver func([]string) ([]string, error)
 
+// ParsableLineSolver extends the regular LineSolver to also parse each line to an object of the given type.
+type ParsableLineSolver[T any] struct {
+	Solver func([]T) ([]string, error)
+	Parser func(string) (T, error)
+}
+
 // ChunkSolver wraps a solution that wants the blank-line-separated paragraphs of the input as strings.
 type ChunkSolver func([]string) ([]string, error)
 
@@ -62,6 +68,26 @@ func (s LineSolver) Solve(input io.Reader) ([]string, error) {
 		return nil, err
 	}
 	out, err := s(data)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Solve implements the Solver interface.
+func (s ParsableLineSolver[T]) Solve(input io.Reader) ([]string, error) {
+	lines, err := util.ScanAll(input, bufio.ScanLines)
+	if err != nil {
+		return nil, err
+	}
+	parsed := make([]T, len(lines))
+	for i, line := range lines {
+		parsed[i], err = s.Parser(line)
+		if err != nil {
+			return nil, err
+		}
+	}
+	out, err := s.Solver(parsed)
 	if err != nil {
 		return nil, err
 	}
