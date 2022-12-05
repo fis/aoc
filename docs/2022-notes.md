@@ -133,3 +133,36 @@ Combined:
 C: ln{',;;{'-;;ri^pr@}              }ms
 2:                    MPINL[nz
 ```
+
+## [Day 5](https://adventofcode.com/2022/day/5): Supply Stacks
+
+Today wasn't a good day for Burlesque. It probably could be done a lot more
+elegantly somehow, but at least it's done.
+
+The Go solutions are unremarkable.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j1?-J{pP'f!!
+l_PPj'fsaJ't!!#R_+'tsaPp}j-]'fjr~j[~'tjr~jE!}m[p\)[~\[
+```
+
+Part 2:
+
+```
+ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j1?-J{pP'f!!
+<-co<-l_)<-\[PPj'fsaJ't!!#R<-_+'tsaPp}j-]'fjr~j[~'tjr~j4iae!}m[p\)[~\[
+```
+
+Combined:
+
+```
+C: ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j1?-J{pP'f!!
+
+1: l_                                                     E!
+C:              PPj'fsaJ't!!#R  _+'tsaPp}j-]'fjr~j[~'tjr~j     }m[p\)[~\[
+2: <-co<-l_)<-\[              <-                          4iae!
+```
