@@ -166,3 +166,24 @@ C: ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j1?-J{pP'f!!
 C:              PPj'fsaJ't!!#R  _+'tsaPp}j-]'fjr~j[~'tjr~j     }m[p\)[~\[
 2: <-co<-l_)<-\[              <-                          4iae!
 ```
+
+## [Day 6](https://adventofcode.com/2022/day/6): Tuning Trouble
+
+Oddly, day 6 feels simpler to me than day 5; and judging from the statistics,
+I'm not the only one. It was definitely simpler to do in Burlesque.
+
+To pad things out a little, the Go version has two alternative solutions: one
+which is the naive `O(n*k)` solution but using an `uint64` as a bitset (just the
+right amount of bits for upper- and lowercase ASCII letters), and another
+implementing the "windowed" `O(n)` approach.
+
+The latter does appear to outperform the former, at least on my puzzle input.
+Though both are already ridiculously inexpensive.
+
+```
+$ go test -run='^$' -bench=. -benchtime=60s ./2022/day06
+BenchmarkFindMarker/size=4/algo=bitset-16      17119893    4080 ns/op
+BenchmarkFindMarker/size=4/algo=windowed-16    26869724    2631 ns/op
+BenchmarkFindMarker/size=14/algo=bitset-16      4383006   15993 ns/op
+BenchmarkFindMarker/size=14/algo=windowed-16   17832987    4008 ns/op
+```
