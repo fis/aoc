@@ -187,3 +187,41 @@ BenchmarkFindMarker/size=4/algo=windowed-16    26869724    2631 ns/op
 BenchmarkFindMarker/size=14/algo=bitset-16      4383006   15993 ns/op
 BenchmarkFindMarker/size=14/algo=windowed-16   17832987    4008 ns/op
 ```
+
+## [Day 7](https://adventofcode.com/2022/day/7): No Space Left On Device
+
+Today's task was really much more about parsing the input than about computing
+the result.
+
+The approach taken here (both in Go and in Burlesque) is to, instead of the
+arguably more natural recursive structure, keep an explicit stack of parent
+directory sizes as we go along. That way a simple scan over the input lines is
+sufficient: file sizes are summed up to the size of the current directory, and
+every time we ascend up to a parent directory, the subdirectory's size is added
+to it also.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{}j{g_J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}{nz}w!
+vvp\CLiT)++PP.+{1e5<=}f[++
+```
+
+Part 2:
+
+```
+ln{}j{g_J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}{nz}w!
+vvp\CLiT)++l_PP.+j4e7.-{>=}j+]f[<]
+```
+
+Combined:
+
+```
+C: ln{}j{g_J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}{nz}w!
+
+1:                  {1e5<=}        ++
+C: vvp\CLiT)++  PP.+             f[
+2:            l_    j4e7.-{>=}j+]  <]
+```

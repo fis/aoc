@@ -45,6 +45,24 @@ func TestCountIf(t *testing.T) {
 	}
 }
 
+func TestMin(t *testing.T) {
+	tests := []struct {
+		data []int
+		want int
+	}{
+		{data: []int{123}, want: 123},
+		{data: []int{123, 456, 789}, want: 123},
+		{data: []int{123, 789, 456}, want: 123},
+		{data: []int{789, 456, 123}, want: 123},
+	}
+	for _, test := range tests {
+		got := Min(test.data)
+		if got != test.want {
+			t.Errorf("Min(%v) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
 func TestMax(t *testing.T) {
 	tests := []struct {
 		data []int
@@ -59,6 +77,23 @@ func TestMax(t *testing.T) {
 		got := Max(test.data)
 		if got != test.want {
 			t.Errorf("Max(%v) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
+func TestHead(t *testing.T) {
+	tests := []struct {
+		data []int
+		def  int
+		want int
+	}{
+		{nil, 999, 999},
+		{[]int{123}, 999, 123},
+		{[]int{123, 456, 789}, 999, 123},
+	}
+	for _, test := range tests {
+		if got := Head(test.data, test.def); got != test.want {
+			t.Errorf("Head(%v, %d) = %d, want %d", test.data, test.def, got, test.want)
 		}
 	}
 }
@@ -111,6 +146,51 @@ func TestMapE(t *testing.T) {
 			t.Errorf("MapE(%v, f): %v, wanted error %v", test.data, err, oddError)
 		} else if err == nil && !cmp.Equal(got, test.want) {
 			t.Errorf("MapE(%v, f) = %v, want %v", test.data, got, test.want)
+		}
+	}
+}
+
+func TestFilter(t *testing.T) {
+	tests := []struct {
+		data []int
+		op   string
+		p    func(int) bool
+		want []int
+	}{
+		{
+			data: []int{1, 2, 3, 4, 5},
+			op:   "even?",
+			p:    func(i int) bool { return i%2 == 0 },
+			want: []int{2, 4},
+		},
+		{
+			data: []int{1, 2, 3, 4, 5},
+			op:   "odd?",
+			p:    func(i int) bool { return i%2 == 1 },
+			want: []int{1, 3, 5},
+		},
+		{
+			data: []int{1, 2, 3, 4, 5},
+			op:   ">10?",
+			p:    func(i int) bool { return i > 10 },
+			want: nil,
+		},
+		{
+			data: []int{1, 2, 3, 4, 5},
+			op:   "<10?",
+			p:    func(i int) bool { return i < 10 },
+			want: []int{1, 2, 3, 4, 5},
+		},
+		{
+			data: []int{},
+			op:   "any",
+			p:    func(int) bool { return true },
+			want: nil,
+		},
+	}
+	for _, test := range tests {
+		if got := Filter(test.data, test.p); !cmp.Equal(got, test.want) {
+			t.Errorf("Filter(%v, %s) = %v, want %v", test.data, test.op, got, test.want)
 		}
 	}
 }
