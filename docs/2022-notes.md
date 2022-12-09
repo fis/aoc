@@ -136,35 +136,32 @@ C: ln{',;;{'-;;ri^pr@}              }ms
 
 ## [Day 5](https://adventofcode.com/2022/day/5): Supply Stacks
 
-Today wasn't a good day for Burlesque. It probably could be done a lot more
-elegantly somehow, but at least it's done.
-
-The Go solutions are unremarkable.
+Nothing really to say about either solution. Went very stateful with Burlesque.
 
 ### Burlesque
 
 Part 1:
 
 ```
-ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j?dJ{pP'f!!
-l_PPj'fsaJ't!!#R_+'tsaPp}j-]'fjr~j[~'tjr~jE!}m[p\)[~\[
+ln{""};;p^~])XXtp4co{1!!:rd}m[+]
+{wd2enri?d^ps2s1{{g_s3}g1ap{g3+]}g2ap}j+.E!}r[)-]\[
 ```
 
 Part 2:
 
 ```
-ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j?dJ{pP'f!!
-<-co<-l_)<-\[PPj'fsaJ't!!#R<-_+'tsaPp}j-]'fjr~j[~'tjr~j4iae!}m[p\)[~\[
+ln{""};;p^~])XXtp4co{1!!:rd}m[+]
+{wd2enrig_s0?d^p#r{g0cog_s1\[}apj{g1j.+}ap}r[)-]\[
 ```
 
 Combined:
 
 ```
-C: ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j?dJ{pP'f!!
+C: ln{""};;p^~])XXtp4co{1!!:rd}m[+]
 
-1: l_                                                     E!
-C:              PPj'fsaJ't!!#R  _+'tsaPp}j-]'fjr~j[~'tjr~j     }m[p\)[~\[
-2: <-co<-l_)<-\[              <-                          4iae!
+1:                 s2s1{{g_s3}g1ap{g3+]}g2ap}j+.E!
+C: {wd2enri    ?d^p                               }r[)-]\[
+2:         g_s0    #r{g0cog_s1\[}apj{g1j.+}ap
 ```
 
 ## [Day 6](https://adventofcode.com/2022/day/6): Tuning Trouble
@@ -226,25 +223,25 @@ to it also.
 Part 1:
 
 ```
-ln{}j{g_J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}{nz}w!
-vvp\CLiT)++PP.+{1e5<=}f[++
+ln{}+]{J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}r[
+p\CLiT)++PP.+{1e5<=}f[++
 ```
 
 Part 2:
 
 ```
-ln{}j{g_J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}{nz}w!
-vvp\CLiT)++l_PP.+j4e7.-{>=}j+]f[<]
+ln{}+]{J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}r[
+p\CLiT)++l_PP.+j4e7.-{>=}j+]f[<]
 ```
 
 Combined:
 
 ```
-C: ln{}j{g_J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}{nz}w!
+C: ln{}+]{J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}r[
 
-1:                  {1e5<=}        ++
-C: vvp\CLiT)++  PP.+             f[
-2:            l_    j4e7.-{>=}j+]  <]
+1:                {1e5<=}        ++
+C: p\CLiT)++  PP.+             f[
+2:          l_    j4e7.-{>=}j+]  <]
 ```
 
 ## [Day 8](https://adventofcode.com/2022/day/8): Treetop Tree House
@@ -262,27 +259,27 @@ a short coda that combines the results from the four directions.
 Part 1:
 
 ```
-ln)XX{{iT[-{l_-1+]>].>}m[}m[}hd
-J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tpCL~])\[tp)r|++
+ln)XXJtpJ)<-#RJ)<-CL{{iT[-{l_-1+]>].>}m[}m[}MP
+tpj)<-tp#R)<-CL)\[tp)r|++
 ```
 
 Part 2:
 
 ```
-ln)XX{{iT[-{<-sa-.jRTJ[~{>=}j+]fi+.<.}m[}m[}hd
-J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tpCL~])\[tp)pd>]
+ln)XXJtpJ)<-#RJ)<-CL{{iT[-{<-sa-.jRTJ[~{>=}j+]fi+.<.}m[}m[}MP
+tpj)<-tp#R)<-CL)\[tp)pd>]
 ```
 
 Combined:
 
 ```
-1:             l_-1+]>].>
-C: ln)XX{{iT[-{                         }m[}m[}hd
-2:             <-sa-.jRTJ[~{>=}j+]fi+.<.
+1:                            l_-1+]>].>
+C: ln)XXJtpJ)<-#RJ)<-CL{{iT[-{                         }m[}m[}MP
+2:                            <-sa-.jRTJ[~{>=}j+]fi+.<.
 
-1:                                          )r|++
-C: J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tpCL~])\[tp
-2:                                          )pd>]
+1:                     )r|++
+C: tpj)<-tp#R)<-CL)\[tp
+2:                     )pd>]
 ```
 
 ## [Day 9](https://adventofcode.com/2022/day/9): Rope Bridge
@@ -302,25 +299,25 @@ respectively.
 Part 1:
 
 ```
-{0 0}Jx/ln{g_2336 3dg?d2coj**5.%!!jri.*}\m
-{{?+J#RJ#r?-J)ab>]2>=?*)sn#R?+JPpj}j+]}\me!p\CL><gl
+0J_+Jx/ln{g_2336 3dg?d2coj**5.%!!{?+J#RJ#r
+?-J)ab>]2>=?*)sn#R?+JPpj}j+]jri.*p^}\me!p\CL><gl
 ```
 
 Part 2:
 
 ```
-{0 0}10.*jln{g_2336 3dg?d2coj**5.%!!jri.*}\m
-{{jg_x/?++]{J2J[P^p?-J)ab>]2>=?*)snjRTg_x/?++]}9E!g_JPp[+}j+]}\me!p\CL><gl
+0J_+10.*jln{g_2336 3dg?d2coj**5.%!!{jg_x/?++]{J2J[P^p
+?-J)ab>]2>=?*)snjRTg_x/?++]}9E!g_JPp[+}j+]jri.*p^}\me!p\CL><gl
 ```
 
 Combined:
 
 ```
-1:      Jx/
-C: {0 0}     ln{g_2336 3dg?d2coj**5.%!!jri.*}\m
-2:      10.*j
+1:     Jx/                             ?+J#RJ#r
+C: 0J_+     ln{g_2336 3dg?d2coj**5.%!!{
+2:     10.*j                           jg_x/?++]{J2J[P^p
 
-1:   ?+J#RJ#r?-J)ab>]2>=?*)sn#R?+JPpj
-C: {{                                                       }j+]}\me!p\CL><gl
-2:   jg_x/?++]{J2J[P^p?-J)ab>]2>=?*)snjRTg_x/?++]}9E!g_JPp[+
+1:                 #R       JPpj
+C: ?-J)ab>]2>=?*)sn       ?+             }j+]jri.*p^}\me!p\CL><gl
+2:                 jRTg_x/  +]}9E!g_JPp[+
 ```
