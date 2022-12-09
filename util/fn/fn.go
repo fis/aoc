@@ -73,6 +73,16 @@ func MapE[S ~[]I, F ~func(I) (O, error), I, O any](in S, f F) (out []O, err erro
 	return out, nil
 }
 
+// MapRange returns a slice with the results of calling function on a range of integers.
+func MapRange[F ~func(I) E, I constraints.Integer, E any](start, end I, f F) (out []E) {
+	n := end - start
+	out = make([]E, n)
+	for i := start; i < end; i++ {
+		out[i-start] = f(i)
+	}
+	return out
+}
+
 // Filter returns a new slice that contains just the elements matching a predicate.
 func Filter[S ~[]E, P ~func(E) bool, E any](s S, p P) (out []E) {
 	for _, e := range s {

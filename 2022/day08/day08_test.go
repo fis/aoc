@@ -12,16 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2022 days.
-package days
+package day08
 
 import (
-	_ "github.com/fis/aoc/2022/day01" // solvers
-	_ "github.com/fis/aoc/2022/day02" // solvers
-	_ "github.com/fis/aoc/2022/day03" // solvers
-	_ "github.com/fis/aoc/2022/day04" // solvers
-	_ "github.com/fis/aoc/2022/day05" // solvers
-	_ "github.com/fis/aoc/2022/day06" // solvers
-	_ "github.com/fis/aoc/2022/day07" // solvers
-	_ "github.com/fis/aoc/2022/day08" // solvers
+	"testing"
 )
+
+var ex = []string{
+	"30373",
+	"25512",
+	"65332",
+	"33549",
+	"35390",
+}
+
+func TestCountVisible(t *testing.T) {
+	want := 21
+	if got := countVisible(ex); got != want {
+		t.Errorf("countVisible(ex) = %d, want %d", got, want)
+	}
+}
+
+func TestFindBest(t *testing.T) {
+	want := 8
+	if got := findBest(ex); got != want {
+		t.Errorf("findBest(ex) = %d, want %d", got, want)
+	}
+}

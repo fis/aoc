@@ -225,3 +225,41 @@ C: ln{}j{g_J"$ c"~!{J'.~[0j{vvPPJ#Rj_+#rPP.+}ifPp}if:><b0PP.+Pp}{nz}w!
 C: vvp\CLiT)++  PP.+             f[
 2:            l_    j4e7.-{>=}j+]  <]
 ```
+
+## [Day 8](https://adventofcode.com/2022/day/8): Treetop Tree House
+
+The Burlesque solutions are not great, but at least they're there. Both parts
+have the same overall structure: defining a "subprogram" that finds the relevant
+quantity (0/1 map of visible trees, or the viewing distances) when looking
+from/to the left. The `J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tp` sequence then applies
+this to the input with the correct flips and transposes to handle all four
+directions (and remap the results back to the original orientation), followed by
+a short coda that combines the results from the four directions.
+
+### Burlesque
+
+Part 1:
+
+```
+ln)XX{{iT[-{l_-1+]>].>}m[}m[}hd
+J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tpCL~])\[tp)r|++
+```
+
+Part 2:
+
+```
+ln)XX{{iT[-{<-sa-.jRTJ[~{>=}j+]fi+.<.}m[}m[}hd
+J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tpCL~])\[tp)pd>]
+```
+
+Combined:
+
+```
+1:             l_-1+]>].>
+C: ln)XX{{iT[-{                         }m[}m[}hd
+2:             <-sa-.jRTJ[~{>=}j+]fi+.<.
+
+1:                                          )r|++
+C: J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tpCL~])\[tp
+2:                                          )pd>]
+```

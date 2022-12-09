@@ -150,6 +150,23 @@ func TestMapE(t *testing.T) {
 	}
 }
 
+func TestMapRange(t *testing.T) {
+	f := func(i int) int { return 2 * i }
+	tests := []struct {
+		start, end int
+		want       []int
+	}{
+		{start: 5, end: 10, want: []int{10, 12, 14, 16, 18}},
+		{start: 5, end: 6, want: []int{10}},
+		{start: 5, end: 5, want: []int{}},
+	}
+	for _, test := range tests {
+		if got := MapRange(test.start, test.end, f); !cmp.Equal(got, test.want) {
+			t.Errorf("MapRange(%d, %d, f) = %v, want %v", test.start, test.end, got, test.want)
+		}
+	}
+}
+
 func TestFilter(t *testing.T) {
 	tests := []struct {
 		data []int
