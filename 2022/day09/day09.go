@@ -20,6 +20,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -74,10 +75,10 @@ func measureLongTail(moves []move) int {
 
 func updateTail(head, tail util.P) util.P {
 	dx, dy := head.X-tail.X, head.Y-tail.Y
-	if max(abs(dx), abs(dy)) <= 1 {
+	if ix.Max(ix.Abs(dx), ix.Abs(dy)) <= 1 {
 		return tail
 	}
-	return util.P{tail.X + sgn(dx), tail.Y + sgn(dy)}
+	return util.P{tail.X + ix.Sign(dx), tail.Y + ix.Sign(dy)}
 }
 
 type move struct {
@@ -106,27 +107,4 @@ var dirStep = [...]util.P{
 	dirDown:  {0, 1},
 	dirLeft:  {-1, 0},
 	dirRight: {1, 0},
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
-func sgn(x int) int {
-	if x < 0 {
-		return -1
-	} else if x > 0 {
-		return 1
-	}
-	return 0
 }

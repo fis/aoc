@@ -51,20 +51,3 @@ func TestPart2(t *testing.T) {
 		}
 	}
 }
-
-func TestSqrt(t *testing.T) {
-	tests := [][2]int{
-		{0, 0},
-		{1, 1}, {2, 1}, {3, 1},
-		{4, 2}, {5, 2}, {8, 2},
-		{9, 3}, {10, 3}, {15, 3},
-		{16, 4}, {17, 4}, {24, 4},
-		{25, 5},
-		{9999, 99}, {10000, 100},
-	}
-	for _, test := range tests {
-		if got := sqrt(test[0]); got != test[1] {
-			t.Errorf("sqrt(%d) = %d, want %d", test[0], got, test[1])
-		}
-	}
-}

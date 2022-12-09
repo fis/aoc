@@ -22,6 +22,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -71,12 +72,12 @@ func inRange(bots []nanobot) (count int) {
 func bestPos(bots []nanobot) (d int) {
 	min, max := bots[0].p, bots[0].p
 	for _, bot := range bots[1:] {
-		min.x = imin(min.x, bot.p.x)
-		max.x = imax(max.x, bot.p.x)
-		min.y = imin(min.y, bot.p.y)
-		max.y = imax(max.y, bot.p.y)
-		min.z = imin(min.z, bot.p.z)
-		max.z = imax(max.z, bot.p.z)
+		min.x = ix.Min(min.x, bot.p.x)
+		max.x = ix.Max(max.x, bot.p.x)
+		min.y = ix.Min(min.y, bot.p.y)
+		max.y = ix.Max(max.y, bot.p.y)
+		min.z = ix.Min(min.z, bot.p.z)
+		max.z = ix.Max(max.z, bot.p.z)
 	}
 	d, _ = findBest(bots, min, max, 0, -1, -1, 0)
 	return d
@@ -206,14 +207,14 @@ func minimumD(min, max, p p3) int {
 }
 
 func maximumD(min, max, p p3) int {
-	dx, dy, dz := abs(min.x-p.x), abs(min.y-p.y), abs(min.z-p.z)
-	if d := abs(max.x - p.x); d > dx {
+	dx, dy, dz := ix.Abs(min.x-p.x), ix.Abs(min.y-p.y), ix.Abs(min.z-p.z)
+	if d := ix.Abs(max.x - p.x); d > dx {
 		dx = d
 	}
-	if d := abs(max.y - p.y); d > dy {
+	if d := ix.Abs(max.y - p.y); d > dy {
 		dy = d
 	}
-	if d := abs(max.z - p.z); d > dz {
+	if d := ix.Abs(max.z - p.z); d > dz {
 		dz = d
 	}
 	return dx + dy + dz
@@ -227,32 +228,11 @@ func parseBot(line string) (bot nanobot, err error) {
 }
 
 func dist(a, b p3) int {
-	return abs(a.x-b.x) + abs(a.y-b.y) + abs(a.z-b.z)
+	return ix.Abs(a.x-b.x) + ix.Abs(a.y-b.y) + ix.Abs(a.z-b.z)
 }
 
 func dist0(p p3) int {
-	return abs(p.x) + abs(p.y) + abs(p.z)
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
-func imin(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func imax(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
+	return ix.Abs(p.x) + ix.Abs(p.y) + ix.Abs(p.z)
 }
 
 // This code would solve part 2 of the puzzle using Chebyshev distance, accidentally.

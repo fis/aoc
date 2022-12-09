@@ -20,6 +20,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 const inputRegexp = `^(\d+),(\d+) -> (\d+),(\d+)$`
@@ -127,7 +128,7 @@ func hvOverlapsPairwise(lines [][2]util.P) int {
 					a1, a2 := l1[0].X, l1[1].X
 					b1, b2 := l2[0].X, l2[1].X
 					if a2 >= b1 && a1 <= b2 {
-						x1, x2 := max(a1, b1), min(a2, b2)
+						x1, x2 := ix.Max(a1, b1), ix.Min(a2, b2)
 						y := l1[0].Y
 						for x := x1; x <= x2; x++ {
 							overlaps[util.P{x, y}] = struct{}{}
@@ -139,7 +140,7 @@ func hvOverlapsPairwise(lines [][2]util.P) int {
 					a1, a2 := l1[0].Y, l1[1].Y
 					b1, b2 := l2[0].Y, l2[1].Y
 					if a2 >= b1 && a1 <= b2 {
-						y1, y2 := max(a1, b1), min(a2, b2)
+						y1, y2 := ix.Max(a1, b1), ix.Min(a2, b2)
 						x := l1[0].X
 						for y := y1; y <= y2; y++ {
 							overlaps[util.P{x, y}] = struct{}{}
@@ -177,7 +178,7 @@ func hvdOverlapsArray(lines [][2]util.P) (overlaps int) {
 	W, H := maxX-minX+1, maxY-minY+1
 	seen := make([]byte, W*H)
 	for _, line := range lines {
-		len := max(abs(line[1].X-line[0].X), abs(line[1].Y-line[0].Y))
+		len := ix.Max(ix.Abs(line[1].X-line[0].X), ix.Abs(line[1].Y-line[0].Y))
 		dx, dy := (line[1].X-line[0].X)/len, (line[1].Y-line[0].Y)/len
 		for i, x, y := 0, line[0].X-minX, line[0].Y-minY; i <= len; i, x, y = i+1, x+dx, y+dy {
 			i := y*W + x
@@ -253,8 +254,8 @@ func hvdOverlapsTypewise(lines [][2]util.P) (overlaps int) {
 func hvd(line [2]util.P) (h, v, dA, dD bool) {
 	h = line[0].Y == line[1].Y
 	v = line[0].X == line[1].X
-	dA = line[1].Y-line[0].Y == abs(line[1].X-line[0].X)
-	dD = line[1].Y-line[0].Y == -abs(line[1].X-line[0].X)
+	dA = line[1].Y-line[0].Y == ix.Abs(line[1].X-line[0].X)
+	dD = line[1].Y-line[0].Y == -ix.Abs(line[1].X-line[0].X)
 	return h, v, dA, dD
 }
 
@@ -278,27 +279,6 @@ func bounds(lines [][2]util.P) (minX, maxX, minY, maxY int) {
 		}
 	}
 	return minX, maxX, minY, maxY
-}
-
-func min(x, y int) int {
-	if x < y {
-		return x
-	}
-	return y
-}
-
-func max(x, y int) int {
-	if x > y {
-		return x
-	}
-	return y
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
 }
 
 func parseInput(input [][]string) (lines [][2]util.P) {

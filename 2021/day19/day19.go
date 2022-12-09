@@ -23,6 +23,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -43,7 +44,7 @@ func solve(chunks []string) ([]string, error) {
 func maxDist(points []p3) (maxD int) {
 	for i, p := range points[:len(points)-1] {
 		for _, q := range points[i+1:] {
-			d := int(abs(q.x-p.x) + abs(q.y-p.y) + abs(q.z-p.z))
+			d := int(ix.Abs(q.x-p.x) + ix.Abs(q.y-p.y) + ix.Abs(q.z-p.z))
 			if d > maxD {
 				maxD = d
 			}
@@ -178,7 +179,7 @@ func (s *scanner) calcDists() {
 		p := s.beacons[i]
 		for j := i + 1; j < len(s.beacons); j++ {
 			q := s.beacons[j]
-			dx, dy, dz := abs(q.x-p.x), abs(q.y-p.y), abs(q.z-p.z)
+			dx, dy, dz := ix.Abs(q.x-p.x), ix.Abs(q.y-p.y), ix.Abs(q.z-p.z)
 			da, db, dc := sort3(dx, dy, dz)
 			d := p3{da, db, dc}
 			if _, seen := distMap[d]; seen {
@@ -294,11 +295,4 @@ func sort3(x, y, z int32) (a, b, c int32) {
 			return z, y, x
 		}
 	}
-}
-
-func abs(x int32) int32 {
-	if x < 0 {
-		return -x
-	}
-	return x
 }

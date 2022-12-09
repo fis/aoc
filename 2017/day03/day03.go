@@ -20,6 +20,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -40,13 +41,13 @@ func part1(square int) int {
 		return 0
 	}
 	square--
-	d := sqrt(square)
+	d := ix.Sqrt(square)
 	if d%2 == 0 {
 		d--
 	}
 	square -= d * d
 	r := (d + 1) / 2
-	return r + abs(square%(2*r)-(r-1))
+	return r + ix.Abs(square%(2*r)-(r-1))
 }
 
 func part2(limit int) int {
@@ -69,26 +70,4 @@ func part2(limit int) int {
 		}
 		r++
 	}
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
-func sqrt(y int) int {
-	if y < 0 {
-		panic("sqrt(neg)")
-	} else if y <= 1 {
-		return y
-	}
-	x0 := y / 2
-	x1 := (x0 + y/x0) / 2
-	for x1 < x0 {
-		x0 = x1
-		x1 = (x0 + y/x0) / 2
-	}
-	return x0
 }

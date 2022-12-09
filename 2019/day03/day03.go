@@ -22,6 +22,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -51,7 +52,7 @@ func compute(w1, w2 string) (closest, best int) {
 		if !ok {
 			return
 		}
-		td := abs(x) + abs(y)
+		td := ix.Abs(x) + ix.Abs(y)
 		if closest == -1 || td < closest {
 			closest = td
 		}
@@ -80,11 +81,4 @@ func walk(w string, cb func(x, y, s int)) {
 			cb(x, y, s)
 		}
 	}
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
 }

@@ -21,6 +21,7 @@ import (
 	"strconv"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/ix"
 )
 
 const inputRegexp = `^p=<(-?\d+),(-?\d+),(-?\d+)>, v=<(-?\d+),(-?\d+),(-?\d+)>, a=<(-?\d+),(-?\d+),(-?\d+)>$`
@@ -201,7 +202,7 @@ func collide1D(p1, v1, a1, p2, v2, a2 int) (t1, t2 int, all bool) {
 			return -1, -1, false
 		}
 	}
-	sqDisc := sqrt(disc)
+	sqDisc := ix.Sqrt(disc)
 	if sqDisc*sqDisc != disc {
 		return -1, -1, false
 	}
@@ -264,27 +265,5 @@ func (p particle) pos(t int) p3 {
 }
 
 func (p p3) dist() int {
-	return abs(p.x) + abs(p.y) + abs(p.z)
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
-func sqrt(y int) int {
-	if y < 0 {
-		panic("sqrt(neg)")
-	} else if y <= 1 {
-		return y
-	}
-	x0 := y / 2
-	x1 := (x0 + y/x0) / 2
-	for x1 < x0 {
-		x0 = x1
-		x1 = (x0 + y/x0) / 2
-	}
-	return x0
+	return ix.Abs(p.x) + ix.Abs(p.y) + ix.Abs(p.z)
 }

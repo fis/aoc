@@ -21,6 +21,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -68,7 +69,7 @@ func findVisible(fromX, fromY int, level *util.Level) []util.P {
 		if dx == 0 && dy == 0 {
 			return
 		}
-		d := gcd(dx, dy)
+		d := ix.GCD(ix.Abs(dx), ix.Abs(dy))
 		dx, dy = dx/d, dy/d
 		tx, ty := fromX+dx, fromY+dy
 		for (tx != toX || ty != toY) && level.At(tx, ty) != '#' {
@@ -79,21 +80,6 @@ func findVisible(fromX, fromY int, level *util.Level) []util.P {
 		}
 	})
 	return visible
-}
-
-func gcd(a, b int) int {
-	if a < 0 {
-		a = -a
-	}
-	if b < 0 {
-		b = -b
-	}
-	for b != 0 {
-		t := b
-		b = a % b
-		a = t
-	}
-	return a
 }
 
 func angle(from, to util.P) float64 {

@@ -21,6 +21,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -46,11 +47,11 @@ func align(input []int, f func(n, x int) int) (x, cost int) {
 }
 
 func cost1(n, x int) int {
-	return abs(n - x)
+	return ix.Abs(n - x)
 }
 
 func cost2(n, x int) int {
-	d := abs(n - x)
+	d := ix.Abs(n - x)
 	return d * (d + 1) / 2
 }
 
@@ -64,7 +65,7 @@ func align1Points(input []int) (x, cost int) {
 		if costs[x-min] == math.MaxInt {
 			costs[x-min] = 0
 			for _, n := range input {
-				costs[x-min] += abs(n - x)
+				costs[x-min] += ix.Abs(n - x)
 			}
 		}
 	}
@@ -77,7 +78,7 @@ func align1MedianSort(input []int) (x, cost int) {
 	sort.Ints(sorted)
 	x = sorted[len(sorted)/2]
 	for _, n := range input {
-		cost += abs(n - x)
+		cost += ix.Abs(n - x)
 	}
 	return x, cost
 }
@@ -85,7 +86,7 @@ func align1MedianSort(input []int) (x, cost int) {
 func align1MedianQS(input []int) (x, cost int) {
 	x = util.QuickSelect(input, len(input)/2)
 	for _, n := range input {
-		cost += abs(n - x)
+		cost += ix.Abs(n - x)
 	}
 	return x, cost
 }
@@ -100,7 +101,7 @@ func align2Mean(input []int) (x, cost int) {
 	for estX := mean - 2; estX <= mean+2; estX++ {
 		estCost := 0
 		for _, n := range input {
-			d := abs(n - estX)
+			d := ix.Abs(n - estX)
 			estCost += d * (d + 1) / 2
 		}
 		if estCost < cost {
@@ -134,11 +135,4 @@ func argmin(input []int) (minI, minN int) {
 		}
 	}
 	return minI, minN
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
 }

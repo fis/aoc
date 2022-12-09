@@ -20,6 +20,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -87,7 +88,7 @@ func (t *turtle) move(actions []action) {
 }
 
 func (t turtle) distance() int {
-	return abs(t.pos.X) + abs(t.pos.Y)
+	return ix.Abs(t.pos.X) + ix.Abs(t.pos.Y)
 }
 
 type ship struct {
@@ -122,7 +123,7 @@ func (s *ship) move(actions []action) {
 }
 
 func (s ship) distance() int {
-	return abs(s.pos.X) + abs(s.pos.Y)
+	return ix.Abs(s.pos.X) + ix.Abs(s.pos.Y)
 }
 
 func rotate(p util.P, deg int) util.P {
@@ -135,11 +136,4 @@ func rotate(p util.P, deg int) util.P {
 		return util.P{-p.Y, p.X}
 	}
 	return p
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
 }

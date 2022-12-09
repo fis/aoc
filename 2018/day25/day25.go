@@ -19,6 +19,7 @@ import (
 	"fmt"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -83,12 +84,5 @@ func readP4(s string) (p p4) {
 }
 
 func distM(a, b p4) int {
-	return abs(a.x-b.x) + abs(a.y-b.y) + abs(a.z-b.z) + abs(a.t-b.t)
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
+	return ix.Abs(a.x-b.x) + ix.Abs(a.y-b.y) + ix.Abs(a.z-b.z) + ix.Abs(a.t-b.t)
 }

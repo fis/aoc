@@ -21,6 +21,7 @@ import (
 	"math"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -184,14 +185,7 @@ func shortestPathAStar(w, h int32, level [][]byte, scale int32) int32 {
 }
 
 func distM(a, b coord) int32 {
-	return abs(a.x-b.x) + abs(a.y-b.y)
-}
-
-func abs(x int32) int32 {
-	if x < 0 {
-		return -x
-	}
-	return x
+	return ix.Abs(a.x-b.x) + ix.Abs(a.y-b.y)
 }
 
 func readLevel(lines []string) (w, h int32, data [][]byte, err error) {

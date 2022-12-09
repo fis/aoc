@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -64,12 +65,5 @@ var directions = map[string]struct{ q, r int }{
 }
 
 func distance(q, r int) int {
-	return (abs(q) + abs(q+r) + abs(r)) / 2
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
+	return (ix.Abs(q) + ix.Abs(q+r) + ix.Abs(r)) / 2
 }

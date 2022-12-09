@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -80,8 +81,8 @@ func totalEnergy(state *[dims]dimState) int {
 	for i := 0; i < moons; i++ {
 		pot, kin := 0, 0
 		for d := 0; d < dims; d++ {
-			pot += abs(state[d].pos[i])
-			kin += abs(state[d].vel[i])
+			pot += ix.Abs(state[d].pos[i])
+			kin += ix.Abs(state[d].vel[i])
 		}
 		tot += pot * kin
 	}
@@ -104,28 +105,12 @@ func cycle(state *[dims]dimState) int {
 	return lcm(cycles)
 }
 
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
 func lcm(cycles [dims]int) int {
 	for d := dims - 2; d >= 0; d-- {
-		div := gcd(cycles[d], cycles[d+1])
+		div := ix.GCD(cycles[d], cycles[d+1])
 		cycles[d] = cycles[d] * cycles[d+1] / div
 	}
 	return cycles[0]
-}
-
-func gcd(a, b int) int {
-	for b != 0 {
-		t := b
-		b = a % b
-		a = t
-	}
-	return a
 }
 
 func parseState(lines []string) *[dims]dimState {

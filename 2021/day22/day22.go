@@ -20,6 +20,7 @@ import (
 	"strconv"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/ix"
 )
 
 const inputRegexp = `^(on|off) x=(-?\d+)\.\.(-?\d+),y=(-?\d+)\.\.(-?\d+),z=(-?\d+)\.\.(-?\d+)`
@@ -148,42 +149,42 @@ func (ct *cubeTree) descend(node uint32, bounds, area r3, f func(child uint32, s
 	p, child := ct.nodes[node].p, ct.nodes[node].child
 	if area.min.x < p.x && area.min.y < p.y && area.min.z < p.z {
 		subBounds := r3{bounds.min, p}
-		subArea := r3{area.min, p3{min(area.max.x, p.x), min(area.max.y, p.y), min(area.max.z, p.z)}}
+		subArea := r3{area.min, p3{ix.Min(area.max.x, p.x), ix.Min(area.max.y, p.y), ix.Min(area.max.z, p.z)}}
 		f(child+0, subBounds, subArea)
 	}
 	if area.max.x > p.x && area.min.y < p.y && area.min.z < p.z {
 		subBounds := r3{p3{p.x, bounds.min.y, bounds.min.z}, p3{bounds.max.x, p.y, p.z}}
-		subArea := r3{p3{max(area.min.x, p.x), area.min.y, area.min.z}, p3{area.max.x, min(area.max.y, p.y), min(area.max.z, p.z)}}
+		subArea := r3{p3{ix.Max(area.min.x, p.x), area.min.y, area.min.z}, p3{area.max.x, ix.Min(area.max.y, p.y), ix.Min(area.max.z, p.z)}}
 		f(child+1, subBounds, subArea)
 	}
 	if area.min.x < p.x && area.max.y > p.y && area.min.z < p.z {
 		subBounds := r3{p3{bounds.min.x, p.y, bounds.min.z}, p3{p.x, bounds.max.y, p.z}}
-		subArea := r3{p3{area.min.x, max(area.min.y, p.y), area.min.z}, p3{min(area.max.x, p.x), area.max.y, min(area.max.z, p.z)}}
+		subArea := r3{p3{area.min.x, ix.Max(area.min.y, p.y), area.min.z}, p3{ix.Min(area.max.x, p.x), area.max.y, ix.Min(area.max.z, p.z)}}
 		f(child+2, subBounds, subArea)
 	}
 	if area.max.x > p.x && area.max.y > p.y && area.min.z < p.z {
 		subBounds := r3{p3{p.x, p.y, bounds.min.z}, p3{bounds.max.x, bounds.max.y, p.z}}
-		subArea := r3{p3{max(area.min.x, p.x), max(area.min.y, p.y), area.min.z}, p3{area.max.x, area.max.y, min(area.max.z, p.z)}}
+		subArea := r3{p3{ix.Max(area.min.x, p.x), ix.Max(area.min.y, p.y), area.min.z}, p3{area.max.x, area.max.y, ix.Min(area.max.z, p.z)}}
 		f(child+3, subBounds, subArea)
 	}
 	if area.min.x < p.x && area.min.y < p.y && area.max.z > p.z {
 		subBounds := r3{p3{bounds.min.x, bounds.min.y, p.z}, p3{p.x, p.y, bounds.max.z}}
-		subArea := r3{p3{area.min.x, area.min.y, max(area.min.z, p.z)}, p3{min(area.max.x, p.x), min(area.max.y, p.y), area.max.z}}
+		subArea := r3{p3{area.min.x, area.min.y, ix.Max(area.min.z, p.z)}, p3{ix.Min(area.max.x, p.x), ix.Min(area.max.y, p.y), area.max.z}}
 		f(child+4, subBounds, subArea)
 	}
 	if area.max.x > p.x && area.min.y < p.y && area.max.z > p.z {
 		subBounds := r3{p3{p.x, bounds.min.y, p.z}, p3{bounds.max.x, p.y, bounds.max.z}}
-		subArea := r3{p3{max(area.min.x, p.x), area.min.y, max(area.min.z, p.z)}, p3{area.max.x, min(area.max.y, p.y), area.max.z}}
+		subArea := r3{p3{ix.Max(area.min.x, p.x), area.min.y, ix.Max(area.min.z, p.z)}, p3{area.max.x, ix.Min(area.max.y, p.y), area.max.z}}
 		f(child+5, subBounds, subArea)
 	}
 	if area.min.x < p.x && area.max.y > p.y && area.max.z > p.z {
 		subBounds := r3{p3{bounds.min.x, p.y, p.z}, p3{p.x, bounds.max.y, bounds.max.z}}
-		subArea := r3{p3{area.min.x, max(area.min.y, p.y), max(area.min.z, p.z)}, p3{min(area.max.x, p.x), area.max.y, area.max.z}}
+		subArea := r3{p3{area.min.x, ix.Max(area.min.y, p.y), ix.Max(area.min.z, p.z)}, p3{ix.Min(area.max.x, p.x), area.max.y, area.max.z}}
 		f(child+6, subBounds, subArea)
 	}
 	if area.max.x > p.x && area.max.y > p.y && area.max.z > p.z {
 		subBounds := r3{p, bounds.max}
-		subArea := r3{p3{max(area.min.x, p.x), max(area.min.y, p.y), max(area.min.z, p.z)}, area.max}
+		subArea := r3{p3{ix.Max(area.min.x, p.x), ix.Max(area.min.y, p.y), ix.Max(area.min.z, p.z)}, area.max}
 		f(child+7, subBounds, subArea)
 	}
 }
@@ -209,17 +210,3 @@ var (
 	maxP3 = p3{math.MaxInt32, math.MaxInt32, math.MaxInt32}
 	allR3 = r3{minP3, maxP3}
 )
-
-func min(a, b int32) int32 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func max(a, b int32) int32 {
-	if a > b {
-		return a
-	}
-	return b
-}

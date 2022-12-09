@@ -17,6 +17,7 @@ package day16
 
 import (
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -49,7 +50,7 @@ func fft(sig []int, phases int) {
 				}
 				i += n + 1
 			}
-			work[n] = abs(r % 10)
+			work[n] = ix.Abs(r % 10)
 		}
 		copy(sig, work)
 	}
@@ -86,7 +87,7 @@ func digits(str string) []int {
 func undigits(sig []int) string {
 	bytes := make([]byte, len(sig))
 	for i, v := range sig {
-		bytes[i] = byte('0' + abs(v%10))
+		bytes[i] = byte('0' + ix.Abs(v%10))
 	}
 	return string(bytes)
 }
@@ -97,11 +98,4 @@ func offset(digits []int) int {
 		off = 10*off + d
 	}
 	return off
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
 }

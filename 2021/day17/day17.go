@@ -22,6 +22,7 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -60,7 +61,7 @@ func findShots(Pmin, Pmax util.P) (height, count int) {
 			if vx0*(vx0+1)/2 > Pmax.X {
 				txmax = quadLe0(-1, 2*vx0+1, -2*Pmax.X, 0, vx0)
 			}
-			tmin, tmax := max(max(tymin, txmin), 0), min(tymax, txmax)
+			tmin, tmax := ix.Max(ix.Max(tymin, txmin), 0), ix.Min(tymax, txmax)
 			if tmin <= tmax {
 				if vy0true > 0 {
 					if h := vy0true * (vy0true + 1) / 2; h > height {
@@ -110,18 +111,4 @@ func quadLe0(a, b, c, x0, x1 int) (x int) {
 		}
 	}
 	return x0
-}
-
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

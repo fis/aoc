@@ -18,6 +18,7 @@ package day17
 import (
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -90,12 +91,12 @@ func cycle3(in map[P3]struct{}, min, max P3) (out map[P3]struct{}, newMin, newMa
 				}
 				if count == 3 || (active && count == 2) {
 					out[p] = struct{}{}
-					newMin.X = imin(newMin.X, x)
-					newMax.X = imax(newMax.X, x)
-					newMin.Y = imin(newMin.Y, y)
-					newMax.Y = imax(newMax.Y, y)
-					newMin.Z = imin(newMin.Z, z)
-					newMax.Z = imax(newMax.Z, z)
+					newMin.X = ix.Min(newMin.X, x)
+					newMax.X = ix.Max(newMax.X, x)
+					newMin.Y = ix.Min(newMin.Y, y)
+					newMax.Y = ix.Max(newMax.Y, y)
+					newMin.Z = ix.Min(newMin.Z, z)
+					newMax.Z = ix.Max(newMax.Z, z)
 				}
 			}
 		}
@@ -128,32 +129,18 @@ func cycle4(in map[P4]struct{}, min, max P4) (out map[P4]struct{}, newMin, newMa
 					}
 					if count == 3 || (active && count == 2) {
 						out[p] = struct{}{}
-						newMin.X = imin(newMin.X, x)
-						newMax.X = imax(newMax.X, x)
-						newMin.Y = imin(newMin.Y, y)
-						newMax.Y = imax(newMax.Y, y)
-						newMin.Z = imin(newMin.Z, z)
-						newMax.Z = imax(newMax.Z, z)
-						newMin.W = imin(newMin.W, w)
-						newMax.W = imax(newMax.W, w)
+						newMin.X = ix.Min(newMin.X, x)
+						newMax.X = ix.Max(newMax.X, x)
+						newMin.Y = ix.Min(newMin.Y, y)
+						newMax.Y = ix.Max(newMax.Y, y)
+						newMin.Z = ix.Min(newMin.Z, z)
+						newMax.Z = ix.Max(newMax.Z, z)
+						newMin.W = ix.Min(newMin.W, w)
+						newMax.W = ix.Max(newMax.W, w)
 					}
 				}
 			}
 		}
 	}
 	return out, newMin, newMax
-}
-
-func imin(a, b int) int {
-	if b < a {
-		return b
-	}
-	return a
-}
-
-func imax(a, b int) int {
-	if b > a {
-		return b
-	}
-	return a
 }
