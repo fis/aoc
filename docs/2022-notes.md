@@ -146,21 +146,21 @@ The Go solutions are unremarkable.
 Part 1:
 
 ```
-ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j1?-J{pP'f!!
+ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j?dJ{pP'f!!
 l_PPj'fsaJ't!!#R_+'tsaPp}j-]'fjr~j[~'tjr~jE!}m[p\)[~\[
 ```
 
 Part 2:
 
 ```
-ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j1?-J{pP'f!!
+ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j?dJ{pP'f!!
 <-co<-l_)<-\[PPj'fsaJ't!!#R<-_+'tsaPp}j-]'fjr~j[~'tjr~j4iae!}m[p\)[~\[
 ```
 
 Combined:
 
 ```
-C: ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j1?-J{pP'f!!
+C: ln{""};;p^<-{[-4co)-]}m[tp{:rd}m[Pp{wd2enrig_j?dJ{pP'f!!
 
 1: l_                                                     E!
 C:              PPj'fsaJ't!!#R  _+'tsaPp}j-]'fjr~j[~'tjr~j     }m[p\)[~\[
@@ -186,6 +186,27 @@ BenchmarkFindMarker/size=4/algo=bitset-16      17119893    4080 ns/op
 BenchmarkFindMarker/size=4/algo=windowed-16    26869724    2631 ns/op
 BenchmarkFindMarker/size=14/algo=bitset-16      4383006   15993 ns/op
 BenchmarkFindMarker/size=14/algo=windowed-16   17832987    4008 ns/op
+```
+
+### Burlesque
+
+Part 1:
+
+```
+4CO{><U_}fi4.+
+```
+
+Part 2:
+
+```
+14CO{><U_}fi14.+
+```
+
+Combined:
+
+```
+C:  4CO{><U_}fi 4.+
+2: 1           1
 ```
 
 ## [Day 7](https://adventofcode.com/2022/day/7): No Space Left On Device
@@ -262,4 +283,44 @@ C: ln)XX{{iT[-{                         }m[}m[}hd
 1:                                          )r|++
 C: J!ajJ)<-!a)<-jtpJ!atpj)<-!a)<-tpCL~])\[tp
 2:                                          )pd>]
+```
+
+## [Day 9](https://adventofcode.com/2022/day/9): Rope Bridge
+
+Both Go and Burlesque use the same building block: the way the tail moves
+towards the head (or more generally, the next knot) is just taking the
+[sign function](https://en.wikipedia.org/wiki/Sign_function) of each of the
+components of the difference between the head and the tail, with one slight
+adjustment that the tail doesn't move if it's already next to the head.
+
+The Burlesque solution also uses the remarkable fact that the ASCII codes for
+the letters 'U', 'L', 'R' and 'D' happen to be 0, 1, 2 and 3 mod 5,
+respectively.
+
+### Burlesque
+
+Part 1:
+
+```
+{0 0}Jx/ln{g_2336 3dg?d2coj**5.%!!jri.*}\m
+{{?+J#RJ#r?-J)ab>]2>=?*)sn#R?+JPpj}j+]}\me!p\CL><gl
+```
+
+Part 2:
+
+```
+{0 0}10.*jln{g_2336 3dg?d2coj**5.%!!jri.*}\m
+{{jg_x/?++]{J2J[P^p?-J)ab>]2>=?*)snjRTg_x/?++]}9E!g_JPp[+}j+]}\me!p\CL><gl
+```
+
+Combined:
+
+```
+1:      Jx/
+C: {0 0}     ln{g_2336 3dg?d2coj**5.%!!jri.*}\m
+2:      10.*j
+
+1:   ?+J#RJ#r?-J)ab>]2>=?*)sn#R?+JPpj
+C: {{                                                       }j+]}\me!p\CL><gl
+2:   jg_x/?++]{J2J[P^p?-J)ab>]2>=?*)snjRTg_x/?++]}9E!g_JPp[+
 ```

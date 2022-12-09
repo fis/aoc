@@ -247,9 +247,14 @@ func (p P) Neigh8() [8]P {
 	}
 }
 
-// DistM returns the Manhattan distance between two points.
+// DistM returns the Manhattan (taxicab, 4-neighbor) distance between two points.
 func DistM(a, b P) int {
 	return abs(a.X-b.X) + abs(a.Y-b.Y)
+}
+
+// DistC returns the Chebyshev (chessboard, 8-neighbor) distance between two points.
+func DistC(a, b P) int {
+	return max(abs(a.X-b.X), abs(a.Y-b.Y))
 }
 
 // Bounds returns the bounding box of a list of points.
@@ -277,4 +282,11 @@ func abs(x int) int {
 		return -x
 	}
 	return x
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }

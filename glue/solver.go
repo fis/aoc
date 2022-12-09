@@ -50,6 +50,13 @@ type RegexpSolver struct {
 	Regexp string
 }
 
+// ParsableRegexpSolver extends the regular RegexpSolver to also parse each line to an object of the given type.
+type ParsableRegexpSolver[T any] struct {
+	Solver func([]T) ([]string, error)
+	Regexp string
+	Parser func([]string) (T, error)
+}
+
 // LevelSolver wraps a solution that wants the lines of the input converted to a 2D level structure.
 type LevelSolver struct {
 	Solver func(*util.Level) ([]string, error)
@@ -125,6 +132,26 @@ func (s RegexpSolver) Solve(input io.Reader) ([]string, error) {
 	parsed, err := util.ScanAllRegexp(input, s.Regexp)
 	if err != nil {
 		return nil, err
+	}
+	out, err := s.Solver(parsed)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Solve implements the Solver interface.
+func (s ParsableRegexpSolver[T]) Solve(input io.Reader) ([]string, error) {
+	matches, err := util.ScanAllRegexp(input, s.Regexp)
+	if err != nil {
+		return nil, err
+	}
+	parsed := make([]T, len(matches))
+	for i, match := range matches {
+		parsed[i], err = s.Parser(match)
+		if err != nil {
+			return nil, err
+		}
 	}
 	out, err := s.Solver(parsed)
 	if err != nil {
