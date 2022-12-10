@@ -321,3 +321,34 @@ C: 0J_+     ln{g_2336 3dg?d2coj**5.%!!{
 C: ?-J)ab>]2>=?*)sn       ?+             }j+]jri.*p^}\me!p\CL><gl
 2:                 jRTg_x/  +]}9E!g_JPp[+
 ```
+
+## [Day 10](https://adventofcode.com/2022/day/10): Cathode-Ray Tube
+
+From part 1, I was expecting a different kind of a twist, maybe something like
+asking for properties of the signal after repeating it a billion times. But no.
+
+Burlesque solutions use a trick where `noop` turns into `0` while `addx N` turns
+into `0 N`. Concatenating those gives a sequence whose cumulative (prefix) sum
+is the desired X register value at the end of each clock cycle.
+
+### Burlesque
+
+Part 1:
+
+```
+WD{J:rd./ps++}\miT)++zi?i20en-.2en)pd++
+```
+
+Part 2:
+
+```
+WD{J:rd./ps++}\miT)++?i40co~]{zi{p^.-ab1<=".#"j!!}\m}mush
+```
+
+Combined:
+
+```
+1:                      zi?i20en-.2en)pd++
+C: WD{J:rd./ps++}\miT)++
+2:                      ?i40co~]{zi{p^.-ab1<=".#"j!!}\m}mush
+```

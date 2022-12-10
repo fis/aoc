@@ -45,6 +45,23 @@ func TestCountIf(t *testing.T) {
 	}
 }
 
+func TestIf(t *testing.T) {
+	tests := []struct {
+		cond              bool
+		trueVal, falseVal int
+		want              int
+	}{
+		{true, 123, 456, 123},
+		{false, 123, 456, 456},
+	}
+	for _, test := range tests {
+		got := If(test.cond, test.trueVal, test.falseVal)
+		if got != test.want {
+			t.Errorf("If(%t, %d, %d) = %d, want %d", test.cond, test.trueVal, test.falseVal, got, test.want)
+		}
+	}
+}
+
 func TestMin(t *testing.T) {
 	tests := []struct {
 		data []int

@@ -21,6 +21,14 @@ func CountIf[S ~[]E, F ~func(E) bool, E any](s S, f F) (count int) {
 	return count
 }
 
+// If is an expression conditional, similar to the C `?:` operator (except both branches are evaluated).
+func If[T any](c bool, t, f T) T {
+	if c {
+		return t
+	}
+	return f
+}
+
 // Min returns the smallest value of a slice of some ordered type.
 func Min[S ~[]E, E constraints.Ordered](s S) (result E) {
 	result = s[0]
