@@ -23,10 +23,12 @@ import (
 	"github.com/fis/aoc/util/ix"
 )
 
+const movePattern = `^([UDLR]) (\d+)$`
+
 func init() {
 	glue.RegisterSolver(2022, 9, glue.ParsableRegexpSolver[move]{
 		Solver: solve,
-		Regexp: `^([UDLR]) (\d+)$`,
+		Regexp: movePattern,
 		Parser: parseMove,
 	})
 }
@@ -42,24 +44,28 @@ func solve(moves []move) ([]string, error) {
 	return glue.Ints(p1, p2), nil
 }
 
+// Solutions using util.Bitmap2D:
+
 func measureTail(moves []move) int {
 	head, tail := util.P{0, 0}, util.P{0, 0}
-	visited := map[util.P]struct{}{{0, 0}: {}}
+	var visited util.Bitmap2D
+	visited.Set(0, 0)
 	for _, m := range moves {
 		d := dirStep[m.dir]
 		for i := 0; i < m.steps; i++ {
 			head = head.Add(d)
 			tail = updateTail(head, tail)
-			visited[tail] = struct{}{}
+			visited.Set(tail.X, tail.Y)
 		}
 	}
-	return len(visited)
+	return visited.Count()
 }
 
 func measureLongTail(moves []move) int {
 	const ropeLength = 10
 	var rope [ropeLength]util.P
-	visited := map[util.P]struct{}{{0, 0}: {}}
+	var visited util.Bitmap2D
+	visited.Set(0, 0)
 	for _, m := range moves {
 		d := dirStep[m.dir]
 		for i := 0; i < m.steps; i++ {
@@ -67,10 +73,11 @@ func measureLongTail(moves []move) int {
 			for i := 1; i < ropeLength; i++ {
 				rope[i] = updateTail(rope[i-1], rope[i])
 			}
-			visited[rope[ropeLength-1]] = struct{}{}
+			tail := rope[ropeLength-1]
+			visited.Set(tail.X, tail.Y)
 		}
 	}
-	return len(visited)
+	return visited.Count()
 }
 
 func updateTail(head, tail util.P) util.P {
@@ -107,4 +114,37 @@ var dirStep = [...]util.P{
 	dirDown:  {0, 1},
 	dirLeft:  {-1, 0},
 	dirRight: {1, 0},
+}
+
+// Solutions using a raw map[util.P]struct{}, for benchmarking:
+
+func measureTailMap(moves []move) int {
+	head, tail := util.P{0, 0}, util.P{0, 0}
+	visited := map[util.P]struct{}{{0, 0}: {}}
+	for _, m := range moves {
+		d := dirStep[m.dir]
+		for i := 0; i < m.steps; i++ {
+			head = head.Add(d)
+			tail = updateTail(head, tail)
+			visited[tail] = struct{}{}
+		}
+	}
+	return len(visited)
+}
+
+func measureLongTailMap(moves []move) int {
+	const ropeLength = 10
+	var rope [ropeLength]util.P
+	visited := map[util.P]struct{}{{0, 0}: {}}
+	for _, m := range moves {
+		d := dirStep[m.dir]
+		for i := 0; i < m.steps; i++ {
+			rope[0] = rope[0].Add(d)
+			for i := 1; i < ropeLength; i++ {
+				rope[i] = updateTail(rope[i-1], rope[i])
+			}
+			visited[rope[ropeLength-1]] = struct{}{}
+		}
+	}
+	return len(visited)
 }

@@ -16,6 +16,9 @@ package day09
 
 import (
 	"testing"
+
+	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/fn"
 )
 
 var ex1 = []move{
@@ -42,8 +45,36 @@ var ex2 = []move{
 
 func TestMeasureTail(t *testing.T) {
 	want := 13
-	if got := measureTail(ex1); got != want {
+	if got := measureTailMap(ex1); got != want {
 		t.Errorf("measureTail(ex1) = %d, want %d", got, want)
+	}
+}
+
+func BenchmarkMeasureTail(b *testing.B) {
+	lines, err := util.ReadRegexp("../days/testdata/day09.txt", movePattern)
+	if err != nil {
+		b.Fatal(err)
+	}
+	moves, err := fn.MapE(lines, parseMove)
+	if err != nil {
+		b.Fatal(err)
+	}
+	algos := []struct {
+		name string
+		f    func(moves []move) int
+	}{
+		{"map", measureTailMap},
+		{"bitmap", measureTail},
+	}
+	want := 6391
+	for _, algo := range algos {
+		b.Run("algo="+algo.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				if got := algo.f(moves); got != want {
+					b.Errorf("%s(ex) = %d, want %d", algo.name, got, want)
+				}
+			}
+		})
 	}
 }
 
@@ -60,5 +91,33 @@ func TestMeasureLongTail(t *testing.T) {
 		if got := measureLongTail(test.moves); got != test.want {
 			t.Errorf("measureLongTail(%s) = %d, want %d", test.name, got, test.want)
 		}
+	}
+}
+
+func BenchmarkMeasureLongTail(b *testing.B) {
+	lines, err := util.ReadRegexp("../days/testdata/day09.txt", movePattern)
+	if err != nil {
+		b.Fatal(err)
+	}
+	moves, err := fn.MapE(lines, parseMove)
+	if err != nil {
+		b.Fatal(err)
+	}
+	algos := []struct {
+		name string
+		f    func(moves []move) int
+	}{
+		{"map", measureLongTailMap},
+		{"bitmap", measureLongTail},
+	}
+	want := 2593
+	for _, algo := range algos {
+		b.Run("algo="+algo.name, func(b *testing.B) {
+			for n := 0; n < b.N; n++ {
+				if got := algo.f(moves); got != want {
+					b.Errorf("%s(ex) = %d, want %d", algo.name, got, want)
+				}
+			}
+		})
 	}
 }
