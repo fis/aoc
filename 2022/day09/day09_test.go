@@ -51,7 +51,7 @@ func TestMeasureTail(t *testing.T) {
 }
 
 func BenchmarkMeasureTail(b *testing.B) {
-	lines, err := util.ReadRegexp("../days/testdata/day09.txt", movePattern)
+	lines, err := util.ReadLines("../days/testdata/day09.txt")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -95,7 +95,7 @@ func TestMeasureLongTail(t *testing.T) {
 }
 
 func BenchmarkMeasureLongTail(b *testing.B) {
-	lines, err := util.ReadRegexp("../days/testdata/day09.txt", movePattern)
+	lines, err := util.ReadLines("../days/testdata/day09.txt")
 	if err != nil {
 		b.Fatal(err)
 	}

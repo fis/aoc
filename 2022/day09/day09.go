@@ -16,6 +16,7 @@
 package day09
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/fis/aoc/glue"
@@ -26,16 +27,10 @@ import (
 const movePattern = `^([UDLR]) (\d+)$`
 
 func init() {
-	glue.RegisterSolver(2022, 9, glue.ParsableRegexpSolver[move]{
+	glue.RegisterSolver(2022, 9, glue.ParsableLineSolver[move]{
 		Solver: solve,
-		Regexp: movePattern,
 		Parser: parseMove,
 	})
-}
-
-func parseMove(groups []string) (move, error) {
-	steps, _ := strconv.Atoi(groups[1])
-	return move{dir: dirMap[groups[0][0]], steps: steps}, nil
 }
 
 func solve(moves []move) ([]string, error) {
@@ -82,10 +77,11 @@ func measureLongTail(moves []move) int {
 
 func updateTail(head, tail util.P) util.P {
 	dx, dy := head.X-tail.X, head.Y-tail.Y
-	if ix.Max(ix.Abs(dx), ix.Abs(dy)) <= 1 {
+	sx, sy := ix.Sign(dx), ix.Sign(dy)
+	if dx == sx && dy == sy {
 		return tail
 	}
-	return util.P{tail.X + ix.Sign(dx), tail.Y + ix.Sign(dy)}
+	return util.P{tail.X + sx, tail.Y + sy}
 }
 
 type move struct {
@@ -101,6 +97,21 @@ const (
 	dirLeft
 	dirRight
 )
+
+func parseMove(line string) (move, error) {
+	if len(line) < 3 || line[1] != ' ' {
+		return move{}, fmt.Errorf("bad move format: %s", line)
+	}
+	dir, ok := dirMap[line[0]]
+	if !ok {
+		return move{}, fmt.Errorf("bad direction letter: %c", line[0])
+	}
+	steps, err := strconv.Atoi(line[2:])
+	if err != nil {
+		return move{}, fmt.Errorf("bad distance: %q: %w", line[2:], err)
+	}
+	return move{dir: dir, steps: steps}, nil
+}
 
 var dirMap = map[byte]direction{
 	'U': dirUp,
