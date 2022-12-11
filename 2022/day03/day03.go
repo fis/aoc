@@ -23,10 +23,7 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2022, 3, glue.ParsableLineSolver[rucksack]{
-		Solver: solve,
-		Parser: pack,
-	})
+	glue.RegisterSolver(2022, 3, glue.LineSolver(glue.WithParser(pack, solve)))
 }
 
 func solve(sacks []rucksack) ([]string, error) {

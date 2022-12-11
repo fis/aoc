@@ -24,10 +24,7 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2022, 4, glue.ParsableLineSolver[[2]section]{
-		Solver: solve,
-		Parser: parsePair,
-	})
+	glue.RegisterSolver(2022, 4, glue.LineSolver(glue.WithParser(parsePair, solve)))
 }
 
 func solve(pairs [][2]section) ([]string, error) {

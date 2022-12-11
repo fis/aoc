@@ -24,13 +24,8 @@ import (
 	"github.com/fis/aoc/util/ix"
 )
 
-const movePattern = `^([UDLR]) (\d+)$`
-
 func init() {
-	glue.RegisterSolver(2022, 9, glue.ParsableLineSolver[move]{
-		Solver: solve,
-		Parser: parseMove,
-	})
+	glue.RegisterSolver(2022, 9, glue.LineSolver(glue.WithParser(parseMove, solve)))
 }
 
 func solve(moves []move) ([]string, error) {

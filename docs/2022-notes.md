@@ -352,3 +352,49 @@ Combined:
 C: WD{J:rd./ps++}\miT)++
 2:                      ?i40co~]{zi{p^.-ab1<=".#"j!!}\m}mush
 ```
+
+## [Day 11](https://adventofcode.com/2022/day/11): Monkey in the Middle
+
+Guessed the twist correctly, from observing that the tests used by the input
+monkeys are the 8 first prime numbers. The trick is, of course, that the worry
+levels can be reduced modulo the least common multiple of the monkeys' tests,
+without affecting the result of any test.
+
+Others have pointed out that a hypothetical "part 3" could be to simulate the
+same using a large number of monkeys, where even the LCM would be unreasonably
+large. This would require tracking the residual specific to each monkey.
+
+Burlesque solutions are entirely unoptimized, but do work. Slowly.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{""};;{[-g_",";;{:><ri}m[jJ-]23!!'.j_+psj{:><b0}m[g_Jz?{vv(J)}ifx/j+]{3./}.+jg_j<-
+{.%ch}[[j+]#RCL}m[J)[-s0)-]saro)z?s9sa-.rz{{0{s1{}}apg90{g1L[.+}aps9g1g00!![~m[Jg00
+!!-]m[{j{[+}j+](ap)#r}Z]e!}j0jr~}\m20E!vvg9<>p^.*it
+```
+
+Part 2:
+
+```
+ln{""};;J{3!!:><b0}mps8{[-g_",";;{:><ri}m[jJ-]23!!'.j_+psj{:><b0}m[g_Jz?{vv(J)}ifx/
+j+]{g8.%}.+jg_j<-{.%ch}[[j+]#RCL}m[J)[-s0)-]saro)z?s9sa-.rz{{0{s1{}}apg90{g1L[.+}ap
+s9g1g00!![~m[Jg00!!-]m[{j{[+}j+](ap)#r}Z]e!}j0jr~}\m10000E!vvg9<>p^.*it
+```
+
+Combined:
+
+```
+C: ln{""};;               {[-g_",";;{:><ri}m[jJ-]23!!'.j_+psj{:><b0}m[g_Jz?{vv(J)}if
+2:         J{3!!:><b0}mps8
+
+1:       3./
+C: x/j+]{    }.+jg_j<-{.%ch}[[j+]#RCL}m[J)[-s0)-]saro)z?s9sa-.rz{{0{s1{}}apg90{g1L[
+2:       g8.%
+
+1:                                                          20
+C: .+}aps9g1g00!![~m[Jg00!!-]m[{j{[+}j+](ap)#r}Z]e!}j0jr~}\m     E!vvg9<>p^.*it
+2:                                                          10000
+```

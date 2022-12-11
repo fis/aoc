@@ -29,12 +29,6 @@ type GenericSolver func(io.Reader) ([]string, error)
 // LineSolver wraps a solution that wants the lines of the input as strings.
 type LineSolver func([]string) ([]string, error)
 
-// ParsableLineSolver extends the regular LineSolver to also parse each line to an object of the given type.
-type ParsableLineSolver[T any] struct {
-	Solver func([]T) ([]string, error)
-	Parser func(string) (T, error)
-}
-
 // ChunkSolver wraps a solution that wants the blank-line-separated paragraphs of the input as strings.
 type ChunkSolver func([]string) ([]string, error)
 
@@ -50,17 +44,25 @@ type RegexpSolver struct {
 	Regexp string
 }
 
-// ParsableRegexpSolver extends the regular RegexpSolver to also parse each line to an object of the given type.
-type ParsableRegexpSolver[T any] struct {
-	Solver func([]T) ([]string, error)
-	Regexp string
-	Parser func([]string) (T, error)
-}
-
 // LevelSolver wraps a solution that wants the lines of the input converted to a 2D level structure.
 type LevelSolver struct {
 	Solver func(*util.Level) ([]string, error)
 	Empty  byte
+}
+
+// WithParser wraps a solver function with one that parses each item separately before it gets called.
+func WithParser[PF ~func(I) (O, error), SF ~func([]O) ([]string, error), I, O any](pf PF, sf SF) func([]I) ([]string, error) {
+	return func(unparsed []I) ([]string, error) {
+		parsed := make([]O, len(unparsed))
+		for i, item := range unparsed {
+			p, err := pf(item)
+			if err != nil {
+				return nil, err
+			}
+			parsed[i] = p
+		}
+		return sf(parsed)
+	}
 }
 
 // Solve implements the Solver interface.
@@ -75,26 +77,6 @@ func (s LineSolver) Solve(input io.Reader) ([]string, error) {
 		return nil, err
 	}
 	out, err := s(data)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Solve implements the Solver interface.
-func (s ParsableLineSolver[T]) Solve(input io.Reader) ([]string, error) {
-	lines, err := util.ScanAll(input, bufio.ScanLines)
-	if err != nil {
-		return nil, err
-	}
-	parsed := make([]T, len(lines))
-	for i, line := range lines {
-		parsed[i], err = s.Parser(line)
-		if err != nil {
-			return nil, err
-		}
-	}
-	out, err := s.Solver(parsed)
 	if err != nil {
 		return nil, err
 	}
@@ -132,26 +114,6 @@ func (s RegexpSolver) Solve(input io.Reader) ([]string, error) {
 	parsed, err := util.ScanAllRegexp(input, s.Regexp)
 	if err != nil {
 		return nil, err
-	}
-	out, err := s.Solver(parsed)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Solve implements the Solver interface.
-func (s ParsableRegexpSolver[T]) Solve(input io.Reader) ([]string, error) {
-	matches, err := util.ScanAllRegexp(input, s.Regexp)
-	if err != nil {
-		return nil, err
-	}
-	parsed := make([]T, len(matches))
-	for i, match := range matches {
-		parsed[i], err = s.Parser(match)
-		if err != nil {
-			return nil, err
-		}
 	}
 	out, err := s.Solver(parsed)
 	if err != nil {

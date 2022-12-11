@@ -25,10 +25,7 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2022, 10, glue.ParsableLineSolver[instruction]{
-		Solver: solve,
-		Parser: parseInstruction,
-	})
+	glue.RegisterSolver(2022, 10, glue.LineSolver(glue.WithParser(parseInstruction, solve)))
 }
 
 func solve(prog []instruction) ([]string, error) {

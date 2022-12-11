@@ -3,10 +3,19 @@ package fn
 
 import "golang.org/x/exp/constraints"
 
-// Sum returns the sum of a slice of integers.
+// Sum returns the sum of a slice of integers. The sum of an empty slice is 0.
 func Sum[S ~[]E, E constraints.Integer](s S) (result E) {
 	for _, e := range s {
 		result += e
+	}
+	return result
+}
+
+// Prod returns the product of a slice of integers. The product of an empty slice is 1.
+func Prod[S ~[]E, E constraints.Integer](s S) (result E) {
+	result = 1
+	for _, e := range s {
+		result *= e
 	}
 	return result
 }

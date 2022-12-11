@@ -25,6 +25,25 @@ func TestSum(t *testing.T) {
 	}
 }
 
+func TestProd(t *testing.T) {
+	tests := []struct {
+		data []int
+		want int
+	}{
+		{data: nil, want: 1},
+		{data: []int{123}, want: 123},
+		{data: []int{123, 456}, want: 56088},
+		{data: []int{1, 2, 3, 4, 5, 6, 7}, want: 5040},
+		{data: []int{1, 2, 3, 0, 5, 6, 7}, want: 0},
+	}
+	for _, test := range tests {
+		got := Prod(test.data)
+		if got != test.want {
+			t.Errorf("Prod(%v) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
 func TestCountIf(t *testing.T) {
 	tests := []struct {
 		data []int

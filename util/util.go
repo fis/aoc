@@ -43,6 +43,12 @@ func Lines(s string) (lines []string) {
 	return lines
 }
 
+// Chunks splits the input string as if by the ScanChunks function.
+func Chunks(s string) (chunks []string) {
+	chunks, _ = ScanAll(strings.NewReader(s), ScanChunks)
+	return chunks
+}
+
 // Ints returns the list of all contiguous sequences of decimal digits parsed as integers,
 // as defined by the ScanInts split function.
 func Ints(s string) (ints []int) {
