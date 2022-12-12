@@ -398,3 +398,56 @@ C: x/j+]{    }.+jg_j<-{.%ch}[[j+]#RCL}m[J)[-s0)-]saro)z?s9sa-.rz{{0{s1{}}apg90{g
 C: .+}aps9g1g00!![~m[Jg00!!-]m[{j{[+}j+](ap)#r}Z]e!}j0jr~}\m     E!vvg9<>p^.*it
 2:                                                          10000
 ```
+
+## [Day 12](https://adventofcode.com/2022/day/12): Hill Climbing Algorithm
+
+Ah, possibly the most traditional AoC format: finding the shortest path in an
+input given as a 2D grid of letters.
+
+Since it was the first instance of a problem of this sort this year, it's
+unsurprisingly on the simpler side. I was expecting part 2 (the scenic path) to
+have a bit more of a twist (perhaps some sort of measure of how good views you
+can have from the path), but it was basically the same thing except in the other
+direction.
+
+Both Go and Burlesque solutions are structurally similar: they do a
+[breadth-first search](https://en.wikipedia.org/wiki/Breadth-first_search). For
+part 2, both start from the endpoint and just invert the rule of allowed moves:
+instead of ascending at most one level up, they descend at most one level down.
+
+The Go code uses an external bitmap to track which nodes have been visited; the
+Burlesque code just replaces items on the map. Writing the search in Burlesque
+was a right pain, like it always seems to be.
+
+### Burlesque
+
+Part 1:
+
+```
+ln)XXS0"SE"XX{J{~[}j+]g0jfiJ#rg0j!!jFi_+}MPS1x/j'zD!jJx/j'~D!s0{'a0}j+]bx
+{g_JPpg_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd!bxj+]}FM
+jp^+.{[~<=}[[j+.{[+}j+]FMJg0+]{-]'~D!}r[s0.+}{nz}w!p\CLg1{-]==}[[fe[~
+```
+
+Part 2:
+
+```
+ln)XXS0"ES"XX{J{~[}j+]g0jfiJ#rg0j!!jFi_+}MPx/j'aD!jJx/j'@D!s0{'z0}j+]bx
+{g_J[-Ppg_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd!bxj+]}FM
+jp^-.{[~>=}[[j+.{[+}j+]FMJg0+]{-]'@D!}r[s0.+}{nz}w!p\CL{-]'a==}f[)[~<]
+```
+
+Combined:
+
+```
+1:         SE                                 S1   'z       '~     'a
+C: ln)XXS0"  "XX{J{~[}j+]g0jfiJ#rg0j!!jFi_+}MP  x/j  D!jJx/j  D!s0{  0}j+]bx
+2:         ES                                      'a       '@     'z
+
+C: {g_J  Ppg_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd!bxj+]}FM
+2:     [-
+
+1:    +.   <=                       '~                    g1{-]==}[[fe[~
+C: jp^  {[~  }[[j+.{[+}j+]FMJg0+]{-]  D!}r[s0.+}{nz}w!p\CL
+2:    -.   >=                       '@                    {-]'a==}f[)[~<]
+```

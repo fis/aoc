@@ -2,6 +2,28 @@ package util
 
 import "math/bits"
 
+type FixedBitmap2D [][]uint64
+
+func MakeFixedBitmap2D(w, h int) FixedBitmap2D {
+	ww := (w + 63) >> 6
+	data := make([]uint64, ww*h)
+	bmp := make(FixedBitmap2D, h)
+	for y := 0; y < h; y++ {
+		bmp[y] = data[y*ww : (y+1)*ww]
+	}
+	return bmp
+}
+
+func (bmp FixedBitmap2D) Get(x, y int) bool {
+	wx, ox := x>>6, x&63
+	return (bmp[y][wx] & (1 << ox)) != 0
+}
+
+func (bmp FixedBitmap2D) Set(x, y int) {
+	wx, ox := x>>6, x&63
+	bmp[y][wx] |= 1 << ox
+}
+
 const (
 	bitmapPageBits = 3
 	bitmapPageSize = (1 << bitmapPageBits) // side length of a square in units of 8x8 blocks
