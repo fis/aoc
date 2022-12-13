@@ -451,3 +451,41 @@ C: {g_J  Ppg_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd!bxj+]}FM
 C: jp^  {[~  }[[j+.{[+}j+]FMJg0+]{-]  D!}r[s0.+}{nz}w!p\CL
 2:    -.   >=                       '@                    {-]'a==}f[)[~<]
 ```
+
+## [Day 13](https://adventofcode.com/2022/day/13): Distress Signal
+
+Most of the bulk of the Go code is in coming up with a representation of a
+heterogenous list that's a mixture of numbers and sublists, as well as parsing
+the input.
+
+The Burlesque solutions sidestep all that, since Burlesque blocks are exactly
+the required data structure, and parsing can be done by rewriting "`[],`" into
+"`{} `" and parsing the result as a native Burlesque expression.
+
+### Burlesque
+
+Part 1:
+
+```
+@[{r~@]}r~',' r~ps%XC={J{to'I~[}m[Jr&{{vvp^cm}
+{{{bx}if}Z]J^p{XC}Z[j)L[p^cm[+:nz0[+-]}}che!}2co{XC}m[{1==}fI?i++
+```
+
+Part 2:
+
+```
+@[{r~@]}r~',' r~ps2+]6+]{%XC={J{to'I~[}m[Jr&{{vv^pcm}
+{{{bx}if}Z]J^p{XC}Z[j)L[^pcm[+:nz0[+-]}}che!}bxj+]XC}sbJ2Fi+.j6Fi+..*
+```
+
+Combined:
+
+```
+1:                                                 p^
+C: @[{r~@]}r~',' r~ps       %XC={J{to'I~[}m[Jr&{{vv  cm}
+2:                   2+]6+]{                       ^p
+
+1:                         p^                   2co{XC}m[{1==}fI?i++
+C: {{{bx}if}Z]J^p{XC}Z[j)L[  cm[+:nz0[+-]}}che!}
+2:                         ^p                   bxj+]XC}sbJ2Fi+.j6Fi+..*
+```
