@@ -112,5 +112,5 @@ func findBest(forest []string) (bestScore int) {
 			}
 		}
 	}
-	return fn.Max(fn.Map(scores, func(s []int) int { return fn.Max(s) }))
+	return fn.MaxF(scores, fn.Max[[]int])
 }

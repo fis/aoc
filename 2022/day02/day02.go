@@ -33,11 +33,11 @@ func solve(lines []string) ([]string, error) {
 }
 
 func totalScoreShapes(guide [][2]shape) int {
-	return fn.Sum(fn.Map(guide, scoreShapes))
+	return fn.SumF(guide, scoreShapes)
 }
 
 func totalScoreRounds(guide []guideLine) int {
-	return fn.Sum(fn.Map(guide, scoreRound))
+	return fn.SumF(guide, scoreRound)
 }
 
 func scoreShapes(shapes [2]shape) int {

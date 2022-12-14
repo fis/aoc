@@ -489,3 +489,63 @@ C: @[{r~@]}r~',' r~ps       %XC={J{to'I~[}m[Jr&{{vv  cm}
 C: {{{bx}if}Z]J^p{XC}Z[j)L[  cm[+:nz0[+-]}}che!}
 2:                         ^p                   bxj+]XC}sbJ2Fi+.j6Fi+..*
 ```
+
+## [Day 14](https://adventofcode.com/2022/day/14): Regolith Reservoir
+
+Even the actual question has a callout to
+[2018 day 17](https://adventofcode.com/2018/day/17). It is quite similar
+thematically, though the previous one was definitely trickier.
+
+For today's question, it's certainly computationally feasible just to simulate
+the sand falling, a grain at a time, even to answer part 2: my initial solution
+(which did just that) had a runtime in the single-digit milliseconds range.
+However, there's also a potential trick.
+
+We can observe that in the settled state, the sand forms a triangular cone,
+which is only broken in locations where the rock formations create "shadows".
+With some vague assumptions about the geometry (that do appear to hold at least
+for the examples and my puzzle input), we can simply iterate over the cone
+region from top to bottom, and for each position, turn it into rock if, on the
+previous row, the three positions above and immediately adjacent are already
+rock. This way, the rock formations will grow to occupy all the spaces the sand
+will *not* get into. Then it's just a matter of subtracting the amount of rock
+from the total volume of the cone (which we get by squaring the height).
+
+This latter version of the solution has a runtime of around 0.34 milliseconds.
+The Burlesque code (again unoptimized) uses the same principle, and in fact the
+part 2 solution runs a lot faster than part 1 (22-23 vs. 3-4 seconds). It also
+has less in common with part 1 than is typical, although the parsing of the
+paths is of course still mostly the same.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{"->";;{',;;)ri}m[2CO{J-]jp^?-J++abj)sn{J?+}[[jE!}m[}\mS0)[~>]s1
+1{vv{500 0}{Jp^2rz?d?-j+.{_+}j+]m[RT{g0j~[n!}f[Jz?{jJPpg0j+]s0g1J.*J_+bx}if-]/v}
+{[~g1.<}w![~g1!=}{}w!p\CLL[
+```
+
+Part 2:
+
+```
+ln{"->";;{',;;)ri}m[2CO{J-]jp^?-J++abj)sn{J?+}[[jE!}m[}\m><NBS0)[~J<]S1
+j>]+.S2r@{JJJ500j.-j500.+r@j{2rz?d?+{_+g0j~[}+]al}j-.5iaf[j{_+}j+]m[g0.+s0}m[
+vvg0><NBL[g2+.S[j.-
+
+```
+
+Combined:
+
+```
+1:                                                                   >]s1
+C: ln{"->";;{',;;)ri}m[2CO{J-]jp^?-J++abj)sn{J?+}[[jE!}m[}\m    S0)[~
+2:                                                          ><NB     J<]S1
+
+1: 1{vv{500 0}{Jp^2rz?d?-j+.{_+}j+]m[RT{g0j~[n!}f[Jz?{jJPpg0j+]s0g1J.*J_+bx}if-]/v}
+1: {[~g1.<}w![~g1!=}{}w!p\CLL[
+
+2: j>]+.S2r@{JJJ500j.-j500.+r@j{2rz?d?+{_+g0j~[}+]al}j-.5iaf[j{_+}j+]m[g0.+s0}m[
+2: vvg0><NBL[g2+.S[j.-
+```

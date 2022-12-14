@@ -25,6 +25,25 @@ func TestSum(t *testing.T) {
 	}
 }
 
+func TestSumF(t *testing.T) {
+	f := func(x int) int { return x + 1 }
+	tests := []struct {
+		data []int
+		want int
+	}{
+		{data: nil, want: 0},
+		{data: []int{123}, want: 124},
+		{data: []int{123, 456}, want: 581},
+		{data: []int{1, 2, 3, 4, 5, 6, 7}, want: 35},
+	}
+	for _, test := range tests {
+		got := SumF(test.data, f)
+		if got != test.want {
+			t.Errorf("SumF(%v, f) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
 func TestProd(t *testing.T) {
 	tests := []struct {
 		data []int
@@ -113,6 +132,25 @@ func TestMax(t *testing.T) {
 		got := Max(test.data)
 		if got != test.want {
 			t.Errorf("Max(%v) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
+func TestMaxF(t *testing.T) {
+	f := func(x int) int { return 3 * x }
+	tests := []struct {
+		data []int
+		want int
+	}{
+		{data: []int{123}, want: 369},
+		{data: []int{123, 456, 789}, want: 2367},
+		{data: []int{123, 789, 456}, want: 2367},
+		{data: []int{789, 456, 123}, want: 2367},
+	}
+	for _, test := range tests {
+		got := MaxF(test.data, f)
+		if got != test.want {
+			t.Errorf("MaxF(%v, f) = %d, want %d", test.data, got, test.want)
 		}
 	}
 }

@@ -11,6 +11,14 @@ func Sum[S ~[]E, E constraints.Integer](s S) (result E) {
 	return result
 }
 
+// SumF returns the sum of the results of applying a function to a slice. The sum of an empty slice is 0.
+func SumF[S ~[]I, F ~func(I) O, I any, O constraints.Integer](s S, f F) (result O) {
+	for _, e := range s {
+		result += f(e)
+	}
+	return result
+}
+
 // Prod returns the product of a slice of integers. The product of an empty slice is 1.
 func Prod[S ~[]E, E constraints.Integer](s S) (result E) {
 	result = 1
@@ -55,6 +63,17 @@ func Max[S ~[]E, E constraints.Ordered](s S) (result E) {
 	for _, e := range s[1:] {
 		if e > result {
 			result = e
+		}
+	}
+	return result
+}
+
+// MaxF returns the largest result of applying a function to a slice.
+func MaxF[S ~[]I, F ~func(I) O, I any, O constraints.Ordered](s S, f F) (result O) {
+	result = f(s[0])
+	for _, e := range s[1:] {
+		if o := f(e); o > result {
+			result = o
 		}
 	}
 	return result

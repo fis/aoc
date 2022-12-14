@@ -33,7 +33,7 @@ func solve(sacks []rucksack) ([]string, error) {
 }
 
 func part1(sacks []rucksack) int {
-	return fn.Sum(fn.Map(sacks, rucksack.overlap))
+	return fn.SumF(sacks, rucksack.overlap)
 }
 
 func part2(sacks []rucksack) (sum int) {

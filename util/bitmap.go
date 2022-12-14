@@ -14,14 +14,38 @@ func MakeFixedBitmap2D(w, h int) FixedBitmap2D {
 	return bmp
 }
 
+func (bmp FixedBitmap2D) Size() (w, h int) {
+	return len(bmp[0]) << 6, len(bmp)
+}
+
 func (bmp FixedBitmap2D) Get(x, y int) bool {
 	wx, ox := x>>6, x&63
 	return (bmp[y][wx] & (1 << ox)) != 0
 }
 
+func (bmp FixedBitmap2D) GetN(x, y, n int) uint64 {
+	wx, ox := x>>6, x&63
+	if ox+n <= 64 {
+		return (bmp[y][wx] >> ox) & ((uint64(1) << n) - 1)
+	}
+	n1, n2 := 64-ox, ox+n-64
+	b := (bmp[y][wx] >> ox) & ((uint64(1) << n1) - 1)
+	b |= (bmp[y][wx+1] & ((uint64(1) << n2) - 1)) << n1
+	return b
+}
+
 func (bmp FixedBitmap2D) Set(x, y int) {
 	wx, ox := x>>6, x&63
 	bmp[y][wx] |= 1 << ox
+}
+
+func (bmp FixedBitmap2D) Clone() (clone FixedBitmap2D) {
+	clone = make(FixedBitmap2D, len(bmp))
+	for i, row := range bmp {
+		clone[i] = make([]uint64, len(row))
+		copy(clone[i], row)
+	}
+	return clone
 }
 
 const (

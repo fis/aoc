@@ -284,3 +284,20 @@ func Bounds(points []P) (min, max P) {
 	}
 	return min, max
 }
+
+// ParseP parses a string in the "X,Y" format as a P.
+func ParseP(s string) (P, error) {
+	comma := strings.IndexByte(s, ',')
+	if comma < 0 {
+		return P{}, fmt.Errorf("no , in point: %q", s)
+	}
+	x, err := strconv.Atoi(s[:comma])
+	if err != nil {
+		return P{}, fmt.Errorf("bad X coordinate: %q: %w", s[:comma], err)
+	}
+	y, err := strconv.Atoi(s[comma+1:])
+	if err != nil {
+		return P{}, fmt.Errorf("bad Y coordinate: %q: %w", s[comma+1:], err)
+	}
+	return P{x, y}, nil
+}
