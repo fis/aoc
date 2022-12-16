@@ -549,3 +549,131 @@ C: ln{"->";;{',;;)ri}m[2CO{J-]jp^?-J++abj)sn{J?+}[[jE!}m[}\m    S0)[~
 2: j>]+.S2r@{JJJ500j.-j500.+r@j{2rz?d?+{_+g0j~[}+]al}j-.5iaf[j{_+}j+]m[g0.+s0}m[
 2: vvg0><NBL[g2+.S[j.-
 ```
+
+## [Day 15](https://adventofcode.com/2022/day/15): Beacon Exclusion Zone
+
+Today had a classic AoC twist: a first part that can be solved naïvely, followed
+by a second part that can't.
+
+For the first part, the task boils down to iterating over the lines of the scan,
+and for each of them, checking how much of a particular line (`y=10` for the
+example, `y=2000000` for the real input) is "covered" by the region for which
+the Manhattan distance from the point to the sensor is less than or equal to the
+distance (`d`) between the sensor and its closest beacon. Denoting the sensor
+position as `(Sx, Sy)`, there's overlap if and only if `|y - Sy| <= d`. Further
+denoting `w = d - |y - Sy|`, we therefore know that on the interval
+`[Sx - w, Sx + w]`, there are no beacons other than perhaps the one mentioned as
+the closest.
+
+The Go solution uses a sorted set of intervals (stored as start, end pairs),
+which it merges opportunistically together. There are only a handful of lines in
+the scan, so nothing fancy is needed. The only point that needs some care is to
+account for the cases where the closest beacon is actually on the line of
+interest, since that shouldn't be counted as a "position where a beacon cannot
+possibly be".
+
+The Burlesque solution _starts_ to do the same (by figuring out the endpoints of
+all the intervals), but then cheats and assumes they all merge together anyway,
+and that the interval spans from the minimum endpoint value to the maximum.
+
+For part 2, the task becomes to find the single "gap" in the two-dimensional
+space where an extra beacon could possibly be. It is in fact feasible to use the
+part 1 solution for this, just performing the interval merging for all the rows
+one by one, and then finding the gap (if any). The initial Go solution did so,
+and had a runtime of just over a second.
+
+To get there faster, the current Go code instead uses a
+[quadtree](https://en.wikipedia.org/wiki/Quadtree).
+
+To make the quadtree easier to implement, the code does a coordinate
+transformation:
+
+<!--
+x' = x - y
+y' = x + y
+-->
+![math:day15](math/2022-notes-day15.png)
+
+
+This has the effect of rotating the diamond-shaped areas we know to be empty of
+(additional) beacons into axis-aligned squares, as illustrated by the following
+diagram:
+
+```
+  a           (x', y') = (x-y, x+y)        e.b.a
+ bcd    ===============================>   .f.c.
+efghi                                      j.g.d
+ jkl    <===============================   .k.h.
+  m     (x, y) = ((x'-y')/2, (-x'+y')/2)   m.l.i
+```
+
+The locations marked as `.` on the right correspond to non-integer coordinates
+on the left. But that doesn't really matter: the main thing is that the regions
+are now rectangular. In the new coordinate system, if a reading contained a
+sensor at original coordinates `(Sx, Sy)` and a beacon with a Manhattan distance
+`d` away, then the region that cannot contain any (other) beacons is given as:
+
+<!--
+Sx - Sy - d <= x' < Sx - Sy + d
+Sx + Sy - d <= y' < Sx + Sy + d
+-->
+![math:day15](math/2022-notes-day15-region.png)
+
+The Go quadtree code isn't very elegant, but it works, and works fast: both
+parts of the solution together, including parsing, benchmark to something around
+0.1 ms. So it'll have to do.
+
+For the record, the coordinate transformation here was derived from the standard
+two-dimensional rotation matrix in the special case of φ = 45° (I like φ more
+than θ), and then just dropping the annoying constant factor:
+
+<!--
+    [cos φ  -sin φ]        [1 -1]
+R = [sin φ   cos φ] = 1/√2 [1  1]
+
+[x']     [x]        [x-y]
+[y'] = R [y] = 1/√2 [x+y]
+-->
+![math:day15-rot](math/2022-notes-day15-rot.png)
+
+Burlesque solution for part 2 is TBD at the time of writing.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{"[-0-9]+"~?)ri2coJp^?-)ab++j^p^p2e6=={JPp}ifvv^p2e6.-abx/j.-_+J^p.-j++_+}m[
+{so}f[\[J>]j<].-+.p\CL><glPPj.-
+```
+
+<!--math
+
+%: day15
+
+\vspace*{-3ex}
+\begin{align*}
+x' &= x - y \\
+y' &= x + y
+\end{align*}
+
+%: day15-region
+
+\vspace*{-3ex}
+\begin{align*}
+S_{\mathsf{x}} - S_{\mathsf{y}} - d &\leq x' < S_{\mathsf{x}} - S_{\mathsf{y}} + d \\
+S_{\mathsf{x}} + S_{\mathsf{y}} - d &\leq y' < S_{\mathsf{x}} + S_{\mathsf{y}} + d
+\end{align*}
+
+%: day15-rot
+
+\vspace*{-3ex}
+\begin{align*}
+R &= \begin{pmatrix} \cos\varphi & -\sin\varphi \\ \sin\varphi & \cos\varphi \end{pmatrix}
+= \frac{1}{\sqrt{2}} \begin{pmatrix} 1 & -1 \\ 1 & 1 \end{pmatrix} \\
+\begin{pmatrix} x' \\ y' \end{pmatrix}
+&= R \begin{pmatrix} x \\ y \end{pmatrix}
+= \frac{1}{\sqrt{2}} \begin{pmatrix} x - y \\ x + y \end{pmatrix}
+\end{align*}
+
+-->

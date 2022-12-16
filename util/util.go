@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"regexp"
 	"strconv"
@@ -220,6 +221,13 @@ func ScanInts(data []byte, atEOF bool) (advance int, token []byte, err error) {
 type P struct {
 	X, Y int
 }
+
+var (
+	// MinP is the P with the most negative coordinates possible.
+	MinP = P{math.MinInt, math.MinInt}
+	// MaxP is the P with the most positive coordinates possible.
+	MaxP = P{math.MaxInt, math.MaxInt}
+)
 
 // String formats the point in the most common (X,Y) style.
 func (p P) String() string {

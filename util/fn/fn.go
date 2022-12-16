@@ -135,3 +135,23 @@ func ForEach[S ~[]E, F ~func(E), E any](s S, f F) {
 		f(e)
 	}
 }
+
+// All returns true if the function f returns true for all elements of slice s. Returns true for an empty slice.
+func All[S ~[]E, F ~func(E) bool, E any](s S, f F) bool {
+	for _, e := range s {
+		if !f(e) {
+			return false
+		}
+	}
+	return true
+}
+
+// Any returns true if the function f returns true for at least one element of slice s. Returns false for an empty slice.
+func Any[S ~[]E, F ~func(E) bool, E any](s S, f F) bool {
+	for _, e := range s {
+		if f(e) {
+			return true
+		}
+	}
+	return false
+}

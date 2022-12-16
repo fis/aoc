@@ -295,3 +295,43 @@ func TestForEach(t *testing.T) {
 		t.Errorf("ForEach(%v, f) -> %v, want %v", data, got, want)
 	}
 }
+
+func TestAll(t *testing.T) {
+	f := func(i int) bool { return i%2 == 0 }
+	tests := []struct {
+		data []int
+		want bool
+	}{
+		{data: []int{}, want: true},
+		{data: []int{2}, want: true},
+		{data: []int{2, 8, 12}, want: true},
+		{data: []int{2, 8, 9, 12}, want: false},
+		{data: []int{3, 9, 13}, want: false},
+		{data: []int{3}, want: false},
+	}
+	for _, test := range tests {
+		if got := All(test.data, f); got != test.want {
+			t.Errorf("All(%v, f) = %t, want %t", test.data, got, test.want)
+		}
+	}
+}
+
+func TestAny(t *testing.T) {
+	f := func(i int) bool { return i%2 == 0 }
+	tests := []struct {
+		data []int
+		want bool
+	}{
+		{data: []int{}, want: false},
+		{data: []int{2}, want: true},
+		{data: []int{2, 8, 12}, want: true},
+		{data: []int{2, 8, 9, 12}, want: true},
+		{data: []int{3, 9, 13}, want: false},
+		{data: []int{3}, want: false},
+	}
+	for _, test := range tests {
+		if got := Any(test.data, f); got != test.want {
+			t.Errorf("Any(%v, f) = %t, want %t", test.data, got, test.want)
+		}
+	}
+}
