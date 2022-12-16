@@ -110,6 +110,7 @@ func MapE[S ~[]I, F ~func(I) (O, error), I, O any](in S, f F) (out []O, err erro
 }
 
 // MapRange returns a slice with the results of calling function on a range of integers.
+// The range is given in the usual half-open [start, end) style.
 func MapRange[F ~func(I) E, I constraints.Integer, E any](start, end I, f F) (out []E) {
 	n := end - start
 	out = make([]E, n)

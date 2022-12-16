@@ -647,6 +647,59 @@ ln{"[-0-9]+"~?)ri2coJp^?-)ab++j^p^p2e6=={JPp}ifvv^p2e6.-abx/j.-_+J^p.-j++_+}m[
 {so}f[\[J>]j<].-+.p\CL><glPPj.-
 ```
 
+## [Day 16](https://adventofcode.com/2022/day/16): Proboscidea Volcanium
+
+Okay, today was a tricky one.
+
+I had no idea what the twist was going to be, so what I did for part 1 was to
+preprocess the scan to drop away all valves with a flow rate of zero, under the
+assumption that tracking them will not be necessary. Instead, I computed all the
+distances between the valves with non-zero flow rates, and then just ran the
+search for the best order of operations in the resulting, much smaller graph.
+
+It also at least intuitively feels like there's another difference to the usual
+sort of "shortest path" questions, in that when you arrive at a valve, it's not
+obvious whether the current path is better or worse than a previous one.
+
+The pruning logic used by the solution here is: for each state (location and set
+of opened vents), keep a track of a list of `(T, P)` pairs, where `T` is the
+minute at which the state was arrived to, while `P` records how much pressure
+will be eventually released by the vents opened so far. When looking at an edge
+that would result in recording `(Tn, Pn)` in the log, if there's already at
+least one entry `(Te, Pe)` for which `Te ≤ Tn ∧ Pe ≥ Pn`, that previously
+explored path is at least as good as the current one, and the current one can be
+discarded. Likewise, to cut down on the amount of state, if we do end up keeping
+this path, all existing entries for which `Te < Tn ∨ Pe > Pn` are strictly worse
+and can be dropped.
+
+However, this is not a total order. If `Te ≤ Tn` but `Pe < Pn`, this means the
+earlier path arrived at the same state faster, but had locked down less pressure
+relief so far. It seems difficult to say which path will win out in the end, so
+both will be kept. Likewise for `Pe ≥ Pn` but `Te > Tn`.
+
+It might be possible to prune solutions further. In particular, since the graph
+is fully connected, there's maybe some use in just considering the current best
+path for a particular set of opened vents (ignoring the current location), since
+it's easy to get a bound for how long it would take to switch locations.
+
+Anyway, all this complexity works out okay for part 1. Part 2 introduced the
+elephant helper, and of course the elephant and you may finish opening your
+respective vents at different times. If the code tracked progress minute by
+minute, it would be (relatively) simple to adapt; this code, not so much.
+
+The solution (which adds "wait times" in the tracking to handle mismatched
+arrival times) does find the correct solution, but is horribly complicated, and
+takes forever (3.3 seconds) to run. I may return to it eventually. Or not.
+
+The one silver lining in the whole thing is that, as a graph problem, we can
+plot the example with GraphViz. In the following, the ignored zero-flow-rate
+vents are shaded, and the entry point `AA` is highlighted in green. If I can
+find suitable settings to produce a neat graph from the actual puzzle input,
+I'll include it as well.
+
+
+- Example 1: [2022-day16-ex.png](2022-day16-ex.png)
+
 <!--math
 
 %: day15

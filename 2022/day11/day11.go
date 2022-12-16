@@ -118,23 +118,23 @@ func parseMonkey(chunk string) (m monkey, err error) {
 	if !strings.HasPrefix(lines[0], prefixID) {
 		return monkey{}, fmt.Errorf("bad monkey: expected ID, got: %q", lines[0])
 	}
-	if items, ok := checkPrefix(lines[1], prefixItems); !ok {
+	if items, ok := util.CheckPrefix(lines[1], prefixItems); !ok {
 		return monkey{}, fmt.Errorf("bad monkey: expected item list, got: %q", lines[1])
 	} else if m.startItems, err = fn.MapE(strings.Split(items, ", "), strconv.Atoi); err != nil {
 		return monkey{}, fmt.Errorf("bad monkey: expected item: %w", err)
 	}
-	if spec, ok := checkPrefix(lines[2], prefixOp); !ok {
+	if spec, ok := util.CheckPrefix(lines[2], prefixOp); !ok {
 		return monkey{}, fmt.Errorf("bad monkey: expected op, got: %q", lines[2])
 	} else if m.op, err = parseMonkeyOp(spec); err != nil {
 		return monkey{}, fmt.Errorf("bad monkey: expected op: %w", err)
 	}
-	if test, ok := checkPrefix(lines[3], prefixTest); !ok {
+	if test, ok := util.CheckPrefix(lines[3], prefixTest); !ok {
 		return monkey{}, fmt.Errorf("bad monkey: expected test, got: %q", lines[3])
 	} else if m.test, err = strconv.Atoi(test); err != nil {
 		return monkey{}, fmt.Errorf("bad monkey: expected test: %w", err)
 	}
 	for i := 0; i < 2; i++ {
-		if next, ok := checkPrefix(lines[4+i], fn.If(i == 0, prefixNextTrue, prefixNextFalse)); !ok {
+		if next, ok := util.CheckPrefix(lines[4+i], fn.If(i == 0, prefixNextTrue, prefixNextFalse)); !ok {
 			return monkey{}, fmt.Errorf("bad monkey: expected next, got: %q", lines[4+i])
 		} else if m.next[i], err = strconv.Atoi(next); err != nil {
 			return monkey{}, fmt.Errorf("bad monkey: expected next: %w", err)
@@ -155,11 +155,4 @@ func parseMonkeyOp(spec string) (monkeyOp, error) {
 		return nil, fmt.Errorf("bad operand: %w", err)
 	}
 	return fn.If[monkeyOp](spec[0] == '+', opAdd(n), opMul(n)), nil
-}
-
-func checkPrefix(s, prefix string) (tail string, ok bool) {
-	if !strings.HasPrefix(s, prefix) {
-		return "", false
-	}
-	return s[len(prefix):], true
 }

@@ -217,6 +217,36 @@ func ScanInts(data []byte, atEOF bool) (advance int, token []byte, err error) {
 	return advance + end, data[:end], nil
 }
 
+// CheckPrefix tests if a string contains a prefix, and if so, removes it.
+// If the string does not contain the prefix, it's returned unmodified.
+// The `ok` result is true if the prefix was found.
+func CheckPrefix(s, prefix string) (tail string, ok bool) {
+	if !strings.HasPrefix(s, prefix) {
+		return s, false
+	}
+	return s[len(prefix):], true
+}
+
+// NextWord returns the prefix of s up to the first space character, if any.
+// If there is no space, the entire string is returned. The second return value
+// gives the remainder of the input string.
+func NextWord(s string) (word, tail string) {
+	if sep := strings.IndexByte(s, ' '); sep >= 0 {
+		return s[:sep], s[sep:]
+	}
+	return s, ""
+}
+
+// NextInt parses the leading decimal digits of s as a (nonnegative) decimal number,
+// and returns both the parsed number and the remainder of the input. If there are
+// no decimal digits, `ok` will be false.
+func NextInt(s string) (n int, ok bool, tail string) {
+	for len(s) > 0 && s[0] >= '0' && s[0] <= '9' {
+		n, ok, s = n*10+int(s[0]-'0'), true, s[1:]
+	}
+	return n, ok, s
+}
+
 // P represents a two-dimensional integer-valued coordinate.
 type P struct {
 	X, Y int
