@@ -677,11 +677,6 @@ earlier path arrived at the same state faster, but had locked down less pressure
 relief so far. It seems difficult to say which path will win out in the end, so
 both will be kept. Likewise for `Pe ≥ Pn` but `Te > Tn`.
 
-It might be possible to prune solutions further. In particular, since the graph
-is fully connected, there's maybe some use in just considering the current best
-path for a particular set of opened vents (ignoring the current location), since
-it's easy to get a bound for how long it would take to switch locations.
-
 Anyway, all this complexity works out okay for part 1. Part 2 introduced the
 elephant helper, and of course the elephant and you may finish opening your
 respective vents at different times. If the code tracked progress minute by
@@ -689,7 +684,7 @@ minute, it would be (relatively) simple to adapt; this code, not so much.
 
 The solution (which adds "wait times" in the tracking to handle mismatched
 arrival times) does find the correct solution, but is horribly complicated, and
-takes forever (3.3 seconds) to run. I may return to it eventually. Or not.
+takes quite long (0.55 seconds) to run. I may return to it eventually. Or not.
 
 The one silver lining in the whole thing is that, as a graph problem, we can
 plot the example with GraphViz. In the following, the ignored zero-flow-rate

@@ -14,9 +14,11 @@
 
 package day16
 
+const maxValves = 15 // using some fixed-size arrays for performance
+
 func releasePressure(sum valveSummary, maxT int) (maxPressure int) {
-	if len(sum.flowRates) > 16 {
-		panic("only <= 16 non-zero flow rate valves supported")
+	if len(sum.flowRates) > maxValves {
+		panic("too many valves")
 	}
 	n := uint16(len(sum.flowRates))
 
@@ -26,9 +28,12 @@ func releasePressure(sum valveSummary, maxT int) (maxPressure int) {
 		q.push(t, move{st: state{at: i, open: 1 << i}, pressure: (maxT - t) * sum.flowRates[i]})
 	}
 
-	log := make(map[state][]logEntry)
+	log := [maxValves][65536]logEntryList{}
 	for q.len() > 0 {
 		pt, p := q.pop()
+		if p.pressure > maxPressure {
+			maxPressure = p.pressure
+		}
 	moveLoop:
 		for i := uint16(0); i < n; i++ {
 			if i == p.st.at || p.st.open&(1<<i) != 0 {
@@ -39,29 +44,12 @@ func releasePressure(sum valveSummary, maxT int) (maxPressure int) {
 				continue
 			}
 			next := move{st: state{at: i, open: p.st.open | (1 << i)}, pressure: p.pressure + (maxT-t)*sum.flowRates[i]}
-			oldLog := log[next.st]
-			for _, e := range oldLog {
-				if e.time <= t && e.pressure >= next.pressure {
-					continue moveLoop
-				}
+			if newLog, keep := log[next.st.at][next.st.open].merge(t, next.pressure); !keep {
+				continue moveLoop
+			} else {
+				log[next.st.at][next.st.open] = newLog
 			}
-			newLog := oldLog[:0]
-			for _, e := range oldLog {
-				if e.time < t || e.pressure > next.pressure {
-					newLog = append(newLog, e)
-				}
-			}
-			newLog = append(newLog, logEntry{time: t, pressure: next.pressure})
-			log[next.st] = newLog
 			q.push(t, next)
-		}
-	}
-
-	for _, entries := range log {
-		for _, e := range entries {
-			if e.pressure > maxPressure {
-				maxPressure = e.pressure
-			}
 		}
 	}
 
@@ -81,4 +69,22 @@ type state struct {
 type logEntry struct {
 	time     int
 	pressure int
+}
+
+type logEntryList []logEntry
+
+func (log logEntryList) merge(time, pressure int) (logEntryList, bool) {
+	for _, e := range log {
+		if e.time <= time && e.pressure >= pressure {
+			return nil, false
+		}
+	}
+	newLog := log[:0]
+	for _, e := range log {
+		if e.time < time || e.pressure > pressure {
+			newLog = append(newLog, e)
+		}
+	}
+	newLog = append(newLog, logEntry{time: time, pressure: pressure})
+	return newLog, true
 }
