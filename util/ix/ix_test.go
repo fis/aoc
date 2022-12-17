@@ -60,6 +60,43 @@ func TestSign(t *testing.T) {
 	}
 }
 
+func TestGCD(t *testing.T) {
+	tests := [][3]int{
+		{10, 15, 5},
+		{20, 30, 10},
+		{15, 10, 5},
+		{30, 20, 10},
+		{17, 19, 1},
+		{20, 10, 10},
+		{10, 10, 10},
+		{1234567890, 987654321, 9},
+		{0, 0, 0},
+	}
+	for _, test := range tests {
+		if got := GCD(test[0], test[1]); got != test[2] {
+			t.Errorf("GCD(%d, %d) = %d, want %d", test[0], test[1], got, test[2])
+		}
+	}
+}
+
+func TestLCM(t *testing.T) {
+	tests := [][3]int{
+		{10, 15, 30},
+		{20, 30, 60},
+		{15, 10, 30},
+		{30, 20, 60},
+		{17, 19, 323},
+		{20, 10, 20},
+		{10, 10, 10},
+		{1234567890, 987654321, 135480701236261410},
+	}
+	for _, test := range tests {
+		if got := LCM(test[0], test[1]); got != test[2] {
+			t.Errorf("LCM(%d, %d) = %d, want %d", test[0], test[1], got, test[2])
+		}
+	}
+}
+
 func TestSqrt(t *testing.T) {
 	tests := [][2]int{
 		{0, 0},

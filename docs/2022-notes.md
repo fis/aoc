@@ -697,8 +697,19 @@ vents are shaded, and the entry point `AA` is highlighted in green. If I can
 find suitable settings to produce a neat graph from the actual puzzle input,
 I'll include it as well.
 
-
 - Example 1: [2022-day16-ex.png](2022-day16-ex.png)
+
+## [Day 17](https://adventofcode.com/2022/day/17): Pyroclastic Flow
+
+A traditional sort of twist today: start with something easily simulatable, then
+ask for a ridiculous amount of steps; the solution lies in finding a point at
+which the same state repeats, so that the majority of the simulation can be
+skipped.
+
+Interestingly, it would seem that with my puzzle input, there's only ever one
+state in the map: after stepping through the 10091 (suspiciously prime) input
+jets twice, we're at exactly the same state as we were when skipping over them
+once. The (much shorter) example input has more variety in it.
 
 <!--math
 

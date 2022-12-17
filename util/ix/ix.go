@@ -61,6 +61,11 @@ func GCD[T constraints.Integer](a, b T) T {
 	return a
 }
 
+// LCM returns the least common multiple of the two arguments.
+func LCM[T constraints.Integer](a, b T) T {
+	return a / GCD(a, b) * b
+}
+
 // Sqrt returns the integer square root of y. For a nonnegative argument,
 // it is the floor of the mathematical square root. Panics for negative numbers.
 func Sqrt(y int) int {
