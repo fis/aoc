@@ -706,6 +706,18 @@ state in the map: after stepping through the 10091 (suspiciously prime) input
 jets twice, we're at exactly the same state as we were when skipping over them
 once. The (much shorter) example input has more variety in it.
 
+## [Day 18](https://adventofcode.com/2022/day/18): Boiling Boulders
+
+Odd difficulty dip. Not really even much of a twist to speak of today.
+
+Solution here just uses a 3-dimensional array of bytes as the data structures,
+denoting each voxel as being either outside air, cube stuff, or inside air. The
+array starts filled with inside air, then the cubes get added, and finally a
+depth-first scan starting at (0, 0, 0) is used to mark all the outside air.
+
+(Probably more efficient flood-fill algorithms would be possible, but this
+approach benchmarks at 0.7 milliseconds, so there's hardly any need to.)
+
 <!--math
 
 %: day15
