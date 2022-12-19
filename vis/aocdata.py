@@ -335,8 +335,6 @@ def _gobench_present(year, day):
     Returns:
         True, if a Go source file with the expected name exists. False, otherwise.
     """
-    # TODO: make a solution that's less terrible
-    if year == 2022 and day == 16: return False
     d = f'day{day:02d}'
     path = f'../{year:4d}/{d}/{d}.go'
     return os.path.exists(path)

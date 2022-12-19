@@ -684,7 +684,7 @@ minute, it would be (relatively) simple to adapt; this code, not so much.
 
 The solution (which adds "wait times" in the tracking to handle mismatched
 arrival times) does find the correct solution, but is horribly complicated, and
-takes quite long (0.55 seconds) to run. I may return to it eventually. Or not.
+takes quite long (0.4 seconds) to run. I may return to it eventually. Or not.
 
 The one silver lining in the whole thing is that, as a graph problem, we can
 plot the example with GraphViz. In the following, the ignored zero-flow-rate
@@ -717,6 +717,29 @@ depth-first scan starting at (0, 0, 0) is used to mark all the outside air.
 
 (Probably more efficient flood-fill algorithms would be possible, but this
 approach benchmarks at 0.7 milliseconds, so there's hardly any need to.)
+
+## [Day 19](https://adventofcode.com/2022/day/19): Not Enough Minerals
+
+Kind of getting flashbacks to day 16 here.
+
+The solution I've got is very much among the same lines: just do a search with
+some pruning heuristics, in this case based on:
+
+- A lower bound for achievable geodes, obtained by considering the strategy
+  where we just spend the remaining minutes building exclusively new geode
+  robots whenever we can.
+- An upper bound for achievable geodes, obtained by considering what we would
+  get if we could build one new robot of each type every minute, bounded by the
+  current resources.
+
+I'm also not simulating each minute, but instead at every point making a choice
+between which type of robot to build next, and then computing at what time will
+it be possible to build a robot of that type. This may or may not be beneficial;
+it's hard to say.
+
+With the pruning, the solution takes about 0.36 seconds on my input. That's...
+barely acceptable. There's probably a clever trick in there somewhere I'm
+missing, but it'll have to do, for now.
 
 <!--math
 

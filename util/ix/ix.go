@@ -51,6 +51,11 @@ func Sign[T constraints.Signed](x T) T {
 	return 0
 }
 
+// CeilDiv returns the result of the integer division a / b except rounded up (for nonnegative integers).
+func CeilDiv[T constraints.Integer](a, b T) T {
+	return (a + b - 1) / b
+}
+
 // GCD returns the greatest common divisor of the two arguments.
 func GCD[T constraints.Integer](a, b T) T {
 	for b != 0 {

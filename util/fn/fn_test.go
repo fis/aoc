@@ -63,6 +63,26 @@ func TestProd(t *testing.T) {
 	}
 }
 
+func TestProdF(t *testing.T) {
+	f := func(x int) int { return x + 1 }
+	tests := []struct {
+		data []int
+		want int
+	}{
+		{data: nil, want: 1},
+		{data: []int{123}, want: 124},
+		{data: []int{123, 456}, want: 56668},
+		{data: []int{1, 2, 3, 4, 5, 6, 7}, want: 40320},
+		{data: []int{1, 2, 3, -1, 5, 6, 7}, want: 0},
+	}
+	for _, test := range tests {
+		got := ProdF(test.data, f)
+		if got != test.want {
+			t.Errorf("ProdF(%v, f) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
 func TestCountIf(t *testing.T) {
 	tests := []struct {
 		data []int

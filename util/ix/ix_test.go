@@ -60,6 +60,19 @@ func TestSign(t *testing.T) {
 	}
 }
 
+func TestCeilDiv(t *testing.T) {
+	tests := [][3]int{
+		{2, 3, 1}, {3, 3, 1}, {4, 3, 2}, {5, 3, 2}, {6, 3, 2}, {7, 3, 3},
+		{1, 1, 1}, {2, 1, 2}, {3, 1, 3},
+		{0, 5, 0},
+	}
+	for _, test := range tests {
+		if got := CeilDiv(test[0], test[1]); got != test[2] {
+			t.Errorf("CeilDiv(%d, %d) = %d, want %d", test[0], test[1], got, test[2])
+		}
+	}
+}
+
 func TestGCD(t *testing.T) {
 	tests := [][3]int{
 		{10, 15, 5},

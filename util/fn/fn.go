@@ -28,6 +28,15 @@ func Prod[S ~[]E, E constraints.Integer](s S) (result E) {
 	return result
 }
 
+// ProdF returns the product of the results of applying a function to a slice. The product of an empty slice is 1.
+func ProdF[S ~[]I, F ~func(I) O, I any, O constraints.Integer](s S, f F) (result O) {
+	result = 1
+	for _, e := range s {
+		result *= f(e)
+	}
+	return result
+}
+
 // CountIf returns the number of items in a slice that satisfy a predicate.
 func CountIf[S ~[]E, F ~func(E) bool, E any](s S, f F) (count int) {
 	for _, e := range s {
