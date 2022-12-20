@@ -649,25 +649,26 @@ ln{"[-0-9]+"~?)ri2coJp^?-)ab++j^p^p2e6=={JPp}ifvv^p2e6.-abx/j.-_+J^p.-j++_+}m[
 
 ## [Day 16](https://adventofcode.com/2022/day/16): Proboscidea Volcanium
 
-Okay, today was a tricky one.
+Had a lot of trouble with day 16 this year.
 
-I had no idea what the twist was going to be, so what I did for part 1 was to
-preprocess the scan to drop away all valves with a flow rate of zero, under the
-assumption that tracking them will not be necessary. Instead, I computed all the
-distances between the valves with non-zero flow rates, and then just ran the
-search for the best order of operations in the resulting, much smaller graph.
+Initially, I had no idea what the twist was going to be, so what I did for part
+1 was to preprocess the scan to drop away all valves with a flow rate of zero,
+under the assumption that tracking them would not be necessary. Instead, I
+computed all the distances between the valves with non-zero flow rates, and then
+just ran the search for the best order of operations in the resulting, much
+smaller graph.
 
-It also at least intuitively feels like there's another difference to the usual
-sort of "shortest path" questions, in that when you arrive at a valve, it's not
-obvious whether the current path is better or worse than a previous one.
+Intuitively speaking, it feels like there's a difference to the usual sort of
+"shortest path" questions: when you arrive at a valve, it's not obvious whether
+the current path is better or worse than a previous one.
 
 The pruning logic used by the solution here is: for each state (location and set
 of opened vents), keep a track of a list of `(T, P)` pairs, where `T` is the
 minute at which the state was arrived to, while `P` records how much pressure
 will be eventually released by the vents opened so far. When looking at an edge
-that would result in recording `(Tn, Pn)` in the log, if there's already at
-least one entry `(Te, Pe)` for which `Te ≤ Tn ∧ Pe ≥ Pn`, that previously
-explored path is at least as good as the current one, and the current one can be
+that would result in adding `(Tn, Pn)` to the list, if there's already at least
+one entry `(Te, Pe)` for which `Te ≤ Tn ∧ Pe ≥ Pn`, that previously explored
+path is at least as good as the current one, and the current one can be
 discarded. Likewise, to cut down on the amount of state, if we do end up keeping
 this path, all existing entries for which `Te < Tn ∨ Pe > Pn` are strictly worse
 and can be dropped.
@@ -677,20 +678,46 @@ earlier path arrived at the same state faster, but had locked down less pressure
 relief so far. It seems difficult to say which path will win out in the end, so
 both will be kept. Likewise for `Pe ≥ Pn` but `Te > Tn`.
 
-Anyway, all this complexity works out okay for part 1. Part 2 introduced the
-elephant helper, and of course the elephant and you may finish opening your
-respective vents at different times. If the code tracked progress minute by
-minute, it would be (relatively) simple to adapt; this code, not so much.
+Anyway, all this complexity works out okay for part 1. Part 2 is what really got
+me stuck, as far as efficient solutions go. It introduced the elephant helper,
+and of course the elephant and you may finish opening your respective vents at
+different times. If the part 1 code had tracked progress minute by minute, it
+might have been simple to adapt; this code, not so much.
 
-The solution (which adds "wait times" in the tracking to handle mismatched
-arrival times) does find the correct solution, but is horribly complicated, and
-takes quite long (0.4 seconds) to run. I may return to it eventually. Or not.
+The initial drafts of the solution were based of a notion of adding the helper's
+location into the state, and also introducing "wait times" to handle mismatched
+arrival times. While this did get an answer, even after quite a bit of tuning it
+still took 0.4 seconds to do so.
 
-The one silver lining in the whole thing is that, as a graph problem, we can
-plot the example with GraphViz. In the following, the ignored zero-flow-rate
-vents are shaded, and the entry point `AA` is highlighted in green. If I can
-find suitable settings to produce a neat graph from the actual puzzle input,
-I'll include it as well.
+Eventually, after some IRC discussion and (frankly) hints, a better solution
+emerged. I had noticed that the agents did act independently: if we knew ahead
+of time which vents will end up opened by you and which by the elephant, it
+would have been possible to find the optimal routes for both by just running the
+part 1 solution (restricted to that subset of vents), and then adding together
+the results. But there are quite a few possible partitionings, and while doing
+the search with one agent was faster, it was not *that* fast.
+
+The crux of the actually efficient (8 ms for part 2, 17 ms in total) solution
+here is that the search for the optimal order for one agent also discovers the
+maximum pressure that's possible to release by opening any subset of vents
+reachable by a single agent in the allotted time. And we can remember those
+solutions, instead of re-running the search from scratch each time.
+
+To arrive at the combined result, the code here starts from the "maximum
+pressure that can be released by a single agent by opening a subset of vents it
+can reach" table. It is then turned into a "maximum pressure that can be
+released by a single agent restricted to an arbitrary subset of vents" table by
+filling in all the missing entries of the original table. This is done by
+iterating over the subsets in an increasing order of cardinality, and setting
+any missing values to the maximum of that of any subset smaller by one. Finally,
+it just iterates one more time over all the subsets, adds the maximum pressure
+achievable by one agent in that subset to the same in its complement, and finds
+the maximum of *those*.
+
+As a graph problem, we can also plot the example with GraphViz. In the
+following, the ignored zero-flow-rate vents are shaded, and the entry point `AA`
+is highlighted in green. If I can find suitable settings to produce a neat graph
+from the actual puzzle input, I'll include it as well.
 
 - Example 1: [2022-day16-ex.png](2022-day16-ex.png)
 

@@ -18,6 +18,7 @@ package day16
 import (
 	"fmt"
 	"io"
+	"math/bits"
 	"strings"
 
 	"github.com/fis/aoc/glue"
@@ -27,42 +28,42 @@ import (
 )
 
 func init() {
-	glue.RegisterSolver(2022, 16, glue.LineSolver(glue.WithParser(parseValveScan, solve)))
-	glue.RegisterPlotter(2022, 16, glue.LinePlotter(plot), map[string]string{"ex": strings.Join(ex, "\n")})
+	glue.RegisterSolver(2022, 16, glue.LineSolver(glue.WithParser(ParseValveScan, solve)))
+	glue.RegisterPlotter(2022, 16, glue.LinePlotter(plot), map[string]string{"ex": strings.Join(ExampleScan, "\n")})
 }
 
-func solve(scan []valveScan) ([]string, error) {
-	sum := preprocess(scan)
-	p1 := releasePressure(sum, 30)
-	p2 := releasePressure2(sum, 26)
+func solve(scan []ValveScan) ([]string, error) {
+	sum := Preprocess(scan)
+	p1 := findOne(sum, 30)
+	p2 := findTwo(sum, 26)
 	return glue.Ints(p1, p2), nil
 }
 
-type valveScan struct {
+type ValveScan struct {
 	name     string
 	flowRate int
 	tunnels  []string
 }
 
-type valveSummary struct {
-	flowRates []int
-	initDist  []int
-	dist      [][]int
+type ValveSummary struct {
+	FlowRates []int
+	InitDist  []int
+	Dist      [][]int
 }
 
-func preprocess(scan []valveScan) (sum valveSummary) {
-	allValves, nonzeroValves := make(map[string]*valveScan), make(map[string]int)
+func Preprocess(scan []ValveScan) (sum ValveSummary) {
+	allValves, nonzeroValves := make(map[string]*ValveScan), make(map[string]int)
 	for i, v := range scan {
 		allValves[v.name] = &scan[i]
 		if v.flowRate != 0 {
-			nonzeroValves[v.name] = len(sum.flowRates)
-			sum.flowRates = append(sum.flowRates, v.flowRate)
+			nonzeroValves[v.name] = len(sum.FlowRates)
+			sum.FlowRates = append(sum.FlowRates, v.flowRate)
 		}
 	}
 
-	n := len(sum.flowRates)
-	sum.initDist = make([]int, n)
-	sum.dist = fn.MapRange(0, n, func(int) []int { return make([]int, n) })
+	n := len(sum.FlowRates)
+	sum.InitDist = make([]int, n)
+	sum.Dist = fn.MapRange(0, n, func(int) []int { return make([]int, n) })
 
 	for _, from := range append(maps.Keys(nonzeroValves), "AA") {
 		fromN, fromNonzero := nonzeroValves[from]
@@ -77,9 +78,9 @@ func preprocess(scan []valveScan) (sum valveSummary) {
 			q = q[1:]
 			if pn, ok := nonzeroValves[p.at]; ok {
 				if fromNonzero {
-					sum.dist[fromN][pn] = p.d
+					sum.Dist[fromN][pn] = p.d
 				} else {
-					sum.initDist[pn] = p.d
+					sum.InitDist[pn] = p.d
 				}
 			}
 			for _, n := range allValves[p.at].tunnels {
@@ -94,25 +95,148 @@ func preprocess(scan []valveScan) (sum valveSummary) {
 	return sum
 }
 
-func parseValveScan(line string) (vs valveScan, err error) {
+const (
+	nValves    = 15 // using some fixed-size arrays for performance
+	nValveSets = 1 << nValves
+)
+
+func findOne(sum ValveSummary, maxT int) (bestP int) {
+	q := util.NewBucketQ[state](32)
+	for i := uint16(0); i < nValves; i++ {
+		t := sum.InitDist[i] + 1
+		q.Push(t, state{at: i, open: 1 << i, pressure: uint32((maxT - t) * sum.FlowRates[i])})
+	}
+
+	seen := [nValves][nValveSets]stateTracker{}
+	for q.Len() > 0 {
+		pt, p := q.Pop()
+		if pr := int(p.pressure); pr > bestP {
+			bestP = pr
+		}
+		for i := uint16(0); i < nValves; i++ {
+			open := p.open | (1 << i)
+			if open == p.open {
+				continue
+			}
+			t := pt + sum.Dist[p.at][i] + 1
+			if t >= maxT {
+				continue
+			}
+			next := state{at: i, open: open, pressure: p.pressure + uint32((maxT-t)*sum.FlowRates[i])}
+			if seen[i][open].keep(t, next) {
+				q.Push(t, next)
+			}
+		}
+	}
+
+	return bestP
+}
+
+func findTwo(sum ValveSummary, maxT int) (bestP int) {
+	q := util.NewBucketQ[state](32)
+	for i := uint16(0); i < nValves; i++ {
+		t := sum.InitDist[i] + 1
+		q.Push(t, state{at: i, open: 1 << i, pressure: uint32((maxT - t) * sum.FlowRates[i])})
+	}
+
+	seen := [nValves][nValveSets]stateTracker{}
+	maxP := [nValveSets]uint32{}
+	for q.Len() > 0 {
+		pt, p := q.Pop()
+		if pr := p.pressure; pr > maxP[p.open] {
+			maxP[p.open] = pr
+		}
+		for i := uint16(0); i < nValves; i++ {
+			open := p.open | (1 << i)
+			if open == p.open {
+				continue
+			}
+			t := pt + sum.Dist[p.at][i] + 1
+			if t >= maxT {
+				continue
+			}
+			next := state{at: i, open: open, pressure: p.pressure + uint32((maxT-t)*sum.FlowRates[i])}
+			if seen[i][open].keep(t, next) {
+				q.Push(t, next)
+			}
+		}
+	}
+
+	for setSize := 2; setSize <= nValves; setSize++ {
+		// There's probably a faster way to iterate integers with a given bit count, but this is fine for 15 bits.
+		firstSet := uint16((1 << setSize) - 1)
+		lastSet := firstSet << (nValves - setSize)
+		for open := firstSet; open <= lastSet; open++ {
+			if maxP[open] != 0 || bits.OnesCount16(open) != setSize {
+				continue
+			}
+			for i := 0; i < nValves; i++ {
+				lessOpen := open &^ (1 << i)
+				if lessOpen != open && maxP[lessOpen] > maxP[open] {
+					maxP[open] = maxP[lessOpen]
+				}
+			}
+		}
+	}
+
+	for open1 := uint16(0); open1 < nValveSets; open1++ {
+		open2 := (nValveSets - 1) ^ open1
+		if p := int(maxP[open1] + maxP[open2]); p > bestP {
+			bestP = p
+		}
+	}
+
+	return bestP
+}
+
+type state struct {
+	at       uint16
+	open     uint16
+	pressure uint32
+}
+
+type stateTracker []stateInfo
+
+type stateInfo struct {
+	time     int
+	pressure uint32
+}
+
+func (t *stateTracker) keep(time int, st state) bool {
+	for _, e := range *t {
+		if e.time <= time && e.pressure >= st.pressure {
+			return false
+		}
+	}
+	nt := (*t)[:0]
+	for _, e := range *t {
+		if e.time < time || e.pressure > st.pressure {
+			nt = append(nt, e)
+		}
+	}
+	*t = append(nt, stateInfo{time, st.pressure})
+	return true
+}
+
+func ParseValveScan(line string) (vs ValveScan, err error) {
 	tail, ok := util.CheckPrefix(line, "Valve ")
 	if !ok {
-		return valveScan{}, fmt.Errorf("expected `Valve ` in %q", line)
+		return ValveScan{}, fmt.Errorf("expected `Valve ` in %q", line)
 	}
 	vs.name, tail = util.NextWord(tail)
 	tail, ok = util.CheckPrefix(tail, " has flow rate=")
 	if !ok {
-		return valveScan{}, fmt.Errorf("expected ` has flow rate=` in %q", line)
+		return ValveScan{}, fmt.Errorf("expected ` has flow rate=` in %q", line)
 	}
 	vs.flowRate, ok, tail = util.NextInt(tail)
 	if !ok {
-		return valveScan{}, fmt.Errorf("expected an integer in %q", line)
+		return ValveScan{}, fmt.Errorf("expected an integer in %q", line)
 	}
 	if tail, ok = util.CheckPrefix(tail, "; tunnel leads to valve "); !ok {
 		tail, ok = util.CheckPrefix(tail, "; tunnels lead to valves ")
 	}
 	if !ok {
-		return valveScan{}, fmt.Errorf("expected `; tunnels? leads? to valves? in %q", line)
+		return ValveScan{}, fmt.Errorf("expected `; tunnels? leads? to valves? in %q", line)
 	}
 	vs.tunnels = strings.Split(tail, ", ")
 	return vs, nil
@@ -120,7 +244,7 @@ func parseValveScan(line string) (vs valveScan, err error) {
 
 // plotting
 
-var ex = []string{
+var ExampleScan = []string{
 	"Valve AA has flow rate=0; tunnels lead to valves DD, II, BB",
 	"Valve BB has flow rate=13; tunnels lead to valves CC, AA",
 	"Valve CC has flow rate=2; tunnels lead to valves DD, BB",
@@ -138,7 +262,7 @@ func plot(lines []string, w io.Writer) error {
 		startStyle = `,style="filled",fillcolor="#0f9d58",fontcolor="white"`
 		stuckStyle = `,style="filled",fillcolor="#dddddd"`
 	)
-	scan, err := fn.MapE(lines, parseValveScan)
+	scan, err := fn.MapE(lines, ParseValveScan)
 	if err != nil {
 		return err
 	}

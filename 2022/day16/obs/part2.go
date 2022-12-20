@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package day16
+package obs
 
 import (
+	"github.com/fis/aoc/2022/day16"
 	"github.com/fis/aoc/util/ix"
 )
 
-func greedyBound(sum valveSummary, maxT int) (pressure int) {
-	n := len(sum.flowRates)
+func greedyBound(sum day16.ValveSummary, maxT int) (pressure int) {
+	n := len(sum.FlowRates)
 	at1, at2 := -1, -1
 	wait1, wait2 := 0, 0
 	open := 0
@@ -37,18 +38,18 @@ func greedyBound(sum valveSummary, maxT int) (pressure int) {
 					}
 					var d1, d2 int
 					if at1 < 0 {
-						d1 = sum.initDist[i]
+						d1 = sum.InitDist[i]
 					} else {
-						d1 = sum.dist[at1][i]
+						d1 = sum.Dist[at1][i]
 					}
 					if at2 < 0 {
-						d2 = sum.initDist[j]
+						d2 = sum.InitDist[j]
 					} else {
-						d2 = sum.dist[at2][j]
+						d2 = sum.Dist[at2][j]
 					}
 					t1 := ix.Min(t+d1+1, maxT)
 					t2 := ix.Min(t+d2+1, maxT)
-					p := (maxT-t1)*sum.flowRates[i] + (maxT-t2)*sum.flowRates[j]
+					p := (maxT-t1)*sum.FlowRates[i] + (maxT-t2)*sum.FlowRates[j]
 					if p > bestP {
 						bestI, bestJ, bestT1, bestT2, bestP = i, j, t1, t2, p
 					}
@@ -68,8 +69,8 @@ func greedyBound(sum valveSummary, maxT int) (pressure int) {
 			if open&(1<<i) != 0 {
 				continue
 			}
-			t1 := ix.Min(t+sum.dist[at1][i]+1, maxT)
-			p := (maxT - t1) * sum.flowRates[i]
+			t1 := ix.Min(t+sum.Dist[at1][i]+1, maxT)
+			p := (maxT - t1) * sum.FlowRates[i]
 			if p > bestP {
 				bestI, bestT1, bestP = i, t1, p
 			}
@@ -81,11 +82,11 @@ func greedyBound(sum valveSummary, maxT int) (pressure int) {
 	return pressure
 }
 
-func releasePressure2(sum valveSummary, maxT int) (maxPressure int) {
-	if len(sum.flowRates) > maxValves {
+func releasePressure2(sum day16.ValveSummary, maxT int) (maxPressure int) {
+	if len(sum.FlowRates) > maxValves {
 		panic("too many valves")
 	}
-	n := uint8(len(sum.flowRates))
+	n := uint8(len(sum.FlowRates))
 
 	maxPressure = greedyBound(sum, maxT)
 
@@ -93,7 +94,7 @@ func releasePressure2(sum valveSummary, maxT int) (maxPressure int) {
 	for i := 0; i < 65536; i++ {
 		for j := uint8(0); j < n; j++ {
 			if i&(1<<j) != 0 {
-				maxFlow[i] += sum.flowRates[j]
+				maxFlow[i] += sum.FlowRates[j]
 			}
 		}
 	}
@@ -105,8 +106,8 @@ func releasePressure2(sum valveSummary, maxT int) (maxPressure int) {
 	for i := uint8(0); i < n; i++ {
 		minD1[i] = maxT
 		for j := uint8(0); j < n; j++ {
-			if i != j && sum.dist[i][j] < minD1[i] {
-				minD1[i] = sum.dist[i][j]
+			if i != j && sum.Dist[i][j] < minD1[i] {
+				minD1[i] = sum.Dist[i][j]
 			}
 		}
 	}
@@ -119,15 +120,15 @@ func releasePressure2(sum valveSummary, maxT int) (maxPressure int) {
 	var q bucketQ[move2]
 	for i := uint8(0); i < n-1; i++ {
 		for j := i + 1; j < n; j++ {
-			t1 := sum.initDist[i] + 1
-			t2 := sum.initDist[j] + 1
+			t1 := sum.InitDist[i] + 1
+			t2 := sum.InitDist[j] + 1
 			switch {
 			case t1 < t2:
-				q.push(t1, move2{st: state2{at1: i, at2: j, open: 1 << i}, wait1: 0, wait2: uint8(t2 - t1), pressure: uint16((maxT - t1) * sum.flowRates[i])})
+				q.push(t1, move2{st: state2{at1: i, at2: j, open: 1 << i}, wait1: 0, wait2: uint8(t2 - t1), pressure: uint16((maxT - t1) * sum.FlowRates[i])})
 			case t1 == t2:
-				q.push(t1, move2{st: state2{at1: i, at2: j, open: (1 << i) | (1 << j)}, wait1: 0, wait2: 0, pressure: uint16((maxT - t1) * (sum.flowRates[i] + sum.flowRates[j]))})
+				q.push(t1, move2{st: state2{at1: i, at2: j, open: (1 << i) | (1 << j)}, wait1: 0, wait2: 0, pressure: uint16((maxT - t1) * (sum.FlowRates[i] + sum.FlowRates[j]))})
 			case t1 > t2:
-				q.push(t2, move2{st: state2{at1: i, at2: j, open: 1 << j}, wait1: uint8(t1 - t2), wait2: 0, pressure: uint16((maxT - t2) * sum.flowRates[j])})
+				q.push(t2, move2{st: state2{at1: i, at2: j, open: 1 << j}, wait1: uint8(t1 - t2), wait2: 0, pressure: uint16((maxT - t2) * sum.FlowRates[j])})
 			}
 		}
 	}
@@ -153,8 +154,8 @@ outerLoop:
 					if p.st.open&((1<<i)|(1<<j)) != 0 || i == p.st.at1 || i == p.st.at2 || j == p.st.at1 || j == p.st.at2 || i == j {
 						continue
 					}
-					t1 := pt + sum.dist[p.st.at1][i] + 1
-					t2 := pt + sum.dist[p.st.at2][j] + 1
+					t1 := pt + sum.Dist[p.st.at1][i] + 1
+					t2 := pt + sum.Dist[p.st.at2][j] + 1
 					if t1 >= maxT && t2 >= maxT {
 						continue
 					}
@@ -164,11 +165,11 @@ outerLoop:
 					)
 					switch {
 					case t1 < t2:
-						nextt, next = t1, move2{st: state2{at1: i, at2: j, open: p.st.open | (1 << i)}, wait1: 0, wait2: uint8(t2 - t1), pressure: p.pressure + uint16((maxT-t1)*sum.flowRates[i])}
+						nextt, next = t1, move2{st: state2{at1: i, at2: j, open: p.st.open | (1 << i)}, wait1: 0, wait2: uint8(t2 - t1), pressure: p.pressure + uint16((maxT-t1)*sum.FlowRates[i])}
 					case t1 == t2:
-						nextt, next = t1, move2{st: state2{at1: i, at2: j, open: p.st.open | (1 << i) | (1 << j)}, wait1: 0, wait2: 0, pressure: p.pressure + uint16((maxT-t1)*(sum.flowRates[i]+sum.flowRates[j]))}
+						nextt, next = t1, move2{st: state2{at1: i, at2: j, open: p.st.open | (1 << i) | (1 << j)}, wait1: 0, wait2: 0, pressure: p.pressure + uint16((maxT-t1)*(sum.FlowRates[i]+sum.FlowRates[j]))}
 					case t1 > t2:
-						nextt, next = t2, move2{st: state2{at1: i, at2: j, open: p.st.open | (1 << j)}, wait1: uint8(t1 - t2), wait2: 0, pressure: p.pressure + uint16((maxT-t2)*sum.flowRates[j])}
+						nextt, next = t2, move2{st: state2{at1: i, at2: j, open: p.st.open | (1 << j)}, wait1: uint8(t1 - t2), wait2: 0, pressure: p.pressure + uint16((maxT-t2)*sum.FlowRates[j])}
 					}
 					if next.st.at1 > next.st.at2 {
 						next.st.at1, next.st.at2 = next.st.at2, next.st.at1
@@ -184,13 +185,13 @@ outerLoop:
 			}
 			continue
 		} else if p.wait1 > 0 {
-			if int(p.pressure)+(maxT-pt-int(p.wait1))*sum.flowRates[p.st.at1]+(maxT-pt-minD1[p.st.at2]-1)*maxFlow[^(p.st.open|(1<<p.st.at1))] <= maxPressure {
+			if int(p.pressure)+(maxT-pt-int(p.wait1))*sum.FlowRates[p.st.at1]+(maxT-pt-minD1[p.st.at2]-1)*maxFlow[^(p.st.open|(1<<p.st.at1))] <= maxPressure {
 				continue
 			}
 			p.wait1, p.wait2 = p.wait2, p.wait1
 			p.st.at1, p.st.at2 = p.st.at2, p.st.at1
 		} else {
-			if int(p.pressure)+(maxT-pt-int(p.wait2))*sum.flowRates[p.st.at2]+(maxT-pt-minD1[p.st.at1]-1)*maxFlow[^(p.st.open|(1<<p.st.at2))] <= maxPressure {
+			if int(p.pressure)+(maxT-pt-int(p.wait2))*sum.FlowRates[p.st.at2]+(maxT-pt-minD1[p.st.at1]-1)*maxFlow[^(p.st.open|(1<<p.st.at2))] <= maxPressure {
 				continue
 			}
 		}
@@ -198,7 +199,7 @@ outerLoop:
 			if p.st.open&(1<<i) != 0 || i == p.st.at1 {
 				continue
 			}
-			t1 := pt + sum.dist[p.st.at1][i] + 1
+			t1 := pt + sum.Dist[p.st.at1][i] + 1
 			t2 := pt + int(p.wait2)
 			if t1 >= maxT && t2 >= maxT {
 				continue
@@ -217,11 +218,11 @@ outerLoop:
 			}
 			if next.wait1 == 0 && next.st.open&(1<<i) == 0 {
 				next.st.open |= 1 << i
-				next.pressure += uint16((maxT - t1) * sum.flowRates[i])
+				next.pressure += uint16((maxT - t1) * sum.FlowRates[i])
 			}
 			if next.wait2 == 0 && next.st.open&(1<<p.st.at2) == 0 {
 				next.st.open |= 1 << p.st.at2
-				next.pressure += uint16((maxT - t2) * sum.flowRates[p.st.at2])
+				next.pressure += uint16((maxT - t2) * sum.FlowRates[p.st.at2])
 			}
 			if next.st.at1 > next.st.at2 {
 				next.st.at1, next.st.at2 = next.st.at2, next.st.at1

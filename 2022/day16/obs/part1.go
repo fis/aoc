@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package day16
+package obs
+
+import "github.com/fis/aoc/2022/day16"
 
 const maxValves = 15 // using some fixed-size arrays for performance
 
-func releasePressure(sum valveSummary, maxT int) (maxPressure int) {
-	if len(sum.flowRates) > maxValves {
+func releasePressure(sum day16.ValveSummary, maxT int) (maxPressure int) {
+	if len(sum.FlowRates) > maxValves {
 		panic("too many valves")
 	}
-	n := uint16(len(sum.flowRates))
+	n := uint16(len(sum.FlowRates))
 
-	var q bucketQ[move]
+	var q bucketQ[move1]
 	for i := uint16(0); i < n; i++ {
-		t := sum.initDist[i] + 1
-		q.push(t, move{st: state{at: i, open: 1 << i}, pressure: (maxT - t) * sum.flowRates[i]})
+		t := sum.InitDist[i] + 1
+		q.push(t, move1{st: state1{at: i, open: 1 << i}, pressure: (maxT - t) * sum.FlowRates[i]})
 	}
 
 	log := [maxValves][65536]logEntryList{}
@@ -39,11 +41,11 @@ func releasePressure(sum valveSummary, maxT int) (maxPressure int) {
 			if i == p.st.at || p.st.open&(1<<i) != 0 {
 				continue
 			}
-			t := pt + sum.dist[p.st.at][i] + 1
+			t := pt + sum.Dist[p.st.at][i] + 1
 			if t >= 30 {
 				continue
 			}
-			next := move{st: state{at: i, open: p.st.open | (1 << i)}, pressure: p.pressure + (maxT-t)*sum.flowRates[i]}
+			next := move1{st: state1{at: i, open: p.st.open | (1 << i)}, pressure: p.pressure + (maxT-t)*sum.FlowRates[i]}
 			if newLog, keep := log[next.st.at][next.st.open].merge(t, next.pressure); !keep {
 				continue moveLoop
 			} else {
@@ -56,12 +58,12 @@ func releasePressure(sum valveSummary, maxT int) (maxPressure int) {
 	return maxPressure
 }
 
-type move struct {
-	st       state
+type move1 struct {
+	st       state1
 	pressure int
 }
 
-type state struct {
+type state1 struct {
 	at   uint16
 	open uint16
 }
