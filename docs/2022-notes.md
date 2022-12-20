@@ -741,6 +741,67 @@ With the pruning, the solution takes about 0.36 seconds on my input. That's...
 barely acceptable. There's probably a clever trick in there somewhere I'm
 missing, but it'll have to do, for now.
 
+## [Day 20](https://adventofcode.com/2022/day/20): Grove Positioning System
+
+Today's excitement was mostly about data structures. My initial solution was a
+simple doubly linked list, with the nodes in an array. This allows enumerating
+over the array to find the element to move, followed by a linear scan to find
+the new position for the element. It wasn't too bad in terms of performance
+(0.17 seconds), but could definitely be improved. It was also quite similar to
+day 23 of [year 2020](2020-notes.md).
+
+What I went with in the end was something a little like a skip list.
+Specifically, it's still a doubly linked list of length N, but every K'th node
+(where K is a factor of N) has a pair of extra links to the previous/next element
+at a distance of K.
+
+This is most easily visualized as a circle (the linked list) with chords (the
+extra links). For example, for the case of N = 25, K = 5:
+
+    TODO: draw a pretty picture?
+
+In this structure, given a starting point, moving forward (or backward) can take
+advantage of the "shortcuts". If K is around √N, then the number of nodes
+traversed to move `n` steps will also be `O(√n)` rather than `O(n)`.
+
+A logarithmic speedup would likely be possible with some sort of a tree
+structure, or even a skip list with more than one level. But this seems good
+enough.
+
+The primary complexity in the implementation comes from having to update these
+secondary pointers when moving elements around. In broad terms, moving one
+element forward has the effect of shifting all elements between the old and new
+positions backwards by one, so all the secondary links in the affected region
+must be moved forward to keep the equidistant spacing. This is done during the
+scan to find the new location, but needs some care to handle correctly the edge
+cases where the moving element is part of the second-level chain before it
+starts to move, becomes one in its new position, or both.
+
+For my input, the length of the file was N = 5000. Some Go benchmarking suggests
+that the best skip distance for this input and implementation is K = 50, which
+achieved a time just shy of 13 ms:
+
+```
+TODO: plot on a chart?
+BenchmarkDecrypt/size=5-16                   205          54787206 ns/op
+BenchmarkDecrypt/size=10-16                  391          31403434 ns/op
+BenchmarkDecrypt/size=20-16                  655          18883989 ns/op
+BenchmarkDecrypt/size=25-16                  792          14549143 ns/op
+BenchmarkDecrypt/size=40-16                 1063          12900883 ns/op
+BenchmarkDecrypt/size=50-16                  961          12770594 ns/op
+BenchmarkDecrypt/size=100-16                 696          17145135 ns/op
+BenchmarkDecrypt/size=125-16                 590          20116699 ns/op
+BenchmarkDecrypt/size=200-16                 399          29804098 ns/op
+BenchmarkDecrypt/size=250-16                 328          36262944 ns/op
+BenchmarkDecrypt/size=500-16                 176          67486755 ns/op
+BenchmarkDecrypt/size=625-16                 144          83281315 ns/op
+BenchmarkDecrypt/size=1000-16                100         118909988 ns/op
+BenchmarkDecrypt/size=1250-16                 84         141315297 ns/op
+BenchmarkDecrypt/size=2500-16                 62         183950757 ns/op
+```
+
+Given that √5000 ≈ 71, that would seem to make sense.
+
 <!--math
 
 %: day15
