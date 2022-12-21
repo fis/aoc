@@ -836,6 +836,21 @@ BenchmarkDecrypt/size=2500-16                 62         183950757 ns/op
 
 Given that √5000 ≈ 71, that would seem to make sense.
 
+## [Day 21](https://adventofcode.com/2022/day/21): Monkey Math
+
+Today's puzzle could have been so much worse than it was. Turns out (and for
+once I validated that before trying to solve the general case) the dependency
+graph of the monkey business is a tree, not a general DAG. This makes thinks
+quite simple indeed:
+
+- Part 1 is solved by just recursing on the tree. There isn't even any need to
+  memoize the results, because no node is visited more than once. (Okay, it
+  might help for part 2, but the tree isn't big enough to matter.)
+- For part 2, for any given node, only one of the subtrees is affected by the
+  human. So if we want a node to produce a given value, we need only evaluate
+  the non-human operand as in part 1, solve what the other operand must be, and
+  recurse down with that value.
+
 <!--math
 
 %: day15
