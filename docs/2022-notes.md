@@ -592,22 +592,23 @@ transformation:
 x' = x - y
 y' = x + y
 -->
-![math:day15](math/2022-notes-day15.png)
+![A pair of equations defining the coordinate transformation: x' = x - y, y' = x + y.](math/2022-notes-day15.png)
 
 
 This has the effect of rotating the diamond-shaped areas we know to be empty of
 (additional) beacons into axis-aligned squares, as illustrated by the following
 diagram:
 
-```
+<!--
   a           (x', y') = (x-y, x+y)        e.b.a
  bcd    ===============================>   .f.c.
 efghi                                      j.g.d
  jkl    <===============================   .k.h.
   m     (x, y) = ((x'-y')/2, (-x'+y')/2)   m.l.i
-```
+-->
+![A diagram showing the effects of the coordinate transformation.](math/2022-notes-day15-trans.png)
 
-The locations marked as `.` on the right correspond to non-integer coordinates
+The locations marked by dots on the right correspond to non-integer coordinates
 on the left. But that doesn't really matter: the main thing is that the regions
 are now rectangular. In the new coordinate system, if a reading contained a
 sensor at original coordinates `(Sx, Sy)` and a beacon with a Manhattan distance
@@ -617,7 +618,7 @@ sensor at original coordinates `(Sx, Sy)` and a beacon with a Manhattan distance
 Sx - Sy - d <= x' < Sx - Sy + d
 Sx + Sy - d <= y' < Sx + Sy + d
 -->
-![math:day15](math/2022-notes-day15-region.png)
+![A pair of inequalities showing the bounds of x' and y'.](math/2022-notes-day15-region.png)
 
 The Go quadtree code isn't very elegant, but it works, and works fast: both
 parts of the solution together, including parsing, benchmark to something around
@@ -634,7 +635,7 @@ R = [sin φ   cos φ] = 1/√2 [1  1]
 [x']     [x]        [x-y]
 [y'] = R [y] = 1/√2 [x+y]
 -->
-![math:day15-rot](math/2022-notes-day15-rot.png)
+![A matrix equation showing the derivation of the coordinate transformation from a standard 2D rotation matrix.](math/2022-notes-day15-rot.png)
 
 Burlesque solution for part 2 is TBD at the time of writing.
 
@@ -792,7 +793,7 @@ at a distance of K.
 This is most easily visualized as a circle (the linked list) with chords (the
 extra links). For example, for the case of N = 25, K = 5:
 
-    TODO: draw a pretty picture?
+![A figure showing the cycle graph C_25, with every 5th node connected by a chord, and a traversal using one of the chords highlighted.](math/2022-notes-day20-graph.png)
 
 In this structure, given a starting point, moving forward (or backward) can take
 advantage of the "shortcuts". If K is around √N, then the number of nodes
@@ -815,8 +816,7 @@ For my input, the length of the file was N = 5000. Some Go benchmarking suggests
 that the best skip distance for this input and implementation is K = 50, which
 achieved a time just shy of 13 ms:
 
-```
-TODO: plot on a chart?
+<!--
 BenchmarkDecrypt/size=5-16                   205          54787206 ns/op
 BenchmarkDecrypt/size=10-16                  391          31403434 ns/op
 BenchmarkDecrypt/size=20-16                  655          18883989 ns/op
@@ -832,7 +832,8 @@ BenchmarkDecrypt/size=625-16                 144          83281315 ns/op
 BenchmarkDecrypt/size=1000-16                100         118909988 ns/op
 BenchmarkDecrypt/size=1250-16                 84         141315297 ns/op
 BenchmarkDecrypt/size=2500-16                 62         183950757 ns/op
-```
+-->
+![A scatter plot of benchmark results on the Y axis vs. skip distances ranging from 5 to 2500 on the X axis, with the result for K = 50 highlighted. The position of √5000 on the X axis is also shown.](math/2022-notes-day20-bench.png)
 
 Given that √5000 ≈ 71, that would seem to make sense.
 
@@ -851,6 +852,12 @@ quite simple indeed:
   the non-human operand as in part 1, solve what the other operand must be, and
   recurse down with that value.
 
+Just as an excuse to do some [TikZ](https://tikz.dev/), the evaluation of part 2
+for the example given on the question page can be illustrated by the following
+diagram:
+
+![A diagram of the tree of monkeys. Edges of the tree have been replaced with arrows that indicate either constant values bubbling up the tree, or the information needed to determine the human value trickling down the one branch.](math/2022-notes-day21.png)
+
 <!--math
 
 %: day15
@@ -860,6 +867,35 @@ quite simple indeed:
 x' &= x - y \\
 y' &= x + y
 \end{align*}
+
+%: day15-trans tikz
+
+\begin{tikzpicture}
+  [every node/.style={anchor=base,font=\footnotesize\sffamily}]
+  %\tikzset{every node}=[font=\footnotesize\sffamily,anchor=base]
+  \matrix at (0,0)
+  {
+    & & \node{a}; \\
+    & \node{b}; & \node{c}; & \node{d}; \\
+    \node{e}; & \node{f}; & \node{g}; & \node{h}; & \node{i}; \\
+    & \node{j}; & \node{k}; & \node{l}; \\
+    & & \node{m}; \\
+  };
+  \matrix at (6,0)
+  {
+    \node{e}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{b}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{a}; \\
+    \fill[gray] (0,1mm) circle (0.5mm); & \node{f}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{c}; & \fill[gray] (0,1mm) circle (0.5mm); \\
+    \node{j}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{g}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{d}; \\
+    \fill[gray] (0,1mm) circle (0.5mm); & \node{k}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{h}; & \fill[gray] (0,1mm) circle (0.5mm); \\
+    \node{m}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{l}; & \fill[gray] (0,1mm) circle (0.5mm); & \node{i}; \\
+  };
+  \node at (3,2) {$x' = x-y$};
+  \node at (3,1.7) {$y' = x+y$};
+  \node at (3,0.35) {$x = \frac{x'-y'}{2}$};
+  \node at (3,-0.2) {$y = \frac{-x'+y'}{2}$};
+  \draw[->,double] (1.3,1.5) -- (4.7,1.5);
+  \draw[<-,double] (1.3,0.8) -- (4.7,0.8);
+\end{tikzpicture}
 
 %: day15-region
 
@@ -879,5 +915,100 @@ R &= \begin{pmatrix} \cos\varphi & -\sin\varphi \\ \sin\varphi & \cos\varphi \en
 &= R \begin{pmatrix} x \\ y \end{pmatrix}
 = \frac{1}{\sqrt{2}} \begin{pmatrix} x - y \\ x + y \end{pmatrix}
 \end{align*}
+
+%: day20-graph tikz color
+
+\begin{tikzpicture}
+  \tikzset{every node}=[font=\footnotesize\sffamily]
+  \foreach \th in {0,1,2,3,4,5,6,7,8,9,10,11,12,13,15,16,17,18,19,22,23,24}
+    \draw ({90+\th/25*360}:5cm) -- ({90+(\th+1)/25*360}:5cm);
+  \foreach \th in {0,1,2,4}
+    \draw[blue] ({90+\th/5*360}:5cm) -- ({90+(\th+1)/5*360}:5cm);
+  \foreach \th in {14,20,21}
+    \draw[red] ({90+\th/25*360}:5cm) -- ({90+(\th+1)/25*360}:5cm);
+  \draw[red] ({90+3/5*360}:5cm) -- ({90+4/5*360}:5cm);
+  \foreach \th in {0,1,2,3,4,5,6,7,8,9,10,11,12,13,16,17,18,19,23,24}
+    \filldraw ({90+\th/25*360}:5cm) circle [radius=1mm];
+  \foreach \th in {14,15,20,21,22}
+    \filldraw[red] ({90+\th/25*360}:5cm) circle [radius=1mm];
+  \draw[red] ({90+22/25*360}:5cm) node[anchor=south west]{from};
+  \draw[red] ({90+14/25*360}:5cm) node[anchor=north west]{to};
+\end{tikzpicture}
+
+%: day20-bench tikz color
+
+\begin{tikzpicture}
+  \tikzset{every node}=[font=\footnotesize\sffamily]
+  \begin{scope}[xscale=1.8]
+    \foreach \y in {0,20,...,180}
+    {
+      \draw (1.3,{\y/30}) -- (1.22,{\y/30});
+      \draw (1.25,{\y/30}) node[anchor=east]{\footnotesize \y};
+    }
+    \foreach \x/\y in {5/54.787,10/31.403,20/18.884,25/14.549,40/12.901,100/17.145,125/20.117,200/29.804,250/36.263,500/67.487,625/83.281,1000/118.910,1250/141.315,2500/183.951} {
+      \draw ({ln(\x)},0) -- ({ln(\x)},-0.15);
+      \draw ({ln(\x)},-0.1) node[rotate=-90,anchor=west]{\footnotesize \x};
+      \filldraw ({ln(\x)},{\y/30}) circle [xscale={1/1.8},radius=0.08];
+    }
+    \draw[blue] ({ln(50)},0) -- ({ln(50)},-0.15);
+    \draw[blue] ({ln(50)},-0.1) node[rotate=-90,anchor=west]{\footnotesize 50};
+    \filldraw[blue] ({ln(50)},{12.771/30}) circle [xscale={1/1.8},radius=0.08];
+    \draw[blue] ({ln(50)},0.55) node[anchor=south]{\footnotesize 12.771 ms};
+    \draw[red] ({ln(sqrt(5000))},0) -- ({ln(sqrt(5000))},-0.15);
+    \draw[red] ({ln(sqrt(5000))},-0.1) node[rotate=-90,anchor=west]{$\sqrt{N}$};
+    \draw[->] (1.3,0) -- (8.1,0);
+    \draw[->] (1.3,0) -- (1.3,6.25);
+    \draw (1.3,6.3) node[anchor=south]{Time (ms)};
+    \draw (8.1,0.02) node[anchor=south east]{Skip distance};
+  \end{scope}
+\end{tikzpicture}
+
+%: day21 tikz color
+
+\usetikzlibrary{shapes.multipart}
+\begin{tikzpicture}
+  [level 1/.style={sibling distance=40mm},
+   level 2/.style={sibling distance=20mm},
+   every node/.style={black, circle split}]
+  %\begin{scope}[]
+  \node (root) {\scriptsize\sffamily root \nodepart{lower} $=$}
+    child {node (pppw) {\scriptsize\sffamily pppw \nodepart{lower} $\div$}
+      child {node (cczh) {\scriptsize\sffamily cczh \nodepart{lower} $+$}
+        child {
+          node (sllz) {\scriptsize\sffamily sllz \nodepart{lower} $4$}
+          edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 4}}
+        child {node (lgvd) {\scriptsize\sffamily lgvd \nodepart{lower} $\times$}
+          child {
+            node (ljgn) {\scriptsize\sffamily ljgn \nodepart{lower} $2$}
+            edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 2}}
+          child {node (ptdq) {\scriptsize\sffamily ptdq \nodepart{lower} $-$}
+            child {
+              node (humn) {\scriptsize\sffamily humn \nodepart{lower} $?$}
+              edge from parent [->,blue] node[rectangle,above,sloped,blue] {\scriptsize 301}}
+            child {
+              node (dvpt) {\scriptsize\sffamily dvpt \nodepart{lower} $3$}
+              edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 3}}
+            edge from parent [->,blue] node[rectangle,above,sloped,blue] {\scriptsize 298}}
+          edge from parent [->,blue] node[rectangle,above,sloped,blue] {\scriptsize 596}}
+        edge from parent [->,blue] node[rectangle,above,sloped,blue] {\scriptsize 600}}
+      child {
+        node (lfqf) {\scriptsize\sffamily lfqf \nodepart{lower} $4$}
+        edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 4}}
+      edge from parent [->,blue] node[rectangle,above,sloped,blue] {\scriptsize 150}}
+    child {node (sjmn) {\scriptsize\sffamily sjmn \nodepart{lower} $\times$}
+      child {
+        node (drzm) {\scriptsize\sffamily drzm \nodepart{lower} $-$}
+        child {
+          node (hmdt) {\scriptsize\sffamily hmdt \nodepart{lower} $32$}
+          edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 32}}
+        child {
+          node (zczc) {\scriptsize\sffamily zczc \nodepart{lower} $2$}
+          edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 2}}
+        edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 30}}
+      child {
+        node (dbpl) {\scriptsize\sffamily dbpl \nodepart{lower} $5$}
+        edge from parent [<-, red] node[rectangle,above,sloped,red] {\scriptsize 5}}
+      edge from parent [<-,red] node[rectangle,above,sloped,red] {\scriptsize 150}};
+\end{tikzpicture}
 
 -->

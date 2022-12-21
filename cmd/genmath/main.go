@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/util"
+	"golang.org/x/exp/slices"
 )
 
 func main() {
@@ -45,7 +46,7 @@ func generateAll(path string) error {
 	}
 	base := strings.TrimSuffix(filepath.Base(path), ".md")
 	for _, snippet := range snippets {
-		if err := generate(base, snippet.name, snippet.body); err != nil {
+		if err := generate(base, snippet.name, snippet.tags, snippet.body); err != nil {
 			return err
 		}
 	}
@@ -54,6 +55,7 @@ func generateAll(path string) error {
 
 type snippet struct {
 	name string
+	tags []string
 	body string
 }
 
@@ -84,6 +86,11 @@ func extract(path string) (snippets []snippet, err error) {
 			continue
 		}
 		name := lines[start][3:]
+		var tags []string
+		if sep := strings.IndexByte(name, ' '); sep > 0 {
+			tags = strings.Split(name[sep+1:], " ")
+			name = name[:sep]
+		}
 		start++
 		end := -1
 		for e := start; e < len(lines); e++ {
@@ -103,6 +110,7 @@ func extract(path string) (snippets []snippet, err error) {
 		}
 		snippets = append(snippets, snippet{
 			name: name,
+			tags: tags,
 			body: strings.Join(lines[start:end], "\n") + "\n",
 		})
 		start = end - 1
@@ -116,15 +124,17 @@ const texHeader = `
 \usepackage[active,pdftext,tightpage]{preview}
 \setlength{\PreviewBorder}{2ex}
 \usepackage{amsmath}
+%EXTRAPACKAGES
 \begin{document}
 \begin{preview}
 `
+
 const texFooter = `
 \end{preview}
 \end{document}
 `
 
-func generate(base, name, body string) error {
+func generate(base, name string, tags []string, body string) error {
 	dir, err := os.MkdirTemp(".", name+".work")
 	if err != nil {
 		return err
@@ -133,8 +143,14 @@ func generate(base, name, body string) error {
 		os.RemoveAll(dir)
 	}()
 
+	var extraPackages []string
+	if slices.Contains(tags, "tikz") {
+		extraPackages = append(extraPackages, "\\usepackage{tikz}\n")
+	}
+	header := strings.Replace(texHeader, "%EXTRAPACKAGES\n", strings.Join(extraPackages, "\n"), 1)
+
 	tex := filepath.Join(dir, "math.tex")
-	body = strings.TrimPrefix(texHeader, "\n") + body + strings.TrimPrefix(texFooter, "\n")
+	body = strings.TrimPrefix(header, "\n") + body + strings.TrimPrefix(texFooter, "\n")
 	if err := os.WriteFile(tex, []byte(body), 0o666); err != nil {
 		return err
 	}
@@ -145,10 +161,14 @@ func generate(base, name, body string) error {
 		return fmt.Errorf("pdflatex math: %w", err)
 	}
 
+	gsDev := "-sDEVICE=pnggray"
+	if slices.Contains(tags, "color") {
+		gsDev = "-sDEVICE=png16m"
+	}
 	pngCmd := exec.Command(
 		"gs",
 		"-dSAFER", "-r160",
-		"-sDEVICE=pnggray", "-dGraphicsAlphaBits=4", "-dTextAlphaBits=4",
+		gsDev, "-dGraphicsAlphaBits=4", "-dTextAlphaBits=4",
 		"-o", fmt.Sprintf("../%s-%s.png", base, name),
 		"math.pdf",
 	)
