@@ -764,9 +764,16 @@ between which type of robot to build next, and then computing at what time will
 it be possible to build a robot of that type. This may or may not be beneficial;
 it's hard to say.
 
-With the pruning, the solution takes about 0.36 seconds on my input. That's...
-barely acceptable. There's probably a clever trick in there somewhere I'm
-missing, but it'll have to do, for now.
+With the pruning, the solution took about 0.36 seconds on my input. That's...
+barely acceptable, but is where I initially left it.
+
+The final solution here adds one more pruning rule, which drops the runtime from
+360 ms to about 16 — credit goes to `int-e` for this one. There's never any need
+to build more ore, clay or obsidian robots than what's sufficient to generate,
+in one round, as much of that particular kind of resource as the maximum cost
+using said resource. Any excess won't help make more geodes: there's no way to
+consume resources faster. So that's three very simple `<` conditions for a >20x
+improvement in speed.
 
 ## [Day 20](https://adventofcode.com/2022/day/20): Grove Positioning System
 

@@ -55,6 +55,10 @@ func qualityLevels(blueprints []blueprint, maxT int) (totalQL int) {
 }
 
 func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
+	capOreR := uint8(ix.Max(ix.Max(bp.clayCostOre, bp.obsCostOre), bp.geoCostOre))
+	capClayR := uint8(bp.obsCostClay)
+	capObsR := uint8(bp.geoCostObs)
+
 	q := util.NewBucketQ[state](32)
 	q.Push(0, state{0, 0, 0, 0, 1, 0, 0, 0})
 	for q.Len() > 0 {
@@ -69,44 +73,50 @@ func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
 			t int
 			s state
 		}
-		next[0].t = pt + 1 + ix.Max(ix.CeilDiv(bp.oreCostOre-int(p.ore), int(p.oreR)), 0)
-		next[0].s = state{
-			p.ore + p.oreR*uint8(next[0].t-pt) - uint8(bp.oreCostOre),
-			p.clay + p.clayR*uint8(next[0].t-pt),
-			p.obs + p.obsR*uint8(next[0].t-pt),
-			p.geo + p.geoR*uint8(next[0].t-pt),
-			p.oreR + 1, p.clayR, p.obsR, p.geoR,
+		nn := 0
+		if p.oreR < capOreR {
+			next[0].t = pt + 1 + ix.Max(ix.CeilDiv(bp.oreCostOre-int(p.ore), int(p.oreR)), 0)
+			next[0].s = state{
+				p.ore + p.oreR*uint8(next[0].t-pt) - uint8(bp.oreCostOre),
+				p.clay + p.clayR*uint8(next[0].t-pt),
+				p.obs + p.obsR*uint8(next[0].t-pt),
+				p.geo + p.geoR*uint8(next[0].t-pt),
+				p.oreR + 1, p.clayR, p.obsR, p.geoR,
+			}
+			nn++
 		}
-		next[1].t = pt + 1 + ix.Max(ix.CeilDiv(bp.clayCostOre-int(p.ore), int(p.oreR)), 0)
-		next[1].s = state{
-			p.ore + p.oreR*uint8(next[1].t-pt) - uint8(bp.clayCostOre),
-			p.clay + p.clayR*uint8(next[1].t-pt),
-			p.obs + p.obsR*uint8(next[1].t-pt),
-			p.geo + p.geoR*uint8(next[1].t-pt),
-			p.oreR, p.clayR + 1, p.obsR, p.geoR,
+		if p.clayR < capClayR {
+			next[nn].t = pt + 1 + ix.Max(ix.CeilDiv(bp.clayCostOre-int(p.ore), int(p.oreR)), 0)
+			next[nn].s = state{
+				p.ore + p.oreR*uint8(next[nn].t-pt) - uint8(bp.clayCostOre),
+				p.clay + p.clayR*uint8(next[nn].t-pt),
+				p.obs + p.obsR*uint8(next[nn].t-pt),
+				p.geo + p.geoR*uint8(next[nn].t-pt),
+				p.oreR, p.clayR + 1, p.obsR, p.geoR,
+			}
+			nn++
 		}
-		nn := 2
-		if p.clayR > 0 {
-			next[2].t = pt + 1 + ix.Max(ix.Max(ix.CeilDiv(bp.obsCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.obsCostClay-int(p.clay), int(p.clayR))), 0)
-			next[2].s = state{
-				p.ore + p.oreR*uint8(next[2].t-pt) - uint8(bp.obsCostOre),
-				p.clay + p.clayR*uint8(next[2].t-pt) - uint8(bp.obsCostClay),
-				p.obs + p.obsR*uint8(next[2].t-pt),
-				p.geo + p.geoR*uint8(next[2].t-pt),
+		if p.clayR > 0 && p.obs < capObsR {
+			next[nn].t = pt + 1 + ix.Max(ix.Max(ix.CeilDiv(bp.obsCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.obsCostClay-int(p.clay), int(p.clayR))), 0)
+			next[nn].s = state{
+				p.ore + p.oreR*uint8(next[nn].t-pt) - uint8(bp.obsCostOre),
+				p.clay + p.clayR*uint8(next[nn].t-pt) - uint8(bp.obsCostClay),
+				p.obs + p.obsR*uint8(next[nn].t-pt),
+				p.geo + p.geoR*uint8(next[nn].t-pt),
 				p.oreR, p.clayR, p.obsR + 1, p.geoR,
 			}
-			nn = 3
+			nn++
 		}
 		if p.obsR > 0 {
-			next[3].t = pt + 1 + ix.Max(ix.Max(ix.CeilDiv(bp.geoCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.geoCostObs-int(p.obs), int(p.obsR))), 0)
-			next[3].s = state{
-				p.ore + p.oreR*uint8(next[3].t-pt) - uint8(bp.geoCostOre),
-				p.clay + p.clayR*uint8(next[3].t-pt),
-				p.obs + p.obsR*uint8(next[3].t-pt) - uint8(bp.geoCostObs),
-				p.geo + p.geoR*uint8(next[3].t-pt),
+			next[nn].t = pt + 1 + ix.Max(ix.Max(ix.CeilDiv(bp.geoCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.geoCostObs-int(p.obs), int(p.obsR))), 0)
+			next[nn].s = state{
+				p.ore + p.oreR*uint8(next[nn].t-pt) - uint8(bp.geoCostOre),
+				p.clay + p.clayR*uint8(next[nn].t-pt),
+				p.obs + p.obsR*uint8(next[nn].t-pt) - uint8(bp.geoCostObs),
+				p.geo + p.geoR*uint8(next[nn].t-pt),
 				p.oreR, p.clayR, p.obsR, p.geoR + 1,
 			}
-			nn = 4
+			nn++
 		}
 		for ni := 0; ni < nn; ni++ {
 			n := next[ni]
