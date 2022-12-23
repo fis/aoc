@@ -841,7 +841,7 @@ Given that √5000 ≈ 71, that would seem to make sense.
 
 Today's puzzle could have been so much worse than it was. Turns out (and for
 once I validated that before trying to solve the general case) the dependency
-graph of the monkey business is a tree, not a general DAG. This makes thinks
+graph of the monkey business is a tree, not a general DAG. This makes things
 quite simple indeed:
 
 - Part 1 is solved by just recursing on the tree. There isn't even any need to
@@ -867,6 +867,12 @@ all the motions.
 
 The solution here sticks to two-dimensional coordinates. In retrospect, it might
 have been easier to keep track of things in 3D, but here we are.
+
+## [Day 23](https://adventofcode.com/2022/day/23): Unstable Diffusion
+
+Might be the first cellular automaton of the year, unless I'm forgetting
+something. Not sure if there's a trick to it: simulating the day's input takes
+0.1s with this implementation, so possibly not.
 
 <!--math
 

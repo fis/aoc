@@ -67,11 +67,15 @@ type Bitmap2D struct {
 
 type bitmapPage [bitmapPageSize][bitmapPageSize]uint64
 
-func (bmp *Bitmap2D) findPage(x, y int) (page *bitmapPage, px, py, bx, by, ox, oy int) {
+func bitmapCoords(x, y int) (px, py, bx, by, ox, oy int) {
 	ox, oy = x&7, y&7
 	bx, by = x>>3+bitmapOffset, y>>3+bitmapOffset
 	px, py = bx>>bitmapPageBits+bitmapOffset, by>>bitmapPageBits+bitmapOffset
 	bx, by = bx&(bitmapPageSize-1), by&(bitmapPageSize-1)
+	return
+}
+
+func (bmp *Bitmap2D) findPage(px, py int) (page *bitmapPage) {
 	if px == bitmapOffset && py == bitmapOffset {
 		page = &bmp.zeroPage
 	} else if px&^(bitmapPageSize-1) == 0 && py&^(bitmapPageSize-1) == 0 {
@@ -79,11 +83,12 @@ func (bmp *Bitmap2D) findPage(x, y int) (page *bitmapPage, px, py, bx, by, ox, o
 	} else if p, ok := bmp.farPages[P{px, py}]; ok {
 		page = p
 	}
-	return page, px, py, bx, by, ox, oy
+	return page
 }
 
 func (bmp *Bitmap2D) makePage(x, y int) (page *bitmapPage, bx, by, ox, oy int) {
-	page, px, py, bx, by, ox, oy := bmp.findPage(x, y)
+	px, py, bx, by, ox, oy := bitmapCoords(x, y)
+	page = bmp.findPage(px, py)
 	if page != nil {
 		return page, bx, by, ox, oy
 	}
@@ -100,7 +105,8 @@ func (bmp *Bitmap2D) makePage(x, y int) (page *bitmapPage, bx, by, ox, oy int) {
 }
 
 func (bmp *Bitmap2D) Get(x, y int) bool {
-	p, _, _, bx, by, ox, oy := bmp.findPage(x, y)
+	px, py, bx, by, ox, oy := bitmapCoords(x, y)
+	p := bmp.findPage(px, py)
 	if p == nil {
 		return false
 	}
@@ -108,9 +114,72 @@ func (bmp *Bitmap2D) Get(x, y int) bool {
 	return b&(1<<(oy<<3|ox)) != 0
 }
 
+func (bmp *Bitmap2D) GetR(x0, y0, x1, y1 int) (result uint64) {
+	px0, py0, bx0, by0, ox0, oy0 := bitmapCoords(x0, y0)
+	px1, py1, bx1, by1, ox1, oy1 := bitmapCoords(x1, y1)
+	w, h := x1-x0+1, y1-y0+1
+	page := bmp.findPage(px0, py0)
+	if px0 == px1 && py0 == py1 {
+		if page == nil {
+			return 0
+		}
+		if bx0 == bx1 && by0 == by1 {
+			for y := oy0; y <= oy1; y++ {
+				for x := ox0; x <= ox1; x++ {
+					result = result<<1 | (page[by0][bx0]>>(y<<3|x))&1
+				}
+			}
+			return result
+		}
+		for y, yi := by0<<3|oy0, 0; yi < h; y, yi = y+1, yi+1 {
+			by, oy := y>>3, y&7
+			for x, xi := bx0<<3|ox0, 0; xi < w; x, xi = x+1, xi+1 {
+				bx, ox := x>>3, x&7
+				result = result<<1 | (page[by][bx]>>(oy<<3|ox))&1
+			}
+		}
+		return result
+	}
+	for y := y0; y <= y1; y++ {
+		for x := x0; x <= x1; x++ {
+			px, py, bx, by, ox, oy := bitmapCoords(x, y)
+			if px != px0 || py != py0 {
+				page = bmp.findPage(px, py)
+				px0, py0 = px, py
+			}
+			result <<= 1
+			if page != nil {
+				result |= (page[by][bx] >> (oy<<3 | ox)) & 1
+			}
+		}
+	}
+	return result
+}
+
 func (bmp *Bitmap2D) Set(x, y int) {
 	page, bx, by, ox, oy := bmp.makePage(x, y)
 	page[by][bx] |= uint64(1) << (oy<<3 | ox)
+}
+
+func (bmp *Bitmap2D) GetSet(x, y int) (old bool) {
+	page, bx, by, ox, oy := bmp.makePage(x, y)
+	oldBlock := page[by][bx]
+	mask := uint64(1) << (oy<<3 | ox)
+	page[by][bx] |= mask
+	return oldBlock&mask != 0
+}
+
+func (bmp *Bitmap2D) Clear(x, y int) {
+	page, bx, by, ox, oy := bmp.makePage(x, y)
+	page[by][bx] &^= uint64(1) << (oy<<3 | ox)
+}
+
+func (bmp *Bitmap2D) GetClear(x, y int) (old bool) {
+	page, bx, by, ox, oy := bmp.makePage(x, y)
+	oldBlock := page[by][bx]
+	mask := uint64(1) << (oy<<3 | ox)
+	page[by][bx] &^= mask
+	return oldBlock&mask != 0
 }
 
 func (bmp *Bitmap2D) Count() (sum int) {

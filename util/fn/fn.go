@@ -66,6 +66,17 @@ func Min[S ~[]E, E constraints.Ordered](s S) (result E) {
 	return result
 }
 
+// MinF returns the smallest result of applying a function to a slice.
+func MinF[S ~[]I, F ~func(I) O, I any, O constraints.Ordered](s S, f F) (result O) {
+	result = f(s[0])
+	for _, e := range s[1:] {
+		if o := f(e); o < result {
+			result = o
+		}
+	}
+	return result
+}
+
 // Max returns the largest value of a slice of some ordered type.
 func Max[S ~[]E, E constraints.Ordered](s S) (result E) {
 	result = s[0]

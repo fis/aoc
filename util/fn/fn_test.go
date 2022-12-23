@@ -138,6 +138,25 @@ func TestMin(t *testing.T) {
 	}
 }
 
+func TestMinF(t *testing.T) {
+	f := func(x int) int { return 3 * x }
+	tests := []struct {
+		data []int
+		want int
+	}{
+		{data: []int{123}, want: 369},
+		{data: []int{123, 456, 789}, want: 369},
+		{data: []int{123, 789, 456}, want: 369},
+		{data: []int{789, 456, 123}, want: 369},
+	}
+	for _, test := range tests {
+		got := MinF(test.data, f)
+		if got != test.want {
+			t.Errorf("MinF(%v, f) = %d, want %d", test.data, got, test.want)
+		}
+	}
+}
+
 func TestMax(t *testing.T) {
 	tests := []struct {
 		data []int
