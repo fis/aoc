@@ -39,6 +39,11 @@ func (bmp FixedBitmap2D) Set(x, y int) {
 	bmp[y][wx] |= 1 << ox
 }
 
+func (bmp FixedBitmap2D) Clear(x, y int) {
+	wx, ox := x>>6, x&63
+	bmp[y][wx] &^= 1 << ox
+}
+
 func (bmp FixedBitmap2D) Clone() (clone FixedBitmap2D) {
 	clone = make(FixedBitmap2D, len(bmp))
 	for i, row := range bmp {

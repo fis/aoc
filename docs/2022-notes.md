@@ -858,6 +858,16 @@ diagram:
 
 ![A diagram of the tree of monkeys. Edges of the tree have been replaced with arrows that indicate either constant values bubbling up the tree, or the information needed to determine the human value trickling down the one branch.](math/2022-notes-day21.png)
 
+## [Day 22](https://adventofcode.com/2022/day/22): Monkey Map
+
+Not sure what to say about today. As far as I can tell, there's no particular
+trick to it, and there's certainly no questions of computational efficiency this
+time. The difficulty is more in visualizing the cube and correctly implementing
+all the motions.
+
+The solution here sticks to two-dimensional coordinates. In retrospect, it might
+have been easier to keep track of things in 3D, but here we are.
+
 <!--math
 
 %: day15
