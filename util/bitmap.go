@@ -44,6 +44,35 @@ func (bmp FixedBitmap2D) Clear(x, y int) {
 	bmp[y][wx] &^= 1 << ox
 }
 
+func (bmp FixedBitmap2D) RotateR(w int) {
+	for y := range bmp {
+		wc, oc := (w-1)>>6, (w-1)&63
+		out := (bmp[y][wc] >> oc) & 1
+		bmp[y][wc] &^= 1 << oc
+		for x := wc; x >= 0; x-- {
+			bmp[y][x] <<= 1
+			if x-1 >= 0 {
+				bmp[y][x] |= bmp[y][x-1] >> 63
+			}
+		}
+		bmp[y][0] |= out
+	}
+}
+
+func (bmp FixedBitmap2D) RotateL(w int) {
+	for y := range bmp {
+		wc, oc := (w-1)>>6, (w-1)&63
+		out := bmp[y][0] & 1
+		for x := range bmp[y] {
+			bmp[y][x] >>= 1
+			if x+1 < len(bmp[y]) {
+				bmp[y][x] |= bmp[y][x+1] << 63
+			}
+		}
+		bmp[y][wc] |= out << oc
+	}
+}
+
 func (bmp FixedBitmap2D) Clone() (clone FixedBitmap2D) {
 	clone = make(FixedBitmap2D, len(bmp))
 	for i, row := range bmp {

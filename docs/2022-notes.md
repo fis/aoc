@@ -928,6 +928,16 @@ Might be the first cellular automaton of the year, unless I'm forgetting
 something. Not sure if there's a trick to it: simulating the day's input takes
 0.1s with this implementation, so possibly not.
 
+## [Day 24](https://adventofcode.com/2022/day/24): Blizzard Basin
+
+One of those path-finding problems again. I'm doing a thing here where I compute
+the blizzard positions in advance into `lcm(w,h)` separate bitmaps (the
+configuration should repeat itself with that period), instead of just updating
+them during the path-finding; not sure if that makes a difference really.
+
+Part 2 didn't really have a twist this time: it was just a matter of calling the
+part 1 solution three times.
+
 <!--math
 
 %: day15
