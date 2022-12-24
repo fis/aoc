@@ -746,6 +746,35 @@ depth-first scan starting at (0, 0, 0) is used to mark all the outside air.
 (Probably more efficient flood-fill algorithms would be possible, but this
 approach benchmarks at 0.7 milliseconds, so there's hardly any need to.)
 
+### Burlesque
+
+The basic building block of the Burlesque solutions is a code fragment that,
+given a list of 3D points, computes all the 6-neighbors of each point.
+
+For part 1, this alone is most of the solution. The length of the output
+(applied to the lava blob cubes) gives the total number of faces. The length of
+the output intersected with the original cubes gives the number of obscured
+faces. The difference of the two results is the answer.
+
+Part 2 needs a bit more work. The approach here starts from `{{0 0 0}}` (after
+shifting the original cubes to make sure the coast is clear), then uses the
+neighbor-generating function iteratively to fill out all the air outside the
+blob. Then it takes the complement (to get what's effectively the blob with all
+inside spaces filled in), and applies the part 1 solution to it.
+
+Part 1:
+
+```
+',' r~ps3coJ2rz?d3CB{)ab++1==}f[cp{?+}^msa#rjINL[.-
+```
+
+Part 2:
+
+```
+',' r~ps?iJ3cos0%xN={J2rz?d3CB{)ab++1==}f[cp{?+}^m}>]+.s10JJ_+0+]bx
+{/vJxN{J>]g1<=j<]0>=&&}f[.+><NBg0\\}{!=}w!/vg1rz3CBj\\xNsa#rjINL[.-
+```
+
 ## [Day 19](https://adventofcode.com/2022/day/19): Not Enough Minerals
 
 Kind of getting flashbacks to day 16 here.
@@ -857,6 +886,31 @@ for the example given on the question page can be illustrated by the following
 diagram:
 
 ![A diagram of the tree of monkeys. Edges of the tree have been replaced with arrows that indicate either constant values bubbling up the tree, or the information needed to determine the human value trickling down the one branch.](math/2022-notes-day21.png)
+
+### Burlesque
+
+A simple recursive solution for part 1. For part 2, the defined instruction
+mnemonics are:
+
+- `xL`: look up the definition of a node in the tree.
+- `xE`: evaluate the value (just the part 1 solution).
+- `xH`: test if the name of a branch has the human as a descendant.
+- `xF`: evaluate the non-human branch and recurse down the human one.
+
+Part 1:
+
+```
+':' r~ln)WDs0%xE={{-]==}[[g0jfe[-sa{0{-]ri}0{p^xEx/xEx/-]'.j_+pe}}j!!e!}"root"xE
+```
+
+Part 2:
+
+```
+':' r~ln)WDs0%xL={{-]==}[[g0jfe[-}%xE={xLsa{0{-]ri}0{p^xEx/xEx/-]'.j_+pe}}j!!e!}
+%xH={J"humn"==jxL{{-]==}[[g0jfi0>=}f[{xH}ay||}%xF={xLsa{0{vv}0{J-]xH
+{^p{{'+j.-}{'-.+}{'*j./}{'/.*}}}j{p^{{'+j.-}{'-.-}{'*j./}{'/./}}}jiex/-]{-]==}[[fe
+[-jxE3MVx/e!jxF}}j!!e!}"root"xLg_JxH{bxj[~}ifxEj[~xF
+```
 
 ## [Day 22](https://adventofcode.com/2022/day/22): Monkey Map
 
