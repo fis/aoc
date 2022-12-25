@@ -288,7 +288,7 @@ Both Go and Burlesque use the same building block: the way the tail moves
 towards the head (or more generally, the next knot) is just taking the
 [sign function](https://en.wikipedia.org/wiki/Sign_function) of each of the
 components of the difference between the head and the tail, with one slight
-adjustment that the tail doesn't move if it's already next to the head.
+adjustment: the tail doesn't move if it's already next to the head.
 
 The Burlesque solution also uses the remarkable fact that the ASCII codes for
 the letters 'U', 'L', 'R' and 'D' happen to be 0, 1, 2 and 3 mod 5,
@@ -306,7 +306,7 @@ Part 1:
 Part 2:
 
 ```
-0J_+10.*jln{g_2336 3dg?d2coj**5.%!!{jg_x/?++]{J2J[P^p
+0J_+10.*jln{g_2336 3dg?d2coj**5.%!!{jg_x/?++]{J2.+^p
 ?-J)ab>]2>=?*)snjRTg_x/?++]}9E!g_JPp[+}j+]jri.*p^}\me!p\CL><gl
 ```
 
@@ -315,7 +315,7 @@ Combined:
 ```
 1:     Jx/                             ?+J#RJ#r
 C: 0J_+     ln{g_2336 3dg?d2coj**5.%!!{
-2:     10.*j                           jg_x/?++]{J2J[P^p
+2:     10.*j                           jg_x/?++]{J2.+^p
 
 1:                 #R       JPpj
 C: ?-J)ab>]2>=?*)sn       ?+             }j+]jri.*p^}\me!p\CL><gl
@@ -641,11 +641,23 @@ Burlesque solution for part 2 is TBD at the time of writing.
 
 ### Burlesque
 
+The part 2 Burlesque solution implements the same quadtree idea. There's also a
+[readable version](../eso/2022-15-2.blsq.txt) left in the repository.
+
 Part 1:
 
 ```
 ln{"[-0-9]+"~?)ri2coJp^?-)ab++j^p^p2e6=={JPp}ifvv^p2e6.-abx/j.-_+J^p.-j++_+}m[
 {so}f[\[J>]j<].-+.p\CL><glPPj.-
+```
+
+Part 2:
+
+```
+%xI={jJ2.+x/_+2cotp{>.<.}{jtpjbx^m}Z]Jp^?-0bc{>.}Z]pd{jJ2!!{J3.-x/{xI}j+]m[j3.+j.+}j
+{J[~{2.+S0.+FL2cotp{2013XXsi2CO}MPcpzi{tpj4!=0j_+.+}^mg01[+j.+0j}if/v}jie0}ifvv}%xF={
+J2!!{3.-{xF}MP}j{l_~]Jp^?i==x/&&n!{vv}if}jie}ln{"[-0-9]+"~?)ri2coJp^?-)ab++s0-]J^p.-
+j++_+Jg0?-jg0+.?+_+2co}m[JFLJ<]J_+j>]J_+_+2co0[+1[++]{xI}r[xF-]J++2e6.*jp^.-2./.+
 ```
 
 ## [Day 16](https://adventofcode.com/2022/day/16): Proboscidea Volcanium
@@ -733,6 +745,20 @@ Interestingly, it would seem that with my puzzle input, there's only ever one
 state in the map: after stepping through the 10091 (suspiciously prime) input
 jets twice, we're at exactly the same state as we were when skipping over them
 once. The (much shorter) example input has more variety in it.
+
+### Burlesque
+
+The part 1 Burlesque solution uses the same sort of bitmap as the Go code for
+the data structure, except of course substituting a block of integers for the
+slice of bytes. Part 2 is still missing.
+
+Part 1:
+
+```
+tts037486866879195108057613107 16dg{0};;s1{}{g1-]L[2.+ro)z?j.+S2g1RTS1[~g_2j**?*
+1{vvJg0RTS0[~'>=={J{2.%}ayn!{2?/}if}j{J{63<=}al{2?*}if}jieJg2{&&}Z]++{j}if/v
+J0+]sag2L[<=jJg2{&&}Z]++n!x/&&S3{j}ifvvg3}{}w!vvg2L[0[P{||}Z]{z?}jdw}2022E!L[
+```
 
 ## [Day 18](https://adventofcode.com/2022/day/18): Boiling Boulders
 
@@ -866,6 +892,36 @@ BenchmarkDecrypt/size=2500-16                 62         183950757 ns/op
 
 Given that √5000 ≈ 71, that would seem to make sense.
 
+### Burlesque
+
+This just does the simple thing of always looking up the number that needs to
+move from the list, with indices added to the elements to make them unique. I
+did try the doubly linked list (with a `{{val prev-idx next-idx} ...}` block),
+but accessing blocks by index is incredibly slow.
+
+Part 1:
+
+```
+psziJ+]{S1jS0jFiS2g0jRAsag2g1[~.+j.%g1jia}r[
+sas1S0{[~z?}fi3ro1000?*?+{g0jg1.%!![~}ms
+```
+
+Part 2:
+
+```
+ps811589153?*ziJ10.*\[j+]{S1jS0jFiS2g0jRAsag2g1[~.+j.%g1jia}r[
+sas1S0{[~z?}fi3ro1000?*?+{g0jg1.%!![~}ms
+```
+
+Combined:
+
+```
+C: ps           ziJ       +]{S1jS0jFiS2g0jRAsag2g1[~.+j.%g1jia}r[
+2:   811589153?*   10.*\[j
+
+C: sas1S0{[~z?}fi3ro1000?*?+{g0jg1.%!![~}ms
+```
+
 ## [Day 21](https://adventofcode.com/2022/day/21): Monkey Math
 
 Today's puzzle could have been so much worse than it was. Turns out (and for
@@ -922,6 +978,20 @@ all the motions.
 The solution here sticks to two-dimensional coordinates. In retrospect, it might
 have been easier to keep track of things in 3D, but here we are.
 
+### Burlesque
+
+So far I've only done the first part, and badly. Not looking forward to trying
+to keep track of the cube stuff in Burlesque.
+
+Part 1:
+
+```
+lnl_~]{zi{{_+}j+]Jx/t]saj:raL[_+J?d<-x/m[jx/m[}m^}hdJ!ajJ)L[>]{' [P}j+]m[S0
+)XXtp)\[!a\[)<-2cobxj+]109954154 5dg?d3cojcy{.+}Z]S1-]3!![~j'S[+{><}gB2coj+]
+{p^ri{jJg1-]?+J{-]==}[[g1-]3.-S2jfiJ0>={g2j!![~j}ifvvJ<-g0jd!'#=={j}if/vj}jE!
+-]**4.%?i{g1rts1}jE!}r[<-?i250ug4.*g1-]2!!.+
+```
+
 ## [Day 23](https://adventofcode.com/2022/day/23): Unstable Diffusion
 
 Might be the first cellular automaton of the year, unless I'm forgetting
@@ -938,6 +1008,45 @@ them during the path-finding; not sure if that makes a difference really.
 Part 2 didn't really have a twist this time: it was just a matter of calling the
 part 1 solution three times.
 
+### Burlesque
+
+Part 1:
+
+```
+%xD={4240 3dg?d2co}lnS0sa2.-s1-]~-L[s2"<^>v"{{!=}j+]{m[}j+]g0~-)~-jm[bx}m[
+s3{0}s4{{0 1 0}}{g_l_JbcxD{?+}Z]j[+{)ab}m[j+.Jg4L[=={g4g1+.{vvg2+.rz)nz}GZ[
++s4}if{[+}j+]m[{JJ~]g0jd!'#!=jJl_jxD?*j?dbc{?+}Z]{g1g2_+{.%}Z]}m[g3{jd!}Z]r&
+j-]Jz?jg1+.==||||&&jrtg4jd!&&}f[Jg4+]{rt0D!}r[s4.+}{-]-]g1+.!=}w!-][~
+```
+
+Part 2:
+
+```
+%xD={4240 3dg?d2co}lnS0sa2.-s1-]~-L[s2"<^>v"{{!=}j+]{m[}j+]g0~-)~-jm[bx}m[
+s3{0}s4{{g_l_JbcxD{?+}Z]{-]g1+.<=}f[j[+{)ab}m[j+.Jg4L[=={g4g1+.{vvg2+.rz)nz}GZ[
++s4}if{[+}j+]m[{JJ~]g0jd!'#!=jJl_jxD?*j?dbc{?+}Z]{g1g2_+{.%}Z]}m[g3{jd!}Z]r&
+j-]Jz?jg1+.==||||&&jrtg4jd!&&}f[Jg4+]{rt0D!}r[s4.+}{-]-]g5!=}w!}hdg1+.s5
+{{0 1 0}}!a-]0s5J[~+.{0}j.*s4bx!a-]g1+.s5J[~+.{0}j.*s4bx!a-][~
+```
+
+Combined:
+
+```
+C: %xD={4240 3dg?d2co}lnS0sa2.-s1-]~-L[s2"<^>v"{{!=}j+]{m[}j+]g0~-)~-jm[bx}m[
+
+1:        {{0 1 0}}
+C: s3{0}s4         {g_l_JbcxD{?+}Z]            j[+{)ab}m[j+.Jg4L[=={g4g1+.{vvg2+.rz)nz}GZ[
+2:        {                        {-]g1+.<=}f[
+
+C: +s4}if{[+}j+]m[{JJ~]g0jd!'#!=jJl_jxD?*j?dbc{?+}Z]{g1g2_+{.%}Z]}m[g3{jd!}Z]r&
+
+1:                                                         g1+.     -][~
+C: j-]Jz?jg1+.==||||&&jrtg4jd!&&}f[Jg4+]{rt0D!}r[s4.+}{-]-]    !=}w!
+2:                                                         g5       }hdg1+.s5
+
+2: {{0 1 0}}!a-]0s5J[~+.{0}j.*s4bx!a-]g1+.s5J[~+.{0}j.*s4bx!a-][~
+```
+
 ## [Day 25](https://adventofcode.com/2022/day/25): Full of Hot Air
 
 As per tradition, there's no second part to day 25 (other than clicking a link),
@@ -951,7 +1060,39 @@ This might be the first time I've done the Burlesque solution *first*.
 
 ```
 @-/r~@=.r~ln{XX)**48?-5ug}ms5dg{0+]J{3>=}m[RTj{2.+5.%2.-}m[?+}{>]3>=}w!
-{z?}jdw48?+)L[@/-r~@.=r~\[
+0S[48?+)L[@/-r~@.=r~\[
+```
+
+## Benchmarks
+
+As before, Go solution benchmarks at `-benchtime 10s`:
+
+```
+BenchmarkAllDays/day=01-16     75800       154406 ns/op
+BenchmarkAllDays/day=02-16     60174       196590 ns/op
+BenchmarkAllDays/day=03-16    143278        81522 ns/op
+BenchmarkAllDays/day=04-16     70956       170039 ns/op
+BenchmarkAllDays/day=05-16     14294       836585 ns/op
+BenchmarkAllDays/day=06-16    594409        19819 ns/op
+BenchmarkAllDays/day=07-16    108121       111226 ns/op
+BenchmarkAllDays/day=08-16     17854       672054 ns/op
+BenchmarkAllDays/day=09-16      6830      1663922 ns/op
+BenchmarkAllDays/day=10-16    361512        34074 ns/op
+BenchmarkAllDays/day=11-16      1593      7474757 ns/op
+BenchmarkAllDays/day=12-16     19060       627049 ns/op
+BenchmarkAllDays/day=13-16      6078      1954332 ns/op
+BenchmarkAllDays/day=14-16     35253       340316 ns/op
+BenchmarkAllDays/day=15-16    104175       114552 ns/op
+BenchmarkAllDays/day=16-16       720     16774955 ns/op
+BenchmarkAllDays/day=17-16     14858       810676 ns/op
+BenchmarkAllDays/day=18-16     16796       721977 ns/op
+BenchmarkAllDays/day=19-16       733     16453949 ns/op
+BenchmarkAllDays/day=20-16       886     14524351 ns/op
+BenchmarkAllDays/day=21-16      3652      3182632 ns/op
+BenchmarkAllDays/day=22-16     40318       302625 ns/op
+BenchmarkAllDays/day=23-16       117    101238876 ns/op
+BenchmarkAllDays/day=24-16       302     39446099 ns/op
+BenchmarkAllDays/day=25-16    465816        25658 ns/op
 ```
 
 <!--math

@@ -1,0 +1,71 @@
+ln
+" parse input into {{min max} ...} list in transformed (x-y,x+y) space "vv
+{
+"[-0-9]+"~?)ri2co
+Jp^?-)ab++s0
+-]J^p.-j++_+
+Jg0?-jg0+.?+_+2co
+}m[
+
+" clamp ( {amin amax} {bmin bmax} -- {max(amin,bmin) min(amax,bmax)} ) "vv
+%xC={
+  _+2cotp{>.<.}{jtpjbx^m}Z]
+}
+" area ( {min max} -- area ) "vv
+%xA={
+  p^?-0bc{>.}Z]pd
+}
+" new-node ( {rmin rmax} {tmin tmax} -- {tmin tmax 1 c1 c2 ...} ) "vv
+%xN={
+  S0.+FL2cotp
+  {2013XXsi2CO}MPcp
+  zi{tpj4!=0j_+.+}^m
+  " {2.+xA}f[ -- slightly faster to filter here, but not strictly necessary "vv
+  g01[+j.+
+}
+" insert-leaf ( {rmin rmax} {lmin lmax 0 v} -- tree' ) "vv
+%xL={
+  J[~{2.+xN0j}if/v
+}
+" insert-tree ( {rmin rmax} {lmin lmax 1 c1 c2 ...} -- tree' ) "vv
+%xT={
+  J3.-x/{xI}j+]m[j3.+j.+
+}
+" insert ( {lmin lmax 0/1 ...} {rmin rmax} -- tree' ) "vv
+%xI={
+  jJ2.+x/xCJxA{
+    jJ2!!{xT}j{xL}jie
+    0
+  }ifvv
+}
+" find-gap ( tree -- gap ... ) "vv
+%xF={
+  J2!!{
+    3.-{xF}MP
+  }j{
+    l_~]Jp^?i==x/&&n!{vv}if
+  }jie
+}
+
+JFLJ<]J_+j>]J_+_+2co0[+1[+       " make a tree for the bounding box "vv
++]{xI}r[                         " insert all ranges "vv
+xF-]J++2e6.*jp^.-2./.+           " transform back and compute frequency "vv
+
+{
+" quadtree node format: "
+" {min max 0/1 ...} "
+" leaf nodes: "
+"   {min max 0 v} "
+"   where v = 1 for uncovered, v = 0 for covered "
+" tree nodes: "
+"   {min max 1 c1 c2 ...} "
+
+" algorithm: "
+" - clamp the input region by node min/max "
+" - if area is nonzero: "
+"   - if leaf node: "
+"     - if node value != 0 "
+"       - change into a tree node with 3x3 children "
+"   - else (tree node): "
+"     - recurse to each child "
+}vv
