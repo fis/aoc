@@ -938,6 +938,22 @@ them during the path-finding; not sure if that makes a difference really.
 Part 2 didn't really have a twist this time: it was just a matter of calling the
 part 1 solution three times.
 
+## [Day 25](https://adventofcode.com/2022/day/25): Full of Hot Air
+
+As per tradition, there's no second part to day 25 (other than clicking a link),
+and the puzzle itself is on the easy/quirky side; this time converting to/from
+[balanced](https://en.wikipedia.org/wiki/Signed-digit_representation#Balanced_form_representations)
+[quinary](https://en.wikipedia.org/wiki/Quinary) numbers.
+
+This might be the first time I've done the Burlesque solution *first*.
+
+### Burlesque
+
+```
+@-/r~@=.r~ln{XX)**48?-5ug}ms5dg{0+]J{3>=}m[RTj{2.+5.%2.-}m[?+}{>]3>=}w!
+{z?}jdw48?+)L[@/-r~@.=r~\[
+```
+
 <!--math
 
 %: day15
