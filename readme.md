@@ -18,7 +18,7 @@ Here's a map of what's in this repository.
     here. The `days` subpackage for each year serves two functions: it imports
     all the days, and also contains a unit test to verify each puzzle using the
     puzzle inputs in `YYYY/days/testdata/`.
-  - `cmd/aoc`: multipurpose binary to execute any of the puzzles.
+  - `cmd/aoc`: Multipurpose binary to execute any of the puzzles.
   - `glue`: Framework code so that the individual puzzle solutions can register
     solvers (and possibly other related utilities) for the binary via init
     functions.
@@ -29,3 +29,7 @@ Here's a map of what's in this repository.
   - `2019-py`: The initial 2019 solutions I wrote in Python, before starting
     this whole Go adventure. May contain assorted odds and ends as well.
   - `vis`: Data visualization code. See [vis/readme.md](vis/readme.md).
+- [Esoteric languages](https://esolangs.org/)
+  - `eso/*/*.blsq`: Solutions in [Burlesque](https://mroman.ch/burlesque/).
+  - `eso/*/*.b98`: Solutions in
+    [(Be)funge 98](https://esolangs.org/wiki/Funge-98).

@@ -642,7 +642,7 @@ Burlesque solution for part 2 is TBD at the time of writing.
 ### Burlesque
 
 The part 2 Burlesque solution implements the same quadtree idea. There's also a
-[readable version](../eso/2022-15-2.blsq.txt) left in the repository.
+[readable version](../eso/2022/2022-15-2.blsq.txt) left in the repository.
 
 Part 1:
 
