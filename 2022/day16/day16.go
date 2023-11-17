@@ -24,7 +24,6 @@ import (
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
 	"github.com/fis/aoc/util/fn"
-	"golang.org/x/exp/maps"
 )
 
 func init() {
@@ -65,7 +64,7 @@ func Preprocess(scan []ValveScan) (sum ValveSummary) {
 	sum.InitDist = make([]int, n)
 	sum.Dist = fn.MapRange(0, n, func(int) []int { return make([]int, n) })
 
-	for _, from := range append(maps.Keys(nonzeroValves), "AA") {
+	for _, from := range append(fn.Keys(nonzeroValves), "AA") {
 		fromN, fromNonzero := nonzeroValves[from]
 		type path struct {
 			at string

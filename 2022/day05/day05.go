@@ -17,11 +17,11 @@ package day05
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
 	"github.com/fis/aoc/util/fn"
-	"golang.org/x/exp/slices"
 )
 
 func init() {

@@ -17,13 +17,13 @@ package day13
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util/fn"
 	"github.com/fis/aoc/util/ix"
-	"golang.org/x/exp/slices"
 )
 
 func init() {
@@ -52,7 +52,7 @@ func part1(packets []list) (sum int) {
 func part2(packets []list) int {
 	d1, d2 := singletonList(2), singletonList(6)
 	packets = append(packets, d1, d2)
-	slices.SortFunc(packets, func(a, b list) bool { return cmp(a, b) < 0 })
+	slices.SortFunc(packets, func(a, b list) int { return cmp(a, b) })
 	i1 := slices.IndexFunc(packets, func(e list) bool { return cmp(e, d1) == 0 }) + 1
 	i2 := slices.IndexFunc(packets, func(e list) bool { return cmp(e, d2) == 0 }) + 1
 	return i1 * i2

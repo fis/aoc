@@ -16,12 +16,13 @@
 package day05
 
 import (
+	"cmp"
 	"crypto/md5"
 	"fmt"
+	"slices"
 	"strconv"
 
 	"github.com/fis/aoc/glue"
-	"golang.org/x/exp/slices"
 )
 
 func init() {
@@ -100,7 +101,7 @@ loop:
 			}
 			sortedCh <- got.found
 			expect += chunkSize
-			slices.SortFunc(pending, func(a, b result) bool { return a.start < b.start })
+			slices.SortFunc(pending, func(a, b result) int { return cmp.Compare(a.start, b.start) })
 			for len(pending) > 0 && pending[0].start == expect {
 				sortedCh <- pending[0].found
 				expect += chunkSize

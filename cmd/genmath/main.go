@@ -21,10 +21,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/fis/aoc/util"
-	"golang.org/x/exp/slices"
 )
 
 func main() {

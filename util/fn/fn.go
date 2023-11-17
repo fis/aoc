@@ -176,3 +176,13 @@ func Any[S ~[]E, F ~func(E) bool, E any](s S, f F) bool {
 	}
 	return false
 }
+
+// Keys returns a slice consisting of the keys of a map.
+// The keys are in no particular order, the same as the iteration order of a map.
+func Keys[M ~map[K]V, K comparable, V any](m M) []K {
+	keys := make([]K, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}
