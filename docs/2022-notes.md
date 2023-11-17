@@ -424,32 +424,31 @@ was a right pain, like it always seems to be.
 Part 1:
 
 ```
-ln)XXS0"SE"XX{J{~[}j+]g0jfiJ#rg0j!!jFi_+}MPS1x/j'zD!jJx/j'~D!s0{'a0}j+]bx
-{g_JPpg_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd!bxj+]}FM
-jp^+.{[~<=}[[j+.{[+}j+]FMJg0+]{-]'~D!}r[s0.+}{nz}w!p\CLg1{-]==}[[fe[~
+ln)XXS0"SE"XX{J{[~~[}[[g0zijfe^px/Fi_+}MPS1x/j'zD!jJx/j'~D!s0'a[+bx
+{0Pp{l_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd![+}FM
+j+.{[~<=}[[f[}\m><NBJg0+]{~]'~D!}r[s0}{)~]g1~[n!}w!p\CLL[
 ```
 
 Part 2:
 
 ```
-ln)XXS0"ES"XX{J{~[}j+]g0jfiJ#rg0j!!jFi_+}MPx/j'aD!jJx/j'@D!s0{'z0}j+]bx
-{g_J[-Ppg_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd!bxj+]}FM
-jp^-.{[~>=}[[j+.{[+}j+]FMJg0+]{-]'@D!}r[s0.+}{nz}w!p\CL{-]'a==}f[)[~<]
+ln)XXS0"ES"XX{J{[~~[}[[g0zijfe^px/Fi_+}MPx/j'aD!jJx/j'@D!s0'z[+bx
+{0Pp{l_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd![+}FM
+j-.{[~>=}[[f[}\m><NBJg0+]{~]'@D!}r[s0}{)[~'a~[n!}w!p\CLL[
 ```
 
 Combined:
 
 ```
-1:         SE                                 S1   'z       '~     'a
-C: ln)XXS0"  "XX{J{~[}j+]g0jfiJ#rg0j!!jFi_+}MP  x/j  D!jJx/j  D!s0{  0}j+]bx
-2:         ES                                      'a       '@     'z
+1:         SE                               S1   'z       '~    'a
+C: ln)XXS0"  "XX{J{[~~[}[[g0zijfe^px/Fi_+}MP  x/j  D!jJx/j  D!s0  [+bx
+2:         ES                                    'a       '@    'z
 
-C: {g_J  Ppg_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd!bxj+]}FM
-2:     [-
+C: {0Pp{l_2336 3dg?d2cojbc{?+}Z]{J<]0>=g0saj-]L[_+x/?-<]0.>&&}{Jg0jd![+}FM
 
-1:    +.   <=                       '~                    g1{-]==}[[fe[~
-C: jp^  {[~  }[[j+.{[+}j+]FMJg0+]{-]  D!}r[s0.+}{nz}w!p\CL
-2:    -.   >=                       '@                    {-]'a==}f[)[~<]
+1:  +.   <=                    '~         )~]g1
+C: j  {[~  }[[f[}\m><NBJg0+]{~]  D!}r[s0}{     ~[n!}w!p\CLL[
+2:  -.   >=                    '@         )[~'a
 ```
 
 ## [Day 13](https://adventofcode.com/2022/day/13): Distress Signal
@@ -636,8 +635,6 @@ R = [sin φ   cos φ] = 1/√2 [1  1]
 [y'] = R [y] = 1/√2 [x+y]
 -->
 ![A matrix equation showing the derivation of the coordinate transformation from a standard 2D rotation matrix.](math/2022-notes-day15-rot.png)
-
-Burlesque solution for part 2 is TBD at the time of writing.
 
 ### Burlesque
 
