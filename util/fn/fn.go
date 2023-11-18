@@ -1,10 +1,14 @@
 // Package fn contains the sort of non-Go-like, occasionally higher-order, utility functions you might find in a functional language.
 package fn
 
-import "golang.org/x/exp/constraints"
+import "cmp"
+
+type integer interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
 
 // Sum returns the sum of a slice of integers. The sum of an empty slice is 0.
-func Sum[S ~[]E, E constraints.Integer](s S) (result E) {
+func Sum[S ~[]E, E integer](s S) (result E) {
 	for _, e := range s {
 		result += e
 	}
@@ -12,7 +16,7 @@ func Sum[S ~[]E, E constraints.Integer](s S) (result E) {
 }
 
 // SumF returns the sum of the results of applying a function to a slice. The sum of an empty slice is 0.
-func SumF[S ~[]I, F ~func(I) O, I any, O constraints.Integer](s S, f F) (result O) {
+func SumF[S ~[]I, F ~func(I) O, I any, O integer](s S, f F) (result O) {
 	for _, e := range s {
 		result += f(e)
 	}
@@ -20,7 +24,7 @@ func SumF[S ~[]I, F ~func(I) O, I any, O constraints.Integer](s S, f F) (result 
 }
 
 // Prod returns the product of a slice of integers. The product of an empty slice is 1.
-func Prod[S ~[]E, E constraints.Integer](s S) (result E) {
+func Prod[S ~[]E, E integer](s S) (result E) {
 	result = 1
 	for _, e := range s {
 		result *= e
@@ -29,7 +33,7 @@ func Prod[S ~[]E, E constraints.Integer](s S) (result E) {
 }
 
 // ProdF returns the product of the results of applying a function to a slice. The product of an empty slice is 1.
-func ProdF[S ~[]I, F ~func(I) O, I any, O constraints.Integer](s S, f F) (result O) {
+func ProdF[S ~[]I, F ~func(I) O, I any, O integer](s S, f F) (result O) {
 	result = 1
 	for _, e := range s {
 		result *= f(e)
@@ -56,7 +60,7 @@ func If[T any](c bool, t, f T) T {
 }
 
 // Min returns the smallest value of a slice of some ordered type.
-func Min[S ~[]E, E constraints.Ordered](s S) (result E) {
+func Min[S ~[]E, E cmp.Ordered](s S) (result E) {
 	result = s[0]
 	for _, e := range s[1:] {
 		if e < result {
@@ -67,7 +71,7 @@ func Min[S ~[]E, E constraints.Ordered](s S) (result E) {
 }
 
 // MinF returns the smallest result of applying a function to a slice.
-func MinF[S ~[]I, F ~func(I) O, I any, O constraints.Ordered](s S, f F) (result O) {
+func MinF[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](s S, f F) (result O) {
 	result = f(s[0])
 	for _, e := range s[1:] {
 		if o := f(e); o < result {
@@ -78,7 +82,7 @@ func MinF[S ~[]I, F ~func(I) O, I any, O constraints.Ordered](s S, f F) (result 
 }
 
 // Max returns the largest value of a slice of some ordered type.
-func Max[S ~[]E, E constraints.Ordered](s S) (result E) {
+func Max[S ~[]E, E cmp.Ordered](s S) (result E) {
 	result = s[0]
 	for _, e := range s[1:] {
 		if e > result {
@@ -89,7 +93,7 @@ func Max[S ~[]E, E constraints.Ordered](s S) (result E) {
 }
 
 // MaxF returns the largest result of applying a function to a slice.
-func MaxF[S ~[]I, F ~func(I) O, I any, O constraints.Ordered](s S, f F) (result O) {
+func MaxF[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](s S, f F) (result O) {
 	result = f(s[0])
 	for _, e := range s[1:] {
 		if o := f(e); o > result {
@@ -131,7 +135,7 @@ func MapE[S ~[]I, F ~func(I) (O, error), I, O any](in S, f F) (out []O, err erro
 
 // MapRange returns a slice with the results of calling function on a range of integers.
 // The range is given in the usual half-open [start, end) style.
-func MapRange[F ~func(I) E, I constraints.Integer, E any](start, end I, f F) (out []E) {
+func MapRange[F ~func(I) E, I integer, E any](start, end I, f F) (out []E) {
 	n := end - start
 	out = make([]E, n)
 	for i := start; i < end; i++ {

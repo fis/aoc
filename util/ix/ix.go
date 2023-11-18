@@ -15,10 +15,20 @@
 // Package ix contains small integer arithmetic functions in the style of the standard `math` package.
 package ix
 
-import "golang.org/x/exp/constraints"
+type signed interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64
+}
+
+type unsigned interface {
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+type integer interface {
+	signed | unsigned
+}
 
 // Abs returns the absolute value of x.
-func Abs[T constraints.Signed](x T) T {
+func Abs[T signed](x T) T {
 	if x < 0 {
 		return -x
 	}
@@ -26,7 +36,7 @@ func Abs[T constraints.Signed](x T) T {
 }
 
 // Sign returns -1, 0 or 1 if x is less than, equal, or greater than zero, respectively.
-func Sign[T constraints.Signed](x T) T {
+func Sign[T signed](x T) T {
 	if x < 0 {
 		return -1
 	} else if x > 0 {
@@ -36,12 +46,12 @@ func Sign[T constraints.Signed](x T) T {
 }
 
 // CeilDiv returns the result of the integer division a / b except rounded up (for nonnegative integers).
-func CeilDiv[T constraints.Integer](a, b T) T {
+func CeilDiv[T integer](a, b T) T {
 	return (a + b - 1) / b
 }
 
 // GCD returns the greatest common divisor of the two arguments.
-func GCD[T constraints.Integer](a, b T) T {
+func GCD[T integer](a, b T) T {
 	for b != 0 {
 		t := b
 		b = a % b
@@ -51,7 +61,7 @@ func GCD[T constraints.Integer](a, b T) T {
 }
 
 // LCM returns the least common multiple of the two arguments.
-func LCM[T constraints.Integer](a, b T) T {
+func LCM[T integer](a, b T) T {
 	return a / GCD(a, b) * b
 }
 
