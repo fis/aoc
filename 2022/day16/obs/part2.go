@@ -16,7 +16,6 @@ package obs
 
 import (
 	"github.com/fis/aoc/2022/day16"
-	"github.com/fis/aoc/util/ix"
 )
 
 func greedyBound(sum day16.ValveSummary, maxT int) (pressure int) {
@@ -47,8 +46,8 @@ func greedyBound(sum day16.ValveSummary, maxT int) (pressure int) {
 					} else {
 						d2 = sum.Dist[at2][j]
 					}
-					t1 := ix.Min(t+d1+1, maxT)
-					t2 := ix.Min(t+d2+1, maxT)
+					t1 := min(t+d1+1, maxT)
+					t2 := min(t+d2+1, maxT)
 					p := (maxT-t1)*sum.FlowRates[i] + (maxT-t2)*sum.FlowRates[j]
 					if p > bestP {
 						bestI, bestJ, bestT1, bestT2, bestP = i, j, t1, t2, p
@@ -69,7 +68,7 @@ func greedyBound(sum day16.ValveSummary, maxT int) (pressure int) {
 			if open&(1<<i) != 0 {
 				continue
 			}
-			t1 := ix.Min(t+sum.Dist[at1][i]+1, maxT)
+			t1 := min(t+sum.Dist[at1][i]+1, maxT)
 			p := (maxT - t1) * sum.FlowRates[i]
 			if p > bestP {
 				bestI, bestT1, bestP = i, t1, p
@@ -113,7 +112,7 @@ func releasePressure2(sum day16.ValveSummary, maxT int) (maxPressure int) {
 	}
 	for i := uint8(0); i < n; i++ {
 		for j := uint8(0); j < n; j++ {
-			minD2[i][j] = ix.Min(minD1[i], minD1[j])
+			minD2[i][j] = min(minD1[i], minD1[j])
 		}
 	}
 

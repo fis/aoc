@@ -25,22 +25,6 @@ func Abs[T constraints.Signed](x T) T {
 	return x
 }
 
-// Max returns the larger of the two arguments.
-func Max[T constraints.Integer](a, b T) T {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-// Min returns the smaller of the two arguments.
-func Min[T constraints.Integer](a, b T) T {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 // Sign returns -1, 0 or 1 if x is less than, equal, or greater than zero, respectively.
 func Sign[T constraints.Signed](x T) T {
 	if x < 0 {

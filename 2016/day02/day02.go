@@ -19,7 +19,6 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -40,13 +39,13 @@ func decode(sheet []string) string {
 		for _, step := range steps {
 			switch step {
 			case 'L':
-				x = ix.Max(x-1, 0)
+				x = max(x-1, 0)
 			case 'R':
-				x = ix.Min(x+1, 2)
+				x = min(x+1, 2)
 			case 'U':
-				y = ix.Max(y-1, 0)
+				y = max(y-1, 0)
 			case 'D':
-				y = ix.Min(y+1, 2)
+				y = min(y+1, 2)
 			}
 		}
 		code.WriteByte(keypad[y][x])
@@ -63,13 +62,13 @@ func decodeCross(sheet []string) string {
 			nx, ny := x, y
 			switch step {
 			case 'L':
-				nx = ix.Max(x-1, 0)
+				nx = max(x-1, 0)
 			case 'R':
-				nx = ix.Min(x+1, 4)
+				nx = min(x+1, 4)
 			case 'U':
-				ny = ix.Max(y-1, 0)
+				ny = max(y-1, 0)
 			case 'D':
-				ny = ix.Min(y+1, 4)
+				ny = min(y+1, 4)
 			}
 			if keypad[ny][nx] != 0 {
 				x, y = nx, ny

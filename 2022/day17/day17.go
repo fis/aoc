@@ -20,7 +20,6 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util/fn"
-	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -179,7 +178,7 @@ func (sim *simulation) step() bool {
 	for y := 0; y < rs.h; y++ {
 		sim.chute[sim.rockY+y] |= rs.shape[y] << (7 - rs.w - sim.rockX)
 	}
-	topY := ix.Max(len(sim.chute)-sim.airGap, sim.rockY+rs.h)
+	topY := max(len(sim.chute)-sim.airGap, sim.rockY+rs.h)
 	sim.airGap = len(sim.chute) - topY
 
 	sim.createRock()

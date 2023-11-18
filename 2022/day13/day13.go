@@ -23,7 +23,6 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util/fn"
-	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -60,7 +59,7 @@ func part2(packets []list) int {
 
 func cmp(left, right list) int {
 	llen, rlen := left.len(), right.len()
-	n := ix.Min(llen, rlen)
+	n := min(llen, rlen)
 	for i := 0; i < n; i++ {
 		lt, rt := left.itemType(i), right.itemType(i)
 		if lt == numItem && rt == numItem {

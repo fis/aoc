@@ -25,32 +25,6 @@ func TestAbs(t *testing.T) {
 	}
 }
 
-func TestMax(t *testing.T) {
-	tests := [][3]int{
-		{-100, 100, 100}, {-20, 20, 20}, {-1, 1, 1},
-		{-5, -5, -5}, {0, 0, 0}, {5, 5, 5},
-		{1, -1, 1}, {20, -20, 20}, {100, -100, 100},
-	}
-	for _, test := range tests {
-		if got := Max(test[0], test[1]); got != test[2] {
-			t.Errorf("Max(%d, %d) = %d, want %d", test[0], test[1], got, test[2])
-		}
-	}
-}
-
-func TestMin(t *testing.T) {
-	tests := [][3]int{
-		{-100, 100, -100}, {-20, 20, -20}, {-1, 1, -1},
-		{-5, -5, -5}, {0, 0, 0}, {5, 5, 5},
-		{1, -1, -1}, {20, -20, -20}, {100, -100, -100},
-	}
-	for _, test := range tests {
-		if got := Min(test[0], test[1]); got != test[2] {
-			t.Errorf("Min(%d, %d) = %d, want %d", test[0], test[1], got, test[2])
-		}
-	}
-}
-
 func TestSign(t *testing.T) {
 	tests := [][2]int{{-100, -1}, {-20, -1}, {-1, -1}, {0, 0}, {1, 1}, {20, 1}, {100, 1}}
 	for _, test := range tests {

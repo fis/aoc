@@ -116,7 +116,7 @@ func (is intervalSet) add(start, end int) intervalSet {
 	is[pos] = interval{start, end}
 	for pos := 0; pos+1 < len(is); {
 		if is[pos+1].start <= is[pos].end+1 {
-			is[pos].end = ix.Max(is[pos].end, is[pos+1].end)
+			is[pos].end = max(is[pos].end, is[pos+1].end)
 			copy(is[pos+1:], is[pos+2:])
 			is = is[:len(is)-1]
 		} else {
@@ -140,22 +140,22 @@ type quadTreeNode struct {
 
 type quadTreeLeaf bool
 
-func (n *quadTreeNode) set(min, max, treeMin, treeMax util.P, v bool) quadTree {
-	if min.X < n.p.X && min.Y < n.p.Y {
-		qmax := util.P{ix.Min(max.X, n.p.X), ix.Min(max.Y, n.p.Y)}
-		n.q[0][0] = n.q[0][0].set(min, qmax, treeMin, n.p, v)
+func (n *quadTreeNode) set(minP, maxP, treeMin, treeMax util.P, v bool) quadTree {
+	if minP.X < n.p.X && minP.Y < n.p.Y {
+		qmax := util.P{min(maxP.X, n.p.X), min(maxP.Y, n.p.Y)}
+		n.q[0][0] = n.q[0][0].set(minP, qmax, treeMin, n.p, v)
 	}
-	if max.X > n.p.X && min.Y < n.p.Y {
-		qmin, qmax := util.P{ix.Max(min.X, n.p.X), min.Y}, util.P{max.X, ix.Min(max.Y, n.p.Y)}
+	if maxP.X > n.p.X && minP.Y < n.p.Y {
+		qmin, qmax := util.P{max(minP.X, n.p.X), minP.Y}, util.P{maxP.X, min(maxP.Y, n.p.Y)}
 		n.q[0][1] = n.q[0][1].set(qmin, qmax, util.P{n.p.X, treeMin.Y}, util.P{treeMax.X, n.p.Y}, v)
 	}
-	if min.X < n.p.X && max.Y > n.p.Y {
-		qmin, qmax := util.P{min.X, ix.Max(min.Y, n.p.Y)}, util.P{ix.Min(max.X, n.p.X), max.Y}
+	if minP.X < n.p.X && maxP.Y > n.p.Y {
+		qmin, qmax := util.P{minP.X, max(minP.Y, n.p.Y)}, util.P{min(maxP.X, n.p.X), maxP.Y}
 		n.q[1][0] = n.q[1][0].set(qmin, qmax, util.P{treeMin.X, n.p.Y}, util.P{n.p.X, treeMax.Y}, v)
 	}
-	if max.X > n.p.X && max.Y > n.p.Y {
-		qmin := util.P{ix.Max(min.X, n.p.X), ix.Max(min.Y, n.p.Y)}
-		n.q[1][1] = n.q[1][1].set(qmin, max, n.p, treeMax, v)
+	if maxP.X > n.p.X && maxP.Y > n.p.Y {
+		qmin := util.P{max(minP.X, n.p.X), max(minP.Y, n.p.Y)}
+		n.q[1][1] = n.q[1][1].set(qmin, maxP, n.p, treeMax, v)
 	}
 	return n
 }

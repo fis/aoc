@@ -20,7 +20,6 @@ import (
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
-	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -127,12 +126,12 @@ func (p p3) neigh() [6]p3 {
 	}
 }
 
-func max3(cubes []p3) (max p3) {
-	max = cubes[0]
+func max3(cubes []p3) (maxP p3) {
+	maxP = cubes[0]
 	for _, c := range cubes[1:] {
-		max.x = ix.Max(max.x, c.x)
-		max.y = ix.Max(max.y, c.y)
-		max.z = ix.Max(max.z, c.z)
+		maxP.x = max(maxP.x, c.x)
+		maxP.y = max(maxP.y, c.y)
+		maxP.z = max(maxP.z, c.z)
 	}
-	return max
+	return maxP
 }

@@ -70,16 +70,16 @@ func inRange(bots []nanobot) (count int) {
 }
 
 func bestPos(bots []nanobot) (d int) {
-	min, max := bots[0].p, bots[0].p
+	minP, maxP := bots[0].p, bots[0].p
 	for _, bot := range bots[1:] {
-		min.x = ix.Min(min.x, bot.p.x)
-		max.x = ix.Max(max.x, bot.p.x)
-		min.y = ix.Min(min.y, bot.p.y)
-		max.y = ix.Max(max.y, bot.p.y)
-		min.z = ix.Min(min.z, bot.p.z)
-		max.z = ix.Max(max.z, bot.p.z)
+		minP.x = min(minP.x, bot.p.x)
+		maxP.x = max(maxP.x, bot.p.x)
+		minP.y = min(minP.y, bot.p.y)
+		maxP.y = max(maxP.y, bot.p.y)
+		minP.z = min(minP.z, bot.p.z)
+		maxP.z = max(maxP.z, bot.p.z)
 	}
-	d, _ = findBest(bots, min, max, 0, -1, -1, 0)
+	d, _ = findBest(bots, minP, maxP, 0, -1, -1, 0)
 	return d
 }
 

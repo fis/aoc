@@ -300,7 +300,7 @@ func DistM(a, b P) int {
 
 // DistC returns the Chebyshev (chessboard, 8-neighbor) distance between two points.
 func DistC(a, b P) int {
-	return ix.Max(ix.Abs(a.X-b.X), ix.Abs(a.Y-b.Y))
+	return max(ix.Abs(a.X-b.X), ix.Abs(a.Y-b.Y))
 }
 
 // Bounds returns the bounding box of a list of points.

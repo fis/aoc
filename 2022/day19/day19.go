@@ -55,7 +55,7 @@ func qualityLevels(blueprints []blueprint, maxT int) (totalQL int) {
 }
 
 func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
-	capOreR := uint8(ix.Max(ix.Max(bp.clayCostOre, bp.obsCostOre), bp.geoCostOre))
+	capOreR := uint8(max(bp.clayCostOre, bp.obsCostOre, bp.geoCostOre))
 	capClayR := uint8(bp.obsCostClay)
 	capObsR := uint8(bp.geoCostObs)
 
@@ -75,7 +75,7 @@ func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
 		}
 		nn := 0
 		if p.oreR < capOreR {
-			next[0].t = pt + 1 + ix.Max(ix.CeilDiv(bp.oreCostOre-int(p.ore), int(p.oreR)), 0)
+			next[0].t = pt + 1 + max(ix.CeilDiv(bp.oreCostOre-int(p.ore), int(p.oreR)), 0)
 			next[0].s = state{
 				p.ore + p.oreR*uint8(next[0].t-pt) - uint8(bp.oreCostOre),
 				p.clay + p.clayR*uint8(next[0].t-pt),
@@ -86,7 +86,7 @@ func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
 			nn++
 		}
 		if p.clayR < capClayR {
-			next[nn].t = pt + 1 + ix.Max(ix.CeilDiv(bp.clayCostOre-int(p.ore), int(p.oreR)), 0)
+			next[nn].t = pt + 1 + max(ix.CeilDiv(bp.clayCostOre-int(p.ore), int(p.oreR)), 0)
 			next[nn].s = state{
 				p.ore + p.oreR*uint8(next[nn].t-pt) - uint8(bp.clayCostOre),
 				p.clay + p.clayR*uint8(next[nn].t-pt),
@@ -97,7 +97,7 @@ func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
 			nn++
 		}
 		if p.clayR > 0 && p.obs < capObsR {
-			next[nn].t = pt + 1 + ix.Max(ix.Max(ix.CeilDiv(bp.obsCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.obsCostClay-int(p.clay), int(p.clayR))), 0)
+			next[nn].t = pt + 1 + max(ix.CeilDiv(bp.obsCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.obsCostClay-int(p.clay), int(p.clayR)), 0)
 			next[nn].s = state{
 				p.ore + p.oreR*uint8(next[nn].t-pt) - uint8(bp.obsCostOre),
 				p.clay + p.clayR*uint8(next[nn].t-pt) - uint8(bp.obsCostClay),
@@ -108,7 +108,7 @@ func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
 			nn++
 		}
 		if p.obsR > 0 {
-			next[nn].t = pt + 1 + ix.Max(ix.Max(ix.CeilDiv(bp.geoCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.geoCostObs-int(p.obs), int(p.obsR))), 0)
+			next[nn].t = pt + 1 + max(ix.CeilDiv(bp.geoCostOre-int(p.ore), int(p.oreR)), ix.CeilDiv(bp.geoCostObs-int(p.obs), int(p.obsR)), 0)
 			next[nn].s = state{
 				p.ore + p.oreR*uint8(next[nn].t-pt) - uint8(bp.geoCostOre),
 				p.clay + p.clayR*uint8(next[nn].t-pt),

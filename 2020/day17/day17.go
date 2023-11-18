@@ -18,7 +18,6 @@ package day17
 import (
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
-	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -69,12 +68,12 @@ func loadLevel4(level *util.Level) (out map[P4]struct{}, outMin, outMax P4) {
 	return out, P4{min.X, min.Y, 0, 0}, P4{max.X, max.Y, 0, 0}
 }
 
-func cycle3(in map[P3]struct{}, min, max P3) (out map[P3]struct{}, newMin, newMax P3) {
+func cycle3(in map[P3]struct{}, minP, maxP P3) (out map[P3]struct{}, newMin, newMax P3) {
 	out = make(map[P3]struct{})
-	newMin, newMax = min, max
-	for z := min.Z - 1; z <= max.Z+1; z++ {
-		for y := min.Y - 1; y <= max.Y+1; y++ {
-			for x := min.X - 1; x <= max.X+1; x++ {
+	newMin, newMax = minP, maxP
+	for z := minP.Z - 1; z <= maxP.Z+1; z++ {
+		for y := minP.Y - 1; y <= maxP.Y+1; y++ {
+			for x := minP.X - 1; x <= maxP.X+1; x++ {
 				p := P3{x, y, z}
 				active, count := false, 0
 				if _, ok := in[p]; ok {
@@ -91,12 +90,12 @@ func cycle3(in map[P3]struct{}, min, max P3) (out map[P3]struct{}, newMin, newMa
 				}
 				if count == 3 || (active && count == 2) {
 					out[p] = struct{}{}
-					newMin.X = ix.Min(newMin.X, x)
-					newMax.X = ix.Max(newMax.X, x)
-					newMin.Y = ix.Min(newMin.Y, y)
-					newMax.Y = ix.Max(newMax.Y, y)
-					newMin.Z = ix.Min(newMin.Z, z)
-					newMax.Z = ix.Max(newMax.Z, z)
+					newMin.X = min(newMin.X, x)
+					newMax.X = max(newMax.X, x)
+					newMin.Y = min(newMin.Y, y)
+					newMax.Y = max(newMax.Y, y)
+					newMin.Z = min(newMin.Z, z)
+					newMax.Z = max(newMax.Z, z)
 				}
 			}
 		}
@@ -104,13 +103,13 @@ func cycle3(in map[P3]struct{}, min, max P3) (out map[P3]struct{}, newMin, newMa
 	return out, newMin, newMax
 }
 
-func cycle4(in map[P4]struct{}, min, max P4) (out map[P4]struct{}, newMin, newMax P4) {
+func cycle4(in map[P4]struct{}, minP, maxP P4) (out map[P4]struct{}, newMin, newMax P4) {
 	out = make(map[P4]struct{})
-	newMin, newMax = min, max
-	for w := min.W - 1; w <= max.W+1; w++ {
-		for z := min.Z - 1; z <= max.Z+1; z++ {
-			for y := min.Y - 1; y <= max.Y+1; y++ {
-				for x := min.X - 1; x <= max.X+1; x++ {
+	newMin, newMax = minP, maxP
+	for w := minP.W - 1; w <= maxP.W+1; w++ {
+		for z := minP.Z - 1; z <= maxP.Z+1; z++ {
+			for y := minP.Y - 1; y <= maxP.Y+1; y++ {
+				for x := minP.X - 1; x <= maxP.X+1; x++ {
 					p := P4{x, y, z, w}
 					active, count := false, 0
 					if _, ok := in[p]; ok {
@@ -129,14 +128,14 @@ func cycle4(in map[P4]struct{}, min, max P4) (out map[P4]struct{}, newMin, newMa
 					}
 					if count == 3 || (active && count == 2) {
 						out[p] = struct{}{}
-						newMin.X = ix.Min(newMin.X, x)
-						newMax.X = ix.Max(newMax.X, x)
-						newMin.Y = ix.Min(newMin.Y, y)
-						newMax.Y = ix.Max(newMax.Y, y)
-						newMin.Z = ix.Min(newMin.Z, z)
-						newMax.Z = ix.Max(newMax.Z, z)
-						newMin.W = ix.Min(newMin.W, w)
-						newMax.W = ix.Max(newMax.W, w)
+						newMin.X = min(newMin.X, x)
+						newMax.X = max(newMax.X, x)
+						newMin.Y = min(newMin.Y, y)
+						newMax.Y = max(newMax.Y, y)
+						newMin.Z = min(newMin.Z, z)
+						newMax.Z = max(newMax.Z, z)
+						newMin.W = min(newMin.W, w)
+						newMax.W = max(newMax.W, w)
 					}
 				}
 			}

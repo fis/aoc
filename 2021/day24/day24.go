@@ -20,7 +20,6 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -46,9 +45,9 @@ func (coeffs *monadCoeffs) findValid(wantBig bool) (num string) {
 		d := coeffs[pair[0]].b + coeffs[pair[1]].a
 		var d1, d2 int
 		if wantBig {
-			d1, d2 = ix.Min(9, 9-d), ix.Min(9, 9+d)
+			d1, d2 = min(9, 9-d), min(9, 9+d)
 		} else {
-			d1, d2 = ix.Max(1, 1-d), ix.Max(1, 1+d)
+			d1, d2 = max(1, 1-d), max(1, 1+d)
 		}
 		digits[pair[0]] = byte('0' + d1)
 		digits[pair[1]] = byte('0' + d2)
