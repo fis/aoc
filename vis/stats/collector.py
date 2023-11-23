@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 from lxml import html
 
 
+keep_files = False
+
+
 def main():
     while True:
         now, next = next_time()
@@ -17,6 +20,13 @@ def main():
             fetch_start = datetime.now()
             content = fetch(next.year)
             fetch_end = datetime.now()
+
+            if keep_files:
+                try:
+                    with open(f'stats.{int(next.timestamp())}.html', 'wb') as f:
+                        f.write(content)
+                except Exception as e:
+                    print(f'failed to save content: {e}')
 
             counts = parse(content)
 
@@ -31,7 +41,7 @@ def main():
 
 
 def next_time():
-    aoctz = pytz.timezone('US/Eastern')
+    aoctz = pytz.timezone('America/New_York')
     now = datetime.now(tz=aoctz)
     next = now.replace(minute=now.minute//5*5, second=0, microsecond=0)
     while next < now:
