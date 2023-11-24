@@ -64,6 +64,21 @@ def gobench():
     return pd.read_pickle(_GOBENCH_FILE)
 
 
+def last_updated():
+    """Returns the timestamps when each of the data files was last updated."""
+
+    files = [
+        ('leaderboard', _LEADERBOARD_FILE),
+        ('stats', _STATS_FILE),
+        ('gobench', _GOBENCH_FILE),
+    ]
+    times = {}
+    for key, file in files:
+        mtime = os.stat(file).st_mtime
+        times[key] = datetime.fromtimestamp(mtime, tz=pytz.UTC)
+    return times
+
+
 def leaderboard_update():
     """Ensures the leaderboard data is up to date.
     
@@ -82,12 +97,11 @@ def leaderboard_update():
         return False
     print('leaderboard: regenerating data')
 
-    data = pd.DataFrame()
+    data = []
     for year, days in contest_days():
-        year_frame = pd.DataFrame()
         for day in days:
-            year_frame = year_frame.append(_leaderboard_parse(year, day))
-        data = data.append(year_frame)
+            data.append(_leaderboard_parse(year, day))
+    data = pd.concat(data)
 
     data.to_pickle(_LEADERBOARD_FILE)
     return True
@@ -170,10 +184,10 @@ def stats_update():
         return False
     print('stats: regenerating data')
 
-    data = pd.DataFrame()
+    data = []
     for year, src, _ in input_times:
-        year_frame = _stats_parse(year, src)
-        data = data.append(year_frame)
+        data.append(_stats_parse(year, src))
+    data = pd.concat(data)
 
     data.to_pickle(_STATS_FILE)
     return True
@@ -192,7 +206,7 @@ def _stats_parse(year, src):
         `two_stars`, containing the number of solutions for one or both parts of that day's puzzle.
     """
 
-    epoch = pd.to_datetime(f'{year}-12-01').tz_localize('US/Eastern').value // 1000000000
+    epoch = pd.to_datetime(f'{year}-12-01').tz_localize('America/New_York').value // 1000000000
 
     with open(src) as f:
         lines = list(f)
@@ -250,12 +264,11 @@ def gobench_update():
         return False
     print('gobench: regenerating data')
 
-    data = pd.DataFrame()
+    data = []
     for year, days in _gobench_days():
-        year_frame = pd.DataFrame()
         for day in days:
-            year_frame = year_frame.append(_gobench_parse(year, day))
-        data = data.append(year_frame)
+            data.append(_gobench_parse(year, day))
+    data = pd.concat(data)
 
     data.to_pickle(_GOBENCH_FILE)
     return True
@@ -298,7 +311,9 @@ def _gobench_parse(year, day):
         day: Contest day, 1 to 25 (unless in the future).
 
     Returns:
-        A Pandas dataframe containing that day's data. TODO: describe format.
+        A Pandas dataframe containing that day's data. It will have a two-level index with the
+        columns `year` and `day`, and one data series `runtime` containing the average time
+        (in seconds) to run that day's Go solution.
     """
     path = _cachefile('gobench', year, day)
     with open(path, 'r') as f:
@@ -348,15 +363,17 @@ def _cachefile(dataset, year, day):
 def contest_days():
     """Generates all the valid AoC puzzle days.
 
-    A new puzzle day is returned 2 hours after US/Eastern midnight, to give some time for the
-    leaderboards to populate.
+    A new puzzle day is returned 2 hours after US Eastern Time midnight, to give some time for
+    the leaderboards to populate.
 
     Yields:
         A pair: the year, and generator for the valid puzzle days on that year.
     """
-    last_date = datetime.now(tz=pytz.timezone('US/Eastern')) - timedelta(hours=2)
+    last_date = datetime.now(tz=pytz.timezone('America/New_York')) - timedelta(hours=2)
     for year in range(_FIRST_YEAR, last_date.year+1):
         last_day = 25
-        if year == last_date.year and last_date.month == 12:
+        if year == last_date.year:
+            if last_date.month < 12:
+                break
             last_day = min(last_day, last_date.day)
         yield year, range(1, last_day+1)

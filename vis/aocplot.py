@@ -17,6 +17,23 @@ import altair as alt
 import aocdata
 import numpy as np
 import pandas as pd
+import re
+
+
+def generate_index():
+    """Updates the `index.html` page with last-updated timestamps."""
+
+    print('generate_index')
+
+    times = aocdata.last_updated()
+    def update_time(dataset):
+        return times[dataset].strftime('%Y-%m-%d %H:%M UTC')
+
+    with open('index.html', 'r') as f_in:
+        with open('out/index.html', 'w') as f_out:
+            content = f_in.read()
+            content = re.sub(r'%UPDATED:(\w+)%', lambda m: update_time(m.group(1)), content)
+            f_out.write(content)
 
 
 def plot_leaderboard():
@@ -125,10 +142,10 @@ def plot_stats():
 
     # Altair has an annoying tendency to localize times, but for the contest it makes sense to show
     # them as US/Eastern no matter what. It has an even more annoying tendency to, in some browsers,
-    # even render naive (TZ-unaware) times as that. This terrible thing converts the timestamps into
+    # even render naive (TZ-unaware) times as zoned. This terrible thing converts the timestamps into
     # allegedly-UTC timestamps that still show the US/Eastern calendar times. :/
     utc_times = pd.to_datetime(data.ts*1000000000).dt.tz_localize('UTC')
-    naive_times = utc_times.dt.tz_convert('US/Eastern').dt.tz_localize(None)
+    naive_times = utc_times.dt.tz_convert('America/New_York').dt.tz_localize(None)
     data['ts_utc'] = naive_times.dt.tz_localize('UTC')
 
     plot_stats_chart(data)

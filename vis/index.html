@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+      body {
+        background-color: #0f0f23;
+        color: #ccc;
+        margin: 0;
+        padding: 2ex;
+        font-family: Helvetica, sans-serif;
+        line-height: 1.2;
+      }
+      .group {
+        padding-inline-start: 0ex;
+      }
+      h1, h2 {
+        color: #fff;
+        border-block-end: 1px solid;
+      }
+      h1 {
+        margin-block-start: 0;
+        margin-block-end: 0.6em;
+      }
+      h2 {
+        margin-block-start: 1em;
+        margin-block-end: 0.6em;
+      }
+      .updated {
+        float: right;
+        margin-block-start: 0;
+        margin-block-end: 0;
+        margin-inline-start: 1ex;
+        padding: 1ex;
+        border: 1px solid;
+      }
+      ul {
+        padding-inline-start: 2ex;
+        list-style-type: square;
+      }
+      li {
+        margin-block-start: 0.5em;
+        margin-block-end: 0.5em;
+      }
+      a {
+        color: #090;
+        text-decoration: none;
+      }
+      a:hover, a:focus {
+        color: #9f9;
+      }
+      h2, code, .chart {
+        font-family: monospace;
+      }
+    </style>
+    <title>Advent of Code visualizations</title>
+  </head>
+  <body>
+    <h1>Advent of Code visualizations</h1>
+    <p>General notes:</p>
+    <ul>
+      <li>In many charts, the day numbers in the chart legend are clickable to highlight a particular day, or (shift-click) several days. To reset the selection, click on the white space immediately below the chart legend.</li>
+      <li>Likewise, many charts also allow hovering the cursor above a single line to highlight it. This may not interact particularly well with clicking on the legend, and has a tendency to get "stuck" if you make sudden movements that take the cursor outside the chart.</li>
+      <li>All the chart pages have been produced using <a href="https://altair-viz.github.io/index.html">Vega-Altair</a>'s HTML export mode. Some of them have a little more data points than is really healthy, and the encoding is not particularly efficient, so they may be a bit sluggish to load or use.</li>
+    </ul>
+    <div class="group">
+      <h2>time</h2>
+      <p class="updated">Last updated: %UPDATED:leaderboard%</p>
+      <p>The <code>time</code> charts are based on the global per-day leaderboards, and measure how long it took for the first 100 people to solve each day's puzzle for one or two stars.</p>
+      <p>Note: There was a problem publishing the day 1 puzzle of 2020, so the charts for that particular date are a little wonky, as the data of the <a href="https://adventofcode.com/2020/leaderboard/day/1">corresponding leaderboard</a> is quite... clumpy.</p>
+      <ul class="chartlist">
+        <li><a class="chart" href="time.one.html">time.one</a> / <a class="chart" href="time.two.html">time.two</a>: box plot showing the time (in minutes) it took to get one / two stars for the person ranked 1st, 25th, 75th and 100th, grouped by puzzle day to allow comparing the same day across the different years.</li>
+        <li><a class="chart" href="time.dist.html">time.dist</a>: smoothed density plot of all the 100 leaderboard entries. Each facet shows a particular year and whether the time was for one or two stars, while each line represents a particular puzzle, with the line color moving from lighter (day 1) to darker (day 25).</li>
+      </ul>
+    </div>
+    <div class="group">
+      <h2>twist</h2>
+      <p class="updated">Last updated: %UPDATED:leaderboard%</p>
+      <p>The <code>twist</code> charts are also based on the leaderboard, but measure the "twistiness" of the puzzle, defined as the total time taken by the 100 people on the leaderboard for two stars (i.e., summing up their individual times), divided by the same total time measurement for the one-star leaderboard. Since you must have had one star prior to getting two, the minimum possible twistiness is 1. The twistiness score is attempting to measure how much harder the second part of the puzzle was, compared to the first one.</p>
+      <ul class="chartlist">
+        <li><a class="chart" href="twist.html">twist</a>: bar chart of each puzzle's twistiness score, grouped by puzzle day to allow cross-year comparisons.</li>
+        <li><a class="chart" href="twist.heat.html">twist.heat</a>: heat map of all twistiness scores, good for locating the most twisty days overall.</li>
+      </ul>
+    </div>
+    <div class="group">
+      <h2>stats</h2>
+      <p class="updated">Last updated: %UPDATED:stats%</p>
+      <p>The <code>stats</code> charts are based on the AoC completion statistics page, which shows current amount of participants who have solved the puzzle, with separate counts for obtaining a single star or both stars. I've collected a snapshot of the scores every five minutes throughout the month of December, giving a picture of how quickly people solved each new puzzle as it was published.</p>
+      <p>The historical data is not available from the Advent of Code website, and the collection started only midway through the 2021 event, so there is no data for years prior to that, and only partial data for the year 2021.</p>
+      <p class="note">Note: while the counts for two-star solutions are monotonically increasing (once you've solved a puzzle, you can't un-solve it), the counts for one-star solutions are not necessarily so, as each individual participant who starts to contribute towards the two-star counts will at the same time no longer contribute towards the one-star counts.</p>
+      <p class="note">Note: to cut down on the number of data points (which is pretty excessive even so), the statistics data has a dynamically scaled resolution, where counts are retained for each puzzle day at full 5-minute fidelity for the first 24 hours after publication; for the following 6 days, data is downsampled (by averaging) to be hourly; and after that, daily. Typically the rate of new solutions slows down radically, so this does not affect the charts much, but may show up as some slight irregularity.</p>
+      <ul class="chartlist">
+        <li><a class="chart" href="stats.chart.html">stats.chart</a>: line chart of the solution counts over time with no transformations.</li>
+        <li><a class="chart" href="stats.aligned.chart.html">stats.aligned.chart</a>: as above, but instead of an absolute time axis, measuring time since each puzzle was published. This allows for side-by-side comparisons of the incoming solution rates for the different days.</li>
+        <li><a class="chart" href="stats.ratio.html">stats.ratio</a> / <a class="chart" href="stats.aligned.ratio.html">stats.aligned.ratio</a>: line chart of the ratio of one-star and two-star solution counts, with the same absolute / relative time scale. This can highlight interesting differences based on how much more difficult the second part of the puzzle was, similar to the twistiness charts.</li>
+        <li><a class="chart" href="stats.trajectory.html">stats.trajectory</a> / <a class="chart" href="stats.trajectory.log.html">stats.trajectory.log</a>: a sort of a "parametric" line chart where each point represents the count of one-star (X axis) and two-star (Y axis) solutions, and the line shows the trajectory of each day over time, with linear / logarithmic axes.</li>
+      </ul>
+    </div>
+    <div class="group">
+      <h2>gobench</h2>
+      <p class="updated">Last updated: %UPDATED:gobench%</p>
+      <p>The <code>gobench</code> charts contain benchmarking results for my Go solutions (see <a href="https://github.com/fis/aoc/">repository for past years</a>).</p>
+      <ul class="chartlist">
+        <li><a class="chart" href="gobench.time.html">gobench.time</a>: bar chart of time used per solution, highest time usage first.</li>
+        <li><a class="chart" href="gobench.heat.html">gobench.heat</a>: heat map representation of the same, linear and logarithmic scale, ordered by date.</li>
+      </ul>
+    </div>
+  </body>
+</html>

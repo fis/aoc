@@ -24,12 +24,19 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == 'redraw':
         redraw = True
 
+    changed = False
     if aocdata.leaderboard_update() or redraw:
         aocplot.plot_leaderboard()
+        changed |= True
     if aocdata.stats_update() or redraw:
         aocplot.plot_stats()
+        changed |= True
     if aocdata.gobench_update() or redraw:
         aocplot.plot_gobench()
+        changed |= True
+
+    if changed or redraw:
+        aocplot.generate_index()
 
 
 if __name__ == '__main__':
