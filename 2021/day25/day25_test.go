@@ -79,7 +79,7 @@ func TestSimulate(t *testing.T) {
 }
 
 func BenchmarkSimulate(b *testing.B) {
-	lines, err := util.ReadLines("../days/testdata/day25.txt")
+	lines, err := util.ReadLines("../../testdata/2021/day25.txt")
 	if err != nil {
 		b.Fatal(err)
 	}

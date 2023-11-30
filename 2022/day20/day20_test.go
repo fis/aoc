@@ -31,7 +31,7 @@ func TestDecrypt(t *testing.T) {
 		{"plain", decryptPlain},
 		{"skip 50", func(file []int, key, rounds int) int { return decrypt(file, key, rounds, 50) }},
 	}
-	file, err := util.ReadInts("../days/testdata/day20.txt")
+	file, err := util.ReadInts("../../testdata/2022/day20.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +60,7 @@ func TestDecryptPlain(t *testing.T) {
 }
 
 func BenchmarkDecrypt(b *testing.B) {
-	file, err := util.ReadInts("../days/testdata/day20.txt")
+	file, err := util.ReadInts("../../testdata/2022/day20.txt")
 	if err != nil {
 		b.Fatal(err)
 	}

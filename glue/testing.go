@@ -18,36 +18,57 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/fis/aoc/util"
 	"github.com/google/go-cmp/cmp"
 )
 
-type TestCase struct {
-	Day  int
-	Want []string
-}
-
-func RunTests(t *testing.T, tests []TestCase, year int) {
+func RunTests(t *testing.T, testRoot string, year int) {
+	tests := findTests(testRoot, year)
 	for _, test := range tests {
-		t.Run(fmt.Sprintf("day=%02d", test.Day), func(t *testing.T) {
-			if got, err := SolveFile(year, test.Day, fmt.Sprintf("testdata/day%02d.txt", test.Day)); err != nil {
+		t.Run(fmt.Sprintf("day=%02d", test.day), func(t *testing.T) {
+			if got, err := SolveFile(year, test.day, test.inputFile); err != nil {
 				t.Errorf("Solve: %v", err)
-			} else if diff := cmp.Diff(test.Want, got); diff != "" {
+			} else if diff := cmp.Diff(test.want, got); diff != "" {
 				t.Errorf("Solve mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}
 }
 
-func RunBenchmarks(b *testing.B, tests []TestCase, year int) {
+func RunBenchmarks(b *testing.B, testRoot string, year int) {
+	tests := findTests(testRoot, year)
 	for _, test := range tests {
-		b.Run(fmt.Sprintf("day=%02d", test.Day), func(b *testing.B) {
+		b.Run(fmt.Sprintf("day=%02d", test.day), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				if got, err := SolveFile(year, test.Day, fmt.Sprintf("testdata/day%02d.txt", test.Day)); err != nil {
+				if got, err := SolveFile(year, test.day, test.inputFile); err != nil {
 					b.Errorf("Solve: %v", err)
-				} else if diff := cmp.Diff(test.Want, got); diff != "" {
+				} else if diff := cmp.Diff(test.want, got); diff != "" {
 					b.Errorf("Solve mismatch (-want +got):\n%s", diff)
 				}
 			}
 		})
 	}
+}
+
+type testCase struct {
+	day       int
+	inputFile string
+	want      []string
+}
+
+func findTests(testRoot string, year int) []testCase {
+	var tests []testCase
+	for day := 1; day <= 25; day++ {
+		basePath := fmt.Sprintf("%s/%04d/day%02d", testRoot, year, day)
+		want, err := util.ReadLines(basePath + ".out")
+		if err != nil {
+			continue
+		}
+		tests = append(tests, testCase{
+			day:       day,
+			inputFile: basePath + ".txt",
+			want:      want,
+		})
+	}
+	return tests
 }

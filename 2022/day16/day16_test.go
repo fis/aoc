@@ -22,7 +22,7 @@ import (
 )
 
 func TestFindOne(t *testing.T) {
-	lines, err := util.ReadLines("../days/testdata/day16.txt")
+	lines, err := util.ReadLines("../../testdata/2022/day16.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func TestFindOne(t *testing.T) {
 }
 
 func TestFindTwo(t *testing.T) {
-	lines, err := util.ReadLines("../days/testdata/day16.txt")
+	lines, err := util.ReadLines("../../testdata/2022/day16.txt")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -40,7 +40,7 @@ func TestAlign(t *testing.T) {
 }
 
 func TestAlgos(t *testing.T) {
-	input, err := util.ReadInts("../days/testdata/day07.txt")
+	input, err := util.ReadInts("../../testdata/2021/day07.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func TestAlgos(t *testing.T) {
 }
 
 func BenchmarkAlgos(b *testing.B) {
-	input, err := util.ReadInts("../days/testdata/day07.txt")
+	input, err := util.ReadInts("../../testdata/2021/day07.txt")
 	if err != nil {
 		b.Fatal(err)
 	}

@@ -57,7 +57,7 @@ func (*solveCmd) Usage() string {
 
   Solve one of the AoC puzzles.
 
-  If an input file is not provided, but the file "YYYY/days/testdata/dayDD.txt"
+  If an input file is not provided, but the file "testdata/YYYY/dayDD.txt"
   exists under the current directory, that file is used instead; this
   facilitates calling the command at the root of the repository. Otherwise,
   input is read from standard input, which you can explicitly request by
@@ -230,7 +230,7 @@ func parseInput(arg string, year, day int) (file *os.File, name string, close fu
 		}
 		return file, arg, func() { file.Close() }, nil
 	} else if arg == "" {
-		name = fmt.Sprintf("%04d/days/testdata/day%02d.txt", year, day)
+		name = fmt.Sprintf("testdata/%04d/day%02d.txt", year, day)
 		if file, err = os.Open(name); err == nil {
 			return file, name, func() { file.Close() }, nil
 		}

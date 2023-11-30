@@ -72,7 +72,7 @@ func TestHVDOverlaps(t *testing.T) {
 }
 
 func BenchmarkOverlaps(b *testing.B) {
-	input, err := util.ReadRegexp("../days/testdata/day05.txt", inputRegexp)
+	input, err := util.ReadRegexp("../../testdata/2021/day05.txt", inputRegexp)
 	if err != nil {
 		b.Fatal(err)
 	}

@@ -79,7 +79,7 @@ func TestCollide1D(t *testing.T) {
 }
 
 func BenchmarkAlgos(b *testing.B) {
-	f, err := os.Open("../days/testdata/day20.txt")
+	f, err := os.Open("../../testdata/2017/day20.txt")
 	if err != nil {
 		b.Fatal(err)
 	}

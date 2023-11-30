@@ -18,14 +18,16 @@ Here's a map of what's in this repository.
     between multiple puzzles that's still specific to one year, it's also in
     here. The `days` subpackage for each year serves two functions: it imports
     all the days, and also contains a unit test to verify each puzzle using the
-    puzzle inputs in `YYYY/days/testdata/`.
+    puzzle inputs and outputs in the `testdata/YYYY/dayDD.{txt,out}` files.
   - `cmd/aoc`: Multipurpose binary to execute any of the puzzles.
   - `glue`: Framework code so that the individual puzzle solutions can register
     solvers (and possibly other related utilities) for the binary via init
     functions.
   - `util`: Utility code useful for solutions across years. Of special note are
     the types `util.Level` (for 2D roguelike style data) and `util.Graph` (for
-    labeled digraphs).
+    labeled digraphs). There are also two packages below this one:
+    - `util/fn`: Very non-idiomatic-Go higher order functions, for conciseness.
+    - `util/ix`: Integer functions that show up a lot in AoC puzzles.
 - Python code
   - `2019-py`: The initial 2019 solutions I wrote in Python, before starting
     this whole Go adventure. May contain assorted odds and ends as well.

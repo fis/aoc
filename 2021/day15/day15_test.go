@@ -70,7 +70,7 @@ func BenchmarkShortestPath(b *testing.B) {
 		b.Fatalf("readLevel(ex): %v", err)
 	}
 
-	dayLines, err := util.ReadLines("../days/testdata/day15.txt")
+	dayLines, err := util.ReadLines("../../testdata/2021/day15.txt")
 	if err != nil {
 		b.Fatalf("ReadLines(day15): %v", err)
 	}

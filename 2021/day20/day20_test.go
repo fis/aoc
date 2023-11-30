@@ -70,7 +70,7 @@ func TestEnhance(t *testing.T) {
 }
 
 func BenchmarkEnhance(b *testing.B) {
-	day20, err := util.ReadChunks("../days/testdata/day20.txt")
+	day20, err := util.ReadChunks("../../testdata/2021/day20.txt")
 	if err != nil {
 		b.Fatal(err)
 	}

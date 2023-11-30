@@ -57,7 +57,7 @@ func TestFindMarker(t *testing.T) {
 }
 
 func BenchmarkFindMarker(b *testing.B) {
-	lines, err := util.ReadLines("../days/testdata/day06.txt")
+	lines, err := util.ReadLines("../../testdata/2022/day06.txt")
 	if err != nil || len(lines) != 1 {
 		b.Fatal(err)
 	}

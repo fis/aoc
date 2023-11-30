@@ -86,7 +86,7 @@ func BenchmarkAlgos(b *testing.B) {
 			},
 		},
 	}
-	edges, err := util.ReadRegexp("../days/testdata/day12.txt", inputRegexp)
+	edges, err := util.ReadRegexp("../../testdata/2021/day12.txt", inputRegexp)
 	if err != nil {
 		b.Fatal(err)
 	}
