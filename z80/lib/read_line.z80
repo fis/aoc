@@ -1,0 +1,20 @@
+if 1-?read_line
+
+; read_line - read a line of input
+;  in: HL: target address
+; out: HL: address of zero byte at end of line
+; use: A, F
+read_line:
+  in a, (1)
+  or a
+  jr z, .done
+  cp '\n'
+  jr z, .done
+  ld (hl), a
+  inc hl
+  jr read_line
+.done:
+  ld (hl), 0
+  ret
+
+endif

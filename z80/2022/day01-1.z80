@@ -1,0 +1,39 @@
+  jp solve
+
+include 'read_u16.z80'
+include 'write_u16.z80'
+
+solve:
+  call read_u16
+  ld a, l
+  or h
+  jr nz, .start_group
+
+  ld hl, (.max_cal)
+  call write_u16_nl
+  halt
+
+.start_group:
+  ld (.cur_cal), hl
+.loop:
+  call read_u16
+  ld a, l
+  or h
+  jr z, .end_group
+  ld bc, (.cur_cal)
+  add hl, bc
+  ld (.cur_cal), hl
+  jr .loop
+
+.end_group:
+  ld hl, (.max_cal)
+  ld bc, (.cur_cal)
+  scf
+  ccf
+  sbc hl, bc
+  jr nc, solve
+  ld (.max_cal), bc
+  jr solve
+
+.cur_cal: defs 2
+.max_cal: defs 2

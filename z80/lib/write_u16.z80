@@ -1,0 +1,30 @@
+if 1-?write_u16
+
+include 'itoa_u16.z80'
+
+; write_u16 - write an unsigned 16-bit integer to the output
+;  in: HL: integer value
+; use: A, F, B, C, D, E
+write_u16:
+  ld de, .buf+4
+  call itoa_u16
+.loop:
+  ld a, (de)
+  or a
+  jr nz, .cont
+  ret
+.cont:
+  out (1), a
+  inc de
+  jr .loop
+
+; write_u16_nl - write_u16 followed by a newline
+write_u16_nl:
+  call write_u16
+  ld a, 10
+  out (1), a
+  ret
+
+.buf: defs 6
+
+endif
