@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Binary aoc provides all the supported AoC actions (solving, plotting, ...).
-package main
+// Package days contains the glue and tests for all AoC 2023 days.
+package days
 
 import (
-	"github.com/fis/aoc/glue"
-
-	_ "github.com/fis/aoc/2016/days" // solvers
-	_ "github.com/fis/aoc/2017/days" // solvers
-	_ "github.com/fis/aoc/2018/days" // solvers
-	_ "github.com/fis/aoc/2019/days" // solvers
-	_ "github.com/fis/aoc/2020/days" // solvers
-	_ "github.com/fis/aoc/2021/days" // solvers
-	_ "github.com/fis/aoc/2022/days" // solvers
-	_ "github.com/fis/aoc/2023/days" // solvers
+	_ "github.com/fis/aoc/2023/day01" // solvers
 )
-
-func main() {
-	glue.Main()
-}
