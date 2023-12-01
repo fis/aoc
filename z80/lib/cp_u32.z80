@@ -1,0 +1,19 @@
+if 1-?cp_u32
+
+;;; cp_u32 - compare two unsigned 32-bit integers
+;;; effectively the same as sub_u32 but without writing the result
+;;;  in: IX: minuend
+;;;      IY: subtrahend
+;;; use: A, F | flags set from the top byte sbc
+cp_u32:
+  ld a, (ix+0)
+  sub (iy+0)
+  ld a, (ix+1)
+  sbc a, (iy+1)
+  ld a, (ix+2)
+  sbc a, (iy+2)
+  ld a, (ix+3)
+  sbc a, (iy+3)
+  ret
+
+endif

@@ -1,0 +1,87 @@
+  jp solve
+
+include 'add_u32.z80'
+include 'cp_u32.z80'
+include 'read_u32.z80'
+include 'write_u32.z80'
+
+solve:
+  ld ix, .temp
+  call read_u32
+  ld a, (ix+0)
+  or (ix+1)
+  or (ix+2)
+  or (ix+3)
+  jp z, .solved
+
+.start_group:
+  ld hl, .temp
+  ld de, .cur_cal
+  ld bc, 4
+  ldir
+.loop:
+  ld ix, .temp
+  call read_u32
+  ld a, (ix+0)
+  or (ix+1)
+  or (ix+2)
+  or (ix+3)
+  jr z, .end_group
+  ld ix, .cur_cal
+  ld iy, .temp
+  call add_u32
+  jr .loop
+
+.end_group:
+  ld ix, .top1_cal
+  ld iy, .cur_cal
+  call cp_u32
+  jr nc, .try2
+  ld hl, .top1_cal+7
+  ld de, .top2_cal+7
+  ld bc, 8
+  lddr
+  ld hl, .cur_cal
+  ld de, .top1_cal
+  ld bc, 4
+  ldir
+  jr solve
+.try2:
+  ld ix, .top2_cal
+  call cp_u32
+  jr nc, .try3
+  ld hl, .top2_cal
+  ld de, .top3_cal
+  ld bc, 4
+  ldir
+  ld hl, .cur_cal
+  ld de, .top2_cal
+  ld bc, 4
+  ldir
+  jp solve
+.try3:
+  ld ix, .top3_cal
+  call cp_u32
+  jp nc, solve
+  ld hl, .cur_cal
+  ld de, .top3_cal
+  ld bc, 4
+  ldir
+  jp solve
+
+.solved:
+  ld ix, .top1_cal
+  ld iy, .top2_cal
+  call add_u32
+  ld iy, .top3_cal
+  call add_u32
+  call write_u32
+  ld a, '\n'
+  out (1), a
+  halt
+
+.temp: defs 4
+.cur_cal: defs 4
+.top1_cal: defs 4
+.top2_cal: defs 4
+.top3_cal: defs 4

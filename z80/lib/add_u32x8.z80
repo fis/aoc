@@ -1,0 +1,20 @@
+if 1-?add_u32x8
+
+;;; add_u32x8 - add a byte to an unsigned 32-bit integer
+;;;  in: IX: destination and first addend
+;;;      A: second addend
+add_u32x8:
+  add a, (ix+0)
+  ld (ix+0), a
+  ld a, 0
+  adc a, (ix+1)
+  ld (ix+1), a
+  ld a, 0
+  adc a, (ix+2)
+  ld (ix+2), a
+  ld a, 0
+  adc a, (ix+3)
+  ld (ix+3), a
+  ret
+
+endif

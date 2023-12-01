@@ -1,0 +1,16 @@
+if 1-?rl_u32
+
+;;; rl_u32 - rotate an unsigned 32-bit integer left through carry
+;;; as with the RL instruction, old carry goes in to lowest bit,
+;;; and new carry is the bit that falls out
+;;;  in: IX: target integer value to shift
+;;       carry flag: new bit shifted into the integer
+;;; out: carry flag: out from the top byte
+sla_u32:
+  rl (ix+0)
+  rl (ix+1)
+  rl (ix+2)
+  rl (ix+3)
+  ret
+
+endif

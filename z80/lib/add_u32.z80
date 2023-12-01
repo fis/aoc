@@ -1,0 +1,23 @@
+if 1-?add_u32
+
+;;; add_u32 - add two unsigned 32-bit integers
+;;; IX = IY is valid case, but sla_u32 is cheaper
+;;;  in: IX: destination and first addend
+;;;      IY: second addend
+;;; use: A, F | flags set by top byte addition
+add_u32:
+  ld a, (ix+0)
+  add a, (iy+0)
+  ld (ix+0), a
+  ld a, (ix+1)
+  adc a, (iy+1)
+  ld (ix+1), a
+  ld a, (ix+2)
+  adc a, (iy+2)
+  ld (ix+2), a
+  ld a, (ix+3)
+  adc a, (iy+3)
+  ld (ix+3), a
+  ret
+
+endif

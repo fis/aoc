@@ -15,7 +15,13 @@
 package glue
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
+	"os"
+	"regexp"
+	"slices"
+	"strconv"
 	"testing"
 
 	"github.com/fis/aoc/util"
@@ -23,12 +29,15 @@ import (
 )
 
 func RunTests(t *testing.T, testRoot string, year int) {
-	tests := findTests(testRoot, year)
+	tests, err := FindTests(testRoot, year)
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, test := range tests {
-		t.Run(fmt.Sprintf("day=%02d", test.day), func(t *testing.T) {
-			if got, err := SolveFile(year, test.day, test.inputFile); err != nil {
+		t.Run(fmt.Sprintf("day=%02d", test.Day), func(t *testing.T) {
+			if got, err := SolveFile(year, test.Day, test.InputFile); err != nil {
 				t.Errorf("Solve: %v", err)
-			} else if diff := cmp.Diff(test.want, got); diff != "" {
+			} else if diff := cmp.Diff(test.Want, got); diff != "" {
 				t.Errorf("Solve mismatch (-want +got):\n%s", diff)
 			}
 		})
@@ -36,13 +45,16 @@ func RunTests(t *testing.T, testRoot string, year int) {
 }
 
 func RunBenchmarks(b *testing.B, testRoot string, year int) {
-	tests := findTests(testRoot, year)
+	tests, err := FindTests(testRoot, year)
+	if err != nil {
+		b.Fatal(err)
+	}
 	for _, test := range tests {
-		b.Run(fmt.Sprintf("day=%02d", test.day), func(b *testing.B) {
+		b.Run(fmt.Sprintf("day=%02d", test.Day), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				if got, err := SolveFile(year, test.day, test.inputFile); err != nil {
+				if got, err := SolveFile(year, test.Day, test.InputFile); err != nil {
 					b.Errorf("Solve: %v", err)
-				} else if diff := cmp.Diff(test.want, got); diff != "" {
+				} else if diff := cmp.Diff(test.Want, got); diff != "" {
 					b.Errorf("Solve mismatch (-want +got):\n%s", diff)
 				}
 			}
@@ -50,25 +62,54 @@ func RunBenchmarks(b *testing.B, testRoot string, year int) {
 	}
 }
 
-type testCase struct {
-	day       int
-	inputFile string
-	want      []string
+type TestCase struct {
+	Year      int
+	Day       int
+	InputFile string
+	Want      []string
 }
 
-func findTests(testRoot string, year int) []testCase {
-	var tests []testCase
+var reYearDir = regexp.MustCompile(`^\d{4}$`)
+
+func FindAllTests(testRoot string) (tests []TestCase, err error) {
+	var years []int
+	items, err := os.ReadDir(testRoot)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read testdata directory: %w", err)
+	}
+	for _, item := range items {
+		if item.IsDir() && reYearDir.MatchString(item.Name()) {
+			year, _ := strconv.Atoi(item.Name())
+			years = append(years, year)
+		}
+	}
+	slices.Sort(years)
+	for _, year := range years {
+		subTests, err := FindTests(testRoot, year)
+		if err != nil {
+			return nil, err
+		}
+		tests = append(tests, subTests...)
+	}
+	return tests, nil
+}
+
+func FindTests(testRoot string, year int) (tests []TestCase, err error) {
 	for day := 1; day <= 25; day++ {
 		basePath := fmt.Sprintf("%s/%04d/day%02d", testRoot, year, day)
 		want, err := util.ReadLines(basePath + ".out")
 		if err != nil {
-			continue
+			if errors.Is(err, fs.ErrNotExist) {
+				continue
+			}
+			return nil, fmt.Errorf("failed to read test output: %w", err)
 		}
-		tests = append(tests, testCase{
-			day:       day,
-			inputFile: basePath + ".txt",
-			want:      want,
+		tests = append(tests, TestCase{
+			Year:      year,
+			Day:       day,
+			InputFile: basePath + ".txt",
+			Want:      want,
 		})
 	}
-	return tests
+	return tests, nil
 }

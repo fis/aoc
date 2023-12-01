@@ -1,39 +1,54 @@
   jp solve
 
-include 'read_u16.z80'
-include 'write_u16.z80'
+include 'add_u32.z80'
+include 'cp_u32.z80'
+include 'read_u32.z80'
+include 'write_u32.z80'
 
 solve:
-  call read_u16
-  ld a, l
-  or h
+  ld ix, .temp
+  call read_u32
+  ld a, (ix+0)
+  or (ix+1)
+  or (ix+2)
+  or (ix+3)
   jr nz, .start_group
 
-  ld hl, (.max_cal)
-  call write_u16_nl
+  ld ix, .max_cal
+  call write_u32
+  ld a, '\n'
+  out (1), a
   halt
 
 .start_group:
-  ld (.cur_cal), hl
+  ld hl, .temp
+  ld de, .cur_cal
+  ld bc, 4
+  ldir
 .loop:
-  call read_u16
-  ld a, l
-  or h
+  ld ix, .temp
+  call read_u32
+  ld a, (ix+0)
+  or (ix+1)
+  or (ix+2)
+  or (ix+3)
   jr z, .end_group
-  ld bc, (.cur_cal)
-  add hl, bc
-  ld (.cur_cal), hl
+  ld ix, .cur_cal
+  ld iy, .temp
+  call add_u32
   jr .loop
 
 .end_group:
-  ld hl, (.max_cal)
-  ld bc, (.cur_cal)
-  scf
-  ccf
-  sbc hl, bc
+  ld ix, .max_cal
+  ld iy, .cur_cal
+  call cp_u32
   jr nc, solve
-  ld (.max_cal), bc
+  ld hl, .cur_cal
+  ld de, .max_cal
+  ld bc, 4
+  ldir
   jr solve
 
-.cur_cal: defs 2
-.max_cal: defs 2
+.temp: defs 4
+.cur_cal: defs 4
+.max_cal: defs 4

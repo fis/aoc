@@ -1,0 +1,62 @@
+  jp solve
+
+include 'read_line.z80'
+include 'write_u16.z80'
+
+solve:
+
+  ld bc, 0
+.loop:
+
+  ld hl, .line
+  call read_line
+
+  ld a, (.line)
+  or a
+  jr nz, .not_eof
+  push bc
+  pop hl
+  call write_u16
+  ld a, '\n'
+  out (1), a
+  halt
+
+.not_eof:
+
+  ld hl, .line
+  ld de, 0
+.next_char:
+
+  ld a, (hl)
+  or a
+  jr z, .accumulate
+
+  sub '0'
+  jr c, .char_done
+  cp 10
+  jr nc, .char_done
+  ld e, a
+  ld a, d
+  or a
+  jr nz, .char_done
+  ld d, e
+
+.char_done:
+  inc hl
+  jr .next_char
+
+.accumulate:
+  sla d
+  ld a, d
+  sla d
+  sla d
+  add a, d
+  add a, e
+  ld l, a
+  ld h, 0
+  add hl, bc
+  push hl
+  pop bc
+  jr .loop
+
+.line: equ 0x8000

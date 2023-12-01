@@ -17,7 +17,6 @@ package glue
 import (
 	"bufio"
 	"io"
-	"io/ioutil"
 	"strconv"
 
 	"github.com/fis/aoc/util"
@@ -124,7 +123,7 @@ func (s RegexpSolver) Solve(input io.Reader) ([]string, error) {
 
 // Solve implements the Solver interface.
 func (s LevelSolver) Solve(input io.Reader) ([]string, error) {
-	data, err := ioutil.ReadAll(input)
+	data, err := io.ReadAll(input)
 	if err != nil {
 		return nil, err
 	}

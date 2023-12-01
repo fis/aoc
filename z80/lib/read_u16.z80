@@ -1,9 +1,9 @@
 if 1-?read_u16
 
-; read_u16 - read an unsigned 16-bit decimal integer
-; any non-digit character terminates the read (and is consumed)
-; out: HL: integer value
-; use: A, F, B, C
+;;; read_u16 - read an unsigned 16-bit decimal integer
+;;; any non-digit character terminates the read (and is consumed)
+;;; out: HL: integer value
+;;; use: A, F, B, C
 read_u16:
   ld hl, 0
 .loop:

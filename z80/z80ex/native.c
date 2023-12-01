@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <z80ex/z80ex.h>
 
 #include "native.h"
@@ -46,6 +47,13 @@ struct cpu *go_z80ex_create(void) {
 void go_z80ex_destroy(struct cpu *cpu) {
 	z80ex_destroy(cpu->ex);
 	free(cpu);
+}
+
+void go_z80ex_reset(struct cpu *cpu, int reset_mem) {
+	z80ex_reset(cpu->ex);
+	z80ex_set_reg(cpu->ex, regSP, 0);
+	if (reset_mem)
+		memset(cpu->ram, 0, sizeof cpu->ram);
 }
 
 uint64_t go_z80ex_run(struct cpu *cpu, uintptr_t streams, uint64_t max_steps) {

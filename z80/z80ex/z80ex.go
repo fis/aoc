@@ -8,6 +8,8 @@ import (
 	"io"
 	"math"
 	"runtime/cgo"
+
+	"github.com/fis/aoc/util/fn"
 )
 
 const haltFlag = 0x8000_0000_0000_0000
@@ -33,6 +35,10 @@ func NewCPU() *CPU {
 
 func (cpu *CPU) Destroy() {
 	C.go_z80ex_destroy(cpu.native)
+}
+
+func (cpu *CPU) Reset(clearMem bool) {
+	C.go_z80ex_reset(cpu.native, fn.If[C.int](clearMem, 1, 0))
 }
 
 func (cpu *CPU) WriteMem(data []byte, at int) {

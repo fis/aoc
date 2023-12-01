@@ -1,18 +1,21 @@
 # AoC on Z80
 
 This directory is a step towards sufficient scaffolding to allow writing Advent
-of Code puzzle solutions in Z80 assembly. As of this writing, it is quite
+of Code puzzle solutions in Z80 assembly. As of this writing, it is pretty
 incomplete, and only contains:
 
 - The `z80ex` package, which provides basic Cgo bindings to the
   [z80ex](https://sourceforge.net/projects/z80ex/) Z80 emulator library.
+- The `validate_test.go` unit test that runs all existing solutions against the
+  shared puzzle inputs and expected outputs.
 - The `cmd/z80ex` binary, which can use the library to run a Z80 program with
-  I/O port 1 bound to the standard input/output streams.
-- Few Z80 utility routines for input and output of unsigned 16-bit integers.
-- A solution for the year 2022, day 1, part 1 puzzle in Z80 assembly. Sadly, the
-  actual puzzle input solution is 69836, which does not fit in a 16-bit integer.
+  I/O port 1 bound to the standard input/output streams, for manual testing.
+- Few Z80 utility routines for input and output of unsigned 16-bit and 32-bit
+  integers.
+- Solutions for 2022-01 and 2023-01 in Z80 assembly, and `//go:generate` lines
+  to assemble them.
 
-Prerequisites:
+Prerequisites for using this:
 
 - The [z80ex](https://sourceforge.net/projects/z80ex/) library, installed so
   that its include file is available as `<z80ex/z80ex.h>` and the library
@@ -30,12 +33,11 @@ of the address space. Writing a byte into the I/O port 1 transmits it to
 standard output, while reading a byte reads it from standard input, returning 0
 if at end of file. That is all.
 
-If I end up picking this up later, subsequent improvements should include:
+If I end up writing more solutions, subsequent improvements could include:
 
-- `//go:generate` lines, or some other automation, to assemble solutions without
-  having to invoke `z80asm` manually.
-- Integration with the shared `testdata` folder, so that it's possible to run
-  `go test` to validate the generated programs.
+- A pure Go Z80 assembler. This would allow quality-of-life stuff like automated
+  importing of library dependencies, and maybe even fancier stuff like inlining
+  only-used-once routines.
 - A solution for debugging. The Visual Studio Code
   [DeZog](https://github.com/maziac/DeZog) extension could be made to serve in
   this role, and its internal simulator should be capable enough for this,

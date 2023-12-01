@@ -1,0 +1,13 @@
+if 1-?sla_u32
+
+;;; sla_u32 - shift an unsigned 32-bit integer left by one step
+;;;  in: IX: target integer value to shift
+;;; out: carry flag: out from the top byte
+sla_u32:
+  sla (ix+0)
+  rl (ix+1)
+  rl (ix+2)
+  rl (ix+3)
+  ret
+
+endif

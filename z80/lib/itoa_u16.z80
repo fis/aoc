@@ -1,20 +1,17 @@
 if 1-?itoa_u16
 
-; itoa_u16 - convert an unsigned 16-bit integer to decimal
-; the output will consist of 1-5 decimal digits ending
-;  in: HL: integer value
-;      DE: address for the *last* character of output
-; out: HL: zero
-;      DE: address of the first digit written
-; use: A, F, B, C
+;;; itoa_u16 - convert an unsigned 16-bit integer to decimal
+;;; the output will consist of 1-5 decimal digits
+;;;  in: HL: integer value
+;;;      DE: address for the *last* character of output
+;;; out: HL: zero
+;;;      DE: address of the first digit written
+;;; use: A, F, B, C
 itoa_u16:
 
-  push de
-
-  ;; divide HL by 10
+  ;; divide HL by 10 in-place
 
   ld bc, 0x1000   ; B = div loop count (16), C = numerator/remainder (0)
-  ld de, 0        ; DE = result accumulator 
 
 .div:
 
@@ -24,31 +21,25 @@ itoa_u16:
   rl h
   rl c
 
-  ;; DE <<= 1 + carry if C >= 10
+  ;; if C >= 10: C -= 10, HL |= 1
 
   ld a, c
-  cp 10
-  ccf
-  rl e
-  rl d
-
-  ;; update C if necessary
-
   sub 10
   jr c, .keep
   ld c, a
+  ld a, 1
+  or l
+  ld l, a
 .keep:
 
   djnz .div
 
-  ;; DE = HL/10, C = HL%10
+  ;; HL' = HL/10, C = HL%10
 
   ld a, '0'
   add c
-  pop hl
-  ld (hl), a
+  ld (de), a
 
-  ex de, hl
   ld a, l
   or h
   jr nz, .cont

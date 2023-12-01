@@ -12,6 +12,7 @@ struct cpu {
 
 struct cpu *go_z80ex_create(void);
 void go_z80ex_destroy(struct cpu *cpu);
+void go_z80ex_reset(struct cpu *cpu, int reset_mem);
 uint64_t go_z80ex_run(struct cpu *cpu, uintptr_t streams, uint64_t max_steps);
 uint64_t go_z80ex_trace(struct cpu *cpu, uintptr_t streams);
 

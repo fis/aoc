@@ -1,0 +1,47 @@
+if 1-?itoa_u32
+
+include 'sla_u32.z80'
+
+;;; itoa_u32 - convert an unsigned 32-bit integer to decimal
+;;; the output will consist of 1-10 decimal digits
+;;;  in: IX: address of the integer value
+;;;      DE: address for the *last* character of output
+;;; out: IX: unchanged, but contents will be zeroed
+;;;      DE: address of the first digit written
+;;; use: A, F, B, C
+
+itoa_u32:
+
+  ld bc, 0x2000
+
+.div:
+  call sla_u32
+  rl c
+
+  ld a, c
+  sub 10
+  jr c, .keep
+  ld c, a
+  ld a, 1
+  or (ix+0)
+  ld (ix+0), a
+.keep:
+
+  djnz .div
+
+  ld a, '0'
+  add c
+  ld (de), a
+
+  ld a, (ix+0)  ; TODO: tstz_u32?
+  or (ix+1)
+  or (ix+2)
+  or (ix+3)
+  jr nz, .cont
+  ret
+.cont:
+
+  dec de
+  jr itoa_u32
+
+endif

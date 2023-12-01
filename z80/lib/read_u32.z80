@@ -1,0 +1,43 @@
+if 1-?read_u32
+
+include 'add_u32.z80'
+include 'add_u32x8.z80'
+include 'sla_u32.z80'
+
+;;; read_u32 - read an unsigned 32-bit decimal integer
+;;; any non-digit character terminates the read (and is consumed)
+;;;  in: IX: address of the output value
+;;; use: A, F, B, C, D, E, H, L, IY
+read_u32:
+  ld (ix+0), 0
+  ld (ix+1), 0
+  ld (ix+2), 0
+  ld (ix+3), 0
+.loop:
+  in a, (1)
+  sub '0'
+  jr c, .done
+  cp 10
+  jr c, .digit
+.done:
+  ret
+.digit:
+  push af
+  call sla_u32
+  push ix
+  pop hl
+  ld de, .temp
+  push de
+  ld bc, 4
+  ldir
+  call sla_u32
+  call sla_u32
+  pop iy
+  call add_u32
+  pop af
+  call add_u32x8
+  jr .loop
+
+.temp: defs 4
+
+endif
