@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+// Package y2023 contains the glue and tests for all AoC 2023 days.
+package y2023
 
 import (
-	"testing"
-
-	"github.com/fis/aoc/glue"
+	_ "github.com/fis/aoc/2023/day01" // solvers
 )
-
-func TestAllDays(t *testing.T) {
-	glue.RunTests(t, "../../testdata", 2022)
-}
-
-func BenchmarkAllDays(b *testing.B) {
-	glue.RunBenchmarks(b, "../../testdata", 2022)
-}

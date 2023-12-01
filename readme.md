@@ -16,9 +16,10 @@ Here's a map of what's in this repository.
 - Go packages
   - `20??/*`: Individual AoC puzzle solutions. If there's any code shared
     between multiple puzzles that's still specific to one year, it's also in
-    here. The `days` subpackage for each year serves two functions: it imports
-    all the days, and also contains a unit test to verify each puzzle using the
-    puzzle inputs and outputs in the `testdata/YYYY/dayDD.{txt,out}` files.
+    here. The top-level subpackage for each year serves two functions: it
+    imports all the days (so other packages can get them all as a group), and
+    also contains a unit test to verify each puzzle using the puzzle inputs and
+    outputs in the `testdata/YYYY/dayDD.{txt,out}` files.
   - `cmd/aoc`: Multipurpose binary to execute any of the puzzles.
   - `glue`: Framework code so that the individual puzzle solutions can register
     solvers (and possibly other related utilities) for the binary via init

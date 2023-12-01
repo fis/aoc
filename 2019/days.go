@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2019 days.
-package days
+// Package y2019 contains the glue and tests for all AoC 2019 days.
+package y2019
 
 import (
 	_ "github.com/fis/aoc/2019/day01" // solvers

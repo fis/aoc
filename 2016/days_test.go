@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+package y2016
 
 import (
 	"testing"
@@ -21,9 +21,9 @@ import (
 )
 
 func TestAllDays(t *testing.T) {
-	glue.RunTests(t, "../../testdata", 2020)
+	glue.RunTests(t, "../testdata", 2016)
 }
 
 func BenchmarkAllDays(b *testing.B) {
-	glue.RunBenchmarks(b, "../../testdata", 2020)
+	glue.RunBenchmarks(b, "../testdata", 2016)
 }

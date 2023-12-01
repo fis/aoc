@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2016 days.
-package days
+package y2022
 
 import (
-	_ "github.com/fis/aoc/2016/day01" // solvers
-	_ "github.com/fis/aoc/2016/day02" // solvers
-	_ "github.com/fis/aoc/2016/day03" // solvers
-	_ "github.com/fis/aoc/2016/day04" // solvers
-	_ "github.com/fis/aoc/2016/day05" // solvers
-	_ "github.com/fis/aoc/2016/day06" // solvers
-	_ "github.com/fis/aoc/2016/day07" // solvers
-	_ "github.com/fis/aoc/2016/day08" // solvers
-	_ "github.com/fis/aoc/2016/day09" // solvers
-	_ "github.com/fis/aoc/2016/day10" // solvers
+	"testing"
+
+	"github.com/fis/aoc/glue"
 )
+
+func TestAllDays(t *testing.T) {
+	glue.RunTests(t, "../testdata", 2022)
+}
+
+func BenchmarkAllDays(b *testing.B) {
+	glue.RunBenchmarks(b, "../testdata", 2022)
+}

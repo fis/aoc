@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package days
+package y2021
 
 import (
 	"testing"
@@ -21,9 +21,9 @@ import (
 )
 
 func TestAllDays(t *testing.T) {
-	glue.RunTests(t, "../../testdata", 2021)
+	glue.RunTests(t, "../testdata", 2021)
 }
 
 func BenchmarkAllDays(b *testing.B) {
-	glue.RunBenchmarks(b, "../../testdata", 2021)
+	glue.RunBenchmarks(b, "../testdata", 2021)
 }

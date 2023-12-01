@@ -15,10 +15,10 @@
 // Package glue contains the glue code to link together the different days' solvers.
 //
 // The expected way to use this package is:
-// - Have your daily solver packages not export anything, but just have init functions
-//   that call this package's `RegisterFoo` functions.
-// - For each year, have a `days` package that blank-imports each day to pull them in.
-// - To build the standard omnibus binary, blank-import each year, and call `Main`.
+//   - Have your daily solver packages not export anything, but just have init functions
+//     that call this package's `RegisterFoo` functions.
+//   - For each year, have a `yNNNN` package that blank-imports each day to pull them in.
+//   - To build the standard omnibus binary, blank-import each year, and call `Main`.
 package glue
 
 import (

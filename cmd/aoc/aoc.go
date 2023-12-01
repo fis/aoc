@@ -18,14 +18,14 @@ package main
 import (
 	"github.com/fis/aoc/glue"
 
-	_ "github.com/fis/aoc/2016/days" // solvers
-	_ "github.com/fis/aoc/2017/days" // solvers
-	_ "github.com/fis/aoc/2018/days" // solvers
-	_ "github.com/fis/aoc/2019/days" // solvers
-	_ "github.com/fis/aoc/2020/days" // solvers
-	_ "github.com/fis/aoc/2021/days" // solvers
-	_ "github.com/fis/aoc/2022/days" // solvers
-	_ "github.com/fis/aoc/2023/days" // solvers
+	_ "github.com/fis/aoc/2016" // solvers
+	_ "github.com/fis/aoc/2017" // solvers
+	_ "github.com/fis/aoc/2018" // solvers
+	_ "github.com/fis/aoc/2019" // solvers
+	_ "github.com/fis/aoc/2020" // solvers
+	_ "github.com/fis/aoc/2021" // solvers
+	_ "github.com/fis/aoc/2022" // solvers
+	_ "github.com/fis/aoc/2023" // solvers
 )
 
 func main() {

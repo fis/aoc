@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package days contains the glue and tests for all AoC 2022 days.
-package days
+// Package y2022 contains the glue and tests for all AoC 2022 days.
+package y2022
 
 import (
 	_ "github.com/fis/aoc/2022/day01" // solvers
