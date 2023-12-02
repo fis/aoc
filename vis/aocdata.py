@@ -351,8 +351,9 @@ def _gobench_present(year, day):
         True, if a Go source file with the expected name exists. False, otherwise.
     """
     d = f'day{day:02d}'
-    path = f'../{year:4d}/{d}/{d}.go'
-    return os.path.exists(path)
+    src_path = f'../{year:4d}/{d}/{d}.go'
+    ref_path = f'../testdata/{year:4d}/{d}.out'
+    return os.path.exists(src_path) and os.path.exists(ref_path)
 
 
 def _cachefile(dataset, year, day):
