@@ -14,10 +14,10 @@
 
 package util
 
+// BucketQ is a priority queue using the "bucket queue" data structure.
 type BucketQ[T any] struct {
 	count   int
 	at      int
-	span    int
 	buckets []bucket[T] // [span]bucket[T]
 }
 
@@ -26,21 +26,24 @@ type bucket[T any] struct {
 	items []T
 }
 
+// NewBucketQ makes a new queue with the given maximum span, which must be a power of 2.
+// The distance between the lowest and highest priority item in the queue must not exceed the span.
 func NewBucketQ[T any](span int) *BucketQ[T] {
 	return &BucketQ[T]{
-		span:    span,
 		buckets: make([]bucket[T], span),
 	}
 }
 
+// Len returns the number of elements currently in the queue.
 func (q *BucketQ[T]) Len() int {
 	return q.count
 }
 
+// Pop removes the lowest priority item currently in the queue.
 func (q *BucketQ[T]) Pop() (prio int, item T) {
 	q.count--
 	for len(q.buckets[q.at].items) == 0 {
-		q.at = (q.at + 1) & (q.span - 1)
+		q.at = (q.at + 1) & (len(q.buckets) - 1)
 	}
 	items := q.buckets[q.at].items
 	item = items[len(items)-1]
@@ -48,9 +51,10 @@ func (q *BucketQ[T]) Pop() (prio int, item T) {
 	return q.buckets[q.at].prio, item
 }
 
+// Push adds an item to the queue with the given priority.
 func (q *BucketQ[T]) Push(prio int, item T) {
 	q.count++
-	i := prio & (q.span - 1)
+	i := prio & (len(q.buckets) - 1)
 	q.buckets[i].prio = prio
 	q.buckets[i].items = append(q.buckets[i].items, item)
 }
