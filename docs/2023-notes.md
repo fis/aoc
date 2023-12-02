@@ -42,31 +42,22 @@ Most of the job is in parsing the input; actual tasks are much simpler.
 
 ### Burlesque
 
-There's probably a better approach to parsing than this "convert to `sa` and
-eval" thing, but let's leave it be for now.
-
 Part 1:
 
 ```
-ln{":";;p^:><rij";";;{",";;{" ";;[-p^rij-]**3.%_+(sa)[+}\m
-3ro0?*je!}m[tp)>]2rz12?+{<=}Z]r&.*}ms
+ln{": ";;p^:><rij" ";;2co{-]**3.%jri_+}^m><{-]}gB{)[~>]}m[2rz12?+{<=}Z]r&.*}ms
 ```
 
 Part 2:
 
 ```
-ln{":";;[~";";;{",";;{" ";;[-p^rij-]**3.%_+(sa)[+}\m
-3ro0?*je!}m[tp)>]pd}ms
+ln{": ";;[~" ";;2co{-]**3.%jri_+}^m><{-]}gB{)[~>]}m[pd}ms
 ```
 
 Combined:
 
 ```
-1:         p^:><rij
-C: ln{":";;        ";";;{",";;{" ";;[-p^rij-]**3.%_+(sa)[+}\m
-2:         [~
-
-1:                  2rz12?+{<=}Z]r&.*
-C: 3ro0?*je!}m[tp)>]                 }ms
-2:                  pd
+1:          p^:><rij                                         2rz12?+{<=}Z]r&.*
+C: ln{": ";;        " ";;2co{-]**3.%jri_+}^m><{-]}gB{)[~>]}m[                 }ms
+2:          [~                                               pd
 ```
