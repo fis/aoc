@@ -17,7 +17,7 @@ package util
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 )
 
 // A Level models a two-dimensional map of ASCII character cells, similar to a roguelike level.
@@ -30,7 +30,7 @@ type Level struct {
 // ReadLevel reads the contents of a text file into a level. Character cells outside the contents of
 // the file are considered to be the specified empty byte.
 func ReadLevel(path string, empty byte) (*Level, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("reading level: %v", err)
 	}

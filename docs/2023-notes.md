@@ -35,3 +35,38 @@ This is based on finding all the suffix strings of the line (`iS`), and for each
 of them testing whether any of the digits (numeric or written) is a prefix.
 Alternating the numbers and words allows using `{><}gB` to expand them into a
 block, giving a semi-compact encoding.
+
+## [Day 2](https://adventofcode.com/2023/day/2): Cube Conundrum
+
+Most of the job is in parsing the input; actual tasks are much simpler.
+
+### Burlesque
+
+There's probably a better approach to parsing than this "convert to `sa` and
+eval" thing, but let's leave it be for now.
+
+Part 1:
+
+```
+ln{":";;p^:><rij";";;{",";;{" ";;[-p^rij-]**3.%_+(sa)[+}\m
+3ro0?*je!}m[tp)>]2rz12?+{<=}Z]r&.*}ms
+```
+
+Part 2:
+
+```
+ln{":";;[~";";;{",";;{" ";;[-p^rij-]**3.%_+(sa)[+}\m
+3ro0?*je!}m[tp)>]pd}ms
+```
+
+Combined:
+
+```
+1:         p^:><rij
+C: ln{":";;        ";";;{",";;{" ";;[-p^rij-]**3.%_+(sa)[+}\m
+2:         [~
+
+1:                  2rz12?+{<=}Z]r&.*
+C: 3ro0?*je!}m[tp)>]                 }ms
+2:                  pd
+```
