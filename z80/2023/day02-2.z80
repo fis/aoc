@@ -1,0 +1,74 @@
+  jp solve
+
+include 'add_u32x16.z80'
+include 'mul_u16x8.z80'
+include 'read_u8.z80'
+include 'write_u32.z80'
+
+solve:
+
+  ld ix, total_power
+.next_game:
+
+  ;; read the game ID, or print result if at EOF
+
+.discard_prefix:
+  in a, (1)
+  or a
+  jr nz, .more_games
+  call write_u32
+  ld a, '\n'
+  out (1), a
+  halt
+.more_games:
+  cp ' '
+  jr nz, .discard_prefix
+  call read_u8
+  ld a, b
+  ld (current_game), a
+  in a, (1)  ; discard extra space
+
+  ;; find biggest count of each type of cube
+
+  ld a, 0
+  ld (max_cubes+0), a
+  ld (max_cubes+1), a
+  ld (max_cubes+2), a
+
+.next_cube:
+  call read_u8   ; B <- cube count
+  in a, (1)      ; discard 'r'/'g'/'b'
+  in a, (1)      ; read    'e'/'r'/'l'
+  and 3          ; 'e'/'r'/'l' -> 1/2/0
+  ld l, a
+  ld h, 0
+  ld de, max_cubes
+  add hl, de     ; HL <- & current max
+
+  ld a, b
+  cp (hl)
+  jr c, .discard_junk
+  ld (hl), a     ; update max
+.discard_junk:
+  in a, (1)
+  cp ' '
+  jr z, .next_cube
+  cp '\n'
+  jr nz, .discard_junk
+
+  ;; sum up the power of this game
+
+  ld a, (max_cubes+0)
+  ld h, 0
+  ld l, a
+  ld a, (max_cubes+1)
+  call mul_u16x8
+  ld a, (max_cubes+2)
+  call mul_u16x8
+  call add_u32x16
+
+  jr .next_game
+
+current_game: defs 1
+max_cubes: defs 3
+total_power: defs 4

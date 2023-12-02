@@ -1,0 +1,26 @@
+if 1-?read_u8
+
+;;; read_u8 - read an unsigned 8-bit decimal integer
+;;; any non-digit character terminates the read (and is consumed)
+;;; out: B: integer value
+;;; use: A, F, C
+read_u8:
+  ld b, 0
+.loop:
+  in a, (1)
+  sub '0'
+  jr c, .done
+  cp 10
+  jr nc, .done
+  sla b
+  ld c, b
+  sla b
+  sla b
+  add b
+  add c
+  ld b, a
+  jr .loop
+.done:
+  ret
+
+endif

@@ -1,0 +1,82 @@
+  jp solve
+
+include 'read_u8.z80'
+include 'write_u16.z80'
+
+solve:
+
+  ;; read the game ID, or print result if at EOF
+
+.discard_prefix:
+  in a, (1)
+  or a
+  jr nz, .more_games
+  ld hl, (possible_sum)
+  call write_u16
+  ld a, '\n'
+  out (1), a
+  halt
+.more_games:
+  cp ' '
+  jr nz, .discard_prefix
+  call read_u8
+  ld a, b
+  ld (current_game), a
+  in a, (1)  ; discard extra space
+
+  ;; find biggest count of each type of cube
+
+  ld a, 0
+  ld (max_cubes+0), a
+  ld (max_cubes+1), a
+  ld (max_cubes+2), a
+
+.next_cube:
+  call read_u8   ; B <- cube count
+  in a, (1)      ; discard 'r'/'g'/'b'
+  in a, (1)      ; read    'e'/'r'/'l'
+  and 3          ; 'e'/'r'/'l' -> 1/2/0
+  ld l, a
+  ld h, 0
+  ld de, max_cubes
+  add hl, de     ; HL <- & current max
+
+  ld a, b
+  cp (hl)
+  jr c, .discard_junk
+  ld (hl), a     ; update max
+.discard_junk:
+  in a, (1)
+  cp ' '
+  jr z, .next_cube
+  cp '\n'
+  jr nz, .discard_junk
+
+  ;; if game is not possible, process next one
+
+  ld a, (max_cubes+1)
+  cp 12+1
+  jr nc, solve
+  ld a, (max_cubes+2)
+  cp 13+1
+  jr nc, solve
+  ld a, (max_cubes+0)
+  cp 14+1
+  jr nc, solve
+
+  ;; add current game ID to sum of possible games
+
+  ld hl, (possible_sum)
+  ld a, (current_game)
+  add a, l
+  ld l, a
+  ld a, 0
+  adc a, h
+  ld h, a
+  ld (possible_sum), hl
+
+  jr solve
+
+current_game: defs 1
+max_cubes: defs 3
+possible_sum: defs 2

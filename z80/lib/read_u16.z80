@@ -23,7 +23,6 @@ read_u16:
   add hl, bc
   jr .loop
 .done:
-  ld (hl), 0
   ret
 
 endif

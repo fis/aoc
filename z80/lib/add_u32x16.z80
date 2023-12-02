@@ -1,0 +1,22 @@
+if 1-?add_u32x16
+
+;;; add_u32x16 - add an unsigned 16-bit integer to an unsigned 32-bit integer
+;;;  in: IX: destination and first addend
+;;;      HL: second addend
+;;; use: A, F, B, C
+
+add_u32x16:
+  ld c, (ix+0)
+  ld b, (ix+1)
+  add hl, bc
+  ld (ix+0), l
+  ld (ix+1), h
+  ld a, 0
+  adc a, (ix+2)
+  ld (ix+2), a
+  ld a, 0
+  adc a, (ix+3)
+  ld (ix+3), a
+  ret
+
+endif

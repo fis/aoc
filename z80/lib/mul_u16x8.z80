@@ -1,0 +1,25 @@
+if 1-?mul_u16x8
+
+;;; mul_u16x8 - multiply 16-bit unsigned integer by an 8-bit unsigned integer
+;;;  in: HL: the 16-bit multiplicand
+;;;      A: the 8-bit multiplier
+;;; out: HL: the multiplication result
+;;;      A: zero
+;;; use: F, B, D, E
+mul_u16x8:
+  ld de, 0
+  ld b, 8
+.mul:
+  srl a
+  jr nc, .skip
+  push hl
+  add hl, de
+  ex de, hl
+  pop hl
+.skip:
+  add hl, hl
+  djnz .mul
+  ex de, hl
+  ret
+
+endif
