@@ -15,12 +15,13 @@
 package glue
 
 import (
+	"cmp"
 	"context"
 	"flag"
 	"fmt"
 	"io"
 	"os"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -72,10 +73,10 @@ func (*solveCmd) Usage() string {
 		}
 		days[yd.Year] = append(days[yd.Year], yd.Day)
 	}
-	sort.Ints(years)
+	slices.Sort(years)
 	for _, y := range years {
 		fmt.Fprintf(&out, "    %d:", y)
-		sort.Ints(days[y])
+		slices.Sort(days[y])
 		for _, d := range days[y] {
 			fmt.Fprintf(&out, " %d", d)
 		}
@@ -151,15 +152,15 @@ func (*plotCmd) Usage() string {
 			examples[yd] = append(examples[yd], ex)
 		}
 	}
-	sort.Slice(days, func(i, j int) bool {
-		if days[i].Year != days[j].Year {
-			return days[i].Year < days[j].Year
+	slices.SortFunc(days, func(a, b YearDay) int {
+		if a.Year != b.Year {
+			return cmp.Compare(a.Year, b.Year)
 		}
-		return days[i].Day < days[j].Day
+		return cmp.Compare(a.Day, b.Day)
 	})
 	for _, yd := range days {
 		fmt.Fprintf(&out, "    %d %d:", yd.Year, yd.Day)
-		sort.Strings(examples[yd])
+		slices.Sort(examples[yd])
 		for _, ex := range examples[yd] {
 			fmt.Fprintf(&out, " %s", ex)
 		}

@@ -18,11 +18,13 @@ package util
 import (
 	"bufio"
 	"bytes"
+	"cmp"
 	"fmt"
 	"io"
 	"math"
 	"os"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -245,6 +247,14 @@ func NextInt(s string) (n int, ok bool, tail string) {
 		n, ok, s = n*10+int(s[0]-'0'), true, s[1:]
 	}
 	return n, ok, s
+}
+
+// SortBy is like slices.SortFunc except applies an accessor function to the objects.
+// Comparing is then done using the natural ordering of the results.
+func SortBy[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](x S, f F) {
+	slices.SortFunc(x, func(a, b I) int {
+		return cmp.Compare(f(a), f(b))
+	})
 }
 
 // P represents a two-dimensional integer-valued coordinate.

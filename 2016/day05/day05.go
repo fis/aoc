@@ -16,13 +16,12 @@
 package day05
 
 import (
-	"cmp"
 	"crypto/md5"
 	"fmt"
-	"slices"
 	"strconv"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util"
 )
 
 func init() {
@@ -101,7 +100,7 @@ loop:
 			}
 			sortedCh <- got.found
 			expect += chunkSize
-			slices.SortFunc(pending, func(a, b result) int { return cmp.Compare(a.start, b.start) })
+			util.SortBy(pending, func(r result) int64 { return r.start })
 			for len(pending) > 0 && pending[0].start == expect {
 				sortedCh <- pending[0].found
 				expect += chunkSize
