@@ -18,7 +18,6 @@ package day08
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strconv"
 
 	"github.com/fis/aoc/glue"
@@ -35,7 +34,7 @@ const (
 )
 
 func solve(input io.Reader) ([]string, error) {
-	data, err := ioutil.ReadAll(input)
+	data, err := io.ReadAll(input)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +53,7 @@ func solve(input io.Reader) ([]string, error) {
 		}
 	}
 
-	level := util.ParseLevelString("", ' ')
+	level := util.EmptyLevel(util.P{0, 0}, util.P{imgW - 1, imgH - 1}, ' ')
 	for i, p := range render(layers) {
 		if p == 1 {
 			level.Set(i%imgW, i/imgW, '#')

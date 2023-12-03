@@ -34,7 +34,7 @@ func solve(prog []int64) ([]string, error) {
 }
 
 func part1(prog []int64) int {
-	level := util.ParseLevelString(" ", ' ')
+	level := util.SparseLevel(util.P{0, 0}, ' ')
 	run(prog, level)
 	painted := 0
 	level.Range(func(_, _ int, _ byte) { painted++ })
@@ -42,7 +42,8 @@ func part1(prog []int64) int {
 }
 
 func part2(prog []int64) []string {
-	level := util.ParseLevelString("#", ' ')
+	level := util.SparseLevel(util.P{0, 0}, ' ')
+	level.Set(0, 0, '#')
 	run(prog, level)
 	var rows []string
 	min, max := level.Bounds()

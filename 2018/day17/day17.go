@@ -35,34 +35,49 @@ func solve(lines []string) ([]string, error) {
 }
 
 func readScan(lines []string) (level *util.Level, minY, maxY int) {
-	level = util.ParseLevelAt([]byte{'+'}, '.', util.P{500, 0})
-	minY, maxY = math.MaxInt32, math.MinInt32
-	for _, line := range lines {
-		var a, bl, bh int
-		if _, err := fmt.Sscanf(line, "x=%d, y=%d..%d", &a, &bl, &bh); err == nil {
-			if bl < minY {
-				minY = bl
-			}
-			if bh > maxY {
-				maxY = bh
-			}
-			for b := bl; b <= bh; b++ {
-				level.Set(a, b, '#')
-			}
-		} else if _, err := fmt.Sscanf(line, "y=%d, x=%d..%d", &a, &bl, &bh); err == nil {
-			if a < minY {
-				minY = a
-			}
-			if a > maxY {
-				maxY = a
-			}
-			for b := bl; b <= bh; b++ {
-				level.Set(b, a, '#')
-			}
+	hwalls, vwalls := readWalls(lines)
+	minP, maxP := util.P{500, math.MaxInt}, util.P{500, math.MinInt}
+	for _, hw := range hwalls {
+		minP.X = min(minP.X, hw.x1)
+		minP.Y = min(minP.Y, hw.y)
+		maxP.X = max(maxP.X, hw.x2)
+		maxP.Y = max(maxP.Y, hw.y)
+	}
+	for _, vw := range vwalls {
+		minP.X = min(minP.X, vw.x)
+		minP.Y = min(minP.Y, vw.y1)
+		maxP.X = max(maxP.X, vw.x)
+		maxP.Y = max(maxP.Y, vw.y2)
+	}
+	level = util.EmptyLevel(util.P{minP.X, min(minP.Y, 0)}, util.P{maxP.X, max(maxP.Y, 0)}, '.')
+	level.Set(500, 0, '+')
+	for _, hw := range hwalls {
+		for x := hw.x1; x <= hw.x2; x++ {
+			level.Set(x, hw.y, '#')
 		}
 	}
-	return level, minY, maxY
+	for _, vw := range vwalls {
+		for y := vw.y1; y <= vw.y2; y++ {
+			level.Set(vw.x, y, '#')
+		}
+	}
+	return level, minP.Y, maxP.Y
 }
+
+func readWalls(lines []string) (hwalls []hwall, vwalls []vwall) {
+	for _, line := range lines {
+		var a, bl, bh int
+		if _, err := fmt.Sscanf(line, "y=%d, x=%d..%d", &a, &bl, &bh); err == nil {
+			hwalls = append(hwalls, hwall{y: a, x1: bl, x2: bh})
+		} else if _, err := fmt.Sscanf(line, "x=%d, y=%d..%d", &a, &bl, &bh); err == nil {
+			vwalls = append(vwalls, vwall{x: a, y1: bl, y2: bh})
+		}
+	}
+	return hwalls, vwalls
+}
+
+type hwall struct{ y, x1, x2 int }
+type vwall struct{ x, y1, y2 int }
 
 func fill(level *util.Level, source util.P, filled map[util.P]struct{}) {
 	p := source

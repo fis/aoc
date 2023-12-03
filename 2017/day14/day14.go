@@ -51,7 +51,7 @@ func hash(key string) (hashes [][]byte, used int) {
 }
 
 func buildLevel(hashes [][]byte) *util.Level {
-	lvl := util.ParseLevel(nil, '.')
+	lvl := util.EmptyLevel(util.P{0, 0}, util.P{knot.N - 1, len(hashes) - 1}, '.')
 	for y, row := range hashes {
 		for x1, b := range row {
 			for x2 := 0; x2 < 8; x2++ {

@@ -47,7 +47,7 @@ func solve(prog []int64) ([]int64, error) {
 
 func capture(prog []int64) *util.Level {
 	out, _ := intcode.Run(prog, nil)
-	level := util.ParseLevelString("", '.')
+	level := util.SparseLevel(util.P{0, 0}, '.')
 	x, y := 0, 0
 	for _, v := range out {
 		switch v {

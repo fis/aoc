@@ -44,7 +44,8 @@ type droid interface {
 }
 
 func explore(dr droid) *util.Level {
-	level := util.ParseLevelString(".", ' ')
+	level := util.SparseLevel(util.P{0, 0}, ' ')
+	level.Set(0, 0, '.')
 
 	var dfs func(util.P)
 	dfs = func(pos util.P) {

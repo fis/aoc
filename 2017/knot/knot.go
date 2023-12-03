@@ -18,8 +18,11 @@ package knot
 // N is the standard list length for knot hashes.
 const N = 256
 
-// Rounds is the standard number of rounds for a knot hash
+// Rounds is the standard number of rounds for a knot hash.
 const Rounds = 64
+
+// Size is the number of bytes in a knot hash with the standard parameters.
+const Size = 16
 
 // List generates the initial knot hash state list, of the given size.
 func List(N int) []byte {

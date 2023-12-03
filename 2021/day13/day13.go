@@ -71,7 +71,7 @@ func countVisible(points []util.P) int {
 }
 
 func printPoints(points []util.P) []string {
-	level := util.ParseLevelString(``, ' ')
+	level := util.SparseLevel(util.P{0, 0}, ' ')
 	for _, p := range points {
 		level.Set(p.X, p.Y, '#')
 	}

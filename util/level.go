@@ -22,9 +22,44 @@ import (
 
 // A Level models a two-dimensional map of ASCII character cells, similar to a roguelike level.
 type Level struct {
-	data     map[P]byte
-	empty    byte
-	min, max P
+	min, max         P
+	empty            byte
+	coreMin, coreMax P
+	core             [][]byte
+	spill            map[P]byte
+}
+
+// EmptyLevel returns a level filled with empty space matching the provided symbol.
+// The given bounds determine the densely allocated space and the initial bounds of the level.
+func EmptyLevel(min, max P, empty byte) *Level {
+	w, h := max.X-min.X+1, max.Y-min.Y+1
+	l := &Level{
+		min: min, max: max,
+		empty:   empty,
+		coreMin: min, coreMax: max,
+		core:  make([][]byte, h),
+		spill: make(map[P]byte),
+	}
+	for i := range l.core {
+		row := make([]byte, w)
+		for j := range row {
+			row[j] = empty
+		}
+		l.core[i] = row
+	}
+	return l
+}
+
+// SparseLevel returns a level with no densely allocated space at all.
+// The level bounds are set to contain only the origin point.
+func SparseLevel(origin P, empty byte) *Level {
+	return &Level{
+		min: origin, max: origin,
+		empty:   empty,
+		coreMin: origin, coreMax: P{origin.X - 1, origin.Y - 1}, // empty region
+		core:  nil,
+		spill: make(map[P]byte),
+	}
 }
 
 // ReadLevel reads the contents of a text file into a level. Character cells outside the contents of
@@ -44,16 +79,12 @@ func ParseLevel(data []byte, empty byte) *Level {
 
 // ParseLevelAt parses a byte array into a level using a specified offset.
 func ParseLevelAt(data []byte, empty byte, min P) *Level {
-	level := make(map[P]byte)
 	x, y, maxX, maxY := min.X, min.Y, 0, 0
 	for _, b := range data {
 		if b == '\n' {
 			x = min.X
 			y++
 			continue
-		}
-		if b != empty {
-			level[P{x, y}] = b
 		}
 		if x > maxX {
 			maxX = x
@@ -63,11 +94,36 @@ func ParseLevelAt(data []byte, empty byte, min P) *Level {
 		}
 		x++
 	}
+	w, h := maxX-min.X+1, maxY-min.Y+1
+	core := make([][]byte, h)
+	for i := range core {
+		row := make([]byte, w)
+		for j := range row {
+			row[j] = empty
+		}
+		core[i] = row
+	}
+	i, j := 0, 0
+	for _, b := range data {
+		if b == '\n' {
+			j = 0
+			i++
+			continue
+		}
+		if b != empty {
+			core[i][j] = b
+		}
+		j++
+	}
+	max := P{maxX, maxY}
 	return &Level{
-		data:  level,
-		empty: empty,
-		min:   min,
-		max:   P{maxX, maxY},
+		min:     min,
+		max:     max,
+		empty:   empty,
+		coreMin: min,
+		coreMax: max,
+		core:    core,
+		spill:   make(map[P]byte),
 	}
 }
 
@@ -83,9 +139,22 @@ func ParseLevelStringAt(data string, empty byte, min P) *Level {
 
 // Copy returns a deep copy of a level.
 func (l *Level) Copy() *Level {
-	c := &Level{data: make(map[P]byte), empty: l.empty, min: l.min, max: l.max}
-	for k, v := range l.data {
-		c.data[k] = v
+	w, h := l.coreMax.X-l.coreMin.X+1, l.coreMax.Y-l.coreMin.Y+1
+	c := &Level{
+		min:     l.min,
+		max:     l.max,
+		empty:   l.empty,
+		coreMin: l.coreMin,
+		coreMax: l.coreMax,
+		core:    make([][]byte, h),
+		spill:   make(map[P]byte),
+	}
+	for i := range c.core {
+		c.core[i] = make([]byte, w)
+		copy(c.core[i], l.core[i])
+	}
+	for k, v := range l.spill {
+		c.spill[k] = v
 	}
 	return c
 }
@@ -95,7 +164,9 @@ func (l *Level) At(x, y int) byte {
 	if x < l.min.X || y < l.min.Y || x > l.max.X || y > l.max.Y {
 		return l.empty
 	}
-	if b, ok := l.data[P{x, y}]; ok {
+	if x >= l.coreMin.X && y >= l.coreMin.Y && x <= l.coreMax.X && y <= l.coreMax.Y {
+		return l.core[y-l.coreMin.Y][x-l.coreMin.X]
+	} else if b, ok := l.spill[P{x, y}]; ok {
 		return b
 	}
 	return l.empty
@@ -116,22 +187,26 @@ func (l *Level) Lines(min, max P) []string {
 
 // Set sets the byte at the given coordinates.
 func (l *Level) Set(x, y int, b byte) {
+	if x >= l.coreMin.X && y >= l.coreMin.Y && x <= l.coreMax.X && y <= l.coreMax.Y {
+		l.core[y-l.coreMin.Y][x-l.coreMin.X] = b
+		return
+	}
 	if b == l.empty {
-		delete(l.data, P{x, y})
-	} else {
-		l.data[P{x, y}] = b
-		if x < l.min.X {
-			l.min.X = x
-		}
-		if y < l.min.Y {
-			l.min.Y = y
-		}
-		if x > l.max.X {
-			l.max.X = x
-		}
-		if y > l.max.Y {
-			l.max.Y = y
-		}
+		delete(l.spill, P{x, y})
+		return
+	}
+	l.spill[P{x, y}] = b
+	if x < l.min.X {
+		l.min.X = x
+	}
+	if y < l.min.Y {
+		l.min.Y = y
+	}
+	if x > l.max.X {
+		l.max.X = x
+	}
+	if y > l.max.Y {
+		l.max.Y = y
 	}
 }
 
@@ -151,14 +226,31 @@ func (l *Level) InBounds(x, y int) bool {
 
 // Range calls the callback function for all non-empty cells in the level.
 func (l *Level) Range(cb func(x, y int, b byte)) {
-	for p, b := range l.data {
+	for i, row := range l.core {
+		for j, b := range row {
+			if b != l.empty {
+				cb(l.coreMin.X+j, l.coreMin.Y+i, b)
+			}
+		}
+	}
+	for p, b := range l.spill {
 		cb(p.X, p.Y, b)
 	}
 }
 
 // Find locates the coordinates of a byte, which must be unique on the level.
 func (l *Level) Find(key byte) (x, y int, found bool) {
-	for p, b := range l.data {
+	for i, row := range l.core {
+		for j, b := range row {
+			if b == key {
+				if found {
+					return 0, 0, false
+				}
+				x, y, found = l.coreMin.X+j, l.coreMin.Y+i, true
+			}
+		}
+	}
+	for p, b := range l.spill {
 		if b == key {
 			if found {
 				return 0, 0, false
