@@ -294,7 +294,7 @@ def _gobench_compute(year, day):
     print(f'gobench: ({year}, {day}) -> {out}')
     cmd = [
         'go', 'test', '-run=$.^',
-        f'-bench=BenchmarkAllDays/day={day:02d}',
+        f'-bench=BenchmarkAllDays/day={year:04d}.{day:02d}',
         f'./{year:04d}',
     ]
     proc = subprocess.run(cmd, cwd='..', capture_output=True, check=True)

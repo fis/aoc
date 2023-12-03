@@ -34,7 +34,7 @@ func RunTests(t *testing.T, testRoot string, year int) {
 		t.Fatal(err)
 	}
 	for _, test := range tests {
-		t.Run(fmt.Sprintf("day=%02d", test.Day), func(t *testing.T) {
+		t.Run(fmt.Sprintf("day=%04d.%02d", year, test.Day), func(t *testing.T) {
 			if got, err := SolveFile(year, test.Day, test.InputFile); err != nil {
 				t.Errorf("Solve: %v", err)
 			} else if diff := cmp.Diff(test.Want, got); diff != "" {
@@ -50,7 +50,7 @@ func RunBenchmarks(b *testing.B, testRoot string, year int) {
 		b.Fatal(err)
 	}
 	for _, test := range tests {
-		b.Run(fmt.Sprintf("day=%02d", test.Day), func(b *testing.B) {
+		b.Run(fmt.Sprintf("day=%04d.%02d", year, test.Day), func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				if got, err := SolveFile(year, test.Day, test.InputFile); err != nil {
 					b.Errorf("Solve: %v", err)

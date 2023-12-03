@@ -520,8 +520,8 @@ first one that satisfies the other.
 
 Merging the constraints could be done more efficiently, with the extended
 Euclidean algorithm. But the simple solution already only takes `0.002s` for my
-puzzle input (`go test -count 1 -run TestAllDays/day=13 ./2020/days`), so it
-hardly seems necessary.
+puzzle input (`go test -count 1 -run TestAllDays/day=2020.13 ./2020/days`), so
+it hardly seems necessary.
 
 ## [Day 14](https://adventofcode.com/2020/day/14): Docking Data
 
