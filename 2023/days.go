@@ -18,4 +18,5 @@ package y2023
 import (
 	_ "github.com/fis/aoc/2023/day01" // solvers
 	_ "github.com/fis/aoc/2023/day02" // solvers
+	_ "github.com/fis/aoc/2023/day03" // solvers
 )

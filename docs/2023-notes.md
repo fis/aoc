@@ -61,3 +61,8 @@ Combined:
 C: ln{": ";;        " ";;2co{-]**3.%jri_+}^m><{-]}gB{)[~>]}m[                 }ms
 2:          [~                                               pd
 ```
+
+## [Day 3](https://adventofcode.com/2023/day/3): Gear Ratios
+
+Go solution is rather pedestrian, and other solutions are still missing. Oh
+well. At least there's quite a bit of code reuse between parts 1 and 2.
