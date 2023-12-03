@@ -22,6 +22,7 @@ import (
 	"strconv"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util"
 )
 
 func init() {
@@ -88,14 +89,14 @@ type keystreamer interface {
 }
 
 type simpleStreamer struct {
-	q        []hash // TODO: replace with a proper queue
-	cnt      int    // index of q[0]
+	q        util.Queue[hash]
+	cnt      int // index of q[0]
 	saltSize int
 	buf      [32]byte
 }
 
 func newSimpleStreamer(salt string) *simpleStreamer {
-	ks := &simpleStreamer{saltSize: len(salt)}
+	ks := &simpleStreamer{saltSize: len(salt), q: util.MakeQueue[hash](1024)}
 	for i, b := range []byte(salt) {
 		ks.buf[i] = b
 	}
@@ -107,24 +108,24 @@ func (ks *simpleStreamer) count() int {
 }
 
 func (ks *simpleStreamer) peek(offset int) hash {
-	for offset >= len(ks.q) {
+	for offset >= ks.q.Len() {
 		idx := int64(ks.cnt + offset)
 		idxSize := len(strconv.AppendInt(ks.buf[ks.saltSize:ks.saltSize], idx, 10))
-		ks.q = append(ks.q, md5.Sum(ks.buf[:ks.saltSize+idxSize]))
+		ks.q.Push(md5.Sum(ks.buf[:ks.saltSize+idxSize]))
 	}
-	return ks.q[offset]
+	return ks.q.Index(offset)
 }
 
 func (ks *simpleStreamer) pop() {
-	if len(ks.q) > 0 {
-		ks.q = ks.q[1:]
+	if !ks.q.Empty() {
+		ks.q.Pop()
 	}
 	ks.cnt++
 }
 
 type stretchedStreamer struct {
-	q        []hash // TODO: replace with a proper queue
-	cnt      int    // index of q[0]
+	q        util.Queue[hash]
+	cnt      int // index of q[0]
 	saltSize int
 	buf      [32]byte
 	stretch  int
@@ -132,7 +133,7 @@ type stretchedStreamer struct {
 }
 
 func newStretchedStreamer(salt string, stretch int) *stretchedStreamer {
-	ks := &stretchedStreamer{saltSize: len(salt), stretch: stretch}
+	ks := &stretchedStreamer{saltSize: len(salt), stretch: stretch, q: util.MakeQueue[hash](1024)}
 	for i, b := range []byte(salt) {
 		ks.buf[i] = b
 	}
@@ -144,7 +145,7 @@ func (ks *stretchedStreamer) count() int {
 }
 
 func (ks *stretchedStreamer) peek(offset int) hash {
-	for offset >= len(ks.q) {
+	for offset >= ks.q.Len() {
 		idx := int64(ks.cnt + offset)
 		idxSize := len(strconv.AppendInt(ks.buf[ks.saltSize:ks.saltSize], idx, 10))
 		h := md5.Sum(ks.buf[:ks.saltSize+idxSize])
@@ -152,14 +153,14 @@ func (ks *stretchedStreamer) peek(offset int) hash {
 			hex.Encode(ks.hashBuf[:], h[:])
 			h = md5.Sum(ks.hashBuf[:])
 		}
-		ks.q = append(ks.q, h)
+		ks.q.Push(h)
 	}
-	return ks.q[offset]
+	return ks.q.Index(offset)
 }
 
 func (ks *stretchedStreamer) pop() {
-	if len(ks.q) > 0 {
-		ks.q = ks.q[1:]
+	if !ks.q.Empty() {
+		ks.q.Pop()
 	}
 	ks.cnt++
 }
