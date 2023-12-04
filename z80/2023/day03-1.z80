@@ -1,0 +1,113 @@
+  jp solve
+
+include 'add_u32x16.z80'
+include 'atoi_u16.z80'
+include 'write_u32.z80'
+
+solve:
+
+  ld ix, sum
+
+  ;; load input into memory so that high byte of address = line, low byte = column
+
+  ld hl, data
+.load:
+  in a, (1)
+  or a
+  jr z, .loaded
+  cp '\n'
+  jr z, .load_nl
+  ld (hl), a
+  inc l
+  jr .load
+.load_nl:
+  inc h
+  ld l, 0
+  jr .load
+.loaded:
+
+  ;; process all symbols (not digit, not '.')
+
+  ld hl, data
+.process:
+  ld a, (hl)
+  or a
+  jr z, .next_line
+  cp '.'
+  jr z, .next_col
+  cp '0'
+  jr c, .found_sym
+  cp '9'+1
+  jr c, .next_col
+.found_sym:
+  call add_adjacent
+.next_col:
+  inc l
+  jr .process
+.next_line:
+  inc h
+  ld l, 0
+  ld a, (hl)
+  or a
+  jr nz, .process
+
+  ;; write final sum
+
+  call write_u32
+  ld a, '\n'
+  out (1), a
+  halt
+
+  ;; add_adjacent - sum up numbers in 3x3 region around symbol
+add_adjacent:
+  push hl
+  push hl
+  pop bc
+  dec h
+  dec l
+  inc b
+  inc c
+.test_digit:
+  ld a, (hl)
+  cp '0'
+  jr c, .next_digit
+  cp '9'+1
+  jr nc, .next_digit
+  call add_num
+.next_digit:
+  inc l
+  ld a, c
+  cp l
+  jr nc, .test_digit
+  inc h
+  ld a, b
+  cp h
+  jr c, .done
+  ld l, c
+  dec l
+  dec l
+  jr .test_digit
+.done:
+  pop hl
+  ret
+
+  ;; add_num - find and add one number
+add_num:
+  dec l
+  ld a, (hl)
+  cp '0'
+  jr c, .start_add
+  cp '9'+1
+  jr c, add_num
+.start_add:
+  inc l
+  push bc
+  call atoi_u16
+  ex de, hl
+  call add_u32x16
+  ex de, hl
+  pop bc
+  ret
+
+sum: defs 4
+data: equ 0x2000

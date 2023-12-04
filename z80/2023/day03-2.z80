@@ -1,0 +1,129 @@
+  jp solve
+
+include 'add_u32.z80'
+include 'atoi_u16.z80'
+include 'mul_u32x16.z80'
+include 'write_u32.z80'
+
+solve:
+
+  ;; load input into memory so that high byte of address = line, low byte = column
+
+  ld hl, data
+.load:
+  in a, (1)
+  or a
+  jr z, .loaded
+  cp '\n'
+  jr z, .load_nl
+  ld (hl), a
+  inc l
+  jr .load
+.load_nl:
+  inc h
+  ld l, 0
+  jr .load
+.loaded:
+
+  ;; process only '*' symbols
+
+  ld hl, data
+.process:
+  ld a, (hl)
+  or a
+  jr z, .next_line
+  cp '*'
+  jr nz, .next_col
+.found_sym:
+  call mul_adjacent
+  exx
+  ld a, c
+  exx
+  cp 2
+  jr nz, .next_col
+  ld ix, sum
+  ld iy, prod
+  call add_u32
+
+.next_col:
+  inc l
+  jr .process
+.next_line:
+  inc h
+  ld l, 0
+  ld a, (hl)
+  or a
+  jr nz, .process
+
+  ;; write final sum
+
+  call write_u32
+  ld a, '\n'
+  out (1), a
+  halt
+
+  ;; mul_adjacent - multiply numbers in 3x3 region around symbol
+mul_adjacent:
+  exx
+  ld c, 0
+  exx
+  ld ix, prod
+  ld (ix+0), 1  ; TODO: make a macro for loading constants
+  ld (ix+1), 0
+  ld (ix+2), 0
+  ld (ix+3), 0
+  push hl
+  push hl
+  pop bc
+  dec h
+  dec l
+  inc b
+  inc c
+.test_digit:
+  ld a, (hl)
+  cp '0'
+  jr c, .next_digit
+  cp '9'+1
+  jr nc, .next_digit
+  exx
+  inc c
+  exx
+  call mul_num
+.next_digit:
+  inc l
+  ld a, c
+  cp l
+  jr nc, .test_digit
+  inc h
+  ld a, b
+  cp h
+  jr c, .done
+  ld l, c
+  dec l
+  dec l
+  jr .test_digit
+.done:
+  pop hl
+  ret
+
+  ;; mul_num - find and multiply one number
+mul_num:
+  dec l
+  ld a, (hl)
+  cp '0'
+  jr c, .start_mul
+  cp '9'+1
+  jr c, mul_num
+.start_mul:
+  inc l
+  push bc
+  call atoi_u16
+  ex de, hl
+  call mul_u32x16
+  ex de, hl
+  pop bc
+  ret
+
+prod: defs 4
+sum: defs 4
+data: equ 0x2000

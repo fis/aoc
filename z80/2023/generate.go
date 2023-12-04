@@ -6,3 +6,5 @@ package y2023
 //go:generate asm -o day01-2.bin day01-2.z80
 //go:generate asm -o day02-1.bin day02-1.z80
 //go:generate asm -o day02-2.bin day02-2.z80
+//go:generate asm -o day03-1.bin day03-1.z80
+//go:generate asm -o day03-2.bin day03-2.z80

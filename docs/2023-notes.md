@@ -64,5 +64,22 @@ C: ln{": ";;        " ";;2co{-]**3.%jri_+}^m><{-]}gB{)[~>]}m[                 }m
 
 ## [Day 3](https://adventofcode.com/2023/day/3): Gear Ratios
 
-Go solution is rather pedestrian, and other solutions are still missing. Oh
-well. At least there's quite a bit of code reuse between parts 1 and 2.
+Nothing much to say about the Go solution, except that it prompted me to add a
+feature to the `util.Level` type so that it keeps a fixed-side region densely
+allocated. This makes it perform a lot better for tasks where the area of
+interest is predictable and densely packed, without having to give up the
+conveniences (`LevelSolver`, nicer API).
+
+For a lot of past problems, had to switch to more rudimentary types like naked
+`[][]byte`s and such to get acceptable performance. Benchmarking some of the old
+days that still used a `Level`, some of them got pretty nice (up to ~1 order of
+magnitude) speedups, and nothing really got slower.
+
+For the Z80 solution, went with a scheme where cell `(x, y)` of the input is
+loaded into RAM at address `0x2000 | y<<8 | x`. For the 140-line puzzle input,
+this consumes over half the device RAM, but makes it really easy to do the 2D
+accessing needed for the task, by just manipulating the high/low halves of the
+register pairs.
+
+Burlesque is still missing at this point. Not looking forward to it: "2D"
+problems are one of the worst kind to do in it.

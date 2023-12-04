@@ -1,0 +1,38 @@
+if 1-?mul_u32x16
+
+include 'add_u32_rev.z80'
+include 'sla_u32.z80'
+
+;;; mul_u32x16 - multiply 32-bit unsigned integer by a 16-bit unsigned integer
+;;;  in: IX: address of the 32-bit multiplicand and destination
+;;;      HL: the 16-bit multiplier
+;;; out: HL: zero
+;;; use: TODO
+mul_u32x16:
+  ld iy, .result
+  ld (iy+0), 0
+  ld (iy+1), 0
+  ld (iy+2), 0
+  ld (iy+3), 0
+  ld b, 16
+.mul:
+  srl h
+  rr l
+  jr nc, .skip
+  call add_u32_rev
+.skip:
+  call sla_u32
+  djnz .mul
+  ld a, (iy+0)  ;; TODO: func?
+  ld (ix+0), a
+  ld a, (iy+1)
+  ld (ix+1), a
+  ld a, (iy+2)
+  ld (ix+2), a
+  ld a, (iy+3)
+  ld (ix+3), a
+  ret
+
+.result: defs 4
+
+endif

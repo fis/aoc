@@ -10,7 +10,7 @@ mul_u16x8:
   ld de, 0
   ld b, 8
 .mul:
-  srl a
+  srl a ;; TODO: rrca saves a byte and should do the same thing, except leave A unchanged in the end?
   jr nc, .skip
   push hl
   add hl, de

@@ -1,0 +1,33 @@
+if 1-?atoi_u16
+
+;;; atoi_u16 - scan an unsigned 16-bit decimal integer
+;;; any non-digit character terminates the scan
+;;;  in: HL: address to start from
+;;; out: HL: address of byte following the number
+;;;      DE: integer value
+;;; use: A, F, B, C
+atoi_u16:
+  ld de, 0
+.loop:
+  ld a, (hl)
+  sub '0'
+  jr c, .done
+  cp 10
+  jr nc, .done
+  ex de, hl
+  add hl, hl
+  push hl
+  add hl, hl
+  add hl, hl
+  pop bc
+  add hl, bc
+  ld b, 0
+  ld c, a
+  add hl, bc
+  ex de, hl
+  inc hl
+  jr .loop
+.done:
+  ret
+
+endif
