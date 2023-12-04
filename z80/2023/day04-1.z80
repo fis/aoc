@@ -1,0 +1,95 @@
+  jp solve
+
+include 'write_u16.z80'
+
+solve:
+
+  ;; discard the card prefix (and detect EOF)
+
+.process_card:
+  in a, (1)
+  or a
+  jr nz, .cards_remain
+  ld hl, (sum)
+  call write_u16
+  ld a, '\n'
+  out (1), a
+  halt
+.cards_remain:
+  in a, (1)
+  cp ':'
+  jr nz, .cards_remain
+
+  ;; clear and then mark winning numbers in the bitmap
+
+  ld hl, blank
+  ld de, bitmap
+  ld bc, 10*16  ;; treating input as hex for simplicity
+  ldir
+
+.read_winner:
+  in a, (1)
+  cp ' '
+  jr z, .read_winner
+  cp '|'
+  jr z, .winners_done
+  call atoi2
+  ld (hl), 0xff
+  jr .read_winner
+.winners_done:
+
+  ;; count up points in our numbers
+
+  ld de, 1
+
+.read_num:
+  in a, (1)
+  cp ' '
+  jr z, .read_num
+  call atoi2
+  bit 0, (hl)
+  jr z, .no_win
+  sla e
+  rl d
+.no_win:
+  ld a, b
+  cp '\n'
+  jr nz, .read_num
+
+  srl d
+  rr e
+  push hl
+  ld hl, (sum)
+  add hl, de
+  ld (sum), hl
+  pop hl
+
+  jr .process_card
+
+;;; atoi2 - read a 1- or 2-digit decimal number
+;;;  in: A - first digit
+;;; out: L - decoded number
+;;;      B - character after the digits
+atoi2:
+  sub '0'
+  ld l, a
+  in a, (1)
+  ld b, a
+  sub '0'
+  jr c, .atoi2done
+  cp 10
+  jr nc, .atoi2done
+  sla l
+  sla l
+  sla l
+  sla l
+  add l
+  ld l, a
+  in a, (1)
+  ld b, a
+.atoi2done:
+  ret
+
+sum: equ 0x1000
+blank: equ 0x8000-10*16
+bitmap: equ 0x8000

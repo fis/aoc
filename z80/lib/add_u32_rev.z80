@@ -1,9 +1,8 @@
 if 1-?add_u32_rev
 
 ;;; add_u32_rev - add two unsigned 32-bit integers (opposite direction to add_u32)
-;;; IX = IY is valid case, but sla_u32 is cheaper
-;;;  in: IX: destination and first addend
-;;;      IY: second addend
+;;;  in: IY: destination and first addend
+;;;      IX: second addend
 ;;; use: A, F | flags set by top byte addition
 add_u32_rev:
   ld a, (iy+0)

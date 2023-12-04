@@ -83,3 +83,47 @@ register pairs.
 
 Burlesque is still missing at this point. Not looking forward to it: "2D"
 problems are one of the worst kind to do in it.
+
+## [Day 4](https://adventofcode.com/2023/day/4): Scratchcards
+
+The Go solution this time has two versions of the code for parsing the cards: a
+"simple" one written first that just relies on `strings.Split` and
+`strconv.ParseInt`, and a "fast" one that assumes ASCII, at most two-digit
+numbers, and so on.
+
+The motivation for adding the second one came from running the Go CPU profiler
+on the day benchmark. You can see the absolutely ludicrous results in the file
+[2023-day14-prof.png](2023-day14-prof.png). According to synthetic benchmarks
+for just the parser part, the other one is roughly 10x faster.
+
+The set intersection builtin `IN` is the MVP of the Burlesque solution. Parsing
+is again a large chunk of the total work. The part 2 solution does a reduce step
+where the accumulator contains the remaining card counts, and totals are added
+to the state stack as each card is processed.
+
+The Z80 solution again uses an addressing trick, where each winning number `x`
+is marked by setting the byte at `0x8000 | x`, so that set membership testing
+is trivial. This time that takes only about 160 bytes, though. The code also
+reads the numbers as hex, since the exact values don't really matter.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{":";;[~"|";;)t[psp^INL[2j**2./}ms
+```
+
+Part 2:
+
+```
+lnsaro)nz+]{":";;[~"|";;)t[psp^INL[jg_JPpbxx/.*\[bxj+]tp)++}r[p\CL++
+```
+
+Combined:
+
+```
+1:                                    2j**2./                  ms
+C: ln         {":";;[~"|";;)t[psp^INL[                        }
+2:   saro)nz+]                        jg_JPpbxx/.*\[bxj+]tp)++ r[p\CL++
+```
