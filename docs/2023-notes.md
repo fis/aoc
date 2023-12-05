@@ -81,8 +81,52 @@ this consumes over half the device RAM, but makes it really easy to do the 2D
 accessing needed for the task, by just manipulating the high/low halves of the
 register pairs.
 
-Burlesque is still missing at this point. Not looking forward to it: "2D"
-problems are one of the worst kind to do in it.
+The Burlesque solutions were added later, and were sufficiently tedious to avoid
+spending any time optimizing for them.
+
+### Burlesque
+
+The general idea is this:
+
+- Turn the `abc123def` strings into `{'a 'b 'c 123 123 123 'd 'e 'f}` blocks. In
+  other words, each number appears as a whole number for all the locations that
+  its digits can be found in.
+- Find the 2D `{row col}` indices for all symbols of interest; anything that's
+  not a number or a `.` for part 1, or just the `*` symbols for part 2.
+- For each index, expand it to its 3x3 neighborhood.
+- Replace the index values with the corresponding contents of the schematic.
+- Add a separator character between each row, and then remove consecutive
+  duplicate elements. This gets rid of the repetition when the same number
+  occupies more than one cell adjacent to a symbol.
+- Filter away all the non-number contents of the groups.
+- For part 2, also filter away all groups that don't have exactly 2 numbers.
+- Compute the final values: overall sum for part 1, sum of products for part 2.
+
+Part 1:
+
+```
+ln{XX{><j><&&}gb{J-]><{\[sa.*)ri}if}\m}m[JPp{{Jto-]'C==j'.!=&&}fI}m[zi
+{{j_+}j+]m[}m^\[{J?dj?i{r@}Z]^pcp{pPjd!}m[3co'xIC=[)-]{to-]'I==}f[++}ms
+```
+
+Part 2:
+
+```
+ln{XX{><j><&&}gb{J-]><{\[sa.*)ri}if}\m}m[JPp{{'*==}fI}m[zi
+{{j_+}j+]m[}m^\[{J?dj?i{r@}Z]^pcp{pPjd!}m[3co'xIC=[)-]{to-]'I==}f[}m[{L[2==}f[)pd++
+```
+
+Combined:
+
+```
+1:                                               Jto-]'C==j'.!=&&
+C: ln{XX{><j><&&}gb{J-]><{\[sa.*)ri}if}\m}m[JPp{{                }fI}m[zi
+2:                                               '*==
+
+1:                                                                   ++}ms
+C: {{j_+}j+]m[}m^\[{J?dj?i{r@}Z]^pcp{pPjd!}m[3co'xIC=[)-]{to-]'I==}f[
+2:                                                                   }m[{L[2==}f[)pd++
+```
 
 ## [Day 4](https://adventofcode.com/2023/day/4): Scratchcards
 
