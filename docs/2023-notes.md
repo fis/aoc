@@ -171,3 +171,50 @@ Combined:
 C: ln         {":";;[~"|";;)t[psp^INL[                        }
 2:   saro)nz+]                        jg_JPpbxx/.*\[bxj+]tp)++ r[p\CL++
 ```
+
+## [Day 5](https://adventofcode.com/2023/day/5): If You Give A Seed A Fertilizer
+
+It's a bit of a stretch, but I'm counting today as this year's first instance of
+the traditional AoC pattern, where the solution for part 1 could in theory be
+used to solve part 2, but doing so naïvely would be computationally infeasible.
+
+The natural solution here is to treat the input as a set of intervals, and
+transform them as such (splitting where necessary), as opposed to trying to
+iterate over each possible range.
+
+Doing part 1 in Burlesque was okay enough, but part 2 was a pain. Again, not
+feeling like golfing these solutions: it's enough to have them here.
+
+### Burlesque
+
+The two parts don't have all that much in common, so omitting the combined
+section. The logic for part 2 this time is:
+
+- Convert the `{dst src len}` ranges into `{start end offset}` ones.
+- For each "layer" of mappings, add in synthetic ranges (with `0` offset) to
+  make sure that the ranges cover the entire input domain, with no gaps between
+  them.
+- To solve the problem, do a reduce operation where the current set of input
+  ranges meets each set of mappings in turn. The operation:
+  - Takes the cross product of input `{is ie}` ranges and `{ms me mo}` mappings.
+  - Turns each pair into `{max(is,ms) min(ie,me) mo}` pseudorange.
+  - Filters to keep only the `max(...) < min(...)` cases. Together with the
+    previous step, this effectively finds all the non-empty intersections the
+    input ranges have with the mappings.
+  - Add the offset to all the surviving pseudoranges to make them the mapped
+    inputs of the next layer.
+
+Part 1:
+
+```
+ln{""};;g_-]WD[-)rij)[-psPp{pPj+]
+{jJJ_+1[+x/j[+jJ{Jx/[-iT[-)++rm==}j+]x/jfe~]^p.-.+}r[}m[<]
+```
+
+Part 2:
+
+```
+ln{""};;g_-]WD[-)ri2co{iT[-)++}m[j)[-ps{{J[-iT[-)++j~]^p.-[+}m[}m[
+1rz9e9?*3.*tp{_+><J2CO{p^[--]0_+j-][]}m[_+}j+]m[
+j+]{cp{tp{>]<]++}z[\[e!Cl}m[{~]^p.<}{l_?+}FM}r[FL<]
+```
