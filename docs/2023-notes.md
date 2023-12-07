@@ -218,3 +218,139 @@ ln{""};;g_-]WD[-)ri2co{iT[-)++}m[j)[-ps{{J[-iT[-)++j~]^p.-[+}m[}m[
 1rz9e9?*3.*tp{_+><J2CO{p^[--]0_+j-][]}m[_+}j+]m[
 j+]{cp{tp{>]<]++}z[\[e!Cl}m[{~]^p.<}{l_?+}FM}r[FL<]
 ```
+
+## [Day 6](https://adventofcode.com/2023/day/6): Wait For It
+
+Let's start with some notation for a single race. Call the time limit of the
+race `T`, and the time you hold down the button `h`. Now we can compute the
+distance `d(h)` you will travel based on the hold time:
+
+<!--
+d(h) = (T - h) * h
+-->
+![The equation for distance: d(h) = (T - h) * h.](math/2023-notes-day06-d.png)
+
+Let's also use `d_best` to denote the previous best distance of the race. The
+brute force solution to determine `w`, the number of different ways to win, is
+to simply try all the possible choices and count how many of them win:
+
+<!--
+     T                       T
+w = sum [ d(h) > d_best ] = sum [ (T - h) * h > d_best ]
+    h=0                     h=0
+-->
+![A sum for counting the winning combinations.](math/2023-notes-day06-w.png)
+
+Normally, when there's a problem where part 1 has a simple brute force solution
+like this, running it on part 2 tends to take a long time indeed. But in this
+instance, the the runtime is measured in milliseconds even for part 2. So we
+could even stop here.
+
+That's not to say we can't do any better, though. Let's take a closer look at
+that inequality. We can turn it into a quadratic form:
+
+<!--
+(T - h) * h > d_best
+-h^2 + T*h - d_best > 0
+-->
+![Quadratic inequality for the winning hold times.](math/2023-notes-day06-ineq.png)
+
+Since it's sad to even entertain the possibility we could not win a race, we can
+probably just assume the parameters are always such that the equation has real
+solutions. If so, counting the possible ways to win is equivalent to counting
+how many integers are in the open interval between the two solutions `h_min` and
+`h_max`. The values of these pop out of the quadratic formula:
+
+<!--
+h_min = (T - sqrt(T^2 - 4*d_best)) / 2
+h_max = (T + sqrt(T^2 - 4*d_best)) / 2
+-->
+![The two solutions for the quadratic equation.](math/2023-notes-day06-minmax.png)
+
+Since we need to beat instead of merely matching the earlier record (that's why
+it's an open interval), we'll need to not include `h_min` or `h_max` themselves,
+should they happen to be integer values. Therefore the equation for `w` becomes:
+
+<!--
+w = (⌈h_max⌉ - 1) - (⌊h_min⌋ + 1) + 1
+  = ⌈h_max⌉ - ⌊h_min⌋ - 1
+-->
+![An alternative equation for w based on the solutions.](math/2023-notes-day06-w2.png)
+
+### Burlesque
+
+For Burlesque, there's two solutions to part 2 this time. The first uses the
+same brute force approach as part 1, where we calculate the distance for every
+possible hold time and then count how many beat the record. This is actually
+(barely) computationally feasible even for the full puzzle input, but takes
+about 8 gigabytes of RAM and 4 minutes to complete. The second uses the
+closed-form solution, but is significantly longer (in terms of code size).
+
+Part 1:
+
+```
+ln{WD[-)ri}m[tp{rzJ<-{.*}Z]j?-{0.>}fl}m^pd
+```
+
+Part 2 (brute force):
+
+```
+ln{:><ri}MPjrzJ<-{.*}Z]j?-{0.>}fl
+```
+
+Combined:
+
+```
+1:    WD[-)ri m[tp{                     }m^pd
+C: ln{       }     rzJ<-{.*}Z]j?-{0.>}fl
+2:    :><ri   MPj
+```
+
+Part 2 (faster alternative):
+
+```
+ln{:><rd}MPjJJ.*x/4.*.-r@2rz?d:nz?*?+2?/^pclj?iav.-ti
+```
+
+<!--math
+
+%: day06-d
+
+\vspace*{-3ex}
+\begin{align*}
+d(h) &= (T - h) \cdot h
+\end{align*}
+
+%: day06-w
+
+\vspace*{-3ex}
+\begin{align*}
+w &= \sum_{h=0}^T [ d(h) > d_{\mathrm{best}} ]
+= \sum_{h=0}^T [ (T - h) \cdot h > d_{\mathrm{best}} ]
+\end{align*}
+
+%: day06-ineq
+
+\vspace*{-3ex}
+\begin{align*}
+(T - h) \cdot h &> d_{\mathrm{best}} \\
+-h^2 + T h - d_{\mathrm{best}} &> 0
+\end{align*}
+
+%: day06-minmax
+
+\vspace*{-3ex}
+\begin{align*}
+h_{\mathrm{min}} &= \frac{1}{2} \left( T - \sqrt{T^2 - 4 d_{\mathrm{best}}} \right) \\
+h_{\mathrm{max}} &= \frac{1}{2} \left( T + \sqrt{T^2 - 4 d_{\mathrm{best}}} \right)
+\end{align*}
+
+%: day06-w2
+
+\vspace*{-3ex}
+\begin{align*}
+w &= \left(\lceil h_{\mathrm{max}} \rceil - 1\right) - \left(\lfloor h_{\mathrm{min}} \rfloor + 1\right) + 1 \\
+&= \lceil h_{\mathrm{max}} \rceil - \lfloor h_{\mathrm{min}} \rfloor - 1
+\end{align*}
+
+-->
