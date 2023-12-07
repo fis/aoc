@@ -312,6 +312,114 @@ Part 2 (faster alternative):
 ln{:><rd}MPjJJ.*x/4.*.-r@2rz?d:nz?*?+2?/^pclj?iav.-ti
 ```
 
+## [Day 7](https://adventofcode.com/2023/day/7): Camel Cards
+
+For day 7, most of the work was in identifying the different Camel Cards hand
+types.
+
+A relatively clean way of doing this is to first count how many times each rank
+appears in the hand, and then further count how many times each *count* (which
+must necessarily be between 0 and 5, and we can ignore the zeros) appears in the
+result.
+
+If we look at the possible hand types, we can see that each is represented by a
+unique "signature" of such counts:
+
+```
+ABCDE [5 0 0 0 0] - high card
+ABCDD [3 1 0 0 0] - one pair
+ABBCC [1 2 0 0 0] - two pair
+ABCCC [2 0 1 0 0] - three of a kind
+AABBB [0 1 1 0 0] - full house
+ABBBB [1 0 0 1 0] - four of a kind
+AAAAA [0 0 0 0 1] - five of a kind
+```
+
+In the above, the letters in `ABCDE` indicate five arbitrary cards, and reuse of
+a letter implies that the same card appears again. The list of numbers that
+follows is the frequency of each count, where, e.g., `[2 0 1 0 0]` indicates
+that there were two ranks that appeared once only in the hand, and one that
+appeared three times.
+
+The Go solution uses an explicit `switch` statement to turn the counts into
+simple labels. The Burlesque solution, on the other hand, takes advantage of a
+second property. If we reverse the list of counts, we can see that the
+lexicographical ordering matches the strength of the type, and can therefore be
+used to sort the hands.
+
+For part 2, the situation is more complex. Adding an extra value `J` to count
+the number of jokers, we can again look at full list of different cases, of
+which there are now more:
+
+```
+ABCDE [5 0 0 0 0] J=0 - high card
+ABCDD [3 1 0 0 0] J=0 - one pair
+ABCDJ [4 0 0 0 0] J=1 - one pair
+ABBCC [1 2 0 0 0] J=0 - two pair
+ABCCC [2 0 1 0 0] J=0 - three of a kind
+ABCCJ [2 1 0 0 0] J=1 - three of a kind
+ABCJJ [3 0 0 0 0] J=2 - three of a kind
+AABBB [0 1 1 0 0] J=0 - full house
+AABBJ [0 2 0 0 0] J=1 - full house
+ABBBB [1 0 0 1 0] J=0 - four of a kind
+AAABJ [1 0 1 0 0] J=1 - four of a kind
+ABBJJ [1 1 0 0 0] J=2 - four of a kind
+ABJJJ [2 0 0 0 0] J=3 - four of a kind
+AAAAA [0 0 0 0 1] J=0 - five of a kind
+AAAAJ [0 0 0 1 0] J=1 - five of a kind
+AAAJJ [0 0 1 0 0] J=2 - five of a kind
+AAJJJ [0 1 0 0 0] J=3 - five of a kind
+AJJJJ [1 0 0 0 0] J=4 - five of a kind
+JJJJJ [0 0 0 0 0] J=5 - five of a kind
+```
+
+For the Go code, there's again an explicit switch that tests the counts (and
+`J` value) to figure out the specific case.
+
+For Burlesque, the direct lexicographical ordering no longer works. However, we
+can observe from the above table that whenever a joker appears, the value it
+will take to maximize the hand strength is that of the rank that appears most
+often within the non-joker cards, picking arbitrarily in case of ties (or using
+an arbitrary rank in the case of five jokers). Fortuitously, Burlesque has a
+built-in for finding the most common element of a list.
+
+### Burlesque
+
+Outline:
+
+- Convert card labels to ranks using the correct numbering.
+- For each hand:
+  - For part 2 only: replace jokers with the most common non-joker card.
+  - Group the cards by rank, and get the group sizes.
+  - Count how many each there are of the different possible group sizes.
+  - Reverse the list, and append the original hand to it. This forms the sort key.
+  - Append the bid amount at the end. This doesn't affect the ordering since it's at the very end.
+- Sort the list, and calculate total wins by summing the product of bids and the corresponding ranks.
+
+Part 1:
+
+```
+ln{WDp^XX{"23456789TJQKA"jFi}m[J
+sg)L[f:6ro0?*+]{^psa}r[<-j_+jri[+}m[><)[~saroz[PD++
+```
+
+Part 2:
+
+```
+ln{WDp^XX{"J23456789TQKA"jFi}m[JJ:nzJ0[+n!x/:z??i?*_+
+sg)L[f:6ro0?*+]{^psa}r[<-j_+jri[+}m[><)[~saroz[PD++
+```
+
+Combined:
+
+```
+1:            23456789TJ
+C: ln{WDp^XX{"          QKA"jFi}m[J
+2:            J23456789T           J:nzJ0[+n!x/:z??i?*_+
+
+C: sg)L[f:6ro0?*+]{^psa}r[<-j_+jri[+}m[><)[~saroz[PD++
+```
+
 <!--math
 
 %: day06-d
