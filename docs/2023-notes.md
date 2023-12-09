@@ -392,9 +392,12 @@ Outline:
   - For part 2 only: replace jokers with the most common non-joker card.
   - Group the cards by rank, and get the group sizes.
   - Count how many each there are of the different possible group sizes.
-  - Reverse the list, and append the original hand to it. This forms the sort key.
-  - Append the bid amount at the end. This doesn't affect the ordering since it's at the very end.
-- Sort the list, and calculate total wins by summing the product of bids and the corresponding ranks.
+  - Reverse the list, and append the original hand to it. This forms the sort
+    key.
+  - Append the bid amount at the end. This doesn't affect the ordering since
+    it's at the very end.
+- Sort the list, and calculate total wins by summing the product of bids and the
+  corresponding ranks.
 
 Part 1:
 
@@ -418,6 +421,96 @@ C: ln{WDp^XX{"          QKA"jFi}m[J
 2:            J23456789T           J:nzJ0[+n!x/:z??i?*_+
 
 C: sg)L[f:6ro0?*+]{^psa}r[<-j_+jri[+}m[><)[~saroz[PD++
+```
+
+## [Day 8](https://adventofcode.com/2023/day/8): Haunted Wasteland
+
+For part 1, brute force is the natural choice: just follow the directions step
+by step until you end at the end.
+
+While it's possible in theory to do part 2 similarly (just keep track of all N
+ghosts and advance each according to the instructions), this time it is actually
+too expensive: my puzzle solution is approximately 10^13.
+
+For this acceptably fast solution, the key idea is this: for each ghost
+independently, find a cycle that has it repeating the same sequence of nodes. A
+cycle is easy to identify: if we ever arrive at the same node while at the same
+point in the list of directions, then that's a cycle.
+
+> If there is some particular structure to the graph and the list of directions,
+> shorter cycles may also be possible. But there seems to be no need to look for
+> some.
+
+In theory, an arbitrary set of nodes visited during a cycle might be suitable
+end positions (have names ending in `Z`). For this puzzle input, however, it
+just so happens that there is always only one. This simplifies the treatment
+somewhat.
+
+Let's assume we've found `N` cycles. There may be some initial steps before each
+cycle begins: let's call that number `s_i`, for cycle `i`. We will take
+`t_0 = max_i s_i`, the time when all the ghosts have entered their cycles, as
+the origin of our shared timekeeping (or step-keeping?).
+
+For each cycle `i`, there are two parameters: the length of the cycle in steps
+(`M_i`), and the specific step (as measured from `t_0`) at which the ghost is in
+its designated end node (`k_i`). This means that any time `T` in which *all* the
+ghosts are at the end nodes must satisfy `T ≡ k_i (mod M_i)` for all the cycles.
+
+Consider a pair of cycles that, without loss of generality, are numbered `1` and
+`2` with `M_1 > M_2`. To find a solution that satisfies both, we can probe the
+numbers `k_1`, `k_1 + M_1`, `k_1 + 2*M_1` and so on. If we find a suitable
+number `a = k_1 + n * M_1 ≡ k_2 (mod M_2)`, we can replace that pair of cycles
+with a single cycle `C`, representing both of them, with the parameters
+`k_C = a` and `M_C = LCM(M_1, M_2)`. In this way, we can reduce the size of our
+set of cycles by one. Finally, we can iterate the process until only a single
+cycle remains, at which point the answer to the puzzle can be derived from the
+`k` value of the sole remaining cycle.
+
+For my puzzle input, there were six `??A` (and `??Z`) nodes, and therefore also
+six cycles. The cycle lengths were 12169, 13301, 14999, 17263, 20093 and 22357.
+While multiplying all six together would produce an 84-bit integer, we can note
+that they all share a factor in common:
+
+| cycle length | factorization |
+|--------------|---------------|
+| 12169        | 43 · 283      |
+| 13301        | 47 · 283      |
+| 14999        | 53 · 283      |
+| 17263        | 61 · 283      |
+| 20093        | 71 · 283      |
+| 22357        | 79 · 283      |
+
+Consequently, the least common multiple of the entire set is merely a 44-bit
+integer.
+
+### Burlesque
+
+Part 1 is *reasonably* simple and fast. It treats the node names as base-26
+numbers (with `A` = 0 and so on), and uses a 20k-element list (> 26^3) to store
+the directions. Then it just makes an infinite cycle out of the directions, and
+uses a `w!` loop to iterate until arriving on the `ZZZ` node.
+
+Part 2 is anything but. It uses the same algorithm as the Go solution, but for
+finding the cycles it just uses a flat list as the `seen` map, so runtime is at
+best quadratic to cycle length. It takes approximately a minute to run for the
+puzzle input.
+
+In retrospect, it might have been better for part 1 to not bother making the
+"fast" map. It likely isn't all that fast.
+
+Part 1:
+
+```
+lng_cyj[-2e4ro+]{:rd3co{XX{**65.-}m[26ug}m[g_sa}r[Pp
+0{JpPj!!x/g_**5.%-.x/j!!}{17575!=}w!CLL[2.-
+```
+
+Part 2:
+
+```
+lng_zicys0[-S1{WD-]}m[{[~'A==}f[{g0j+]{}j{J2.+x/j+]jg_{~!}j+]g1jfejg_[~**5.%x/:rd3coj!!+]}
+{2.+~[n!}w!2.+jsas9Jx/Fi+.Jg9j.-_+j{-][~'Z==}fig9-.j.-[+}m[J)[-)-]>]S9jJ)[~x/?-j)-]jz[
+{J2.+<>p^p^{.+}j+]x/{.%!=}z[\[w!jJ2.-j2.+)-]p^l_x/_++]}{L[2>=}w![~[~g9.+
 ```
 
 <!--math
