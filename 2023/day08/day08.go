@@ -17,7 +17,9 @@ package day08
 
 import (
 	"fmt"
+	"io"
 	"regexp"
+	"strings"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
@@ -27,6 +29,7 @@ import (
 
 func init() {
 	glue.RegisterSolver(2023, 8, glue.ChunkSolver(solve))
+	glue.RegisterPlotter(2023, 8, glue.ChunkPlotter(plot), map[string]string{"ex1": ex1, "ex2": ex2, "ex3": ex3})
 }
 
 func solve(chunks []string) ([]string, error) {
@@ -59,16 +62,12 @@ func countGhostSteps(g *graph, dirs []direction) (steps int) {
 			cycles = append(cycles, findCycle(g, node, dirs))
 		}
 	}
-	start := fn.MaxF(cycles, func(c cycle) int { return c.start })
-	for i := range cycles {
-		cycles[i].end -= start
-	}
 	for len(cycles) > 1 {
 		i := len(cycles) - 2
 		cycles[i] = mergeCycles(cycles[i], cycles[i+1])
 		cycles = cycles[:i+1]
 	}
-	return start + cycles[0].end
+	return cycles[0].end
 }
 
 type cycle struct {
@@ -78,39 +77,35 @@ type cycle struct {
 }
 
 func findCycle(g *graph, from int, dirs []direction) cycle {
-	n, steps, d := from, 0, 0
-	seen := make([][]int, len(g.nodes))
-	for i := range seen {
-		seen[i] = make([]int, len(dirs))
-		for j := range seen[i] {
-			seen[i][j] = -1
-		}
-	}
-	end := -1 // assumes there's just one suitable end to it
+	seen := fn.MapRange(0, len(g.nodes), func(int) int { return -1 })
+	n, steps := from, 0
+	end := -1
 	for {
-		seen[n][d] = steps
-		steps++
-		n = g.edges[n][dirs[d]]
-		d++
-		if d == len(dirs) {
-			d = 0
+		seen[n] = steps
+		for i, d := range dirs {
+			n = g.edges[n][dirs[d]]
+			if label := g.labels[n]; label[len(label)-1] == 'Z' {
+				end = steps + i + 1
+			}
 		}
-		if label := g.labels[n]; label[len(label)-1] == 'Z' {
-			end = steps
-		}
-		if start := seen[n][d]; start >= 0 {
-			return cycle{start: start, size: steps - start, end: end}
+		steps += len(dirs)
+		if start := seen[n]; start >= 0 {
+			size := steps - start
+			return cycle{start: start, size: size, end: end % size}
 		}
 	}
 }
 
-func mergeCycles(ca, cb cycle) cycle {
-	if ca.size < cb.size {
-		ca, cb = cb, ca
+func mergeCycles(c1, c2 cycle) cycle {
+	if c1.size < c2.size {
+		c1, c2 = c2, c1
 	}
-	for a := ca.end; ; a += ca.size {
-		if a%cb.size == cb.end {
-			return cycle{size: ix.LCM(ca.size, cb.size), end: a}
+	for a := c1.end; ; a += c1.size {
+		if a < c1.start || a < c2.start {
+			continue
+		}
+		if a%c2.size == c2.end {
+			return cycle{size: ix.LCM(c1.size, c2.size), end: a}
 		}
 	}
 }
@@ -166,4 +161,57 @@ func parseMaps(chunks []string) (g *graph, dirs []direction, err error) {
 		g.edges[from] = [2]int{left, right}
 	}
 	return g, dirs, err
+}
+
+// plotting
+
+var (
+	ex1 = strings.TrimPrefix(`
+RL
+
+AAA = (BBB, CCC)
+BBB = (DDD, EEE)
+CCC = (ZZZ, GGG)
+DDD = (DDD, DDD)
+EEE = (EEE, EEE)
+GGG = (GGG, GGG)
+ZZZ = (ZZZ, ZZZ)
+`, "\n")
+	ex2 = strings.TrimPrefix(`
+LLR
+
+AAA = (BBB, BBB)
+BBB = (AAA, ZZZ)
+ZZZ = (ZZZ, ZZZ)
+`, "\n")
+	ex3 = strings.TrimPrefix(`
+LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)
+`, "\n")
+)
+
+func plot(chunks []string, w io.Writer) error {
+	g, _, err := parseMaps(chunks)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(w, "digraph G {")
+	for i, label := range g.labels {
+		fmt.Fprintf(w, "  n%d [label=\"%s\"];\n", i, label)
+	}
+	for i, e := range g.edges {
+		for j, label := range []string{"L", "R"} {
+			fmt.Fprintf(w, "  n%d -> n%d [label=\"%s\"];\n", i, e[j], label)
+		}
+	}
+	fmt.Fprintln(w, "}")
+	return nil
 }

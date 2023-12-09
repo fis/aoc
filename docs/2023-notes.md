@@ -441,30 +441,31 @@ point in the list of directions, then that's a cycle.
 > shorter cycles may also be possible. But there seems to be no need to look for
 > some.
 
-In theory, an arbitrary set of nodes visited during a cycle might be suitable
-end positions (have names ending in `Z`). For this puzzle input, however, it
-just so happens that there is always only one. This simplifies the treatment
-somewhat.
+In theory, many nodes visited during a cycle might be suitable end positions
+(have names ending in `Z`). For this puzzle input, however, it just so happens
+that there is always only one. This simplifies the treatment somewhat.
+
+> It also looks like the end node is always right at the end of the cycle, but
+> the solution does not assume that to be the case.
 
 Let's assume we've found `N` cycles. There may be some initial steps before each
-cycle begins: let's call that number `s_i`, for cycle `i`. We will take
-`t_0 = max_i s_i`, the time when all the ghosts have entered their cycles, as
-the origin of our shared timekeeping (or step-keeping?).
+cycle begins: let's call that number `s_i`, for cycle `i`. Just to be sure,
+we'll want to take care to avoid any solutions that are less than `max_i s_i`.
 
 For each cycle `i`, there are two parameters: the length of the cycle in steps
-(`M_i`), and the specific step (as measured from `t_0`) at which the ghost is in
-its designated end node (`k_i`). This means that any time `T` in which *all* the
-ghosts are at the end nodes must satisfy `T ≡ k_i (mod M_i)` for all the cycles.
+(`M_i`), and the specific step at which the ghost is in its designated end node
+(`k_i`). This means that any time `T` in which *all* the ghosts are at the end
+nodes must satisfy `T ≡ k_i (mod M_i)` (and `T ≥ s_i`) for all the cycles.
 
 Consider a pair of cycles that, without loss of generality, are numbered `1` and
-`2` with `M_1 > M_2`. To find a solution that satisfies both, we can probe the
-numbers `k_1`, `k_1 + M_1`, `k_1 + 2*M_1` and so on. If we find a suitable
-number `a = k_1 + n * M_1 ≡ k_2 (mod M_2)`, we can replace that pair of cycles
-with a single cycle `C`, representing both of them, with the parameters
-`k_C = a` and `M_C = LCM(M_1, M_2)`. In this way, we can reduce the size of our
-set of cycles by one. Finally, we can iterate the process until only a single
-cycle remains, at which point the answer to the puzzle can be derived from the
-`k` value of the sole remaining cycle.
+`2` with `M_1 > M_2`. To find a solution that satisfies both, we can check the
+numbers that are of the form `k_1 + n * M_1` for some integer `n`. Once we find
+a suitable number `a` of that form where `a ≡ k_2 (mod M_2), a ≥ s_1, a ≥ s_2`,
+we can replace that pair of cycles with a single cycle `C`, representing both,
+with the parameters `k_C = a` and `M_C = LCM(M_1, M_2)`. In this way, we can
+reduce the size of our set of cycles by one. Finally, we can iterate the process
+until only a single cycle remains, at which point the answer to the puzzle can
+be derived from the `k` value of the sole remaining cycle.
 
 For my puzzle input, there were six `??A` (and `??Z`) nodes, and therefore also
 six cycles. The cycle lengths were 12169, 13301, 14999, 17263, 20093 and 22357.
@@ -482,6 +483,11 @@ that they all share a factor in common:
 
 Consequently, the least common multiple of the entire set is merely a 44-bit
 integer.
+
+> Update 2023-12-09: As a performance optimization, the Go code is now checking
+> for cycles only at the start of each run through the entire list of
+> directions. This allows it to no longer track both the node and the position
+> in the direction list when checking for cycles.
 
 ### Burlesque
 

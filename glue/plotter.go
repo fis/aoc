@@ -32,3 +32,14 @@ func (p LinePlotter) Plot(r io.Reader, w io.Writer) error {
 	}
 	return p(data, w)
 }
+
+type ChunkPlotter func([]string, io.Writer) error
+
+// Plot implements the Plotter interface.
+func (p ChunkPlotter) Plot(r io.Reader, w io.Writer) error {
+	data, err := util.ScanAll(r, util.ScanChunks)
+	if err != nil {
+		return err
+	}
+	return p(data, w)
+}

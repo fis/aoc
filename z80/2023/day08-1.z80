@@ -1,0 +1,118 @@
+  jp solve
+
+include 'write_u16.z80'
+
+solve:
+
+  ;; read in directions
+
+  ld hl, dirs
+.read_dir:
+  in a, (1)
+  cp '\n'
+  jr z, .read_dir_done
+  ld (hl), a
+  inc hl
+  jr .read_dir
+.read_dir_done:
+  in a, (1)   ; discard separator line
+
+  ;; read in nodes
+
+  ld hl, nodes
+  ld de, scratch
+  ld c, 1
+.read_node:
+  ld b, 3
+  inir
+  ex de, hl
+  ld b, 4
+  inir
+  ex de, hl
+  ld b, 3
+  inir
+  in a, (1)
+  in a, (1)
+  ld b, 3
+  inir
+  in a, (1)
+  in a, (1)
+  or a
+  jr nz, .read_node
+
+  ;; count steps
+
+  ld de, 0
+  ld hl, dirs
+  ld iy, cur_node
+.next_step:
+
+  ;; find the record for the current node
+
+  ld ix, nodes
+  ld bc, 9
+.find_node:
+  ld a, (ix+0)
+  cp (iy+0)
+  jr nz, .next_node
+  ld a, (ix+1)
+  cp (iy+1)
+  jr nz, .next_node
+  ld a, (ix+2)
+  cp (iy+2)
+  jr z, .node_found
+.next_node:
+  add ix, bc
+  jr .find_node
+.node_found:
+
+  ;; read in the next direction value
+
+.take_step:
+  ld a, (hl)
+  inc hl
+  or a
+  jr nz, .valid_step
+  ld hl, dirs
+  jr .take_step
+.valid_step:
+  rrca
+  and 1
+  jr nz, .branch_right
+.branch_left:
+  ld a, (ix+3)
+  ld b, (ix+4)
+  ld c, (ix+5)
+  jr .update_node
+.branch_right:
+  ld a, (ix+6)
+  ld b, (ix+7)
+  ld c, (ix+8)
+.update_node:
+  ld (iy+0), a
+  ld (iy+1), b
+  ld (iy+2), c
+
+  ;; increment steps and test for "ZZZ"
+
+  inc de
+  cp 'Z'
+  jr nz, .next_step
+  ld a, b
+  cp 'Z'
+  jr nz, .next_step
+  ld a, c
+  cp 'Z'
+  jr nz, .next_step
+
+  ex de, hl
+  call write_u16
+  ld a, '\n'
+  out (1), a
+  halt
+
+cur_node: defb "AAA"
+
+dirs: equ 0x1000
+nodes: equ 0x2000
+scratch: equ 0x8000
