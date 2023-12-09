@@ -519,6 +519,46 @@ lng_zicys0[-S1{WD-]}m[{[~'A==}f[{g0j+]{}j{J2.+x/j+]jg_{~!}j+]g1jfejg_[~**5.%x/:r
 {J2.+<>p^p^{.+}j+]x/{.%!=}z[\[w!jJ2.-j2.+)-]p^l_x/_++]}{L[2>=}w![~[~g9.+
 ```
 
+## [Day 9](https://adventofcode.com/2023/day/9): Mirage Maintenance
+
+Today might have been the first instance where I wrote the Burlesque solution
+first. It's kind of well-suited to it.
+
+This time there's no twist, and simply implementing the problem statement is a
+perfectly adequate solution. The Burlesque version builds the triangle of
+differences out explicitly, and then extracts the last element and does the
+necessary operations to get the prediction. Go version does it in-place (though
+on a copy of the list since it's still needed for later).
+
+The problem as described is a case of
+[polynomial interpolation](https://en.wikipedia.org/wiki/Polynomial_interpolation)
+with consecutive equally spaced data points, and the problem statement is pretty
+much describing the forward/backward difference expressions of a
+[Newton polynomial](https://en.wikipedia.org/wiki/Newton_polynomial). Not sure
+if this would yield some shortcuts in calculating the prediction; the task does
+not really need any.
+
+### Burlesque
+
+Part 1:
+
+```
+lnps{sa-.{J2CO{.-}m^}jE!CL)[~++}ms
+```
+
+Part 2:
+
+```
+lnps)<-{sa-.{J2CO{.-}m^}jE!CL)[~++}ms
+```
+
+Combined:
+
+```
+C: lnps   {sa-.{J2CO{.-}m^}jE!CL)[~++}ms
+2:     )<-
+```
+
 <!--math
 
 %: day06-d
