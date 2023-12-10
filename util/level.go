@@ -21,6 +21,7 @@ import (
 )
 
 // A Level models a two-dimensional map of ASCII character cells, similar to a roguelike level.
+// The origin of the coordinate system is the top-left cell; X grows right, Y grows down.
 type Level struct {
 	min, max         P
 	empty            byte
