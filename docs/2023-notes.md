@@ -559,6 +559,49 @@ C: lnps   {sa-.{J2CO{.-}m^}jE!CL)[~++}ms
 2:     )<-
 ```
 
+## [Day 10](https://adventofcode.com/2023/day/10): Pipe Maze
+
+TODO: document.
+
+## [Day 11](https://adventofcode.com/2023/day/11): Cosmic Expansion
+
+Today's twist was only twisty if your part 1 solution involved explicitly
+constructing the expanded map. In my case, the Go solution instead iterates over
+the original galaxy positions and updates the locations as it goes along.
+
+An alternative solution could be to compute the distances in the original map,
+but count empty rows/columns as worth more. The Burlesque solution goes this
+route.
+
+### Burlesque
+
+This is based on finding, for each pair of galaxies, the range (`r@`) of row and
+column indices between them, and then intersecting the ranges with the lists of
+empty rows and columns, respectively.
+
+Part 1:
+
+```
+lnJ)XXJtpbxj[+{{{'.==}al}fI}m[s0zi{{'#==}fIj{_+}j+]m[}^m\[2CB:so
+{tpg0{j><^pr@[-sa#rINL[}Z]++}ms
+```
+
+Part 2:
+
+```
+lnJ)XXJtpbxj[+{{{'.==}al}fI}m[s0zi{{'#==}fIj{_+}j+]m[}^m\[2CB:so
+{tpg0{j><^pr@[-sa#rINL[1e6-..*}Z]++}ms
+```
+
+Combined:
+
+```
+C: lnJ)XXJtpbxj[+{{{'.==}al}fI}m[s0zi{{'#==}fIj{_+}j+]m[}^m\[2CB:so
+
+C: {tpg0{j><^pr@[-sa#rINL[       }Z]++}ms
+2:                        1e6-..*
+```
+
 <!--math
 
 %: day06-d
