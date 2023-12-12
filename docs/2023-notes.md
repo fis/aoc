@@ -602,6 +602,43 @@ C: {tpg0{j><^pr@[-sa#rINL[       }Z]++}ms
 2:                        1e6-..*
 ```
 
+## [Day 12](https://adventofcode.com/2023/day/12): Hot Springs
+
+The solution here is a
+[dynamic programming](https://en.wikipedia.org/wiki/Dynamic_programming#Computer_science)
+kind of a thing.
+
+Let's denote by `a[i,j]` the number of ways it is possible to arrange
+`groups[i:]` (i.e., all groups from the `i`th group onwards) into `row[j:]`
+(i.e., the suffix of the row from the `j`th spring onwards). In this case,
+`a[0,0]` is the answer to the puzzle: the number of ways to arrange all the
+groups into the entire row.
+
+We have the following relationships within the elements of the table:
+
+```
+a[0,j] = 0, if row[j:] contains any '#' characters
+         1, if row[j:] contains only '.' or '?' characters
+
+a[i,j] = sum of:
+           a[i,j+1] if row[j] is not '#'
+           a[i+1][j+g+1] if current group (of size g) can fit at position j
+```
+
+This represents the following logical conditions:
+
+- If there are no groups left, they can be arranged in one way if the target
+  consists of only `.` or `?` (by making it fully functional), or they can't be
+  arranged at all if there are some `#` characters (as those would have to be
+  part of a group).
+- If there are some groups left, there are two possibilities:
+  - We can start the group at some later position, which is only possible if the
+    first character of the target range is not `#`; in that case, we need to
+    arrange the remaining groups in the remainder of the row.
+  - Or we can put the first group here (assuming it fits, i.e., there are no `.`
+    characters within the group, and no `#` immediately after), and arrange the
+    remaining groups in the leftover space.
+
 <!--math
 
 %: day06-d
