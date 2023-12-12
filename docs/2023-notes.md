@@ -639,6 +639,11 @@ This represents the following logical conditions:
     characters within the group, and no `#` immediately after), and arrange the
     remaining groups in the leftover space.
 
+The initial Go solution built the full table from the bottom up. Current
+solution instead does it top-down with recursion, which seems to be a little
+(~30%) faster, presumably because not all the elements are actually used for the
+final answer.
+
 <!--math
 
 %: day06-d

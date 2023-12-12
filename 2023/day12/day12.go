@@ -46,10 +46,8 @@ func countAllWays(data []record) int {
 func unfold(data []record, factor int) []record {
 	unfolded := make([]record, len(data))
 	for i, r := range data {
-		var (
-			row    []byte
-			groups []int
-		)
+		row := make([]byte, 0, factor*len(r.row)+factor-1)
+		groups := make([]int, 0, factor*len(r.groups))
 		for j := 0; j < factor; j++ {
 			if j > 0 {
 				row = append(row, '?')
@@ -63,43 +61,58 @@ func unfold(data []record, factor int) []record {
 }
 
 func countWays(row []byte, groups []int) int {
-	// ways[i][j] ::= number of ways the last groups[i:] can fit in row[j:]
-	ways := make([][]int, len(groups)+1)
-	for i := 0; i <= len(groups); i++ {
-		ways[i] = make([]int, len(row))
-	}
+	return memoize(row, groups).solve(0, 0)
+}
 
-	// base case: suffixes that can match no groups
-	{
-		w := 1
-		for i := len(row) - 1; i >= 0; i-- {
-			if row[i] == '#' {
-				w = 0
+type memoized struct {
+	row    []byte
+	groups []int
+	gmin   []int // gmin[i] = minimum size to place groups[i:]
+	ways   []int // flattened (len(groups)+1) x (len(row)+1) array, 0 for unsolved, 1+w for solved
+}
+
+func memoize(row []byte, groups []int) *memoized {
+	gmin := make([]int, len(groups))
+	for gi, gm := len(groups)-1, -1; gi >= 0; gi-- {
+		gm += groups[gi] + 1
+		gmin[gi] = gm
+	}
+	ways := make([]int, (len(groups)+1)*(len(row)+1))
+	return &memoized{row: row, groups: groups, gmin: gmin, ways: ways}
+}
+
+func (m *memoized) solve(gi, offset int) (w int) {
+	if w := m.ways[gi*(len(m.row)+1)+offset]; w > 0 {
+		return w - 1
+	}
+	w = 0
+	if gi == len(m.groups) {
+		// no groups left to place: see if suffix can be empty
+		if offset == len(m.row) {
+			w = 1
+		} else if m.row[offset] == '#' {
+			w = 0
+		} else {
+			w = m.solve(gi, offset+1)
+		}
+	} else if len(m.row[offset:]) < m.gmin[gi] {
+		// some groups left to place, but no chance to place them
+		w = 0
+	} else {
+		// some groups left to place and might still make it: try to place next group here or later
+		if gs := m.groups[gi]; testFit(m.row[offset:], gs) {
+			if offset+gs+1 < len(m.row) {
+				w += m.solve(gi+1, offset+gs+1)
+			} else if gi == len(m.groups)-1 {
+				w++
 			}
-			ways[len(groups)][i] = w
+		}
+		if m.row[offset] != '#' && offset+1 < len(m.row) {
+			w += m.solve(gi, offset+1)
 		}
 	}
-
-	// recursive case
-	for gi := len(groups) - 1; gi >= 0; gi-- {
-		gs := groups[gi]
-		for offset := len(row) - 1; offset >= 0; offset-- {
-			w := 0
-			if row[offset] != '#' && offset+1 < len(row) {
-				w += ways[gi][offset+1]
-			}
-			if testFit(row[offset:], gs) {
-				if offset+gs+1 < len(row) {
-					w += ways[gi+1][offset+gs+1]
-				} else if gi == len(groups)-1 {
-					w++
-				}
-			}
-			ways[gi][offset] = w
-		}
-	}
-
-	return ways[0][0]
+	m.ways[gi*(len(m.row)+1)+offset] = w + 1
+	return w
 }
 
 func testFit(row []byte, groupSize int) bool {
