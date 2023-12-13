@@ -137,7 +137,7 @@ numbers, and so on.
 
 The motivation for adding the second one came from running the Go CPU profiler
 on the day benchmark. You can see the absolutely ludicrous results in the file
-[2023-day14-prof.png](2023-day14-prof.png). According to synthetic benchmarks
+[2023-day04-prof.png](2023-day04-prof.png). According to synthetic benchmarks
 for just the parser part, the other one is roughly 10x faster.
 
 The set intersection builtin `IN` is the MVP of the Burlesque solution. Parsing
@@ -643,6 +643,46 @@ The initial Go solution built the full table from the bottom up. Current
 solution instead does it top-down with recursion, which seems to be a little
 (~30%) faster, presumably because not all the elements are actually used for the
 final answer.
+
+## [Day 13](https://adventofcode.com/2023/day/13): Point of Incidence
+
+The Go solution parses the input directly into both a row-major and a
+column-major bitmap, where each row (or column, respectively) is an `uint32`.
+This makes it quite quick to compare entire rows (or columns) with a single `==`
+operation for part 1, or compute the number of differences by doing a `xor`
+operation and then counting number of set bits for part 2.
+
+### Burlesque
+
+The high-level structure involves constructing a transposed version of the
+pattern (with `)XXtp)\[`), mapping a piece of code that locates the line of
+reflection over both the original and the transposed versions, and then treating
+the result as the digits of a base-100 number (`100ug`) to combine them as
+required by the puzzle.
+
+Part 1:
+
+```
+ln""bx;;{J)XXtp)\[bxj+]{sarojbc{zij{-].<}[[ptp^<-
+z[{)[~p^==}al}Z]1Fi+.}m[100ug}ms
+```
+
+Part 2:
+
+```
+ln""bx;;{J)XXtp)\[bxj+]{sarojbc{zij{-].<}[[ptp^<-
+{)[~p^{!=}Z]++}Z[++}Z]1Fi+.}m[100ug}ms
+```
+
+Combined:
+
+```
+C: ln""bx;;{J)XXtp)\[bxj+]{sarojbc{zij{-].<}[[ptp^<-
+
+1: z[      ==}al
+C:   {)[~p^             }Z]1Fi+.}m[100ug}ms
+2:         {!=}Z]++}Z[++
+```
 
 <!--math
 
