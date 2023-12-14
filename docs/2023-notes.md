@@ -684,6 +684,33 @@ C:   {)[~p^             }Z]1Fi+.}m[100ug}ms
 2:         {!=}Z]++}Z[++
 ```
 
+## [Day 14](https://adventofcode.com/2023/day/14): Parabolic Reflector Dish
+
+Not much of a trick today. It doesn't take many iterations of the spin sequence
+to find a cycle (for me, there's a cycle of length 18 that begins after 122
+spins), but it still takes a non-trivial amount of time to do all that sliding.
+
+### Burlesque
+
+Golfed the part 1 solution to a moderately pleasant size, but for part 2 just
+didn't bother. It's based on just keeping the full list of seen platform
+contents on the stack, and iterating until something that's already on the list
+shows up. The spin cycle is implemented by evaluating a "turn 90° and slide"
+core 4 times.
+
+Part 1:
+
+```
+ln)XXtp{{'#==}gB)<>\[<-{'O==}fI?i++}ms
+```
+
+Part 2:
+
+```
+ln)XX)<-<-{tp{<-{'#==}gB)<>\[}m[}s0{}j{Jx/j+]jg04E!}{~[n!}w!
+S1jsas2jFi1e9g2.-j+..%4.*g1jg0jE!tp{{'O==}fI?i++}ms
+```
+
 <!--math
 
 %: day06-d

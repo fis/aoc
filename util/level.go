@@ -173,6 +173,24 @@ func (l *Level) At(x, y int) byte {
 	return l.empty
 }
 
+// CoreAt returns the byte at the given coordinates, which must be within the densely stored region (see CoreBounds).
+func (l *Level) CoreAt(x, y int) byte {
+	return l.core[y-l.coreMin.Y][x-l.coreMin.X]
+}
+
+// Row returns a []byte with the contents of a single contiguous row from the level.
+// If this is within the core area, the returned slice will share storage with the level.
+func (l *Level) Row(x1, x2, y int) []byte {
+	if x1 >= l.coreMin.X && y >= l.coreMin.Y && x2 <= l.coreMax.X && y <= l.coreMax.Y {
+		return l.core[y-l.coreMin.Y][x1-l.coreMin.X : x2-l.coreMin.X+1]
+	}
+	row := make([]byte, x2-x1+1)
+	for x := x1; x <= x2; x++ {
+		row[x-x1] = l.At(x, y)
+	}
+	return row
+}
+
 // Lines returns the contents of a part of the level as a list of strings.
 func (l *Level) Lines(min, max P) []string {
 	lines := make([]string, max.Y-min.Y+1)
@@ -211,11 +229,15 @@ func (l *Level) Set(x, y int, b byte) {
 	}
 }
 
+// CoreSet sets the byte at the given coordinates, which must be within the densely stored region (see CoreBounds).
+func (l *Level) CoreSet(x, y int, b byte) {
+	l.core[y-l.coreMin.Y][x-l.coreMin.X] = b
+}
+
 // Bounds returns the top-left and bottom-right corners of the level's bounding box. See InBounds
 // for the definition.
 func (l *Level) Bounds() (min, max P) {
-	min, max = l.min, l.max
-	return
+	return l.min, l.max
 }
 
 // InBounds returns true if the given coordinates are within the bounding box of the level. The
@@ -223,6 +245,11 @@ func (l *Level) Bounds() (min, max P) {
 // characters are later overwritten to be empty.
 func (l *Level) InBounds(x, y int) bool {
 	return x >= l.min.X && y >= l.min.Y && x <= l.max.X && y <= l.max.Y
+}
+
+// CoreBounds returns the top-left and bottom-right corners of the core (densely stored) area.
+func (l *Level) CoreBounds() (min, max P) {
+	return l.coreMin, l.coreMax
 }
 
 // Range calls the callback function for all non-empty cells in the level.
