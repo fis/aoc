@@ -19,6 +19,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/fis/aoc/util"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -36,7 +37,7 @@ O.#..O.#.#
 `, "\n")
 
 func TestTotalLoad(t *testing.T) {
-	l := parseLevel([]byte(ex))
+	l := util.ParseFixedLevel([]byte(ex))
 	slideNorth(l)
 	want := 136
 	if got := totalLoad(l); got != want {
@@ -45,7 +46,7 @@ func TestTotalLoad(t *testing.T) {
 }
 
 func TestSlideNorth(t *testing.T) {
-	want := parseLevel([]byte(strings.TrimPrefix(`
+	want := util.ParseFixedLevel([]byte(strings.TrimPrefix(`
 OOOO.#.O..
 OO..#....#
 OO..O##..O
@@ -57,17 +58,17 @@ O..#.OO...
 #....###..
 #....#....
 `, "\n")))
-	got := parseLevel([]byte(ex))
+	got := util.ParseFixedLevel([]byte(ex))
 	slideNorth(got)
 	if diff := cmp.Diff(printLevel(want), printLevel(got)); diff != "" {
 		t.Errorf("slideNorth(ex) mismatch (-want +got):\n%s", diff)
 	}
 }
 
-func printLevel(l *level) string {
+func printLevel(l *util.FixedLevel) string {
 	var buf strings.Builder
-	for y := 0; y < l.h; y++ {
-		fmt.Fprintf(&buf, "%s\n", l.row(y))
+	for y := 0; y < l.H; y++ {
+		fmt.Fprintf(&buf, "%s\n", l.Row(y))
 	}
 	return buf.String()
 }

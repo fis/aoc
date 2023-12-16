@@ -737,6 +737,15 @@ t]",";;{}256.*+]{J:rdXX0+]{**.+17.*256.%}r[j{J[~'-=={~]'=[+{~!n!}j+]f[}j{s0J{~!}
 g0:rd'=[++]fiJ0>={g0jsa}j{vvg0[+}jie}jie}j+]ap}r[zi{p^+.jzi{p^+.j:><ri.*}ms.*}ms
 ```
 
+## [Day 16](https://adventofcode.com/2023/day/16): The Floor Will Be Lava
+
+If there's a trick to today's part 2, I have not found it yet. Just re-running
+the part 1 solution for all the possible inputs.
+
+There's probably a lot of duplicate work (as the paths are bound to marge
+together), but it seems hard to reuse old solutions as the final result must
+avoid double-counting cells crossed by multiple beams.
+
 <!--math
 
 %: day06-d

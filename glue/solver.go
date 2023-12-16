@@ -49,6 +49,9 @@ type LevelSolver struct {
 	Empty  byte
 }
 
+// FixedLevelSolver wraps a solution that wants the lines of the input converted to the trimmed-down `util.FixedLevel` type.
+type FixedLevelSolver func(*util.FixedLevel) ([]string, error)
+
 // WithParser wraps a solver function with one that parses each item separately before it gets called.
 func WithParser[PF ~func(I) (O, error), SF ~func([]O) ([]string, error), I, O any](pf PF, sf SF) func([]I) ([]string, error) {
 	return func(unparsed []I) ([]string, error) {
@@ -75,11 +78,7 @@ func (s LineSolver) Solve(input io.Reader) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	out, err := s(data)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
+	return s(data)
 }
 
 // Solve implements the Solver interface.
@@ -88,11 +87,7 @@ func (s ChunkSolver) Solve(input io.Reader) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	out, err := s(data)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
+	return s(data)
 }
 
 // Solve implements the Solver interface.
@@ -101,11 +96,7 @@ func (s IntSolver) Solve(input io.Reader) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	out, err := s(data)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
+	return s(data)
 }
 
 // Solve implements the Solver interface.
@@ -114,11 +105,7 @@ func (s RegexpSolver) Solve(input io.Reader) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	out, err := s.Solver(parsed)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
+	return s.Solver(parsed)
 }
 
 // Solve implements the Solver interface.
@@ -128,11 +115,17 @@ func (s LevelSolver) Solve(input io.Reader) ([]string, error) {
 		return nil, err
 	}
 	level := util.ParseLevel(data, s.Empty)
-	out, err := s.Solver(level)
+	return s.Solver(level)
+}
+
+// Solve implements the Solver interface.
+func (s FixedLevelSolver) Solve(input io.Reader) ([]string, error) {
+	data, err := io.ReadAll(input)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	level := util.ParseFixedLevel(data)
+	return s(level)
 }
 
 // Ints converts a list of ints to a list of strings.

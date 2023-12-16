@@ -15,6 +15,7 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -240,6 +241,11 @@ func (l *Level) Bounds() (min, max P) {
 	return l.min, l.max
 }
 
+// Size returns the width and height of the bounding box of the level (see InBounds).
+func (l *Level) Size() (w, h int) {
+	return l.max.X - l.min.X + 1, l.max.Y - l.min.Y + 1
+}
+
 // InBounds returns true if the given coordinates are within the bounding box of the level. The
 // bounds will grow to accommodate new non-empty characters, but will never shrink even if those
 // characters are later overwritten to be empty.
@@ -309,3 +315,40 @@ func (l *Level) WriteRect(w io.Writer, min, max P) error {
 	}
 	return nil
 }
+
+// FixedLevel is a restricted subset of Level, with less overhead for some operations.
+//
+// Limitations:
+//   - The bounding box of the level has a predefined size based on the initial contents.
+//   - The northwest corner is fixed at (0, 0).
+type FixedLevel struct {
+	// W and H are the level size.
+	W, H int
+	// Data is a row-major representation of the level data in a W*H length array.
+	Data []byte
+}
+
+var singleNL = []byte{'\n'}
+
+// ParseFixedLevel converts the input to a level structure.
+// All lines are expected to be equally long.
+func ParseFixedLevel(allData []byte) *FixedLevel {
+	w, h := bytes.IndexByte(allData, '\n'), bytes.Count(allData, singleNL)
+	data := make([]byte, w*h)
+	for src, dst := 0, 0; dst < len(data); {
+		eol := bytes.IndexByte(allData[src:], '\n')
+		copy(data[dst:], allData[src:src+eol])
+		src += eol + 1
+		dst += w
+	}
+	return &FixedLevel{W: w, H: h, Data: data}
+}
+
+// At returns the value at the given coordinates.
+func (l *FixedLevel) At(x, y int) byte { return l.Data[y*l.W+x] }
+
+// Row returns the contents of an entire single row of the level.
+func (l *FixedLevel) Row(y int) []byte { return l.Data[y*l.W : (y+1)*l.W] }
+
+// Set assigns a new value at the given coordinates.
+func (l *FixedLevel) Set(x, y int, b byte) { l.Data[y*l.W+x] = b }
