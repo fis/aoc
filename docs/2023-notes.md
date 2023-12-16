@@ -711,6 +711,32 @@ ln)XX)<-<-{tp{<-{'#==}gB)<>\[}m[}s0{}j{Jx/j+]jg04E!}{~[n!}w!
 S1jsas2jFi1e9g2.-j+..%4.*g1jg0jE!tp{{'O==}fI?i++}ms
 ```
 
+## [Day 15](https://adventofcode.com/2023/day/15): Lens Library
+
+Hmm, well. Feels like today was just a matter of implementing a specification,
+rather than figuring out a puzzle.
+
+### Burlesque
+
+Part 1 is pleasantly short, as befits a task like this. Part 2 is not. Having a
+lot of "branching" logic isn't Burlesque's strong suit, and couldn't figure out
+a clever way to do the "remove, update or add" logic other than explicitly
+spelling out the cases. Even the nested multiplications in the scoring are
+inelegant.
+
+Part 1:
+
+```
+t]",";;{XX0+]{**.+17.*256.%}r[}ms
+```
+
+Part 2:
+
+```
+t]",";;{}256.*+]{J:rdXX0+]{**.+17.*256.%}r[j{J[~'-=={~]'=[+{~!n!}j+]f[}j{s0J{~!}
+g0:rd'=[++]fiJ0>={g0jsa}j{vvg0[+}jie}jie}j+]ap}r[zi{p^+.jzi{p^+.j:><ri.*}ms.*}ms
+```
+
 <!--math
 
 %: day06-d
