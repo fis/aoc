@@ -290,6 +290,8 @@ func (p P) Scale(n int) P {
 }
 
 // Neigh returns a point's von Neumann neighbourhood (the 4 orthogonally adjacent elements).
+//
+// The directions will be returned in this order: north, south, west, east.
 func (p P) Neigh() [4]P {
 	return [4]P{{p.X, p.Y - 1}, {p.X, p.Y + 1}, {p.X - 1, p.Y}, {p.X + 1, p.Y}}
 }
