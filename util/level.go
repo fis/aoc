@@ -344,6 +344,15 @@ func ParseFixedLevel(allData []byte) *FixedLevel {
 	return &FixedLevel{W: w, H: h, Data: data}
 }
 
+// EmptyFixedLevel returns an empty fixed level filled with the given byte.
+func EmptyFixedLevel(w, h int, empty byte) *FixedLevel {
+	data := make([]byte, w*h)
+	for i := range data {
+		data[i] = empty
+	}
+	return &FixedLevel{W: w, H: h, Data: data}
+}
+
 // At returns the value at the given coordinates.
 func (l *FixedLevel) At(x, y int) byte { return l.Data[y*l.W+x] }
 
@@ -352,3 +361,13 @@ func (l *FixedLevel) Row(y int) []byte { return l.Data[y*l.W : (y+1)*l.W] }
 
 // Set assigns a new value at the given coordinates.
 func (l *FixedLevel) Set(x, y int, b byte) { l.Data[y*l.W+x] = b }
+
+// Write outputs the contents of the level to the given writer.
+func (l *FixedLevel) Write(w io.Writer) {
+	row := make([]byte, l.W+1)
+	row[l.W] = '\n'
+	for y := 0; y < l.H; y++ {
+		copy(row, l.Data[y*l.W:(y+1)*l.W])
+		w.Write(row)
+	}
+}

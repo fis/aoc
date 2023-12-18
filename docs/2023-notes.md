@@ -746,6 +746,128 @@ There's probably a lot of duplicate work (as the paths are bound to marge
 together), but it seems hard to reuse old solutions as the final result must
 avoid double-counting cells crossed by multiple beams.
 
+## [Day 17](https://adventofcode.com/2023/day/17): Clumsy Crucible
+
+I'm just using
+[Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm),
+with the pre-existing [bucket queue](https://en.wikipedia.org/wiki/Bucket_queue)
+as the priority queue; also known as
+[Dial's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm#Specialized_variants).
+The edge weights (the heat loss values) are between 1-9, so 16 buckets is
+sufficient.
+
+The search runs on a graph where (conceptually) the vertices are states composed
+of the current city block, movement direction, and number of consecutive steps
+so far. There's also one extra pruning rule for part 1: smaller numbers of
+consecutive steps are strictly better (in the sense that it restricts future
+choices less), so a vertex need not be explored if the same city block has been
+already visited with the same number *or fewer* steps. This does not hold in
+part 2 due to the minimum step requirement, so that part just uses a bitmap.
+
+## [Day 18](https://adventofcode.com/2023/day/18): Lavaduct Lagoon
+
+In my opinion (and in this solution), most of the work went to extracting the
+exact outer bound of the area of interest.
+
+We can easily trace the loop by following the digging instructions, but this
+gives coordinates of the 1 meter cubes that have been dug out. To calculate the
+area, it would be more useful to find the outer bounary of those cubes, and that
+depends on knowing which side is the inside, which may not always be obvious.
+
+For the solution here, we do it by first locating the top-left corner: the point
+with the lowest X coordinate out of all the points with the lowest Y coordinate.
+Due to the nature of the digging, there are only two possibilities: it must be
+either an up-then-right or a left-then-down corner. We can use that to choose
+the direction in which we iterate the points, so that the inside is always a
+predictable side, say right, of the edge.
+
+To adjust the coordinates of the corner points to extract the outer edge, we can
+take a look at the 8 possible corners there are. Denoting the (normalized)
+direction of the digging by the `v` `>` `^` `<` characters, the current corner
+by `*`, the inside of the area by `#` and the outside by `.`, we have:
+
+```
+.....  ..^##  ##v..  ##v..  ..^##  #####  .....  #####
+.....  ..^##  ##v..  ##v..  ..^##  #####  .....  #####
+>>*..  >>*##  <<*..  ##*>>  ..*<<  ##*<<  ..*>>  <<*##
+##v..  #####  .....  #####  .....  ##v..  ..^##  ..^##
+##v..  #####  .....  #####  .....  ##v..  ..^##  ..^##
+
+ (1)    (2)    (3)    (4)    (5)    (6)    (7)    (8)
+```
+
+The initial coordinates are effectively of the top-left corner of the `*`. We
+can see that we get the coordinates of the actual outer edge by selectively
+adding 1 to the X and/or the Y coordinate. The cases where we do need to
+increment the coordinates are:
+
+|   | (1) | (2) | (3) | (4) | (5) | (6) | (7) | (8) |
+|---|-----|-----|-----|-----|-----|-----|-----|-----|
+| X |  +1 |     |  +1 |  +1 |     |  +1 |     |     |
+| Y |     |     |  +1 |     |  +1 | +1  |     |  +1 |
+
+In other words, we'll need to add 1 to the X coordinate if we're either exiting
+or entering the corner moving down (cases 1, 3, 4, 6), and correspondingly to
+the Y coordinate if we're exiting or entering moving left (cases 3, 5, 6, 8).
+
+Once we have the coordinates of a polygon denoting the dig, computing its area
+is basically a known problem.
+
+The solution here is derived from the
+[trapezoid formula](https://en.wikipedia.org/wiki/Shoelace_formula#Trapezoid_formula)
+(for a positively oriented polygon), except that since our polygon always
+consists of a sequence of alternating horizontal and vertical edges (with a
+horizontal edge coming first), for an even `i` the `x_(i+1) - x_i` term is
+always zero, and for an odd `i` the `y_(i+1) + y_i` term is just `2 y_i`. So the
+formula simplifies to:
+
+<!--
+             n
+A = (1/2) * sum (y_(i+1) + y_i) (x_(i+1) - x_i)
+            i=1
+
+            n/2                                n/2
+  = (1/2) * sum 2 y_(2k) (x_(2k) - x_(2k-1)) = sum y_(2k) (x_(2k) - x_(2k-1))
+            k=1                                k=1
+-->
+![The equation for the area.](math/2023-notes-day18-eq.png)
+
+The geometric interpretation for this is that instead of summing trapezoids,
+we're summing a sequence of oriented rectangles, ignoring the degenerate cases
+of vertical edges.
+
+Note to self: this might be worth a TikZ diagram.
+
+### Burlesque
+
+This implements pretty much the same algorithm as the Go code, with no notable
+golfing. The only difference between the parts is in parsing. Oh, and it does
+the full trapezoid formula to avoid having to normalize the starting point.
+
+Part 1:
+
+```
+ln{0 0}Pp{g_**5.%2rz?dJcp2enj!!jWD-]ri?*pP?+Pp}m[p\CLJ1!![+3CO
+J{1!!}<m2.+)[~p^=={)<-<-}if{J1!!jtp^psojSO_+?+}m[J-][+2CO{tpp^++jp^.-.*}ms2./
+```
+
+Part 2:
+
+```
+ln{0 0}Pp{WD[~~]J<-1.+ri2rz?dJcp2enr@1!!j!!j2.-~]b6?*pP?+Pp}m[p\CLJ1!![+3CO
+J{1!!}<m2.+)[~p^=={)<-<-}if{J1!!jtp^psojSO_+?+}m[J-][+2CO{tpp^++jp^.-.*}ms2./
+```
+
+Combined:
+
+```
+1:           g_**5.%                           WD-]ri
+C: ln{0 0}Pp{              2rz?dJcp2en     j!!j       ?*pP?+Pp}m[p\CLJ1!![+3CO
+2:           WD[~~]J<-1.+ri           r@1!!    2.-~]b6
+
+C: J{1!!}<m2.+)[~p^=={)<-<-}if{J1!!jtp^psojSO_+?+}m[J-][+2CO{tpp^++jp^.-.*}ms2./
+```
+
 <!--math
 
 %: day06-d
@@ -785,6 +907,15 @@ h_{\mathrm{max}} &= \frac{1}{2} \left( T + \sqrt{T^2 - 4 d_{\mathrm{best}}} \rig
 \begin{align*}
 w &= \left(\lceil h_{\mathrm{max}} \rceil - 1\right) - \left(\lfloor h_{\mathrm{min}} \rfloor + 1\right) + 1 \\
 &= \lceil h_{\mathrm{max}} \rceil - \lfloor h_{\mathrm{min}} \rfloor - 1
+\end{align*}
+
+%: day18-eq
+
+\vspace*{-3ex}
+\begin{align*}
+A &= \frac{1}{2} \sum_{i=1}^n \left(y_{i+1} + y_i\right) \left( x_{i+1} - x_i \right) \\
+  &= \frac{1}{2} \sum_{k=1}^{\frac{n}{2}} 2 y_{2k} \left( x_{2k} - x_{2k-1} \right) \\
+  &= \sum_{k=1}^{\frac{n}{2}} 2 y_{2k} \left( x_{2k} - x_{2k-1} \right)
 \end{align*}
 
 -->
