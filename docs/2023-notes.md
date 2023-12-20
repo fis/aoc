@@ -868,6 +868,35 @@ C: ln{0 0}Pp{              2rz?dJcp2en     j!!j       ?*pP?+Pp}m[p\CLJ1!![+3CO
 C: J{1!!}<m2.+)[~p^=={)<-<-}if{J1!!jtp^psojSO_+?+}m[J-][+2CO{tpp^++jp^.-.*}ms2./
 ```
 
+## [Day 19](https://adventofcode.com/2023/day/19): Aplenty
+
+No trick needed. Part 1 evaluates the workflows as specified; part 2 recurses
+over the workflows using intervals to indicate the space of acceptable parts.
+
+### Burlesque
+
+Clever trick in part 1: to evaluate something like `>1234`, prepend a `.` and
+parse the result as a Burlesque expression; the result is `{.> 1234}`, which can
+then be reversed and evaluated with `e!` to perform the desired function.
+
+Had to fall back to developing part 2 with functions (and then inlining the
+non-recursive ones). It is pretty long. But didn't take that long to implement.
+
+Part 1:
+
+```
+ln""bx;;p^s0{~-',;;S1{:><ri}ms"in"{'{[+{~!}j+]g0jfe{rd}jdw~-',;;l_{':;;
+-]g_{-]==}[[g1jfe2.-rij'.+]ps<-e!}{':;;[~}FMj[+-]}{JZZ!=}w!"A"==.*}ms
+```
+
+Part 2:
+
+```
+ln""bx;;-]s0%xR={JJZZ=={"A"=={{[-p^.-+.}mpJPp}ifvv}j{'{[+{~!}j+]g0jfe{rd}jdw
+~-',;;l_x/+]{':;;p^x/jg_{-]==}[[x/jptp^-]g_s1x/g_'<=={riJ-.j_+z[<-}j{riJ+._+
+z[}jie)><{g1+]}m[j{j+]}j+]MPx/xR}r[jxR}jie}"xmas"XX{{1 4e3}j+]}m["in"xRp\CL++
+```
+
 <!--math
 
 %: day06-d
