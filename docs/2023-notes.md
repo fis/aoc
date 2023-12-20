@@ -897,6 +897,63 @@ ln""bx;;-]s0%xR={JJZZ=={"A"=={{[-p^.-+.}mpJPp}ifvv}j{'{[+{~!}j+]g0jfe{rd}jdw
 z[}jie)><{g1+]}m[j{j+]}j+]MPx/xR}r[jxR}jie}"xmas"XX{{1 4e3}j+]}m["in"xRp\CL++
 ```
 
+## [Day 20](https://adventofcode.com/2023/day/20): Pulse Propagation
+
+Solving part 2 in the general case feels quite tricky (wouldn't know where to
+begin, except for the brute-force method of simulating it), so let's take a look
+at the input graph to see if it has any structure to make use of.
+
+An acceptable GraphViz rendering of the graph can be found in
+[2023-day20-input.png](2023-day20-input.png). "BC" denotes the special broadcast
+node, and "rx" is the output that we want a low pulse in; flip-flops modules
+(and outputs) are blue while conjunctions are red. It's immediately clear that
+the graph has four more or less independent sections. Looking at them more
+closely, all four sections have the following properties:
+
+- The initial broadcast goes to one and only one flip-flop module in the
+  section.
+- That flip-flop is the head of a linear chain of 12 flip-flops.
+- In addition to the flip-flops, each section has its own dedicated conjunction
+  module, which some subset of the flip-flop modules connect to.
+- That conjunction module outputs to the head flip-flop, as well as all
+  flip-flops that do *not* connect to the conjunction.
+- In addition, each section's conjunction connects to a single-input conjunction
+  (an inverter), which connects to a single conjunction that's global to the
+  entire graph, which is the only thing that connects to the special `rx` output
+  node.
+
+In order to receive a low pulse at `rx`, we must receive a high pulse at the
+penultimate conjunction module from each of the four sections. Due to the
+inverters, this will only happen if the per-section conjunction modules all have
+most recently sent a low pulse. What might it take for that to happen?
+
+Let's first consider the behavior of a chain of flip-flops and ignore the other
+connections. Assuming the flip-flops are in their initial state (off), this will
+cause the head flip-flop to flip on, and send a high pulse to the next
+flip-flop. Since that pulse is high, it will be ignored. However, the *next* low
+pulse to the head will cause it to flop off, and send a low pulse instead. By
+induction, we can see that a chain of N flip-flops forms an N-bit binary
+counter.
+
+Next, let's consider the role of the per-section conjunction modules. As long as
+at least one of the connected flip-flops (bits) remains (0), the conjunction's
+outgoing pulse will be high, and therefore the feedback going back to the
+flip-flops will be ignored, so the counter behavior is unaffected.
+
+The first time something else happens is when the counter reaches the value
+where all the input flip-flops are on at the same time. At the time, the
+remaining flip-flops will be off (otherwise it wouldn't be the first occasion).
+At this point, the conjunction module will send a low pulse to turn each
+remaining flip-flop on as well, and then "add one": this resets the entire
+flip-flop chain to all-off (zero). So the counters will count up to this value
+and then reset.
+
+In order for the graph-wide conjunction module to get simultaneous low pulses
+from every graph subsection, we must press the button enough times that all four
+counters hit zero at the same time. In other words, we need to find the least
+common multiple of all the counter target values. (Or for my input, their
+product, as they all seem to be prime numbers.)
+
 <!--math
 
 %: day06-d

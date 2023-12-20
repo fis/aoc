@@ -257,6 +257,40 @@ func SortBy[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](x S, f F) {
 	})
 }
 
+// LabelMap is a mapping from string labels to integer indices, with automatic allocation.
+type LabelMap map[string]int
+
+// Retrieves the corresponding index for a label, or allocates the next free one if it is new.
+func (m LabelMap) Get(label string) int {
+	if id, ok := m[label]; ok {
+		return id
+	}
+	id := len(m)
+	m[label] = id
+	return id
+}
+
+// Splitter is a convenience type for iterating over the results of splitting a string without allocating a slice.
+type Splitter string
+
+// Empty returns true if the current state of the splitter is the empty string (no components remain).
+func (s Splitter) Empty() bool {
+	return len(s) == 0
+}
+
+// Count returns how many parts there would be in the string if it were to be split with a delimiter.
+func (s Splitter) Count(delim string) int {
+	return strings.Count(string(s), delim) + 1
+}
+
+// Next returns the part of the string leading up to the delimiter (if found), and also updates the splitter to retain the trailing part.
+// If there is no delimiter, the entire contents are returned and the splitter becomes empty.
+func (s *Splitter) Next(delim string) string {
+	next, tail, _ := strings.Cut(string(*s), delim)
+	*s = Splitter(tail)
+	return next
+}
+
 // P represents a two-dimensional integer-valued coordinate.
 type P struct {
 	X, Y int

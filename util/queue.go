@@ -14,7 +14,10 @@
 
 package util
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Queue is a simple array-backed ring buffer implementation of an unbounded queue.
 //
@@ -101,4 +104,29 @@ func (q *Queue[T]) Pop() T {
 	q.head = (head + 1) & (cap(q.q) - 1)
 	q.q = q.q[:len(q.q)-1]
 	return q.q[:head+1][head]
+}
+
+// Clear makes the queue empty but without releasing any storage associated with it.
+func (q *Queue[T]) Clear() {
+	q.q = q.q[:0]
+	q.head = 0
+}
+
+// String formats the queue contents as a string, mostly for debugging purposes.
+func (q Queue[T]) String() string {
+	var sb strings.Builder
+	sb.WriteByte('[')
+	for i := 0; i < cap(q.q); i++ {
+		if i > 0 {
+			sb.WriteByte(' ')
+		}
+		idx := (i - q.head) & (cap(q.q) - 1)
+		if idx >= len(q.q) {
+			sb.WriteByte('?')
+		} else {
+			sb.WriteString(fmt.Sprint(q.Index(idx)))
+		}
+	}
+	sb.WriteByte(']')
+	return sb.String()
 }

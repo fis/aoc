@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util"
 	"github.com/fis/aoc/util/fn"
 )
 
@@ -241,7 +242,7 @@ func parsePart(line string) (p part, err error) {
 	return p, nil
 }
 
-type workflowMap map[string]int
+type workflowMap util.LabelMap
 
 func (m workflowMap) get(label string) int {
 	switch label {
@@ -250,10 +251,5 @@ func (m workflowMap) get(label string) int {
 	case "R":
 		return actReject
 	}
-	if id, ok := m[label]; ok {
-		return id
-	}
-	id := len(m)
-	m[label] = id
-	return id
+	return util.LabelMap(m).Get(label)
 }
