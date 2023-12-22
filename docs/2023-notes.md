@@ -1022,3 +1022,29 @@ t(n) &= a n^2 + b^n + c \\
    b &= s(1) - s(0) - a \\
    c &= s(0)
 \end{aligned}$$
+
+## [Day 22](https://adventofcode.com/2023/day/22): Sand Slabs
+
+Very much going with the path of least resistance today, but at least the code
+is moderately short.
+
+The initial version of the part 1 solution explicitly built the DAG where an
+edge between two bricks indicates the head brick is supported by the tail brick,
+as computing the safe bricks is trivial in that data structure: just count the
+bricks that support at least one brick that no other bricks support.
+
+Part 2 *could* be done in the same graph, but it is not quite as trivial: it
+effectively involves finding
+[dominators](https://en.wikipedia.org/wiki/Dominator_(graph_theory)). However,
+there's a low-effort alternative: the same code that figures out the graph by
+packing the bricks inherently knows if any bricks fell. So both parts can be
+solved by, for each brick, removing it from the tower and seeing how many bricks
+move as a result. If none, increment a counter for part 1; if some, include
+those in the total for part 2.
+
+This makes for an $O(n^2)$ algorithm as long as the packing is $O(n)$, which is
+not hard to accomplish by doing a single pass over the bricks while tracking the
+current top $z$ coordinate at each $(x, y)$ position. But the number of bricks
+is pretty modest, so the whole thing still runs in under 20 milliseconds.
+
+At least for now, that's good enough.
