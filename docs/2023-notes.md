@@ -222,24 +222,17 @@ j+]{cp{tp{>]<]++}z[\[e!Cl}m[{~]^p.<}{l_?+}FM}r[FL<]
 ## [Day 6](https://adventofcode.com/2023/day/6): Wait For It
 
 Let's start with some notation for a single race. Call the time limit of the
-race `T`, and the time you hold down the button `h`. Now we can compute the
-distance `d(h)` you will travel based on the hold time:
+race $T$, and the time you hold down the button $h$. Now we can compute the
+distance $d(h)$ you will travel based on the hold time:
 
-<!--
-d(h) = (T - h) * h
--->
-![The equation for distance: d(h) = (T - h) * h.](math/2023-notes-day06-d.png)
+$$ d(h) = (T - h) \cdot h $$
 
-Let's also use `d_best` to denote the previous best distance of the race. The
-brute force solution to determine `w`, the number of different ways to win, is
-to simply try all the possible choices and count how many of them win:
+Let's also use $d_{\mathrm{best}}$ to denote the previous best distance of the
+race. The brute force solution to determine $w$, the number of different ways to
+win, is to simply try all the possible choices and count how many of them win:
 
-<!--
-     T                       T
-w = sum [ d(h) > d_best ] = sum [ (T - h) * h > d_best ]
-    h=0                     h=0
--->
-![A sum for counting the winning combinations.](math/2023-notes-day06-w.png)
+$$ w = \sum_{h=0}^T [ d(h) > d_{\mathrm{best}} ]
+     = \sum_{h=0}^T [ (T - h) \cdot h > d_{\mathrm{best}} ] $$
 
 Normally, when there's a problem where part 1 has a simple brute force solution
 like this, running it on part 2 tends to take a long time indeed. But in this
@@ -249,33 +242,32 @@ could even stop here.
 That's not to say we can't do any better, though. Let's take a closer look at
 that inequality. We can turn it into a quadratic form:
 
-<!--
-(T - h) * h > d_best
--h^2 + T*h - d_best > 0
--->
-![Quadratic inequality for the winning hold times.](math/2023-notes-day06-ineq.png)
+$$\begin{aligned}
+(T - h) \cdot h &> d_{\mathrm{best}} \\
+-h^2 + T h - d_{\mathrm{best}} &> 0
+\end{aligned}$$
 
 Since it's sad to even entertain the possibility we could not win a race, we can
 probably just assume the parameters are always such that the equation has real
 solutions. If so, counting the possible ways to win is equivalent to counting
-how many integers are in the open interval between the two solutions `h_min` and
-`h_max`. The values of these pop out of the quadratic formula:
+how many integers are in the open interval between the two solutions
+$h_{\mathrm{min}}$ and $h_{\mathrm{max}}$. The values of these pop out of the
+quadratic formula:
 
-<!--
-h_min = (T - sqrt(T^2 - 4*d_best)) / 2
-h_max = (T + sqrt(T^2 - 4*d_best)) / 2
--->
-![The two solutions for the quadratic equation.](math/2023-notes-day06-minmax.png)
+$$\begin{aligned}
+h_{\mathrm{min}} &= \frac{1}{2} \left( T - \sqrt{T^2 - 4 d_{\mathrm{best}}} \right) \\
+h_{\mathrm{max}} &= \frac{1}{2} \left( T + \sqrt{T^2 - 4 d_{\mathrm{best}}} \right)
+\end{aligned}$$
 
 Since we need to beat instead of merely matching the earlier record (that's why
-it's an open interval), we'll need to not include `h_min` or `h_max` themselves,
-should they happen to be integer values. Therefore the equation for `w` becomes:
+it's an open interval), we'll need to not include $h_{\mathrm{min}}$ or
+$h_{\mathrm{max}}$ themselves, should they happen to be integer values.
+Therefore the equation for $w$ becomes:
 
-<!--
-w = (⌈h_max⌉ - 1) - (⌊h_min⌋ + 1) + 1
-  = ⌈h_max⌉ - ⌊h_min⌋ - 1
--->
-![An alternative equation for w based on the solutions.](math/2023-notes-day06-w2.png)
+$$\begin{aligned}
+w &= \left(\lceil h_{\mathrm{max}} \rceil - 1\right) - \left(\lfloor h_{\mathrm{min}} \rfloor + 1\right) + 1 \\
+&= \lceil h_{\mathrm{max}} \rceil - \lfloor h_{\mathrm{min}} \rfloor - 1
+\end{aligned}$$
 
 ### Burlesque
 
@@ -430,7 +422,7 @@ by step until you end at the end.
 
 While it's possible in theory to do part 2 similarly (just keep track of all N
 ghosts and advance each according to the instructions), this time it is actually
-too expensive: my puzzle solution is approximately 10^13.
+too expensive: my puzzle solution is approximately $10^{13}$.
 
 For this acceptably fast solution, the key idea is this: for each ghost
 independently, find a cycle that has it repeating the same sequence of nodes. A
@@ -448,24 +440,26 @@ that there is always only one. This simplifies the treatment somewhat.
 > It also looks like the end node is always right at the end of the cycle, but
 > the solution does not assume that to be the case.
 
-Let's assume we've found `N` cycles. There may be some initial steps before each
-cycle begins: let's call that number `s_i`, for cycle `i`. Just to be sure,
-we'll want to take care to avoid any solutions that are less than `max_i s_i`.
+Let's assume we've found $N$ cycles. There may be some initial steps before each
+cycle begins: let's call that number $s_i$, for cycle $i$. Just to be sure,
+we'll want to take care to avoid any solutions that are less than $\max_i s_i$.
 
-For each cycle `i`, there are two parameters: the length of the cycle in steps
-(`M_i`), and the specific step at which the ghost is in its designated end node
-(`k_i`). This means that any time `T` in which *all* the ghosts are at the end
-nodes must satisfy `T ≡ k_i (mod M_i)` (and `T ≥ s_i`) for all the cycles.
+For each cycle $i$, there are two parameters: the length of the cycle in steps
+($M_i$), and the specific step at which the ghost is in its designated end node
+($k_i$). This means that any time $T$ in which *all* the ghosts are at the end
+nodes must satisfy $T \equiv k_i\ (\mathrm{mod}\ M_i)$ (and $T \geq s_i$) for
+all the cycles.
 
-Consider a pair of cycles that, without loss of generality, are numbered `1` and
-`2` with `M_1 > M_2`. To find a solution that satisfies both, we can check the
-numbers that are of the form `k_1 + n * M_1` for some integer `n`. Once we find
-a suitable number `a` of that form where `a ≡ k_2 (mod M_2), a ≥ s_1, a ≥ s_2`,
-we can replace that pair of cycles with a single cycle `C`, representing both,
-with the parameters `k_C = a` and `M_C = LCM(M_1, M_2)`. In this way, we can
-reduce the size of our set of cycles by one. Finally, we can iterate the process
-until only a single cycle remains, at which point the answer to the puzzle can
-be derived from the `k` value of the sole remaining cycle.
+Consider a pair of cycles that, without loss of generality, are numbered $1$ and
+$2$ with $M_1 > M_2$. To find a solution that satisfies both, we can check the
+numbers that are of the form $k_1 + n \cdot M_1$ for some integer $n$. Once we
+find a suitable number $a$ of that form where
+$a \equiv k_2\ (\mathrm{mod}\ M_2),\ a \geq s_1,\ a \geq s_2$, we can replace that
+pair of cycles with a single cycle $C$, representing both, with the parameters
+$k_C = a$ and $M_C = \mathrm{LCM}(M_1, M_2)$. In this way, we can reduce the
+size of our set of cycles by one. Finally, we can iterate the process until only
+a single cycle remains, at which point the answer to the puzzle can be derived
+from the $k$ value of the sole remaining cycle.
 
 For my puzzle input, there were six `??A` (and `??Z`) nodes, and therefore also
 six cycles. The cycle lengths were 12169, 13301, 14999, 17263, 20093 and 22357.
@@ -817,20 +811,15 @@ The solution here is derived from the
 [trapezoid formula](https://en.wikipedia.org/wiki/Shoelace_formula#Trapezoid_formula)
 (for a positively oriented polygon), except that since our polygon always
 consists of a sequence of alternating horizontal and vertical edges (with a
-horizontal edge coming first), for an even `i` the `x_(i+1) - x_i` term is
-always zero, and for an odd `i` the `y_(i+1) + y_i` term is just `2 y_i`. So the
+horizontal edge coming first), for an even $i$ the $x_{i+1} - x_i$ term is
+always zero, and for an odd $i$ the $y_{i+1} + y_i$ term is just $2 y_i$. So the
 formula simplifies to:
 
-<!--
-             n
-A = (1/2) * sum (y_(i+1) + y_i) (x_(i+1) - x_i)
-            i=1
-
-            n/2                                n/2
-  = (1/2) * sum 2 y_(2k) (x_(2k) - x_(2k-1)) = sum y_(2k) (x_(2k) - x_(2k-1))
-            k=1                                k=1
--->
-![The equation for the area.](math/2023-notes-day18-eq.png)
+$$\begin{aligned}
+A &= \frac{1}{2} \sum_{i=1}^n \left(y_{i+1} + y_i\right) \left( x_{i+1} - x_i \right) \\
+  &= \frac{1}{2} \sum_{k=1}^{\frac{n}{2}} 2 y_{2k} \left( x_{2k} - x_{2k-1} \right) \\
+  &= \sum_{k=1}^{\frac{n}{2}} y_{2k} \left( x_{2k} - x_{2k-1} \right)
+\end{aligned}$$
 
 The geometric interpretation for this is that instead of summing trapezoids,
 we're summing a sequence of oriented rectangles, ignoring the degenerate cases
@@ -1033,55 +1022,3 @@ t(n) &= a n^2 + b^n + c \\
    b &= s(1) - s(0) - a \\
    c &= s(0)
 \end{aligned}$$
-
-<!--math
-
-%: day06-d
-
-\vspace*{-3ex}
-\begin{align*}
-d(h) &= (T - h) \cdot h
-\end{align*}
-
-%: day06-w
-
-\vspace*{-3ex}
-\begin{align*}
-w &= \sum_{h=0}^T [ d(h) > d_{\mathrm{best}} ]
-= \sum_{h=0}^T [ (T - h) \cdot h > d_{\mathrm{best}} ]
-\end{align*}
-
-%: day06-ineq
-
-\vspace*{-3ex}
-\begin{align*}
-(T - h) \cdot h &> d_{\mathrm{best}} \\
--h^2 + T h - d_{\mathrm{best}} &> 0
-\end{align*}
-
-%: day06-minmax
-
-\vspace*{-3ex}
-\begin{align*}
-h_{\mathrm{min}} &= \frac{1}{2} \left( T - \sqrt{T^2 - 4 d_{\mathrm{best}}} \right) \\
-h_{\mathrm{max}} &= \frac{1}{2} \left( T + \sqrt{T^2 - 4 d_{\mathrm{best}}} \right)
-\end{align*}
-
-%: day06-w2
-
-\vspace*{-3ex}
-\begin{align*}
-w &= \left(\lceil h_{\mathrm{max}} \rceil - 1\right) - \left(\lfloor h_{\mathrm{min}} \rfloor + 1\right) + 1 \\
-&= \lceil h_{\mathrm{max}} \rceil - \lfloor h_{\mathrm{min}} \rfloor - 1
-\end{align*}
-
-%: day18-eq
-
-\vspace*{-3ex}
-\begin{align*}
-A &= \frac{1}{2} \sum_{i=1}^n \left(y_{i+1} + y_i\right) \left( x_{i+1} - x_i \right) \\
-  &= \frac{1}{2} \sum_{k=1}^{\frac{n}{2}} 2 y_{2k} \left( x_{2k} - x_{2k-1} \right) \\
-  &= \sum_{k=1}^{\frac{n}{2}} 2 y_{2k} \left( x_{2k} - x_{2k-1} \right)
-\end{align*}
-
--->
