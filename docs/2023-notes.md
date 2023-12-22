@@ -555,7 +555,19 @@ C: lnps   {sa-.{J2CO{.-}m^}jE!CL)[~++}ms
 
 ## [Day 10](https://adventofcode.com/2023/day/10): Pipe Maze
 
-TODO: document.
+Looking at the examples and the puzzle input, it seems to be the case that out
+of the neighbour tiles of the starting position, only the two that are part of
+the loop are such that they could connect to it. This being the case, tracing
+the loop is a matter of finding a neighbour that connects, and then following
+the tracks until they lead back to the beginning.
+
+Where it gets slightly trickier is in finding the area, as that requires
+figuring out what's inside and what's outside. In this solution, that is based
+on
+[this rule](https://en.wikipedia.org/wiki/Curve_orientation#Orientation_of_a_simple_polygon)
+of figuring out the orientation of a simple polygon. After that, the code just
+does a DFS flood-fill for each tile that's on the inside side next to the loop
+boundary.
 
 ## [Day 11](https://adventofcode.com/2023/day/11): Cosmic Expansion
 
