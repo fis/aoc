@@ -954,6 +954,86 @@ counters hit zero at the same time. In other words, we need to find the least
 common multiple of all the counter target values. (Or for my input, their
 product, as they all seem to be prime numbers.)
 
+## [Day 21](https://adventofcode.com/2023/day/21): Step Counter
+
+For part 1, we can do a simple BFS in the level to discover the reachable tiles.
+A tile is reachable in $n$ steps if the Manhattan distance to it is no more than
+$n$, and has the same "parity" (is even or odd) as $n$.
+
+Part 2 looks a lot more tricky at first. But wait, let's take a look at what the
+solution from part 1 looked like:
+
+![A graphical representation of the input map.](2023-day21-map.png)
+
+In the above, rocks are represented by red, garden plots by green, and the blue
+region marks the garden plots whose distance from the start point is at most 64
+(ignoring the parity aspect). There's a conspicuous circular (in terms of the
+Manhattan distance) "green belt" area devoid of any rocks, that seems designed
+(intelligent design!) to allow the various possible paths to "line up", leaving
+the equidistant boundary a perfect circle.
+
+Since this blank area also repeats infinitely, it could be that there's also a
+pattern to the number of tiles reachable in $n$ steps, as $n$ grows by multiples
+of the map size $D$. In my case, $D = 131$.
+
+Let's use $S$ to denote the ultimately interesting step count of 26501365, and
+$T$ the number of tiles reachable in that many steps. If we say $t(n)$ is the
+number of tiles reachable in $n D + S\,\mathrm{mod}\,D$ steps, then
+$T = t(\lfloor \frac{S}{D} \rfloor) = t(202300)$.
+
+> The 202300 is probably not a coincidence.
+
+To get started, we can write a piece of code that can run the BFS for the
+infinitely repeated level, at least for reasonable step counts. Let's do that,
+and take a look at the first few values of $t(n)$, as well as their first and
+second differences:
+
+| $n$                        | 0    | 1     | 2     | 3      | 4      |
+|----------------------------|------|-------|-------|--------|--------|
+| $t(n)$                     | 3832 | 33967 | 94056 | 184099 | 304096 |
+| $t'(n) = t(n) - t(n-1)$    |      | 30135 | 60089 | 90043  | 119997 |
+| $t''(n) = t'(n) - t'(n-1)$ |      |       | 29954 | 29954  | 29954  |
+
+Well, *that* looks pretty constant there on the bottom row. Let's just assume
+it is actually constant (and denote $t''(n) = t'' = 29954$), and see if we could
+use that to extrapolate to $t(202300)$.
+
+We will take $t(0)$, $t(1)$ and $t(2) as constants. From these three, we can
+also derive:
+
+$$\begin{aligned}
+t'(1) &= t(1) - t(0) \\
+t'(2) &= t(2) - t(1) \\
+  t'' &= t'(2) - t'(1) \\
+      &= t(2) - 2t(1) + t(0)
+\end{aligned}$$
+
+For the more general case of $t'(n)$, we get:
+
+$$\begin{aligned}
+ t''  &= t'(n) - t'(n-1) \\
+t'(n) &= t'(n-1) + t'' \\
+t'(n) &= t'(1) + \sum_{i=2}^n t'' = t'(1) + (n-1) t''
+\end{aligned}$$
+
+And we can do the same for $t(n)$, given the above:
+
+$$\begin{aligned}
+t'(n) &= t(n) - t(n-1) \\
+ t(n) &= t(n-1) + t'(1) + (n-1) t'' \\
+ t(n) &= t(0) + \sum_{i=1}^n \left( t'(1) + (i-1) t'' \right) \\
+      &= t(0) + n t'(1) + \frac{n(n-1)}{2} t''
+\end{aligned}$$
+
+If we express this in terms of our initial three values, we end up with:
+
+$$\begin{aligned}
+t(n) &= a n^2 + b^n + c \\
+   a &= \frac{1}{2} \left(s(2) - 2s(1) + s(0)\right) \\
+   b &= s(1) - s(0) - a \\
+   c &= s(0)
+\end{aligned}$$
+
 <!--math
 
 %: day06-d

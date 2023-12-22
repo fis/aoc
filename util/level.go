@@ -371,3 +371,18 @@ func (l *FixedLevel) Write(w io.Writer) {
 		w.Write(row)
 	}
 }
+
+// Find locates the coordinates of a byte, which must be unique on the level.
+func (l *FixedLevel) Find(key byte) (x, y int, found bool) {
+	for i := 0; i < l.H; i++ {
+		for j := 0; j < l.W; j++ {
+			if l.Data[i*l.W+j] == key {
+				if found {
+					return 0, 0, false
+				}
+				x, y, found = j, i, true
+			}
+		}
+	}
+	return
+}

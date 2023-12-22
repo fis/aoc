@@ -47,6 +47,11 @@ func (q Queue[T]) Len() int {
 	return len(q.q)
 }
 
+// Cap returns the physical size of the queue's backing array.
+func (q Queue[T]) Cap() int {
+	return cap(q.q)
+}
+
 // Empty returns true if the queue has no items.
 func (q Queue[T]) Empty() bool {
 	return len(q.q) == 0
