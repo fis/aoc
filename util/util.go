@@ -318,6 +318,11 @@ func (p P) Add(q P) P {
 	return P{p.X + q.X, p.Y + q.Y}
 }
 
+// AddXY returns Add(P{x, y}).
+func (p P) AddXY(x, y int) P {
+	return P{p.X + x, p.Y + y}
+}
+
 // Scale returns the point multiplied by a scalar. Useful for points representing vectors.
 func (p P) Scale(n int) P {
 	return P{n * p.X, n * p.Y}

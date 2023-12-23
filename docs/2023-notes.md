@@ -1067,3 +1067,28 @@ would fall (counting towards part 2).
 > Ullman, 1972). Faster algorithms are possible even in general graphs, and the
 > fact that this is a well-behaved DAG could potentially also be useful. But
 > this solution is already below 12 milliseconds.
+
+## [Day 23](https://adventofcode.com/2023/day/23): A Long Walk
+
+Today's
+[longest path problem](https://en.wikipedia.org/wiki/Longest_path_problem) is
+well-known to be NP-hard in the general case.
+
+For part 1, the graph that we get by unravelling the maze is directed, due to
+the slopes permitting travel in one direction only. It is also highly regular.
+Have a look at the GraphViz renderings:
+
+- Puzzle example: [2023-day23-ex.png](2023-day23-ex.png).
+- Puzzle input: [2023-day23-input.png](2023-day23-input.png).
+
+Since these are DAGs, we can find a longest path by performing a
+[topological sort](https://en.wikipedia.org/wiki/Topological_sorting), and then
+iterating over the vertices in that order and setting the longest path based on
+the (already visited) predecessors of the vertex.
+
+In part 2, where the same graph is made undirected, this no longer works. The
+graph still has the same structure (it's effectively a finite
+[lattice graph](https://en.wikipedia.org/wiki/Lattice_graph)) with two corners
+eliminated by path contraction), so a more optimal solution may exist, though it
+seems not to be an obvious one. Here, we just fall back to an exhaustive search,
+which is just barely acceptably fast (just shy of 0.14 seconds).

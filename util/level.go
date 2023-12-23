@@ -356,11 +356,17 @@ func EmptyFixedLevel(w, h int, empty byte) *FixedLevel {
 // At returns the value at the given coordinates.
 func (l *FixedLevel) At(x, y int) byte { return l.Data[y*l.W+x] }
 
+// AtP returns At(p.X, p.Y).
+func (l *FixedLevel) AtP(p P) byte { return l.Data[p.Y*l.W+p.X] }
+
 // Row returns the contents of an entire single row of the level.
 func (l *FixedLevel) Row(y int) []byte { return l.Data[y*l.W : (y+1)*l.W] }
 
 // Set assigns a new value at the given coordinates.
 func (l *FixedLevel) Set(x, y int, b byte) { l.Data[y*l.W+x] = b }
+
+// InBounds returns true if the given coordinates are within the area of the level.
+func (l *FixedLevel) InBounds(x, y int) bool { return x >= 0 && x < l.W && y >= 0 && y < l.H }
 
 // Write outputs the contents of the level to the given writer.
 func (l *FixedLevel) Write(w io.Writer) {

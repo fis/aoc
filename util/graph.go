@@ -143,20 +143,37 @@ func (g *Graph) NumSuccV(fromV int) int {
 	return n
 }
 
+// SuccV returns the idx'th successor of the given vertex.
+func (g *Graph) SuccV(fromV, idx int) int {
+	n := 0
+	for i := 0; i < len(g.edges); i++ {
+		if g.edges[fromV][i] {
+			if n == idx {
+				return i
+			}
+			n++
+		}
+	}
+	return -1
+}
+
 // RangeSucc calls the callback for each of the given vertex's successors.
-func (g *Graph) RangeSucc(from string, cb func(to string) bool) {
-	g.RangeSuccV(g.V(from), func(toV int) bool { return cb(g.vertNames[toV]) })
+// It returns false if the callback ever returned false, true otherwise.
+func (g *Graph) RangeSucc(from string, cb func(to string) bool) bool {
+	return g.RangeSuccV(g.V(from), func(toV int) bool { return cb(g.vertNames[toV]) })
 }
 
 // RangeSuccV calls the callback for each of the given vertex's successors.
-func (g *Graph) RangeSuccV(fromV int, cb func(toV int) bool) {
+// It returns false if the callback ever returned false, true otherwise.
+func (g *Graph) RangeSuccV(fromV int, cb func(toV int) bool) bool {
 	for i := 0; i < len(g.edges); i++ {
 		if g.edges[fromV][i] {
 			if !cb(i) {
-				break
+				return false
 			}
 		}
 	}
+	return true
 }
 
 // NumPred returns the number of predecessors of the given vertex.
@@ -175,29 +192,57 @@ func (g *Graph) NumPredV(toV int) int {
 	return n
 }
 
+// PredV returns the idx'th predecessor of the given vertex.
+func (g *Graph) PredV(toV, idx int) int {
+	n := 0
+	for i := 0; i < len(g.edges); i++ {
+		if g.edges[i][toV] {
+			if n == idx {
+				return i
+			}
+			n++
+		}
+	}
+	return -1
+}
+
 // RangePred calls the callback for each of the given vertex's predecessors.
-func (g *Graph) RangePred(to string, cb func(from string) bool) {
-	g.RangePredV(g.V(to), func(fromV int) bool { return cb(g.vertNames[fromV]) })
+// It returns false if the callback ever returned false, true otherwise.
+func (g *Graph) RangePred(to string, cb func(from string) bool) bool {
+	return g.RangePredV(g.V(to), func(fromV int) bool { return cb(g.vertNames[fromV]) })
 }
 
 // RangePredV calls the callback for each of the given vertex's predecessors.
-func (g *Graph) RangePredV(toV int, cb func(fromV int) bool) {
+// It returns false if the callback ever returned false, true otherwise.
+func (g *Graph) RangePredV(toV int, cb func(fromV int) bool) bool {
 	for i := 0; i < len(g.edges); i++ {
 		if g.edges[i][toV] {
 			if !cb(i) {
-				break
+				return false
 			}
 		}
 	}
+	return true
 }
 
 // TopoSort returns the graph's vertices in topological order (which must exist).
-func (g *Graph) TopoSort() []string {
-	return g.Names(g.TopoSortV())
+// If keepEdges is not set, all the graph edges will be removed.
+func (g *Graph) TopoSort(keepEdges bool) []string {
+	return g.Names(g.TopoSortV(keepEdges))
 }
 
 // TopoSortV returns the graph's vertices in topological order (which must exist).
-func (g *Graph) TopoSortV() []int {
+// If keepEdges is not set, all the graph edges will be removed.
+func (g *Graph) TopoSortV(keepEdges bool) []int {
+	var edgeCopy [][]bool
+	if keepEdges {
+		edgeCopy = make([][]bool, len(g.edges))
+		for i, e := range g.edges {
+			edgeCopy[i] = make([]bool, len(e))
+			copy(edgeCopy[i], e)
+		}
+	}
+
 	var stack []int
 	g.RangeV(func(v int) {
 		if g.NumPredV(v) == 0 {
@@ -217,7 +262,31 @@ func (g *Graph) TopoSortV() []int {
 			return true
 		})
 	}
+
+	if keepEdges {
+		g.edges = edgeCopy
+	}
 	return order
+}
+
+// MakeUndirected ensures that all edges are bidirectional.
+// If the graph has weights and an edge already exists in both directions, the weights sum up.
+func (g *Graph) MakeUndirected() {
+	N := len(g.edges)
+	for u := 0; u < N-1; u++ {
+		for v := u + 1; v < N; v++ {
+			e := g.edges[u][v] || g.edges[v][u]
+			g.edges[u][v], g.edges[v][u] = e, e
+		}
+	}
+	if g.w != nil {
+		for u := 0; u < N-1; u++ {
+			for v := u + 1; v < N; v++ {
+				w := g.w[u][v] + g.w[v][u]
+				g.w[u][v], g.w[v][u] = w, w
+			}
+		}
+	}
 }
 
 // WriteDOT writes the graph out in GraphViz format. The `nodeAttr` and `edgeAttr` callback

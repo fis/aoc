@@ -39,7 +39,7 @@ func TestTopoSort(t *testing.T) {
 		for _, e := range test.edges {
 			g.AddEdge(e[0], e[1])
 		}
-		got := g.TopoSort()
+		got := g.TopoSort(false)
 		if !cmp.Equal(got, test.want) {
 			t.Errorf("%v -> %v, want %v", test.edges, got, test.want)
 		}

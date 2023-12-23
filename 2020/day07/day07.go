@@ -141,10 +141,10 @@ func plotRules(rules []string, out io.Writer) error {
 
 	var (
 		colors   map[int]string
-		colorize func(int, func(*util.Graph, int, func(int) bool), string)
+		colorize func(int, func(*util.Graph, int, func(int) bool) bool, string)
 	)
 	colors = make(map[int]string)
-	colorize = func(at int, ranger func(*util.Graph, int, func(int) bool), color string) {
+	colorize = func(at int, ranger func(*util.Graph, int, func(int) bool) bool, color string) {
 		colors[at] = color
 		ranger(g, at, func(next int) bool {
 			if _, ok := colors[next]; !ok {

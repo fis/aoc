@@ -75,7 +75,7 @@ func reactionOrder(reactions map[string]reaction) []string {
 			g.AddEdge(out, in.name)
 		}
 	}
-	return g.TopoSort()
+	return g.TopoSort(false)
 }
 
 func oreFor(want map[string]int, order []string, reactions map[string]reaction) int {
