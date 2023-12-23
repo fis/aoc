@@ -10,7 +10,7 @@ introductions for more about what this is all about. In the meanwhile...
 Typically soft landing. The Go code just sums and sorts to find the top three.
 
 I've played around with extending the quickselect algorithm in the `util`
-package to support the unordered partial sorting needed to find the _k_ lowest
+package to support the unordered partial sorting needed to find the $k$ lowest
 (or highest) elements in arbitrary order in linear time. If I get around to
 cleaning it up, I'll update this day's solution to use it.
 
@@ -170,9 +170,9 @@ Oddly, day 6 feels simpler to me than day 5; and judging from the statistics,
 I'm not the only one. It was definitely simpler to do in Burlesque.
 
 To pad things out a little, the Go version has two alternative solutions: one
-which is the naive `O(n*k)` solution but using an `uint64` as a bitset (just the
+which is the naive $O(nk)$ solution but using an `uint64` as a bitset (just the
 right amount of bits for upper- and lowercase ASCII letters), and another
-implementing the "windowed" `O(n)` approach.
+implementing the "windowed" $O(n)$ approach.
 
 The latter does appear to outperform the former, at least on my puzzle input.
 Though both are already ridiculously inexpensive.
@@ -291,7 +291,7 @@ components of the difference between the head and the tail, with one slight
 adjustment: the tail doesn't move if it's already next to the head.
 
 The Burlesque solution also uses the remarkable fact that the ASCII codes for
-the letters 'U', 'L', 'R' and 'D' happen to be 0, 1, 2 and 3 mod 5,
+the letters `U`, `L`, `R` and `D` happen to be 0, 1, 2 and 3 mod 5,
 respectively.
 
 ### Burlesque
@@ -555,14 +555,14 @@ Today had a classic AoC twist: a first part that can be solved naïvely, followe
 by a second part that can't.
 
 For the first part, the task boils down to iterating over the lines of the scan,
-and for each of them, checking how much of a particular line (`y=10` for the
-example, `y=2000000` for the real input) is "covered" by the region for which
+and for each of them, checking how much of a particular line ($y=10$ for the
+example, $y=2000000$ for the real input) is "covered" by the region for which
 the Manhattan distance from the point to the sensor is less than or equal to the
-distance (`d`) between the sensor and its closest beacon. Denoting the sensor
-position as `(Sx, Sy)`, there's overlap if and only if `|y - Sy| <= d`. Further
-denoting `w = d - |y - Sy|`, we therefore know that on the interval
-`[Sx - w, Sx + w]`, there are no beacons other than perhaps the one mentioned as
-the closest.
+distance ($d$) between the sensor and its closest beacon. Denoting the sensor
+position as $(S_x, S_y)$, there's overlap if and only if
+$\left|y - S_y\right| \leq d$. Further denoting $w = d - \left|y - S_y\right|$,
+we therefore know that on the interval $[S_x - w, S_x + w]$, there are no
+beacons other than perhaps the one mentioned as the closest.
 
 The Go solution uses a sorted set of intervals (stored as start, end pairs),
 which it merges opportunistically together. There are only a handful of lines in
@@ -587,12 +587,10 @@ To get there faster, the current Go code instead uses a
 To make the quadtree easier to implement, the code does a coordinate
 transformation:
 
-<!--
-x' = x - y
-y' = x + y
--->
-![A pair of equations defining the coordinate transformation: x' = x - y, y' = x + y.](math/2022-notes-day15.png)
-
+$$\begin{aligned}
+x' &= x - y \\
+y' &= x + y
+\end{aligned}$$
 
 This has the effect of rotating the diamond-shaped areas we know to be empty of
 (additional) beacons into axis-aligned squares, as illustrated by the following
@@ -610,14 +608,14 @@ efghi                                      j.g.d
 The locations marked by dots on the right correspond to non-integer coordinates
 on the left. But that doesn't really matter: the main thing is that the regions
 are now rectangular. In the new coordinate system, if a reading contained a
-sensor at original coordinates `(Sx, Sy)` and a beacon with a Manhattan distance
-`d` away, then the region that cannot contain any (other) beacons is given as:
+sensor at original coordinates $(S_x, S_y)$ and a beacon with a Manhattan
+distance $d$ away, then the region that cannot contain any (other) beacons is
+given as:
 
-<!--
-Sx - Sy - d <= x' < Sx - Sy + d
-Sx + Sy - d <= y' < Sx + Sy + d
--->
-![A pair of inequalities showing the bounds of x' and y'.](math/2022-notes-day15-region.png)
+$$\begin{aligned}
+S_x - S_y - d &\leq x' < S_x - S_y + d \\
+S_x + S_y - d &\leq y' < S_x + S_y + d
+\end{aligned}$$
 
 The Go quadtree code isn't very elegant, but it works, and works fast: both
 parts of the solution together, including parsing, benchmark to something around
@@ -627,14 +625,20 @@ For the record, the coordinate transformation here was derived from the standard
 two-dimensional rotation matrix in the special case of φ = 45° (I like φ more
 than θ), and then just dropping the annoying constant factor:
 
-<!--
-    [cos φ  -sin φ]        [1 -1]
-R = [sin φ   cos φ] = 1/√2 [1  1]
-
-[x']     [x]        [x-y]
-[y'] = R [y] = 1/√2 [x+y]
--->
-![A matrix equation showing the derivation of the coordinate transformation from a standard 2D rotation matrix.](math/2022-notes-day15-rot.png)
+$$
+\begin{aligned}
+R &= \begin{pmatrix} \cos\varphi & -\sin\varphi \\
+\sin\varphi & \cos\varphi \end{pmatrix}
+= \frac{1}{\sqrt{2}} \begin{pmatrix} 1 & -1 \\
+1 & 1 \end{pmatrix} \\
+\begin{pmatrix} x' \\
+y' \end{pmatrix}
+&= R \begin{pmatrix} x \\
+y \end{pmatrix}
+= \frac{1}{\sqrt{2}} \begin{pmatrix} x - y \\
+x + y \end{pmatrix}
+\end{aligned}
+$$
 
 ### Burlesque
 
@@ -673,20 +677,20 @@ Intuitively speaking, it feels like there's a difference to the usual sort of
 the current path is better or worse than a previous one.
 
 The pruning logic used by the solution here is: for each state (location and set
-of opened vents), keep a track of a list of `(T, P)` pairs, where `T` is the
-minute at which the state was arrived to, while `P` records how much pressure
+of opened vents), keep a track of a list of $(T, P)$ pairs, where $T$ is the
+minute at which the state was arrived to, while $P$ records how much pressure
 will be eventually released by the vents opened so far. When looking at an edge
-that would result in adding `(Tn, Pn)` to the list, if there's already at least
-one entry `(Te, Pe)` for which `Te ≤ Tn ∧ Pe ≥ Pn`, that previously explored
-path is at least as good as the current one, and the current one can be
-discarded. Likewise, to cut down on the amount of state, if we do end up keeping
-this path, all existing entries for which `Te < Tn ∨ Pe > Pn` are strictly worse
-and can be dropped.
+that would result in adding $(T_n, P_n)$ to the list, if there's already at
+least one entry $(T_e, P_e)$ for which $T_e \leq T_n \land P_e \geq P_n$, that
+previously explored path is at least as good as the current one, and the current
+one can be discarded. Likewise, to cut down on the amount of state, if we do end
+up keeping this path, all existing entries for which $T_e < T_n \lor P_e > P_n$
+are strictly worse and can be dropped.
 
-However, this is not a total order. If `Te ≤ Tn` but `Pe < Pn`, this means the
-earlier path arrived at the same state faster, but had locked down less pressure
-relief so far. It seems difficult to say which path will win out in the end, so
-both will be kept. Likewise for `Pe ≥ Pn` but `Te > Tn`.
+However, this is not a total order. If $T_e \leq T_n$ but $P_e < P_n$, this
+means the earlier path arrived at the same state faster, but had locked down
+less pressure relief so far. It seems difficult to say which path will win out
+in the end, so both will be kept. Likewise for $P_e \geq P_n$ but $T_e > T_n$.
 
 Anyway, all this complexity works out okay for part 1. Part 2 is what really got
 me stuck, as far as efficient solutions go. It introduced the elephant helper,
@@ -1094,14 +1098,6 @@ BenchmarkAllDays/day=25-16    465816        25658 ns/op
 
 <!--math
 
-%: day15
-
-\vspace*{-3ex}
-\begin{align*}
-x' &= x - y \\
-y' &= x + y
-\end{align*}
-
 %: day15-trans tikz
 
 \begin{tikzpicture}
@@ -1130,25 +1126,6 @@ y' &= x + y
   \draw[->,double] (1.3,1.5) -- (4.7,1.5);
   \draw[<-,double] (1.3,0.8) -- (4.7,0.8);
 \end{tikzpicture}
-
-%: day15-region
-
-\vspace*{-3ex}
-\begin{align*}
-S_{\mathsf{x}} - S_{\mathsf{y}} - d &\leq x' < S_{\mathsf{x}} - S_{\mathsf{y}} + d \\
-S_{\mathsf{x}} + S_{\mathsf{y}} - d &\leq y' < S_{\mathsf{x}} + S_{\mathsf{y}} + d
-\end{align*}
-
-%: day15-rot
-
-\vspace*{-3ex}
-\begin{align*}
-R &= \begin{pmatrix} \cos\varphi & -\sin\varphi \\ \sin\varphi & \cos\varphi \end{pmatrix}
-= \frac{1}{\sqrt{2}} \begin{pmatrix} 1 & -1 \\ 1 & 1 \end{pmatrix} \\
-\begin{pmatrix} x' \\ y' \end{pmatrix}
-&= R \begin{pmatrix} x \\ y \end{pmatrix}
-= \frac{1}{\sqrt{2}} \begin{pmatrix} x - y \\ x + y \end{pmatrix}
-\end{align*}
 
 %: day20-graph tikz color
 
