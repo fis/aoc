@@ -37,70 +37,93 @@ func solve(bricks []brick) ([]string, error) {
 
 const chuteSize = 10
 
-func disintegrate(bricks []brick) (numSafe, totalFallen int) {
+func disintegrate(bricks []brick) (safe, fallen int) {
 	util.SortBy(bricks, func(b brick) uint16 { return b[0].z })
-	drop(bricks)
+	succ := drop(bricks)
 
-	newBricks := make([]brick, len(bricks)-1)
-	for i := range bricks {
-		copy(newBricks[:i], bricks[:i])
-		copy(newBricks[i:], bricks[i+1:])
-		fallen := drop(newBricks)
-		if fallen > 0 {
-			totalFallen += fallen
+	seen := util.MakeFixedBitmap1D(len(bricks) + 1)
+	for i := 1; i <= len(bricks); i++ {
+		seen.Clear()
+		r := reachableWithout(succ, uint16(i), 0, seen)
+		if r == len(bricks) {
+			safe++
 		} else {
-			numSafe++
+			fallen += len(bricks) - r
 		}
 	}
 
-	return numSafe, totalFallen
+	return safe, fallen
 }
 
-func drop(bricks []brick) (fallen int) {
-	var topZ [chuteSize][chuteSize]uint16
+func reachableWithout(succ [][]uint16, removed uint16, at uint16, seen util.FixedBitmap1D) (reachable int) {
+	reachable = 1
+	for _, b := range succ[at] {
+		if b != removed && !seen.Get(int(b)) {
+			seen.Set(int(b))
+			reachable += reachableWithout(succ, removed, b, seen)
+		}
+	}
+	return reachable
+}
+
+func drop(bricks []brick) (succ [][]uint16) {
+	succ = make([][]uint16, len(bricks)+1)
+	var top [chuteSize][chuteSize]struct {
+		z uint16
+		b uint16
+	}
 	for i := range bricks {
 		b := &bricks[i]
 		switch {
 		case b[0].x == b[1].x && b[0].y == b[1].y: // vertical brick or single cube
 			x, y := b[0].x, b[0].y
-			if d := b[0].z - topZ[y][x]; d > 0 {
+			if d := b[0].z - top[y][x].z; d > 0 {
 				b[0].z, b[1].z = b[0].z-d, b[1].z-d
-				fallen++
 			}
-			topZ[y][x] = b[1].z + 1
+			succ[top[y][x].b] = append(succ[top[y][x].b], uint16(i+1))
+			top[y][x].z = b[1].z + 1
+			top[y][x].b = uint16(i + 1)
 		case b[1].x > b[0].x: // horizontal brick with some X extent
 			x, y, n := b[0].x, b[0].y, b[1].x-b[0].x+1
 			minD := uint16(math.MaxUint16)
 			for j := byte(0); j < n; j++ {
-				if d := b[0].z - topZ[y][x+j]; d < minD {
+				if d := b[0].z - top[y][x+j].z; d < minD {
 					minD = d
 				}
 			}
 			if minD > 0 {
 				b[0].z, b[1].z = b[0].z-minD, b[1].z-minD
-				fallen++
 			}
-			for j := byte(0); j < n; j++ {
-				topZ[y][x+j] = b[1].z + 1
+			for j, pb := byte(0), uint16(0xffff); j < n; j++ {
+				if tz, tb := top[y][x+j].z, top[y][x+j].b; tz == b[0].z && tb != pb {
+					pb = tb
+					succ[tb] = append(succ[tb], uint16(i+1))
+				}
+				top[y][x+j].z = b[1].z + 1
+				top[y][x+j].b = uint16(i + 1)
 			}
 		default: // horizontal brick with some Y extent
 			x, y, n := b[0].x, b[0].y, b[1].y-b[0].y+1
 			minD := uint16(math.MaxUint16)
 			for j := byte(0); j < n; j++ {
-				if d := b[0].z - topZ[y+j][x]; d < minD {
+				if d := b[0].z - top[y+j][x].z; d < minD {
 					minD = d
 				}
 			}
 			if minD > 0 {
-				fallen++
 				b[0].z, b[1].z = b[0].z-minD, b[1].z-minD
 			}
-			for j := byte(0); j < n; j++ {
-				topZ[y+j][x] = b[1].z + 1
+			for j, pb := byte(0), uint16(0xffff); j < n; j++ {
+				if tz, tb := top[y+j][x].z, top[y+j][x].b; tz == b[0].z && tb != pb {
+					pb = tb
+					succ[tb] = append(succ[tb], uint16(i+1))
+				}
+				top[y+j][x].z = b[1].z + 1
+				top[y+j][x].b = uint16(i + 1)
 			}
 		}
 	}
-	return fallen
+	return succ
 }
 
 type brick [2]p3

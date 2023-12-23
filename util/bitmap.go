@@ -2,6 +2,22 @@ package util
 
 import "math/bits"
 
+type FixedBitmap1D []uint64
+
+func MakeFixedBitmap1D(size int) FixedBitmap1D {
+	wsize := (size + 63) >> 6
+	return make(FixedBitmap1D, wsize)
+}
+
+func (bmp FixedBitmap1D) Clear() {
+	for i := range bmp {
+		bmp[i] = 0
+	}
+}
+
+func (bmp FixedBitmap1D) Get(i int) bool { return bmp[i>>6]&(1<<(i&63)) != 0 }
+func (bmp FixedBitmap1D) Set(i int)      { bmp[i>>6] |= 1 << (i & 63) }
+
 type FixedBitmap2D [][]uint64
 
 func MakeFixedBitmap2D(w, h int) FixedBitmap2D {

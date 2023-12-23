@@ -1041,26 +1041,29 @@ $T = t(202300)$.
 
 ## [Day 22](https://adventofcode.com/2023/day/22): Sand Slabs
 
-Very much going with the path of least resistance today, but at least the code
-is moderately short.
-
-The initial version of the part 1 solution explicitly built the DAG where an
-edge between two bricks indicates the head brick is supported by the tail brick,
-as computing the safe bricks is trivial in that data structure: just count the
-bricks that support at least one brick that no other bricks support.
-
-Part 2 *could* be done in the same graph, but it is not quite as trivial: it
-effectively involves finding
-[dominators](https://en.wikipedia.org/wiki/Dominator_(graph_theory)). However,
-there's a low-effort alternative: the same code that figures out the graph by
-packing the bricks inherently knows if any bricks fell. So both parts can be
-solved by, for each brick, removing it from the tower and seeing how many bricks
-move as a result. If none, increment a counter for part 1; if some, include
-those in the total for part 2.
+The first complete solution I had for today was really simple: after dropping
+all the bricks down, it simply re-ran the same code with a single brick removed,
+for each of the bricks, and counted how many bricks moved during the repacking.
+If none did, then the removed brick counted towards part 1; otherwise, all those
+that did counted towards part 2.
 
 This makes for an $O(n^2)$ algorithm as long as the packing is $O(n)$, which is
 not hard to accomplish by doing a single pass over the bricks while tracking the
 current top $z$ coordinate at each $(x, y)$ position. But the number of bricks
-is pretty modest, so the whole thing still runs in under 20 milliseconds.
+is pretty modest, so the whole thing still ran in a little under 20
+milliseconds.
 
-At least for now, that's good enough.
+Current solution instead makes the initial packing step construct a DAG where an
+edge $v \rightarrow w$ exists if brick $v$ supports brick $w$ (i.e., $w$ rests
+directly on top of $v$). This allows a similar $O(n^2)$ algorithm to run on the
+graph: for each brick, count (using a DFS) which bricks are still reachable if
+that brick was removed. If all of them are, the brick is safe to remove
+(counting towards part 1). Otherwise, the unreachable bricks are those that
+would fall (counting towards part 2).
+
+> This is effectively a simple algorithm to find the
+> [dominators](https://en.wikipedia.org/wiki/Dominator_(graph_theory)) of each
+> node, found in *The theory of parsing, translation, and compiling* (Aho and
+> Ullman, 1972). Faster algorithms are possible even in general graphs, and the
+> fact that this is a well-behaved DAG could potentially also be useful. But
+> this solution is already below 12 milliseconds.
