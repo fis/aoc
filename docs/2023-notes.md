@@ -447,14 +447,14 @@ we'll want to take care to avoid any solutions that are less than $\max_i s_i$.
 For each cycle $i$, there are two parameters: the length of the cycle in steps
 ($M_i$), and the specific step at which the ghost is in its designated end node
 ($k_i$). This means that any time $T$ in which *all* the ghosts are at the end
-nodes must satisfy $T \equiv k_i\ (\mathrm{mod}\ M_i)$ (and $T \geq s_i$) for
-all the cycles.
+nodes must satisfy $T \equiv k_i \pmod{M_i}$ (and $T \geq s_i$) for all the
+cycles.
 
 Consider a pair of cycles that, without loss of generality, are numbered $1$ and
 $2$ with $M_1 > M_2$. To find a solution that satisfies both, we can check the
 numbers that are of the form $k_1 + n \cdot M_1$ for some integer $n$. Once we
 find a suitable number $a$ of that form where
-$a \equiv k_2\ (\mathrm{mod}\ M_2),\ a \geq s_1,\ a \geq s_2$, we can replace that
+$a \equiv k_2 \pmod{M_2},\ a \geq s_1,\ a \geq s_2$, we can replace that
 pair of cycles with a single cycle $C$, representing both, with the parameters
 $k_C = a$ and $M_C = \mathrm{LCM}(M_1, M_2)$. In this way, we can reduce the
 size of our set of cycles by one. Finally, we can iterate the process until only
@@ -979,7 +979,7 @@ of the map size $D$. In my case, $D = 131$.
 
 Let's use $S$ to denote the ultimately interesting step count of 26501365, and
 $T$ the number of tiles reachable in that many steps. If we say $t(n)$ is the
-number of tiles reachable in $n D + S\,\mathrm{mod}\,D$ steps, then
+number of tiles reachable in $n D + S \bmod D$ steps, then
 $T = t(\lfloor \frac{S}{D} \rfloor) = t(202300)$.
 
 > The 202300 is probably not a coincidence.
@@ -1034,6 +1034,10 @@ t(n) &= a n^2 + b^n + c \\
    b &= s(1) - s(0) - a \\
    c &= s(0)
 \end{aligned}$$
+
+At this point, the solution is just a matter of computing $s(0)$, $s(1)$ and
+$s(2)$, using them to derive $a$, $b$ and $c$, and then evaluating
+$T = t(202300)$.
 
 ## [Day 22](https://adventofcode.com/2023/day/22): Sand Slabs
 
