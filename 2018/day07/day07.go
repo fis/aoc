@@ -28,7 +28,7 @@ import (
 
 func init() {
 	glue.RegisterSolver(2018, 7, glue.LineSolver(solve))
-	glue.RegisterPlotter(2018, 7, glue.LinePlotter(plotDeps), map[string]string{"ex": example})
+	glue.RegisterPlotter(2018, 7, "", glue.LinePlotter(plotDeps), map[string]string{"ex": example})
 }
 
 func solve(lines []string) ([]string, error) {

@@ -1092,3 +1092,6 @@ graph still has the same structure (it's effectively a finite
 eliminated by path contraction), so a more optimal solution may exist, though it
 seems not to be an obvious one. Here, we just fall back to an exhaustive search,
 which is just barely acceptably fast (just shy of 0.14 seconds).
+
+We can also take a look at the resulting path:
+[2023-day23-input-2.png](2023-day23-input-2.png).

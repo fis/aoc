@@ -28,7 +28,7 @@ import (
 
 func init() {
 	glue.RegisterSolver(2022, 16, glue.LineSolver(glue.WithParser(ParseValveScan, solve)))
-	glue.RegisterPlotter(2022, 16, glue.LinePlotter(plot), map[string]string{"ex": strings.Join(ExampleScan, "\n")})
+	glue.RegisterPlotter(2022, 16, "", glue.LinePlotter(plot), map[string]string{"ex": strings.Join(ExampleScan, "\n")})
 }
 
 func solve(scan []ValveScan) ([]string, error) {

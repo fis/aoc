@@ -29,7 +29,7 @@ import (
 
 func init() {
 	glue.RegisterSolver(2023, 8, glue.ChunkSolver(solve))
-	glue.RegisterPlotter(2023, 8, glue.ChunkPlotter(plot), map[string]string{"ex1": ex1, "ex2": ex2, "ex3": ex3})
+	glue.RegisterPlotter(2023, 8, "", glue.ChunkPlotter(plot), map[string]string{"ex1": ex1, "ex2": ex2, "ex3": ex3})
 }
 
 func solve(chunks []string) ([]string, error) {

@@ -17,14 +17,21 @@ package util
 import (
 	"fmt"
 	"io"
+
+	"github.com/fis/aoc/util/fn"
 )
 
 // Graph models a dense directed graph of string-labeled nodes.
+//
+// Graphs are for the most part directed, but there's a limited support for undirected graphs.
+// The MakeUndirected() method can be used to add any missing edges to make all existing edges bidirectional.
+// The only other effect of that command is to affect the printing style; other methods like AddEdge are not affected.
 type Graph struct {
-	verts     map[string]int
-	vertNames []string
-	edges     [][]bool
-	w         [][]int
+	verts      map[string]int
+	vertNames  []string
+	edges      [][]bool
+	w          [][]int
+	undirected bool
 }
 
 // Len returns the number of vertices in the graph.
@@ -287,13 +294,14 @@ func (g *Graph) MakeUndirected() {
 			}
 		}
 	}
+	g.undirected = true
 }
 
 // WriteDOT writes the graph out in GraphViz format. The `nodeAttr` and `edgeAttr` callback
 // functions are optional, and can be used to add extra attributes to the node. If the callback
 // returns a "label" attribute, it takes precedence over the usual node name / edge weight.
 func (g *Graph) WriteDOT(w io.Writer, name string, nodeAttr func(v int) map[string]string, edgeAttr func(fromV, toV int) map[string]string) (err error) {
-	fmt.Fprintf(w, "digraph %s {\n", name)
+	fmt.Fprintf(w, "%s %s {\n", fn.If(g.undirected, "graph", "digraph"), name)
 	g.RangeV(func(v int) {
 		var attrs map[string]string
 		if nodeAttr != nil {
@@ -305,11 +313,15 @@ func (g *Graph) WriteDOT(w io.Writer, name string, nodeAttr func(v int) map[stri
 	})
 	g.RangeV(func(fromV int) {
 		g.RangeSuccV(fromV, func(toV int) bool {
+			if g.undirected && toV < fromV {
+				return true
+			}
 			var attrs map[string]string
 			if edgeAttr != nil {
 				attrs = edgeAttr(fromV, toV)
 			}
-			fmt.Fprintf(w, "  n%d -> n%d [", fromV, toV)
+			edgeType := fn.If(g.undirected, "--", "->")
+			fmt.Fprintf(w, "  n%d %s n%d [", fromV, edgeType, toV)
 			if g.w != nil {
 				writeAttrs(w, attrs, "label", fmt.Sprintf(`"%d"`, g.W(fromV, toV)))
 			} else {

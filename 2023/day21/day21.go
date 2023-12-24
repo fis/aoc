@@ -33,7 +33,7 @@ import (
 
 func init() {
 	glue.RegisterSolver(2023, 21, glue.FixedLevelSolver(solve))
-	glue.RegisterPlotter(2023, 21, plotter{}, nil)
+	glue.RegisterPlotter(2023, 21, "", plotter{}, nil)
 }
 
 const target = 26501365 // 589 // 26501365

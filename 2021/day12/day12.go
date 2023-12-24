@@ -29,7 +29,7 @@ const inputRegexp = `^([^-]+)-([^-]+)$`
 
 func init() {
 	glue.RegisterSolver(2021, 12, glue.RegexpSolver{Solver: solve, Regexp: inputRegexp})
-	glue.RegisterPlotter(2021, 12, glue.LinePlotter(plot), map[string]string{
+	glue.RegisterPlotter(2021, 12, "", glue.LinePlotter(plot), map[string]string{
 		"ex1": edgesToText(ex1),
 		"ex2": edgesToText(ex2),
 		"ex3": edgesToText(ex3),

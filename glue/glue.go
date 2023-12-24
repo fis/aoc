@@ -46,14 +46,20 @@ type plotterRecord struct {
 // YearDay names an AoC puzzle by the event year (2015+) and puzzle day (1-25).
 type YearDay struct{ Year, Day int }
 
+// YearDaySuffix names a plotter by the event year (2015+), puzzle day (1-25) and an optional disambiguation suffix.
+type YearDaySuffix struct {
+	YearDay
+	Suffix string
+}
+
 var (
 	solvers  map[YearDay]Solver
-	plotters map[YearDay]plotterRecord
+	plotters map[YearDaySuffix]plotterRecord
 )
 
 func init() {
 	solvers = make(map[YearDay]Solver)
-	plotters = make(map[YearDay]plotterRecord)
+	plotters = make(map[YearDaySuffix]plotterRecord)
 }
 
 // RegisterSolver makes a solver known to the glue code as the nominated solver of the given day.
@@ -67,10 +73,10 @@ func RegisterSolver(year, day int, s Solver) {
 }
 
 // RegisterPlotter makes a plotter known to the glue code as the nominated plotter of the given day.
-func RegisterPlotter(year, day int, p Plotter, examples map[string]string) {
-	yd := YearDay{year, day}
+func RegisterPlotter(year, day int, suffix string, p Plotter, examples map[string]string) {
+	yd := YearDaySuffix{YearDay{year, day}, suffix}
 	if _, ok := plotters[yd]; ok {
-		panic(fmt.Sprintf("duplicate plotters: %d %d", year, day))
+		panic(fmt.Sprintf("duplicate plotters: %d %d%s", year, day, suffix))
 	}
 	plotters[yd] = plotterRecord{plotter: p, examples: examples}
 }

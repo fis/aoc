@@ -27,7 +27,7 @@ import (
 
 func init() {
 	glue.RegisterSolver(2016, 10, glue.RegexpSolver{Solver: solve, Regexp: inputRegexp})
-	glue.RegisterPlotter(2016, 10, plotter{}, map[string]string{"ex": ex})
+	glue.RegisterPlotter(2016, 10, "", plotter{}, map[string]string{"ex": ex})
 }
 
 const inputRegexp = `value (\d+) goes to bot (\d+)|bot (\d+) gives low to (bot|output) (\d+) and high to (bot|output) (\d+)`

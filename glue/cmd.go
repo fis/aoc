@@ -17,6 +17,7 @@ package glue
 import (
 	"cmp"
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -25,6 +26,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/fis/aoc/util"
 	"github.com/google/subcommands"
 )
 
@@ -92,8 +94,11 @@ func (*solveCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) s
 		fmt.Fprintf(os.Stderr, "usage: solve <year> <day> [input]\n")
 		return subcommands.ExitFailure
 	}
-	year, day, err := parseDay(f.Arg(0), f.Arg(1))
-	if err != nil {
+	year, day, suffix, err := parseDay(f.Arg(0), f.Arg(1))
+	if err != nil || suffix != "" {
+		if err == nil {
+			err = errors.New("unexpected suffix after day number")
+		}
 		fmt.Fprintln(os.Stderr, err)
 		return subcommands.ExitFailure
 	}
@@ -135,31 +140,34 @@ func (*plotCmd) Usage() string {
 
   Plot a graph related to one of the AoC puzzles.
 
-	Input handling is similar to the 'solve' command (see 'aoc help solve'), but
-	the name can additionally be one of the built-in example inputs, typically
-	"ex" or "exN". If you need to plot a file with the same name, use a path such
-	as "./ex" instead.
+  Input handling is similar to the 'solve' command (see 'aoc help solve'), but
+  the name can additionally be one of the built-in example inputs, typically
+  "ex" or "exN". If you need to plot a file with the same name, use a path such
+  as "./ex" instead.
 
-	The output is by default as .dot source in standard output, but other options
+  The output is by default as .dot source in standard output, but other options
   are available. TODO: implement other options
 
   Available days and their example inputs:
 `)
-	days, examples := []YearDay(nil), make(map[YearDay][]string)
+	days, examples := []YearDaySuffix(nil), make(map[YearDaySuffix][]string)
 	for yd, pr := range plotters {
 		days = append(days, yd)
 		for ex := range pr.examples {
 			examples[yd] = append(examples[yd], ex)
 		}
 	}
-	slices.SortFunc(days, func(a, b YearDay) int {
+	slices.SortFunc(days, func(a, b YearDaySuffix) int {
 		if a.Year != b.Year {
 			return cmp.Compare(a.Year, b.Year)
 		}
-		return cmp.Compare(a.Day, b.Day)
+		if a.Day != b.Day {
+			return cmp.Compare(a.Day, b.Day)
+		}
+		return cmp.Compare(a.Suffix, b.Suffix)
 	})
 	for _, yd := range days {
-		fmt.Fprintf(&out, "    %d %d:", yd.Year, yd.Day)
+		fmt.Fprintf(&out, "    %d %d%s:", yd.Year, yd.Day, yd.Suffix)
 		slices.Sort(examples[yd])
 		for _, ex := range examples[yd] {
 			fmt.Fprintf(&out, " %s", ex)
@@ -176,15 +184,15 @@ func (*plotCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) su
 		fmt.Fprintf(os.Stderr, "usage: plot <year> <day> [input]\n")
 		return subcommands.ExitFailure
 	}
-	year, day, err := parseDay(f.Arg(0), f.Arg(1))
+	year, day, suffix, err := parseDay(f.Arg(0), f.Arg(1))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return subcommands.ExitFailure
 	}
 
-	pr, ok := plotters[YearDay{year, day}]
+	pr, ok := plotters[YearDaySuffix{YearDay{year, day}, suffix}]
 	if !ok {
-		fmt.Fprintf(os.Stderr, "no plotter for: %d %d\n", year, day)
+		fmt.Fprintf(os.Stderr, "no plotter for: %d %d%s\n", year, day, suffix)
 		return subcommands.ExitFailure
 	}
 
@@ -213,14 +221,16 @@ func (*plotCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) su
 
 // common utilities
 
-func parseDay(ya, da string) (y, d int, err error) {
+func parseDay(ya, da string) (y, d int, suffix string, err error) {
 	if y, err = strconv.Atoi(ya); err != nil {
-		return 0, 0, fmt.Errorf("not a year: %s", ya)
+		return 0, 0, "", fmt.Errorf("not a year: %s", ya)
 	}
-	if d, err = strconv.Atoi(da); err != nil {
-		return 0, 0, fmt.Errorf("not a day: %s", da)
+	var ok bool
+	d, ok, suffix = util.NextInt(da)
+	if !ok {
+		return 0, 0, "", fmt.Errorf("not a day with suffix: %s", da)
 	}
-	return y, d, nil
+	return y, d, suffix, nil
 }
 
 func parseInput(arg string, year, day int) (file *os.File, name string, close func(), err error) {

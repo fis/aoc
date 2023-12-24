@@ -42,6 +42,16 @@ func MakeQueue[T any](size int) Queue[T] {
 	}
 }
 
+// QueueOf returns a new queue of the given size initialized with the specified contents.
+func QueueOf[T any](size int, init ...T) Queue[T] {
+	if len(init) > size {
+		panic(fmt.Sprintf("QueueOf: out of bounds: %d > %d", len(init), size))
+	}
+	q := make([]T, len(init), size)
+	copy(q, init)
+	return Queue[T]{q: q, head: 0}
+}
+
 // Len returns the number of items currently in the queue.
 func (q Queue[T]) Len() int {
 	return len(q.q)

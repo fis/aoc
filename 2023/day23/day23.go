@@ -29,7 +29,8 @@ import (
 
 func init() {
 	glue.RegisterSolver(2023, 23, glue.FixedLevelSolver(solve))
-	glue.RegisterPlotter(2023, 23, plotter{}, map[string]string{"ex": ex})
+	glue.RegisterPlotter(2023, 23, "a", plotter{tr: tracerA{}}, map[string]string{"ex": ex})
+	glue.RegisterPlotter(2023, 23, "b", plotter{tr: tracerB{}, undir: true}, map[string]string{"ex": ex})
 }
 
 func solve(l *util.FixedLevel) ([]string, error) {
@@ -115,13 +116,12 @@ func deconstruct(l *util.FixedLevel) (g *util.Graph, startV, endV int) {
 		d    util.P
 		srcV int
 	}
-	paths := []path{{at: util.P{bytes.IndexByte(l.Row(0), '.'), 1}, d: util.P{0, 1}, srcV: startV}}
+	paths := util.QueueOf[path](16, path{at: util.P{bytes.IndexByte(l.Row(0), '.'), 1}, d: util.P{0, 1}, srcV: startV})
 	gates := make(map[util.P]int)
 
 nextPath:
-	for len(paths) > 0 {
-		p := paths[len(paths)-1]
-		paths = paths[:len(paths)-1]
+	for !paths.Empty() {
+		p := paths.Pop()
 
 		at, d, steps := p.at, p.d, 0
 	nextStep:
@@ -145,7 +145,7 @@ nextPath:
 						gates[gate] = dstV
 						for _, exit := range gateExits {
 							if ep := gate.Add(exit.d); l.At(ep.X, ep.Y) == exit.c {
-								paths = append(paths, path{at: ep, d: exit.d, srcV: dstV})
+								paths.Push(path{at: ep, d: exit.d, srcV: dstV})
 							}
 						}
 					}
@@ -188,15 +188,144 @@ var ex = strings.TrimPrefix(`
 #####################.#
 `, "\n")
 
-type plotter struct{}
+type plotter struct {
+	tr    tracer
+	undir bool
+}
 
-func (plotter) Plot(r io.Reader, w io.Writer) error {
+func (p plotter) Plot(r io.Reader, w io.Writer) error {
+	const (
+		highlightColor = `"#db4437"`
+		subdueColor    = `"gray75"`
+	)
+
 	input, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}
 	l := util.ParseFixedLevel(input)
-	g, _, _ := deconstruct(l)
-	g.WriteDOT(w, "G", nil, nil)
+	g, startV, endV := deconstruct(l)
+	longestV, longestE := p.tr.trace(g, startV, endV)
+	nodeAttr := func(v int) map[string]string {
+		m := map[string]string{}
+		if _, ok := longestV[v]; ok {
+			m["color"] = highlightColor
+			m["fontcolor"] = highlightColor
+		} else if p.undir {
+			m["color"] = subdueColor
+			m["fontcolor"] = subdueColor
+		}
+		return m
+	}
+	edgeAttr := func(u, v int) map[string]string {
+		m := map[string]string{}
+		_, ok1 := longestE[[2]int{u, v}]
+		_, ok2 := longestE[[2]int{v, u}]
+		if ok1 || ok2 {
+			m["color"] = highlightColor
+			m["fontcolor"] = highlightColor
+		} else if p.undir {
+			m["color"] = subdueColor
+			m["fontcolor"] = subdueColor
+		}
+		if p.undir {
+			m["dir"] = "none"
+		}
+		return m
+	}
+	g.WriteDOT(w, "G", nodeAttr, edgeAttr)
 	return nil
+}
+
+type tracer interface {
+	trace(g *util.Graph, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{})
+}
+
+type tracerA struct{}
+
+func (tracerA) trace(g *util.Graph, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{}) {
+	d := make([]int, g.Len())
+	p := make([]int, g.Len())
+	for i := range d {
+		d[i] = math.MaxInt
+		p[i] = -1
+	}
+	order := g.TopoSortV(true)
+	d[order[0]] = 0
+	for _, u := range order {
+		g.RangeSuccV(u, func(v int) bool {
+			w := g.W(u, v)
+			if d[v] > d[u]-w {
+				d[v] = d[u] - w
+				p[v] = u
+			}
+			return true
+		})
+	}
+	longestV = make(map[int]struct{})
+	longestE = make(map[[2]int]struct{})
+	for v := order[len(order)-1]; v != -1; v = p[v] {
+		longestV[v] = struct{}{}
+		if u := p[v]; u != -1 {
+			longestE[[2]int{u, v}] = struct{}{}
+		}
+	}
+	return longestV, longestE
+}
+
+type tracerB struct {
+	bestD uint32
+	chain *backRef
+}
+
+type backRef struct {
+	v uint32
+	p *backRef
+}
+
+func (tr tracerB) trace(g *util.Graph, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{}) {
+	sg := make([]vertex, g.Len())
+	for u := range sg {
+		g.RangeSuccV(u, func(v int) bool {
+			if u != startV && u != endV && v != startV && v != endV {
+				d := sg[u].degree
+				sg[u].next[d].v, sg[u].next[d].w = uint32(v), uint32(g.W(u, v))
+				sg[u].degree = d + 1
+				d = sg[v].degree
+				sg[v].next[d].v, sg[v].next[d].w = uint32(u), uint32(g.W(u, v))
+				sg[v].degree = d + 1
+			}
+			return true
+		})
+	}
+	firstV, lastV := g.SuccV(startV, 0), g.PredV(endV, 0)
+	tr.bruteForce(sg, uint32(firstV), 0, uint32(lastV), nil)
+	longestV = map[int]struct{}{startV: {}, endV: {}}
+	longestE = map[[2]int]struct{}{{startV, firstV}: {}, {lastV, endV}: {}}
+	for at := tr.chain; at != nil; at = at.p {
+		longestV[int(at.v)] = struct{}{}
+		if at.p != nil {
+			longestE[[2]int{int(at.p.v), int(at.v)}] = struct{}{}
+		}
+	}
+	return longestV, longestE
+}
+
+func (tr *tracerB) bruteForce(sg []vertex, atV, d, toV uint32, br *backRef) {
+	br = &backRef{v: atV, p: br}
+	if atV == toV {
+		if d > tr.bestD {
+			tr.bestD = d
+			tr.chain = br
+		}
+		return
+	}
+	sg[atV].seen = true
+	for _, next := range sg[atV].next[:sg[atV].degree] {
+		if sg[next.v].seen {
+			continue
+		}
+		tr.bruteForce(sg, next.v, d+next.w, toV, br)
+	}
+	sg[atV].seen = false
 }
