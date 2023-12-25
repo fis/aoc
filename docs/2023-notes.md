@@ -1281,3 +1281,68 @@ following process:
    $A$'s as $B$.
 3. Select the first remaining hailstone whose velocity vector is not in the same
    plane as that defined by $A$'s and $B$'s as $C$.
+
+## [Day 25](https://adventofcode.com/2023/day/25): Snowverload
+
+To be honest, I was expecting something a little less of a regular puzzle for
+day 25. But unless I'm missing something, this could have been any other day
+(except for the lack of part 2).
+
+The [min-cut](https://en.wikipedia.org/wiki/Minimum_cut) problem is of course
+well known in graph theory, and there are a number of algorithms available,
+mostly for weighted graphs. Here, we do something quite a lot simpler, based on
+the fact that we know there is a unique minimum cut of size 3.
+
+We have a graph $G = (V, E)$. Let's assume we know a pair of vertices
+$s, t \in V$ that are definitely in the two different partitions $S$ and $T$
+corresponding to the minimum cut we want to find. To find the cut, we can use
+the following procedure:
+
+- Find the shortest path $p_1$ between $s$ and $t$. Since they're in different
+  partitions, at least one of the three cut edges is in the path $p_1$.
+- For each edge $e_1 \in p_1$:
+  - Remove $e_1 = (u_1, v_1)$ from the graph.
+  - Find the shortest path $p_2$ between $u_1$ and $v_1$. If $e_1$ was truly one
+    of the minimum cut edges, then $u_1 \in S, v_1 \in T$ (or the other way
+    around), and one of the remaining two cut edges must be in $p_2$.
+  - For each edge $e_2 \in p_2$:
+    - Remove $e_2 = (u_2, v_2)$ from the graph.
+    - Again, find a new shortest path $p_3$ between $u_2$ and $v_2$. By the same
+      argument, if both $e_1$ and $e_2$ were part of the minimum cut, the sole
+      remaining edge must be in $p_3$.
+    - For each edge $e_3 \in p_3$:
+      - Remove $e_3 = (u_3, v_3)$ from the graph.
+      - If $e_3$ was the correct edge, the graph is now cut. Otherwise, it's
+        still a single connected component.
+      - Find $|S|$, the size of the connected component $u_3$ is in. This search
+        can also terminate early if it encounters $v_3$.
+      - If the search found $v_3$, the set $(e_1, e_2, e_3)$ was not a cut,
+        because the endpoints of $e_3$ are still connected. Continue.
+      - Otherwise it was *the* cut. In this case  $|S|$ is one of the partition
+        sizes, and $|T| = |V| - |S|$ is the size of the other partition.
+
+> Update 2023-12-25: Initial version of the solution always used the shortest
+> path between $s$ and $t$ even in the nested loops. However, using the paths
+> between the endpoints of the deleted edge runs a lot faster. This makes
+> intuitive sense: the points are likely to be still close despite the removed
+> edge, so the new path is also likely shorter, meaning less edges to test.
+
+Now we just need to pick $s, t$ correctly. A simple choice would be to repeat
+the above for all pairs of vertices: if we pick accidentally pick two vertices
+in $S$ (or $T$), the algorithm simply terminates without finding a cut.
+
+What's done here is slightly more handwavy. We first pick $s$ arbitrarily. Then
+we find some $t$ that achieves a distance $d(s, t) = \epsilon(s)$, where
+$\epsilon(s)$ is the eccentricity of $s$. Intuitively, this corresponds to
+picking $t$ that's "as far away from $s$ as possible", under the assumption that
+it's likely to be in the other component. As a side effect, this step also finds
+path $p_1$ in the above algorithm. Then we run the rest of the steps, and if no
+cut was found, try again with a different $s$.
+
+It's possible that the above might not work for some graphs. But it works for
+the example and the puzzle input, which is by definition good enough.
+
+Finally, here's the puzzle example. To a human, the minimum cut (highlighted in
+red) is obvious. It's curious how non-obvious finding it is to a computer.
+
+![A rendering of the puzzle example graph.](2023-day25-ex.png)
