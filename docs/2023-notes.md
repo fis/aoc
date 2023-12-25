@@ -1096,6 +1096,10 @@ which is just barely acceptably fast (just shy of 0.14 seconds).
 We can also take a look at the resulting path:
 [2023-day23-input-2.png](2023-day23-input-2.png).
 
+> Update 2023-12-24: Using a Cgo implementation (just the one call, so overhead
+> isn't a problem) improved runtime from 0.14 to 0.11 or so. Must be all that
+> tedious memory safety Go insists on.
+
 ## [Day 24](https://adventofcode.com/2023/day/24): Never Tell Me The Odds
 
 Really more of a math challenge than a programming challenge, at least the way I

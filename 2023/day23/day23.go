@@ -37,7 +37,7 @@ func solve(l *util.FixedLevel) ([]string, error) {
 	g, startV, endV := deconstruct(l)
 	p1 := longestPath(g)
 	g.MakeUndirected()
-	p2 := evenLongestPath(g, startV, endV)
+	p2 := unsafeLongestPath(g, startV, endV)
 	return glue.Ints(p1, p2), nil
 }
 
@@ -60,45 +60,10 @@ func longestPath(g *util.Graph) (longest int) {
 	return -fn.Min(d)
 }
 
-func evenLongestPath(g *util.Graph, startV, endV int) (longest int) {
-	sg := make([]vertex, g.Len())
-	for u := range sg {
-		g.RangeSuccV(u, func(v int) bool {
-			if v != startV && v != endV {
-				d := sg[u].degree
-				sg[u].next[d].v, sg[u].next[d].w = uint32(v), uint32(g.W(u, v))
-				sg[u].degree = d + 1
-			}
-			return true
-		})
-	}
-	firstV, lastV := g.SuccV(startV, 0), g.PredV(endV, 0)
-	wS, wE := g.W(startV, firstV), g.W(lastV, endV)
-	return wS + int(bruteForce(sg, uint32(firstV), 0, uint32(lastV))) + wE
-}
-
 type vertex struct {
 	degree uint32
 	next   [4]struct{ v, w uint32 }
 	seen   bool
-}
-
-func bruteForce(sg []vertex, atV, d, toV uint32) uint32 {
-	if atV == toV {
-		return d
-	}
-	sg[atV].seen = true
-	maxD := uint32(0)
-	for _, next := range sg[atV].next[:sg[atV].degree] {
-		if sg[next.v].seen {
-			continue
-		}
-		if nextD := bruteForce(sg, next.v, d+next.w, toV); nextD > maxD {
-			maxD = nextD
-		}
-	}
-	sg[atV].seen = false
-	return maxD
 }
 
 var gateExits = []struct {

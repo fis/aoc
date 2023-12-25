@@ -14,27 +14,23 @@
 
 package day23
 
-import (
-	"testing"
+// #include "native.h"
+import "C"
+import "github.com/fis/aoc/util"
 
-	"github.com/fis/aoc/util"
-)
-
-func TestLongestPath(t *testing.T) {
-	l := util.ParseFixedLevel([]byte(ex))
-	g, _, _ := deconstruct(l)
-	want := 94
-	if got := longestPath(g); got != want {
-		t.Errorf("longestPath(ex) = %d, want %d", got, want)
+func unsafeLongestPath(g *util.Graph, startV, endV int) (longest int) {
+	sg := make([]C.struct_vertex, g.Len())
+	for u := range sg {
+		g.RangeSuccV(u, func(v int) bool {
+			if v != startV && v != endV {
+				d := sg[u].degree
+				sg[u].next[d].v, sg[u].next[d].w = C.uint32_t(v), C.uint32_t(g.W(u, v))
+				sg[u].degree = d + 1
+			}
+			return true
+		})
 	}
-}
-
-func TestUnsafeLongestPath(t *testing.T) {
-	l := util.ParseFixedLevel([]byte(ex))
-	g, startV, endV := deconstruct(l)
-	g.MakeUndirected()
-	want := 154
-	if got := unsafeLongestPath(g, startV, endV); got != want {
-		t.Errorf("evenLongestPath(ex) = %d, want %d", got, want)
-	}
+	firstV, lastV := g.SuccV(startV, 0), g.PredV(endV, 0)
+	wS, wE := g.W(startV, firstV), g.W(lastV, endV)
+	return wS + int(C.brute_force(&sg[0], C.uint32_t(firstV), 0, C.uint32_t(lastV))) + wE
 }
