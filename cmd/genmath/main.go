@@ -28,19 +28,23 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "usage: genmath file.md")
+	if len(os.Args) < 2 || len(os.Args) > 3 {
+		fmt.Fprintln(os.Stderr, "usage: genmath file.md [figure]")
 		os.Exit(1)
 	}
+	file, filter := os.Args[1], ""
+	if len(os.Args) == 3 {
+		filter = os.Args[2]
+	}
 
-	if err := generateAll(os.Args[1]); err != nil {
+	if err := generateAll(file, filter); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
 
-func generateAll(path string) error {
-	snippets, err := extract(path)
+func generateAll(path, filter string) error {
+	snippets, err := extract(path, filter)
 	if err != nil {
 		return err
 	}
@@ -59,7 +63,7 @@ type snippet struct {
 	body string
 }
 
-func extract(path string) (snippets []snippet, err error) {
+func extract(path, filter string) (snippets []snippet, err error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -90,6 +94,9 @@ func extract(path string) (snippets []snippet, err error) {
 		if sep := strings.IndexByte(name, ' '); sep > 0 {
 			tags = strings.Split(name[sep+1:], " ")
 			name = name[:sep]
+		}
+		if filter != "" && name != filter {
+			continue
 		}
 		start++
 		end := -1
@@ -144,8 +151,10 @@ func generate(base, name string, tags []string, body string) error {
 	}()
 
 	var extraPackages []string
-	if slices.Contains(tags, "tikz") {
-		extraPackages = append(extraPackages, "\\usepackage{tikz}\n")
+	for _, pkg := range []string{"tikz", "textcomp"} {
+		if slices.Contains(tags, pkg) {
+			extraPackages = append(extraPackages, fmt.Sprintf("\\usepackage{%s}\n", pkg))
+		}
 	}
 	header := strings.Replace(texHeader, "%EXTRAPACKAGES\n", strings.Join(extraPackages, "\n"), 1)
 

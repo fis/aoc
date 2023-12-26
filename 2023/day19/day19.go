@@ -17,6 +17,7 @@ package day19
 
 import (
 	"fmt"
+	"io"
 	"slices"
 	"strconv"
 	"strings"
@@ -28,6 +29,7 @@ import (
 
 func init() {
 	glue.RegisterSolver(2023, 19, glue.LineSolver(solve))
+	glue.RegisterPlotter(2023, 19, "", glue.LinePlotter(plot), map[string]string{"ex": ex}) // TODO: ex
 }
 
 func solve(lines []string) ([]string, error) {
@@ -107,6 +109,7 @@ func (wfs workflowSet) countAcceptedIn(wf int, space [numCategories]interval) in
 }
 
 type workflow struct {
+	label string
 	rules []rule
 	def   int
 }
@@ -186,6 +189,7 @@ func parseWorkflows(lines []string) (wfs workflowSet, err error) {
 			spec = tail
 		}
 		workflows[wfId.get(wfName)] = workflow{
+			label: wfName,
 			rules: rules,
 			def:   wfId.get(spec),
 		}
@@ -252,4 +256,64 @@ func (m workflowMap) get(label string) int {
 		return actReject
 	}
 	return util.LabelMap(m).Get(label)
+}
+
+// plotting
+
+var ex = strings.TrimPrefix(`
+px{a<2006:qkq,m>2090:A,rfg}
+pv{a>1716:R,A}
+lnx{m>1548:A,A}
+rfg{s<537:gd,x>2440:R,A}
+qs{s>3448:A,lnx}
+qkq{x<1416:A,crn}
+crn{x>2662:A,R}
+in{s<1351:px,qqz}
+qqz{s>2770:qs,m<1801:hdj,R}
+gd{a>3333:R,R}
+hdj{m>838:A,pv}
+
+{x=787,m=2655,a=1222,s=2876}
+{x=1679,m=44,a=2067,s=496}
+{x=2036,m=264,a=79,s=2244}
+{x=2461,m=1339,a=466,s=291}
+{x=2127,m=1623,a=2188,s=1013}
+`, "\n")
+
+func plot(lines []string, w io.Writer) error {
+	workflows, _, err := parseInput(lines)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintln(w, "digraph G {")
+	fmt.Fprintln(w, "  graph [rankdir=\"LR\",dpi=60,size=600];")
+	fmt.Fprintln(w, "  start [shape=\"point\"];")
+	for i, wf := range workflows {
+		var label strings.Builder
+		fmt.Fprintf(&label, "<l> %s", wf.label)
+		for j, r := range wf.rules {
+			fmt.Fprintf(&label, "|<r%d> %c%s%d", j, "xmas"[r.cat], fn.If(r.op == '<', "&lt;", "&gt;"), r.val)
+		}
+		fmt.Fprintf(&label, "|<r%d> else", len(wf.rules))
+		fmt.Fprintf(w, "  w%d [label=\"%s\",shape=record];\n", i, label.String())
+		for j, r := range append(wf.rules, rule{dst: wf.def}) {
+			if r.dst == actAccept || r.dst == actReject {
+				fmt.Fprintf(w, "  w%dr%da [label=\"%c\",shape=plaintext,width=0,height=0];\n", i, j, fn.If(r.dst == actAccept, 'A', 'R'))
+			}
+		}
+	}
+	fmt.Fprintln(w, "  start -> w0:l;")
+	for i, wf := range workflows {
+		for j, r := range append(wf.rules, rule{dst: wf.def}) {
+			if r.dst == actAccept || r.dst == actReject {
+				fmt.Fprintf(w, "  w%d:r%d -> w%dr%da;\n", i, j, i, j)
+			} else {
+				fmt.Fprintf(w, "  w%d:r%d -> w%d:l;\n", i, j, r.dst)
+			}
+		}
+	}
+	fmt.Fprintln(w, "}")
+
+	return nil
 }

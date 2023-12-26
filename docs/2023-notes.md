@@ -182,6 +182,10 @@ The natural solution here is to treat the input as a set of intervals, and
 transform them as such (splitting where necessary), as opposed to trying to
 iterate over each possible range.
 
+As a gratuitous use of *TikZ*, here's a diagram illustrating the part 2 example:
+
+![A diagram illustrating the part 2 example.](math/2023-notes-day05.png)
+
 Doing part 1 in Burlesque was okay enough, but part 2 was a pain. Again, not
 feeling like golfing these solutions: it's enough to have them here.
 
@@ -420,7 +424,7 @@ C: sg)L[f:6ro0?*+]{^psa}r[<-j_+jri[+}m[><)[~saroz[PD++
 For part 1, brute force is the natural choice: just follow the directions step
 by step until you end at the end.
 
-While it's possible in theory to do part 2 similarly (just keep track of all N
+While it's possible in theory to do part 2 similarly (just keep track of all the
 ghosts and advance each according to the instructions), this time it is actually
 too expensive: my puzzle solution is approximately $10^{13}$.
 
@@ -486,7 +490,7 @@ integer.
 ### Burlesque
 
 Part 1 is *reasonably* simple and fast. It treats the node names as base-26
-numbers (with `A` = 0 and so on), and uses a 20k-element list (> 26^3) to store
+numbers (with `A` = 0 and so on), and uses a 20k-element list ($>26^3$) to store
 the directions. Then it just makes an infinite cycle out of the directions, and
 uses a `w!` loop to iterate until arriving on the `ZZZ` node.
 
@@ -752,7 +756,7 @@ g0:rd'=[++]fiJ0>={g0jsa}j{vvg0[+}jie}jie}j+]ap}r[zi{p^+.jzi{p^+.j:><ri.*}ms.*}ms
 If there's a trick to today's part 2, I have not found it yet. Just re-running
 the part 1 solution for all the possible inputs.
 
-There's probably a lot of duplicate work (as the paths are bound to marge
+There's probably a lot of duplicate work (as the paths are bound to merge
 together), but it seems hard to reuse old solutions as the final result must
 avoid double-counting cells crossed by multiple beams.
 
@@ -877,6 +881,17 @@ C: J{1!!}<m2.+)[~p^=={)<-<-}if{J1!!jtp^psojSO_+?+}m[J-][+2CO{tpp^++jp^.-.*}ms2./
 
 No trick needed. Part 1 evaluates the workflows as specified; part 2 recurses
 over the workflows using intervals to indicate the space of acceptable parts.
+
+Just for fun, we can render the example workflows as a graph:
+
+![A graph showing the workflow rules.](2023-day19-ex.png)
+
+(The full ruleset is slightly too large for the same treatment, but is still a
+tree.)
+
+We could also try visualizing the way the ruleset subdivides the space of valid
+parts into accepted and rejected regions, but that would be easier in four
+dimensions.
 
 ### Burlesque
 
@@ -1182,31 +1197,152 @@ red) is obvious. It's curious how non-obvious finding it is to a computer.
 Relative performance of the Go solutions at `-benchtime 10s`:
 
 ```
-BenchmarkAllDays/day=2023.01-16                    22753            532470 ns/op
-BenchmarkAllDays/day=2023.02-16                    35479            335563 ns/op
-BenchmarkAllDays/day=2023.03-16                    21721            562327 ns/op
-BenchmarkAllDays/day=2023.04-16                    72106            167282 ns/op
-BenchmarkAllDays/day=2023.05-16                    80011            150554 ns/op
-BenchmarkAllDays/day=2023.06-16                   444787             24981 ns/op
-BenchmarkAllDays/day=2023.07-16                    16962            708669 ns/op
-BenchmarkAllDays/day=2023.08-16                    10000           1099452 ns/op
-BenchmarkAllDays/day=2023.09-16                    32901            365815 ns/op
-BenchmarkAllDays/day=2023.10-16                    12025            999252 ns/op
-BenchmarkAllDays/day=2023.11-16                    28070            431491 ns/op
-BenchmarkAllDays/day=2023.12-16                     1770           6626348 ns/op
-BenchmarkAllDays/day=2023.13-16                    65322            176377 ns/op
-BenchmarkAllDays/day=2023.14-16                      528          22589834 ns/op
-BenchmarkAllDays/day=2023.15-16                    26101            464228 ns/op
-BenchmarkAllDays/day=2023.16-16                      600          19901869 ns/op
-BenchmarkAllDays/day=2023.17-16                      446          26286768 ns/op
-BenchmarkAllDays/day=2023.18-16                    23107            508272 ns/op
-BenchmarkAllDays/day=2023.19-16                    24823            470003 ns/op
-BenchmarkAllDays/day=2023.20-16                    25536            472802 ns/op
-BenchmarkAllDays/day=2023.21-16                     1306           9054766 ns/op
-BenchmarkAllDays/day=2023.22-16                     1009          11705302 ns/op
-BenchmarkAllDays/day=2023.23-16                      100         107175509 ns/op
-BenchmarkAllDays/day=2023.24-16                    18754            624505 ns/op
-BenchmarkAllDays/day=2023.25-16                     3655           3419396 ns/op
+BenchmarkAllDays/day=2023.01-16     22753       532470 ns/op
+BenchmarkAllDays/day=2023.02-16     35479       335563 ns/op
+BenchmarkAllDays/day=2023.03-16     21721       562327 ns/op
+BenchmarkAllDays/day=2023.04-16     72106       167282 ns/op
+BenchmarkAllDays/day=2023.05-16     80011       150554 ns/op
+BenchmarkAllDays/day=2023.06-16    444787        24981 ns/op
+BenchmarkAllDays/day=2023.07-16     16962       708669 ns/op
+BenchmarkAllDays/day=2023.08-16     10000      1099452 ns/op
+BenchmarkAllDays/day=2023.09-16     32901       365815 ns/op
+BenchmarkAllDays/day=2023.10-16     12025       999252 ns/op
+BenchmarkAllDays/day=2023.11-16     28070       431491 ns/op
+BenchmarkAllDays/day=2023.12-16      1770      6626348 ns/op
+BenchmarkAllDays/day=2023.13-16     65322       176377 ns/op
+BenchmarkAllDays/day=2023.14-16       528     22589834 ns/op
+BenchmarkAllDays/day=2023.15-16     26101       464228 ns/op
+BenchmarkAllDays/day=2023.16-16       600     19901869 ns/op
+BenchmarkAllDays/day=2023.17-16       446     26286768 ns/op
+BenchmarkAllDays/day=2023.18-16     23107       508272 ns/op
+BenchmarkAllDays/day=2023.19-16     24823       470003 ns/op
+BenchmarkAllDays/day=2023.20-16     25536       472802 ns/op
+BenchmarkAllDays/day=2023.21-16      1306      9054766 ns/op
+BenchmarkAllDays/day=2023.22-16      1009     11705302 ns/op
+BenchmarkAllDays/day=2023.23-16       100    107175509 ns/op
+BenchmarkAllDays/day=2023.24-16     18754       624505 ns/op
+BenchmarkAllDays/day=2023.25-16      3655      3419396 ns/op
 ```
 
-Lowlight of the year being day 23 with its exhaustive search for part 2.
+A median day seems to be somewhere around half a millisecond. Lowlight of the
+year of course being day 23 with its exhaustive search for part 2. Oh, well. It
+doesn't look that bad in log-scale:
+
+![A bar chart of the benchmark results in log-scale.](math/2023-notes-bench.png)
+
+<!--math
+
+%: day05 tikz color
+
+\begin{tikzpicture}
+  \tikzset{every node}=[font=\footnotesize\sffamily]
+  \begin{scope}[xscale=2,yscale=-0.1]
+    \foreach \dst/\src/\len in {0/0/50,52/50/48,50/98/2} {
+      \fill[nearly transparent] (0,\src) -- (1,\dst) -- (1,{\dst+\len}) -- (0,{\src+\len}) -- cycle;
+      \draw (0,\src) -- (1,\dst);
+      \draw (0,{\src+\len}) -- (1,{\dst+\len});
+    }
+    \foreach \dst/\src/\len/\c in {81/79/14/red,57/55/13/blue} {
+      \fill[\c,very nearly transparent] (0,\src) -- (1,\dst) -- (1,{\dst+\len}) -- (0,{\src+\len}) -- cycle;
+    }
+    \foreach \dst/\src/\len in {39/0/15,0/15/39,54/54/46} {
+      \fill[nearly transparent] (1,\src) -- (2,\dst) -- (2,{\dst+\len}) -- (1,{\src+\len}) -- cycle;
+      \draw (1,\src) -- (2,\dst);
+      \draw (1,{\src+\len}) -- (2,{\dst+\len});
+    }
+    \foreach \dst/\src/\len/\c in {81/81/14/red,57/57/13/blue} {
+      \fill[\c,very nearly transparent] (1,\src) -- (2,\dst) -- (2,{\dst+\len}) -- (1,{\src+\len}) -- cycle;
+    }
+    \foreach \dst/\src/\len in {42/0/7,57/7/4,0/11/42,49/53/8,61/61/39} {
+      \fill[nearly transparent] (2,\src) -- (3,\dst) -- (3,{\dst+\len}) -- (2,{\src+\len}) -- cycle;
+      \draw (2,\src) -- (3,\dst);
+      \draw (2,{\src+\len}) -- (3,{\dst+\len});
+    }
+    \foreach \dst/\src/\len/\c in {81/81/14/red,53/57/4/blue,61/61/9/blue} {
+      \fill[\c,very nearly transparent] (2,\src) -- (3,\dst) -- (3,{\dst+\len}) -- (2,{\src+\len}) -- cycle;
+    }
+    \foreach \dst/\src/\len in {0/0/18,88/18/7,18/25/70,95/95/5} {
+      \fill[nearly transparent] (3,\src) -- (4,\dst) -- (4,{\dst+\len}) -- (3,{\src+\len}) -- cycle;
+      \draw (3,\src) -- (4,\dst);
+      \draw (3,{\src+\len}) -- (4,{\dst+\len});
+    }
+    \foreach \dst/\src/\len/\c in {74/81/14/red,46/53/4/blue,54/61/9/blue} {
+      \fill[\c,very nearly transparent] (3,\src) -- (4,\dst) -- (4,{\dst+\len}) -- (3,{\src+\len}) -- cycle;
+    }
+    \foreach \dst/\src/\len in {0/0/45,81/45/19,68/64/13,45/77/23} {
+      \fill[nearly transparent] (4,\src) -- (5,\dst) -- (5,{\dst+\len}) -- (4,{\src+\len}) -- cycle;
+      \draw (4,\src) -- (5,\dst);
+      \draw (4,{\src+\len}) -- (5,{\dst+\len});
+    }
+    \foreach \dst/\src/\len/\c in {78/74/3/red,45/77/11/red,82/46/4/blue,90/54/9/blue} {
+      \fill[\c,very nearly transparent] (4,\src) -- (5,\dst) -- (5,{\dst+\len}) -- (4,{\src+\len}) -- cycle;
+    }
+    \foreach \dst/\src/\len in {1/0/69,0/69/1,70/70/30} {
+      \fill[nearly transparent] (5,\src) -- (6,\dst) -- (6,{\dst+\len}) -- (5,{\src+\len}) -- cycle;
+      \draw (5,\src) -- (6,\dst);
+      \draw (5,{\src+\len}) -- (6,{\dst+\len});
+    }
+    \foreach \dst/\src/\len/\c in {78/78/3/red,46/45/11/red,82/82/4/blue,90/90/9/blue} {
+      \fill[\c,very nearly transparent] (5,\src) -- (6,\dst) -- (6,{\dst+\len}) -- (5,{\src+\len}) -- cycle;
+    }
+    \foreach \dst/\src/\len in {0/0/56,60/56/37,56/93/4,97/97/3} {
+      \fill[nearly transparent] (6,\src) -- (7,\dst) -- (7,{\dst+\len}) -- (6,{\src+\len}) -- cycle;
+      \draw (6,\src) -- (7,\dst);
+      \draw (6,{\src+\len}) -- (7,{\dst+\len});
+    }
+    \foreach \dst/\src/\len/\c in {82/78/3/red,46/46/10/red,60/56/1/red,86/82/4/blue,94/90/3/blue,56/93/4/blue,97/97/2/blue} {
+      \fill[\c,very nearly transparent] (6,\src) -- (7,\dst) -- (7,{\dst+\len}) -- (6,{\src+\len}) -- cycle;
+    }
+    \draw[red] (0,82) -- (1,84) -- (2,84) -- (3,84) -- (4,77) -- (5,45) -- (6,46) -- (7,46);
+    \draw (-0.05,82) node[anchor=east,red]{82};
+    \draw (7.05,46) node[anchor=west,red]{46};
+    \foreach \x in {0,1,2,3,4,5,6,7} {
+      \draw[line width=0.5mm] (\x,0) -- (\x,100);
+    }
+    \foreach \start/\len/\c in {79/14/red,55/13/blue} {
+      \draw[\c,semitransparent,line width=0.5mm] (-0.05,\start) -- (-0.05,{\start+\len});
+    }
+    \foreach \start/\len/\c in {46/10/red,60/1/red,82/3/red,56/4/blue,86/4/blue,94/5/blue} {
+      \draw[\c,semitransparent,line width=0.5mm] (7.05,\start) -- (7.05,{\start+\len});
+    }
+    \draw (0,0) node[anchor=north east]{0};
+    \draw (0,100) node[anchor=south east]{100};
+    \draw (0,100) node[anchor=north]{seeds};
+    \draw (1,100) node[anchor=north]{soil};
+    \draw (2,100) node[anchor=north]{fertilizer};
+    \draw (3,100) node[anchor=north]{water};
+    \draw (4,100) node[anchor=north]{light};
+    \draw (5,100) node[anchor=north]{temperature};
+    \draw (6,100) node[anchor=north]{humidity};
+    \draw (7,100) node[anchor=north]{location};
+  \end{scope}
+\end{tikzpicture}
+
+%: bench tikz textcomp color
+
+\begin{tikzpicture}
+  \definecolor{bar}{RGB}{66,133,244}
+  \tikzset{every node}=[font=\footnotesize\sffamily]
+  \begin{scope}[xscale=0.4,yscale=1]
+    \foreach \x/\y in {1/53.2470,2/33.5563,3/56.2327,4/16.7282,5/15.0554,6/2.4981,7/70.8669,8/109.9452,9/36.5815,10/99.9252,11/43.1491,12/662.6348,13/17.6377,14/2258.9834,15/46.4228,16/1990.1869,17/2628.6768,18/50.8272,19/47.0003,20/47.2802,21/905.4766,22/1170.5302,23/10717.5509,24/62.4505,25/341.9396} {
+      \fill[bar] ({\x-0.25},0) rectangle ({\x+0.25},{ln(\y)});
+    }
+    \draw (-0.2,0) -- (26,0);
+    \foreach \x in {1,2,...,25} {
+      \draw (\x,-0.1) node[rotate=-90,anchor=west]{\footnotesize \x};
+    }
+    \draw (13,-0.6) node[anchor=north]{Day};
+    \draw[->] (0,0) -- (0,9.5);
+    \foreach \y in {10,100,1000,10000} {
+      \draw (0,{ln(\y)}) -- (-0.2,{ln(\y)});
+    }
+    \draw (-0.2,0) node[anchor=east]{\footnotesize 10 {\textmu}s};
+    \draw (-0.2,{ln(10)}) node[anchor=east]{\footnotesize 100 {\textmu}s};
+    \draw (-0.2,{ln(100)}) node[anchor=east]{\footnotesize 1 ms};
+    \draw (-0.2,{ln(1000)}) node[anchor=east]{\footnotesize 10 ms};
+    \draw (-0.2,{ln(10000)}) node[anchor=east]{\footnotesize 100 ms};
+    \draw (0.1,9.5) node[anchor=north west]{Time};
+  \end{scope}
+\end{tikzpicture}
+
+-->
