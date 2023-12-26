@@ -7,4 +7,4 @@ struct vertex {
 	bool seen;
 };
 
-uint32_t brute_force(struct vertex *sg, uint32_t atV, uint32_t d, uint32_t toV);
+uint32_t brute_force(struct vertex *sg, uint32_t from_v, uint32_t to_v);

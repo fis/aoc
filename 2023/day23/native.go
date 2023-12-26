@@ -32,5 +32,5 @@ func unsafeLongestPath(g *util.Graph, startV, endV int) (longest int) {
 	}
 	firstV, lastV := g.SuccV(startV, 0), g.PredV(endV, 0)
 	wS, wE := g.W(startV, firstV), g.W(lastV, endV)
-	return wS + int(C.brute_force(&sg[0], C.uint32_t(firstV), 0, C.uint32_t(lastV))) + wE
+	return wS + int(C.brute_force(&sg[0], C.uint32_t(firstV), C.uint32_t(lastV))) + wE
 }

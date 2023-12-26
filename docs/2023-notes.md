@@ -1204,7 +1204,7 @@ BenchmarkAllDays/day=2023.19-16                    24823            470003 ns/op
 BenchmarkAllDays/day=2023.20-16                    25536            472802 ns/op
 BenchmarkAllDays/day=2023.21-16                     1306           9054766 ns/op
 BenchmarkAllDays/day=2023.22-16                     1009          11705302 ns/op
-BenchmarkAllDays/day=2023.23-16                       97         114974927 ns/op
+BenchmarkAllDays/day=2023.23-16                      100         107175509 ns/op
 BenchmarkAllDays/day=2023.24-16                    18754            624505 ns/op
 BenchmarkAllDays/day=2023.25-16                     3655           3419396 ns/op
 ```
