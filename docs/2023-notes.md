@@ -1145,13 +1145,45 @@ well known in graph theory, and there are a number of algorithms available,
 mostly for weighted graphs. Here, we do something quite a lot simpler, based on
 the fact that we know there is a unique minimum cut of size 3.
 
-We have a graph $G = (V, E)$. Let's assume we know a pair of vertices
-$s, t \in V$ that are definitely in the two different partitions $S$ and $T$
-corresponding to the minimum cut we want to find. To find the cut, we can use
-the following procedure:
+There are two algorithms here: one for finding the partition sizes (for the
+puzzle solution), another for finding the cut edges (for the graph). Both start
+with the same assumption: we're given a graph $G = (V, E)$, and we assume we
+know a pair of vertices $s, t \in V$ that are definitely in the two different
+partitions $S$ and $T$ corresponding to the minimum cut we want to find.
 
-- Find the shortest path $p_1$ between $s$ and $t$. Since they're in different
-  partitions, at least one of the three cut edges is in the path $p_1$.
+To just find the partition sizes, we can use the following procedure (loosely
+inspired by the
+[max-flow min-cut theorem](https://en.wikipedia.org/wiki/Max-flow_min-cut_theorem)):
+
+- Find the shortest path $p_1$ between $s$ and $t$. Since they're from different
+  partitions, one of the three cut edges is in the path $p_1$.
+- Remove the edges of $p_1$ from the graph. This is basically the residual
+  graph in the
+  [Ford-Fulkerson method](https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm).
+- Find a new shortest path $p_2$ between $s$ and $t$ in the new graph. One of
+  the two remaining cut edges must be in $p_2$.
+- Remove the edges of $p_2$ from the graph.
+- Find a final, third shortest path $p_3$. The last remaining cut edge must be
+  in $p_3$.
+- For each edge $e \in p_3$:
+  - Remove edge $e = (u, v)$ from the graph.
+  - If $e$ was the final cut edge, the graph is now partitioned into two
+    connected components. Otherwise, it's still a single component.
+  - Find $|S|$, the size of the connected component $u$ is in, stopping early if
+    we encounter $v$.
+  - If the search found $v$, $e$ was not a cut edge. Add it back and try another
+    one.
+  - Otherwise, we have found the cut. $|S|$ is size of one of the partitions,
+    and $|T| = |V| - |S|$ is the other.
+
+It would be relatively simple to find the specific cut edges as well after the
+above, by locating the edges in $p_1$ and $p_2$ that have their endpoints in the
+two different partitions. However, we can also use the following procedure (my
+first solution for this puzzle), which is slightly less efficient (3.3 vs 1.2
+milliseconds) but more directly locates the three cut edges $(e_1, e_2, e_3)$:
+
+- Find the shortest path $p_1$ between $s$ and $t$. Again, one of the cut edges
+  must be on the path $p_1$.
 - For each edge $e_1 \in p_1$:
   - Remove $e_1 = (u_1, v_1)$ from the graph.
   - Find the shortest path $p_2$ between $u_1$ and $v_1$. If $e_1$ was truly one
@@ -1166,30 +1198,33 @@ the following procedure:
       - Remove $e_3 = (u_3, v_3)$ from the graph.
       - If $e_3$ was the correct edge, the graph is now cut. Otherwise, it's
         still a single connected component.
-      - Find $|S|$, the size of the connected component $u_3$ is in. This search
-        can also terminate early if it encounters $v_3$.
-      - If the search found $v_3$, the set $(e_1, e_2, e_3)$ was not a cut,
-        because the endpoints of $e_3$ are still connected. Continue.
-      - Otherwise it was *the* cut. In this case  $|S|$ is one of the partition
-        sizes, and $|T| = |V| - |S|$ is the size of the other partition.
+      - Test whether $u_3$ and $v_3$ are connected. If they are, we have not
+        found the cut; add $e_3$ back to the graph and continue.
+      - Otherwise, return $(e_1, e_2, e_3)$ as the cut (and also add them back
+        in the graph so that we leave it as we found it).
+    - If no cut was found, add $e_2$ back to the graph.
+  - If no cut was found, add $e_1$ back to the graph.
 
-> Update 2023-12-25: Initial version of the solution always used the shortest
-> path between $s$ and $t$ even in the nested loops. However, using the paths
-> between the endpoints of the deleted edge runs a lot faster. This makes
+> Update 2023-12-25: Initial version of the above algorithm always used the
+> shortest path between $s$ and $t$ even in the nested loops. However, using the
+> paths between the endpoints of the deleted edge runs a lot faster. This makes
 > intuitive sense: the points are likely to be still close despite the removed
 > edge, so the new path is also likely shorter, meaning less edges to test.
 
-Now we just need to pick $s, t$ correctly. A simple choice would be to repeat
-the above for all pairs of vertices: if we pick accidentally pick two vertices
-in $S$ (or $T$), the algorithm simply terminates without finding a cut.
+> Update 2023-12-26: Added the more efficient first method for finding the cut.
+
+For both algorithms, we also need to pick $s, t$ correctly. A simple choice
+would be to repeat the above for all pairs of vertices: if we pick accidentally
+pick two vertices in $S$ (or $T$), both algorithms simply terminates without
+finding a cut.
 
 What's done here is slightly more handwavy. We first pick $s$ arbitrarily. Then
 we find some $t$ that achieves a distance $d(s, t) = \epsilon(s)$, where
 $\epsilon(s)$ is the eccentricity of $s$. Intuitively, this corresponds to
 picking $t$ that's "as far away from $s$ as possible", under the assumption that
 it's likely to be in the other component. As a side effect, this step also finds
-path $p_1$ in the above algorithm. Then we run the rest of the steps, and if no
-cut was found, try again with a different $s$.
+path $p_1$ for the above algorithms. Then we run the rest of the steps, and if
+no cut was found, try again with a different $s$.
 
 It's possible that the above might not work for some graphs. But it works for
 the example and the puzzle input, which is by definition good enough.
@@ -1228,7 +1263,7 @@ BenchmarkAllDays/day=2023.21-16      1306      9054766 ns/op
 BenchmarkAllDays/day=2023.22-16      1009     11705302 ns/op
 BenchmarkAllDays/day=2023.23-16       100    107175509 ns/op
 BenchmarkAllDays/day=2023.24-16     18754       624505 ns/op
-BenchmarkAllDays/day=2023.25-16      3655      3419396 ns/op
+BenchmarkAllDays/day=2023.25-16     10000      1239585 ns/op
 ```
 
 A median day seems to be somewhere around half a millisecond. Lowlight of the
@@ -1331,7 +1366,7 @@ doesn't look that bad in log-scale:
   \definecolor{bar}{RGB}{66,133,244}
   \tikzset{every node}=[font=\footnotesize\sffamily]
   \begin{scope}[xscale=0.4,yscale=1]
-    \foreach \x/\y in {1/53.2470,2/33.5563,3/56.2327,4/16.7282,5/15.0554,6/2.4981,7/70.8669,8/109.9452,9/36.5815,10/99.9252,11/43.1491,12/662.6348,13/17.6377,14/2258.9834,15/46.4228,16/1990.1869,17/2628.6768,18/50.8272,19/47.0003,20/47.2802,21/905.4766,22/1170.5302,23/10717.5509,24/62.4505,25/341.9396} {
+    \foreach \x/\y in {1/53.2470,2/33.5563,3/56.2327,4/16.7282,5/15.0554,6/2.4981,7/70.8669,8/109.9452,9/36.5815,10/99.9252,11/43.1491,12/662.6348,13/17.6377,14/2258.9834,15/46.4228,16/1990.1869,17/2628.6768,18/50.8272,19/47.0003,20/47.2802,21/905.4766,22/1170.5302,23/10717.5509,24/62.4505,25/123.9585} {
       \fill[bar] ({\x-0.25},0) rectangle ({\x+0.25},{ln(\y)});
     }
     \draw (-0.2,0) -- (26,0);
