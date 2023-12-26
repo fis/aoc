@@ -1127,6 +1127,13 @@ did it. There's probably more "code-based" ways of doing part 2 as well, though.
 The amount of math in this is sufficient to noticeably bog down the rendering,
 so it's in a separate file: [2023-day24.md](2023-day24.md).
 
+If you're viewing this on GitHub, you'll be wanting
+[2023-day24-github.md](2023-day24-github.md) instead, as the GitHub renderer
+does not like certain use of the `_` character in `$`- or `$$`-delimited math
+blocks, and requires them either be escaped as `\_`. However, the KaTeX-based
+preview in Visual Studio Code (which I'm writing this in) does not like *that*.
+It seems impossible to satisfy both.
+
 ## [Day 25](https://adventofcode.com/2023/day/25): Snowverload
 
 To be honest, I was expecting something a little less of a regular puzzle for
