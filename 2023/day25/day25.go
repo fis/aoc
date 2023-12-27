@@ -18,6 +18,7 @@ package day25
 import (
 	"fmt"
 	"io"
+	"math"
 	"slices"
 	"strings"
 
@@ -27,7 +28,8 @@ import (
 
 func init() {
 	glue.RegisterSolver(2023, 25, glue.LineSolver(solve))
-	glue.RegisterPlotter(2023, 25, "", glue.LinePlotter(plot), map[string]string{"ex": ex})
+	glue.RegisterPlotter(2023, 25, "a", glue.LinePlotter(plotCut), map[string]string{"ex": ex})
+	glue.RegisterPlotter(2023, 25, "b", glue.LinePlotter(plotEdges), map[string]string{"ex": ex})
 }
 
 func solve(lines []string) ([]string, error) {
@@ -73,16 +75,12 @@ func findCutSizes(g *sparseGraph) (leftSize, rightSize int) {
 	for _, e := range edges {
 		g.delEdge(e[0], e[1])
 	}
-	ls, rs := cf.componentSize(edges[0][0], edges[0][1]), cf.componentSize(edges[0][1], edges[1][0])
+	ls, rs := cf.componentSize(edges[0][0], edges[0][1]), cf.componentSize(edges[0][1], edges[0][0])
 	return max(ls, rs), min(ls, rs)
 }
 
 func findCutEdges(g *sparseGraph) (edges [3][2]int) {
-	cf := &cutFinder{
-		p:    make([]int, g.len()),
-		q:    util.MakeQueue[int](512),
-		seen: util.MakeFixedBitmap1D(g.len()),
-	}
+	cf := newCutFinder(g)
 	src := 0
 	for {
 		dst, firstPath := cf.firstPath(src)
@@ -256,6 +254,35 @@ func (cf *cutFinder) componentSize(src, dst int) (reachable int) {
 	return reachable
 }
 
+func (cf *cutFinder) edgeUsage(src int, counts map[[2]int]int) {
+	g := cf.g
+	cf.p[src] = -1
+	cf.q.Clear()
+	cf.q.Push(src)
+	cf.seen.Clear()
+	cf.seen.Set(src)
+	for !cf.q.Empty() {
+		at := cf.q.Pop()
+		for _, n := range g.edges[at] {
+			if cf.seen.Get(n) {
+				continue
+			}
+			cf.p[n] = at
+			cf.seen.Set(n)
+			cf.q.Push(n)
+		}
+	}
+	for end := 0; end < g.len(); end++ {
+		v := end
+		for cf.p[v] != -1 {
+			u := cf.p[v]
+			e := [2]int{min(u, v), max(u, v)}
+			counts[e] = counts[e] + 1
+			v = u
+		}
+	}
+}
+
 type sparseGraph struct {
 	edges  [][]int
 	labels []string
@@ -321,7 +348,7 @@ rzs: qnr cmg lsr rsh
 frs: qnr lhk lsr
 `, "\n")
 
-func plot(lines []string, w io.Writer) error {
+func plotCut(lines []string, w io.Writer) error {
 	g := parseGraph(lines)
 	edges := findCutEdges(g)
 	fmt.Fprintln(w, "graph G {")
@@ -341,4 +368,56 @@ func plot(lines []string, w io.Writer) error {
 	}
 	fmt.Fprintln(w, "}")
 	return nil
+}
+
+func plotEdges(lines []string, w io.Writer) error {
+	g := parseGraph(lines)
+	counts := make(map[[2]int]int)
+	cf := newCutFinder(g)
+	for v := 0; v < g.len(); v++ {
+		cf.edgeUsage(v, counts)
+	}
+	vCounts, minC, maxC := make(map[int]int), math.MaxInt, math.MinInt
+	for e, c := range counts {
+		minC = min(minC, c)
+		maxC = max(maxC, c)
+		vCounts[e[0]] = vCounts[e[0]] + c
+		vCounts[e[1]] = vCounts[e[1]] + c
+	}
+	fmt.Println("graph G {")
+	fmt.Printf("  bgcolor=\"black\";")
+	for v := 0; v < g.len(); v++ {
+		c := vCounts[v] / len(g.edges[v])
+		r, g, b := colorOf(c, minC, maxC)
+		fmt.Printf("  v%d [label=\"\",shape=point,color=\"#%02x%02x%02x\"];\n", v, r, g, b)
+	}
+	for u := 0; u < g.len(); u++ {
+		for _, v := range g.edges[u] {
+			if v > u {
+				c := counts[[2]int{u, v}]
+				r, g, b := colorOf(c, minC, maxC)
+				fmt.Printf("  v%d -- v%d [color=\"#%02x%02x%02x\"];\n", u, v, r, g, b)
+			}
+		}
+	}
+	fmt.Println("}")
+	return nil
+}
+
+func colorOf(c, minC, maxC int) (r, g, b int) {
+	lc, lmin, lmax := math.Log(float64(c)), math.Log(float64(minC)), math.Log(float64(maxC))
+	v := 3 * float64(lc-lmin) / float64(lmax-lmin)
+	switch {
+	case v >= 2:
+		r, g, b = 255, 255, colorComp(v-2)
+	case v >= 1:
+		r, g, b = 255, colorComp(v-1), 0
+	default:
+		r, g, b = colorComp(v), 0, 0
+	}
+	return r, g, b
+}
+
+func colorComp(v float64) int {
+	return int(math.Round(255 * v))
 }

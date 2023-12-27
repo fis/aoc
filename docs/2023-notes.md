@@ -1226,10 +1226,21 @@ it's likely to be in the other component. As a side effect, this step also finds
 path $p_1$ for the above algorithms. If this fails to find a cut, we fall back
 to trying the remaining vertices in order.
 
-Finally, here's the puzzle example. To a human, the minimum cut (highlighted in
-red) is obvious. It's curious how non-obvious finding it is to a computer.
+Finally, here's the puzzle example.
 
 ![A rendering of the puzzle example graph.](2023-day25-ex.png)
+
+You can also take a look at a force-directed rendering of the actual puzzle
+input graph (without labels), coloured by the frequency at which an edge appears
+when considering the shortest paths between all pairs of vertices. This suggests
+a more data-driven approach to the puzzle: for this graph structure, the cut
+edges are the three that are used most frequently.
+
+See: [2023-day25-input.png](2023-day25-input.png).
+
+To a human, the minimum cut (highlighted in red in first graph, and shows up as
+bright white in the other) is very obvious. It's curious how non-obvious it is
+to write a program to find it.
 
 ## Benchmarks
 
