@@ -37,25 +37,24 @@ func solve(lines []string) ([]string, error) {
 }
 
 func findCutSizes(g *sparseGraph) (leftSize, rightSize int) {
-	cf := &cutFinder{
-		p:    make([]int, g.len()),
-		q:    util.MakeQueue[int](512),
-		seen: util.MakeFixedBitmap1D(g.len()),
-	}
-	for src := 0; src < g.len(); src++ {
-		firstPath := cf.longestPath(g, src)
-		dst := firstPath[0]
+	cf := newCutFinder(g)
+	src := 0
+	for {
+		dst, firstPath := cf.firstPath(src)
+		if dst == -1 {
+			break
+		}
 		for i := 0; i < len(firstPath)-1; i++ {
 			g.delEdge(firstPath[i], firstPath[i+1])
 		}
-		secondPath := cf.shortestPath(g, src, dst)
+		secondPath := cf.shortestPath(src, dst)
 		for i := 0; i < len(secondPath)-1; i++ {
 			g.delEdge(secondPath[i], secondPath[i+1])
 		}
-		thirdPath := cf.shortestPath(g, src, dst)
+		thirdPath := cf.shortestPath(src, dst)
 		for i := 0; i < len(thirdPath)-1; i++ {
 			g.delEdge(thirdPath[i], thirdPath[i+1])
-			ls := cf.componentSize(g, thirdPath[i], thirdPath[i+1])
+			ls := cf.componentSize(thirdPath[i], thirdPath[i+1])
 			if ls != -1 {
 				rs := g.len() - ls
 				return max(ls, rs), min(ls, rs)
@@ -69,7 +68,13 @@ func findCutSizes(g *sparseGraph) (leftSize, rightSize int) {
 			}
 		}
 	}
-	return -1, -1
+	// fallback option
+	edges := findCutEdges(g)
+	for _, e := range edges {
+		g.delEdge(e[0], e[1])
+	}
+	ls, rs := cf.componentSize(edges[0][0], edges[0][1]), cf.componentSize(edges[0][1], edges[1][0])
+	return max(ls, rs), min(ls, rs)
 }
 
 func findCutEdges(g *sparseGraph) (edges [3][2]int) {
@@ -78,17 +83,21 @@ func findCutEdges(g *sparseGraph) (edges [3][2]int) {
 		q:    util.MakeQueue[int](512),
 		seen: util.MakeFixedBitmap1D(g.len()),
 	}
-	for src := 0; src < g.len(); src++ {
-		firstPath := cf.longestPath(g, src)
+	src := 0
+	for {
+		dst, firstPath := cf.firstPath(src)
+		if dst == -1 {
+			panic("cut not found")
+		}
 		for i := 0; i < len(firstPath)-1; i++ {
 			g.delEdge(firstPath[i], firstPath[i+1])
-			secondPath := cf.shortestPath(g, firstPath[i], firstPath[i+1])
+			secondPath := cf.shortestPath(firstPath[i], firstPath[i+1])
 			for j := 0; j < len(secondPath)-1; j++ {
 				g.delEdge(secondPath[j], secondPath[j+1])
-				thirdPath := cf.shortestPath(g, secondPath[j], secondPath[j+1])
+				thirdPath := cf.shortestPath(secondPath[j], secondPath[j+1])
 				for k := 0; k < len(thirdPath)-1; k++ {
 					g.delEdge(thirdPath[k], thirdPath[k+1])
-					if !cf.hasPath(g, thirdPath[k], thirdPath[k+1]) {
+					if !cf.hasPath(thirdPath[k], thirdPath[k+1]) {
 						edges = [3][2]int{
 							{firstPath[i], firstPath[i+1]},
 							{secondPath[j], secondPath[j+1]},
@@ -106,16 +115,47 @@ func findCutEdges(g *sparseGraph) (edges [3][2]int) {
 			g.addEdge(firstPath[i], firstPath[i+1])
 		}
 	}
-	return edges
 }
 
 type cutFinder struct {
-	p    []int
-	q    util.Queue[int]
-	seen util.FixedBitmap1D
+	g       *sparseGraph
+	p       []int
+	q       util.Queue[int]
+	seen    util.FixedBitmap1D
+	nextDst int
 }
 
-func (cf *cutFinder) longestPath(g *sparseGraph, src int) []int {
+func newCutFinder(g *sparseGraph) *cutFinder {
+	return &cutFinder{
+		g:       g,
+		p:       make([]int, g.len()),
+		q:       util.MakeQueue[int](512),
+		seen:    util.MakeFixedBitmap1D(g.len()),
+		nextDst: -1,
+	}
+}
+
+func (cf *cutFinder) firstPath(src int) (dst int, path []int) {
+	switch cf.nextDst {
+	case -1:
+		cf.nextDst = 0
+		path = cf.longestPath(src)
+		return path[0], path
+	case src:
+		cf.nextDst++
+		fallthrough
+	default:
+		if cf.nextDst == cf.g.len() {
+			return -1, nil
+		}
+		dst = cf.nextDst
+		cf.nextDst++
+		return dst, cf.shortestPath(src, dst)
+	}
+}
+
+func (cf *cutFinder) longestPath(src int) []int {
+	g := cf.g
 	cf.p[src] = -1
 	cf.q.Clear()
 	cf.q.Push(src)
@@ -141,7 +181,8 @@ func (cf *cutFinder) longestPath(g *sparseGraph, src int) []int {
 	return path
 }
 
-func (cf *cutFinder) shortestPath(g *sparseGraph, src, dst int) []int {
+func (cf *cutFinder) shortestPath(src, dst int) []int {
+	g := cf.g
 	cf.p[src] = -1
 	cf.q.Clear()
 	cf.q.Push(src)
@@ -169,7 +210,8 @@ func (cf *cutFinder) shortestPath(g *sparseGraph, src, dst int) []int {
 	return nil
 }
 
-func (cf *cutFinder) hasPath(g *sparseGraph, src, dst int) bool {
+func (cf *cutFinder) hasPath(src, dst int) bool {
+	g := cf.g
 	cf.q.Clear()
 	cf.q.Push(src)
 	cf.seen.Clear()
@@ -190,7 +232,8 @@ func (cf *cutFinder) hasPath(g *sparseGraph, src, dst int) bool {
 	return false
 }
 
-func (cf *cutFinder) componentSize(g *sparseGraph, src, dst int) (reachable int) {
+func (cf *cutFinder) componentSize(src, dst int) (reachable int) {
+	g := cf.g
 	cf.q.Clear()
 	cf.q.Push(src)
 	cf.seen.Clear()

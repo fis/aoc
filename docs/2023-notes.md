@@ -1157,7 +1157,7 @@ inspired by the
 
 - Find the shortest path $p_1$ between $s$ and $t$. Since they're from different
   partitions, one of the three cut edges is in the path $p_1$.
-- Remove the edges of $p_1$ from the graph. This is basically the residual
+- Remove the edges of $p_1$ from the graph. This is kind of like the residual
   graph in the
   [Ford-Fulkerson method](https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm).
 - Find a new shortest path $p_2$ between $s$ and $t$ in the new graph. One of
@@ -1176,11 +1176,11 @@ inspired by the
   - Otherwise, we have found the cut. $|S|$ is size of one of the partitions,
     and $|T| = |V| - |S|$ is the other.
 
-It would be relatively simple to find the specific cut edges as well after the
-above, by locating the edges in $p_1$ and $p_2$ that have their endpoints in the
-two different partitions. However, we can also use the following procedure (my
-first solution for this puzzle), which is slightly less efficient (3.3 vs 1.2
-milliseconds) but more directly locates the three cut edges $(e_1, e_2, e_3)$:
+The above algorithm would fail if the set of edges $p_1 \cup p_2$ is a cut. It
+doesn't seem to happen in practice with shortest paths, but I haven't exactly
+proven it couldn't. So there's also the following fallback option, which is
+slightly less efficient (3.3 vs 1.2 milliseconds on the puzzle input), but
+should never fail as it never removes more than 3 edges at a time:
 
 - Find the shortest path $p_1$ between $s$ and $t$. Again, one of the cut edges
   must be on the path $p_1$.
@@ -1214,20 +1214,17 @@ milliseconds) but more directly locates the three cut edges $(e_1, e_2, e_3)$:
 > Update 2023-12-26: Added the more efficient first method for finding the cut.
 
 For both algorithms, we also need to pick $s, t$ correctly. A simple choice
-would be to repeat the above for all pairs of vertices: if we pick accidentally
-pick two vertices in $S$ (or $T$), both algorithms simply terminates without
-finding a cut.
+would be to pick $s$ arbitrarily (it's always in one partition; call that $S$)
+and then test with each remaining vertex as $t$. If we accidentally pick
+$t \in S$, both algorithms simply terminate without finding a cut.
 
 What's done here is slightly more handwavy. We first pick $s$ arbitrarily. Then
 we find some $t$ that achieves a distance $d(s, t) = \epsilon(s)$, where
 $\epsilon(s)$ is the eccentricity of $s$. Intuitively, this corresponds to
 picking $t$ that's "as far away from $s$ as possible", under the assumption that
 it's likely to be in the other component. As a side effect, this step also finds
-path $p_1$ for the above algorithms. Then we run the rest of the steps, and if
-no cut was found, try again with a different $s$.
-
-It's possible that the above might not work for some graphs. But it works for
-the example and the puzzle input, which is by definition good enough.
+path $p_1$ for the above algorithms. If this fails to find a cut, we fall back
+to trying the remaining vertices in order.
 
 Finally, here's the puzzle example. To a human, the minimum cut (highlighted in
 red) is obvious. It's curious how non-obvious finding it is to a computer.
