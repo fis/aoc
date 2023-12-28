@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/graph"
 )
 
 func init() {
@@ -49,8 +49,8 @@ var (
 	bagPattern  = regexp.MustCompile(`^(\d+) (\w+ \w+) bags?$`)
 )
 
-func parseRules(rules []string) (g *util.Graph, err error) {
-	g = &util.Graph{}
+func parseRules(rules []string) (*graph.DenseW, error) {
+	g := graph.NewBuilder()
 
 	for _, rule := range rules {
 		m := rulePattern.FindStringSubmatch(rule)
@@ -58,24 +58,24 @@ func parseRules(rules []string) (g *util.Graph, err error) {
 			return nil, fmt.Errorf("invalid rule: %s", rule)
 		}
 		from, contents := m[1], m[2]
-		fromV := g.V(from)
+		u := g.V(from)
 		if contents != "no other bags" {
 			for _, content := range strings.Split(contents, ", ") {
 				m = bagPattern.FindStringSubmatch(content)
 				if m == nil {
 					return nil, fmt.Errorf("invalid content: %s", content)
 				}
-				toW, _ := strconv.Atoi(m[1])
-				toV := g.V(m[2])
-				g.AddEdgeWV(fromV, toV, toW)
+				w, _ := strconv.Atoi(m[1])
+				v := g.V(m[2])
+				g.AddEdgeW(u, v, w)
 			}
 		}
 	}
 
-	return g, nil
+	return g.DenseDigraphW(), nil
 }
 
-func countAncestors(g *util.Graph, node string) int {
+func countAncestors(g *graph.DenseW, node string) int {
 	seen := make([]bool, g.Len())
 	var dfs func(int) int
 	dfs = func(at int) int {
@@ -84,16 +84,16 @@ func countAncestors(g *util.Graph, node string) int {
 		}
 		seen[at] = true
 		count := 1
-		g.RangePredV(at, func(next int) bool {
-			count += dfs(next)
-			return true
-		})
+		for it := g.Pred(at); it.Valid(); it = g.Next(it) {
+			count += dfs(it.Tail())
+		}
 		return count
 	}
-	return dfs(g.V(node)) - 1
+	v, _ := g.V(node)
+	return dfs(v) - 1
 }
 
-func countDescendants(g *util.Graph, node string) int {
+func countDescendants(g *graph.DenseW, node string) int {
 	memo := make([]int, g.Len())
 	var dfs func(int) int
 	dfs = func(at int) int {
@@ -101,15 +101,16 @@ func countDescendants(g *util.Graph, node string) int {
 			return c
 		}
 		count := 0
-		g.RangeSuccV(at, func(next int) bool {
+		for it := g.Succ(at); it.Valid(); it = g.Next(it) {
+			next := it.Head()
 			n := g.W(at, next)
 			count += n * (1 + dfs(next))
-			return true
-		})
+		}
 		memo[at] = count
 		return count
 	}
-	return dfs(g.V(node))
+	v, _ := g.V(node)
+	return dfs(v)
 }
 
 var (
@@ -141,25 +142,25 @@ func plotRules(rules []string, out io.Writer) error {
 
 	var (
 		colors   map[int]string
-		colorize func(int, func(*util.Graph, int, func(int) bool) bool, string)
+		colorize func(int, func(int) graph.DenseIt, func(graph.DenseIt) int, string)
 	)
 	colors = make(map[int]string)
-	colorize = func(at int, ranger func(*util.Graph, int, func(int) bool) bool, color string) {
-		colors[at] = color
-		ranger(g, at, func(next int) bool {
-			if _, ok := colors[next]; !ok {
-				colorize(next, ranger, color)
+	colorize = func(u int, next func(int) graph.DenseIt, end func(graph.DenseIt) int, color string) {
+		colors[u] = color
+		for it := next(u); it.Valid(); it = g.Next(it) {
+			v := end(it)
+			if _, ok := colors[v]; !ok {
+				colorize(v, next, end, color)
 			}
-			return true
-		})
+		}
 	}
 
-	nodeV := g.V("shiny gold")
-	colorize(nodeV, (*util.Graph).RangePredV, `"#1e8e3e"`)
-	colorize(nodeV, (*util.Graph).RangeSuccV, `"#1a73e8"`)
+	nodeV, _ := g.V("shiny gold")
+	colorize(nodeV, g.Pred, graph.DenseIt.Tail, `"#1e8e3e"`)
+	colorize(nodeV, g.Succ, graph.DenseIt.Head, `"#1a73e8"`)
 	colors[nodeV] = `"#d93025"`
 
-	return g.WriteDOT(out, "bags", func(v int) map[string]string {
+	return graph.WriteDOT(g, out, "bags", true, func(v int) map[string]string {
 		fg, bg := `"black"`, `"white"`
 		if c, ok := colors[v]; ok {
 			fg, bg = `"white"`, c

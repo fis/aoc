@@ -21,7 +21,8 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/fn"
+	"github.com/fis/aoc/util/graph"
 )
 
 func init() {
@@ -69,13 +70,15 @@ func maxFuel(ore int, reactions map[string]reaction) int {
 }
 
 func reactionOrder(reactions map[string]reaction) []string {
-	var g util.Graph
+	gb := graph.NewBuilder()
 	for out, r := range reactions {
 		for _, in := range r.in {
-			g.AddEdge(out, in.name)
+			gb.AddEdgeL(out, in.name)
 		}
 	}
-	return g.TopoSort(false)
+	g := gb.DenseDigraph()
+	order := g.TopoSort(false)
+	return fn.Map(order, g.Label)
 }
 
 func oreFor(want map[string]int, order []string, reactions map[string]reaction) int {

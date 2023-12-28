@@ -25,6 +25,7 @@ import (
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
 	"github.com/fis/aoc/util/fn"
+	"github.com/fis/aoc/util/graph"
 )
 
 func init() {
@@ -36,26 +37,24 @@ func init() {
 func solve(l *util.FixedLevel) ([]string, error) {
 	g, startV, endV := deconstruct(l)
 	p1 := longestPath(g)
-	g.MakeUndirected()
 	p2 := unsafeLongestPath(g, startV, endV)
 	return glue.Ints(p1, p2), nil
 }
 
-func longestPath(g *util.Graph) (longest int) {
+func longestPath(g *graph.SparseW) (longest int) {
 	d := make([]int, g.Len())
 	for i := range d {
 		d[i] = math.MaxInt
 	}
-	order := g.TopoSortV(true)
+	order := g.TopoSort(true)
 	d[order[0]] = 0
 	for _, u := range order {
-		g.RangeSuccV(u, func(v int) bool {
-			w := g.W(u, v)
+		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
+			v, w := it.Head(), it.W()
 			if d[v] > d[u]-w {
 				d[v] = d[u] - w
 			}
-			return true
-		})
+		}
 	}
 	return -fn.Min(d)
 }
@@ -71,10 +70,10 @@ var gateExits = []struct {
 	c byte
 }{{util.P{1, 0}, '>'}, {util.P{0, 1}, 'v'}, {util.P{-1, 0}, '<'}, {util.P{0, -1}, '^'}}
 
-func deconstruct(l *util.FixedLevel) (g *util.Graph, startV, endV int) {
-	g = &util.Graph{}
-	startV = g.V("qS")
-	endV = g.V("qE")
+func deconstruct(l *util.FixedLevel) (g *graph.SparseW, startV, endV int) {
+	gb := graph.NewBuilder()
+	startV = gb.V("qS")
+	endV = gb.V("qE")
 
 	type path struct {
 		at   util.P
@@ -95,7 +94,7 @@ nextPath:
 			for _, newD := range []util.P{d, {-d.Y, d.X}, {d.Y, -d.X}} {
 				n := at.Add(newD)
 				if !l.InBounds(n.X, n.Y) {
-					g.AddEdgeWV(p.srcV, endV, steps)
+					gb.AddEdgeW(p.srcV, endV, steps)
 					continue nextPath
 				}
 				switch l.At(n.X, n.Y) {
@@ -106,7 +105,7 @@ nextPath:
 					gate := n.Add(newD)
 					dstV, ok := gates[gate]
 					if !ok {
-						dstV = g.V(fmt.Sprintf("q%d", g.Len()-1))
+						dstV = gb.V(fmt.Sprintf("q%d", gb.Len()-1))
 						gates[gate] = dstV
 						for _, exit := range gateExits {
 							if ep := gate.Add(exit.d); l.At(ep.X, ep.Y) == exit.c {
@@ -114,7 +113,7 @@ nextPath:
 							}
 						}
 					}
-					g.AddEdgeWV(p.srcV, dstV, steps+2)
+					gb.AddEdgeW(p.srcV, dstV, steps+2)
 					continue nextPath
 				}
 			}
@@ -122,7 +121,7 @@ nextPath:
 		}
 	}
 
-	return g, startV, endV
+	return gb.SparseDigraphW(), startV, endV
 }
 
 // plotting
@@ -198,34 +197,33 @@ func (p plotter) Plot(r io.Reader, w io.Writer) error {
 		}
 		return m
 	}
-	g.WriteDOT(w, "G", nodeAttr, edgeAttr)
+	graph.WriteDOT(g, w, "G", true, nodeAttr, edgeAttr)
 	return nil
 }
 
 type tracer interface {
-	trace(g *util.Graph, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{})
+	trace(g *graph.SparseW, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{})
 }
 
 type tracerA struct{}
 
-func (tracerA) trace(g *util.Graph, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{}) {
+func (tracerA) trace(g *graph.SparseW, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{}) {
 	d := make([]int, g.Len())
 	p := make([]int, g.Len())
 	for i := range d {
 		d[i] = math.MaxInt
 		p[i] = -1
 	}
-	order := g.TopoSortV(true)
+	order := g.TopoSort(true)
 	d[order[0]] = 0
 	for _, u := range order {
-		g.RangeSuccV(u, func(v int) bool {
-			w := g.W(u, v)
+		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
+			v, w := it.Head(), it.W()
 			if d[v] > d[u]-w {
 				d[v] = d[u] - w
 				p[v] = u
 			}
-			return true
-		})
+		}
 	}
 	longestV = make(map[int]struct{})
 	longestE = make(map[[2]int]struct{})
@@ -248,22 +246,22 @@ type backRef struct {
 	p *backRef
 }
 
-func (tr tracerB) trace(g *util.Graph, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{}) {
+func (tr tracerB) trace(g *graph.SparseW, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{}) {
 	sg := make([]vertex, g.Len())
 	for u := range sg {
-		g.RangeSuccV(u, func(v int) bool {
+		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
+			v, w := it.Head(), it.W()
 			if u != startV && u != endV && v != startV && v != endV {
 				d := sg[u].degree
-				sg[u].next[d].v, sg[u].next[d].w = uint32(v), uint32(g.W(u, v))
+				sg[u].next[d].v, sg[u].next[d].w = uint32(v), uint32(w)
 				sg[u].degree = d + 1
 				d = sg[v].degree
-				sg[v].next[d].v, sg[v].next[d].w = uint32(u), uint32(g.W(u, v))
+				sg[v].next[d].v, sg[v].next[d].w = uint32(u), uint32(w)
 				sg[v].degree = d + 1
 			}
-			return true
-		})
+		}
 	}
-	firstV, lastV := g.SuccV(startV, 0), g.PredV(endV, 0)
+	firstV, lastV := g.SuccI(startV, 0), g.PredI(endV, 0)
 	tr.bruteForce(sg, uint32(firstV), 0, uint32(lastV), nil)
 	longestV = map[int]struct{}{startV: {}, endV: {}}
 	longestE = map[[2]int]struct{}{{startV, firstV}: {}, {lastV, endV}: {}}

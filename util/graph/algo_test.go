@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package graph
 
 import (
 	"testing"
 
+	"github.com/fis/aoc/util/fn"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -34,14 +35,28 @@ func TestTopoSort(t *testing.T) {
 			want:  []string{"a", "b", "c", "d"},
 		},
 	}
-	for _, test := range tests {
-		g := Graph{}
-		for _, e := range test.edges {
-			g.AddEdge(e[0], e[1])
-		}
-		got := g.TopoSort(false)
-		if !cmp.Equal(got, test.want) {
-			t.Errorf("%v -> %v, want %v", test.edges, got, test.want)
+	type topoSortable interface {
+		TopoSort(keepEdges bool) []int
+		Label(v int) string
+	}
+	graphTypes := []struct {
+		name    string
+		builder func(*Builder) topoSortable
+	}{
+		{"Dense", func(b *Builder) topoSortable { return b.DenseDigraph() }},
+		{"SparseW", func(b *Builder) topoSortable { return b.SparseDigraphW() }},
+	}
+	for _, gt := range graphTypes {
+		for _, test := range tests {
+			b := NewBuilder()
+			for _, e := range test.edges {
+				b.AddEdgeL(e[0], e[1])
+			}
+			g := gt.builder(b)
+			got := fn.Map(g.TopoSort(false), g.Label)
+			if !cmp.Equal(got, test.want) {
+				t.Errorf("%s(%v).TopoSort() = %v, want %v", gt.name, test.edges, got, test.want)
+			}
 		}
 	}
 }

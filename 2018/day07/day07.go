@@ -23,7 +23,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/graph"
 )
 
 func init() {
@@ -38,61 +38,61 @@ func solve(lines []string) ([]string, error) {
 	return []string{part1, strconv.Itoa(part2)}, nil
 }
 
-func parseRules(lines []string) *util.Graph {
-	g := &util.Graph{}
+func parseRules(lines []string) *graph.Dense {
+	g := graph.NewBuilder()
 	for _, line := range lines {
 		var from, to string
 		if _, err := fmt.Sscanf(line, "Step %s must be finished before step %s can begin.", &from, &to); err != nil {
 			continue
 		}
-		g.AddEdge(from, to)
+		g.AddEdgeL(from, to)
 	}
-	return g
+	return g.DenseDigraph()
 }
 
-func toplexSort(g *util.Graph) (order []string) {
+func toplexSort(g *graph.Dense) (order []string) {
 	avail := labelHeap{}
-	g.RangeV(func(v int) {
-		if g.NumPredV(v) == 0 {
-			heap.Push(&avail, g.Name(v))
+	for v := 0; v < g.Len(); v++ {
+		if g.NumPred(v) == 0 {
+			heap.Push(&avail, g.Label(v))
 		}
-	})
+	}
 	for len(avail) > 0 {
 		from := heap.Pop(&avail).(string)
 		order = append(order, from)
-		fromV := g.V(from)
-		g.RangeSuccV(fromV, func(toV int) bool {
-			g.DelEdgeV(fromV, toV)
-			if g.NumPredV(toV) == 0 {
-				heap.Push(&avail, g.Name(toV))
+		u, _ := g.V(from)
+		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
+			v := it.Head()
+			g.DelEdge(u, v)
+			if g.NumPred(v) == 0 {
+				heap.Push(&avail, g.Label(v))
 			}
-			return true
-		})
+		}
 	}
 	return order
 }
 
-func timedSort(g *util.Graph, workers, baseTime int) (order []string, totalTime int) {
+func timedSort(g *graph.Dense, workers, baseTime int) (order []string, totalTime int) {
 	avail := labelHeap{}
-	g.RangeV(func(v int) {
-		if g.NumPredV(v) == 0 {
-			heap.Push(&avail, g.Name(v))
+	for v := 0; v < g.Len(); v++ {
+		if g.NumPred(v) == 0 {
+			heap.Push(&avail, g.Label(v))
 		}
-	})
+	}
 	busy := workHeap{}
 	now := 0
 	for len(avail) > 0 || len(busy) > 0 {
 		for len(busy) > 0 && now >= busy[0].readyAt {
 			wi := heap.Pop(&busy).(workItem)
 			order = append(order, wi.label)
-			fromV := g.V(wi.label)
-			g.RangeSuccV(fromV, func(toV int) bool {
-				g.DelEdgeV(fromV, toV)
-				if g.NumPredV(toV) == 0 {
-					heap.Push(&avail, g.Name(toV))
+			u, _ := g.V(wi.label)
+			for it := g.Succ(u); it.Valid(); it = g.Next(it) {
+				v := it.Head()
+				g.DelEdge(u, v)
+				if g.NumPred(v) == 0 {
+					heap.Push(&avail, g.Label(v))
 				}
-				return true
-			})
+			}
 		}
 		for len(avail) > 0 && workers-len(busy) > 0 {
 			from := heap.Pop(&avail).(string)
@@ -164,5 +164,5 @@ Step F must be finished before step E can begin.
 
 func plotDeps(lines []string, w io.Writer) error {
 	g := parseRules(lines)
-	return g.WriteDOT(w, "deps", nil, nil)
+	return graph.WriteDOT(g, w, "deps", true, nil, nil)
 }

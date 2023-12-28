@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/graph"
 )
 
 func TestCountAllPaths(t *testing.T) {
@@ -33,10 +34,17 @@ func TestCountAllPaths(t *testing.T) {
 			},
 		},
 		{
-			name: "util.Graph",
+			name: "util/graph.SparseGraph",
 			f: func(edges [][]string, allowTwice bool) int {
-				g := makeGraph(edges)
-				return countAllPaths(g, allowTwice)
+				g := makeGraph(edges, (*graph.Builder).SparseDigraph)
+				return countAllPathsSparse(g, allowTwice)
+			},
+		},
+		{
+			name: "util/graph.DenseGraph",
+			f: func(edges [][]string, allowTwice bool) int {
+				g := makeGraph(edges, (*graph.Builder).DenseDigraph)
+				return countAllPathsDense(g, allowTwice)
 			},
 		},
 	}
@@ -77,11 +85,20 @@ func BenchmarkAlgos(b *testing.B) {
 			},
 		},
 		{
-			name: "util.Graph",
+			name: "util/graph.SparseGraph",
 			f: func(edges [][]string) (p1, p2 int) {
-				g := makeGraph(edges)
-				p1 = countAllPaths(g, false)
-				p2 = countAllPaths(g, true)
+				g := makeGraph(edges, (*graph.Builder).SparseDigraph)
+				p1 = countAllPathsSparse(g, false)
+				p2 = countAllPathsSparse(g, true)
+				return p1, p2
+			},
+		},
+		{
+			name: "util/graph.DenseGraph",
+			f: func(edges [][]string) (p1, p2 int) {
+				g := makeGraph(edges, (*graph.Builder).DenseDigraph)
+				p1 = countAllPathsDense(g, false)
+				p2 = countAllPathsDense(g, true)
 				return p1, p2
 			},
 		},

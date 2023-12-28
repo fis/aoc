@@ -22,7 +22,7 @@ import (
 	"unicode"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/graph"
 )
 
 const inputRegexp = `^([^-]+)-([^-]+)$`
@@ -115,56 +115,101 @@ func makeIntGraph(lines [][]string) (g *intGraph) {
 	return &intGraph{verts: verts, small: small, edges: edges}
 }
 
-// util.Graph
+// util/graph
 
-func countAllPaths(g *util.Graph, allowTwice bool) int {
-	return countPaths(g, "start", "end", allowTwice, map[string]struct{}{"start": {}})
+func countAllPathsSparse(g *graph.Sparse, allowTwice bool) int {
+	start, _ := g.V("start")
+	end, _ := g.V("end")
+	smallCaves := make([]bool, g.Len())
+	smallCaves[start] = true
+	return countPathsSparse(g, start, end, allowTwice, smallCaves)
 }
 
-func countPaths(g *util.Graph, src, dst string, allowTwice bool, smallCaves map[string]struct{}) (paths int) {
+func countPathsSparse(g *graph.Sparse, src, dst int, allowTwice bool, smallCaves []bool) (paths int) {
 	if src == dst {
 		return 1
 	}
-	g.RangeSucc(src, func(next string) bool {
-		lower := unicode.IsLower(rune(next[0]))
+	for it := g.Succ(src); it.Valid(); it = g.Next(it) {
+		next := it.Head()
+		lower := unicode.IsLower(rune(g.Label(next)[0]))
 		usedAllowance := false
 		if lower {
-			if _, seen := smallCaves[next]; seen {
+			if smallCaves[next] {
 				if allowTwice {
 					usedAllowance = true
 					allowTwice = false
 				} else {
-					return true
+					continue
 				}
 			}
 			if !usedAllowance {
-				smallCaves[next] = struct{}{}
+				smallCaves[next] = true
 			}
 		}
-		paths += countPaths(g, next, dst, allowTwice, smallCaves)
+		paths += countPathsSparse(g, next, dst, allowTwice, smallCaves)
 		if lower {
 			if usedAllowance {
 				allowTwice = true
 			} else {
-				delete(smallCaves, next)
+				smallCaves[next] = false
 			}
 		}
-		return true
-	})
+	}
 	return paths
 }
 
-func makeGraph(edges [][]string) (g *util.Graph) {
-	g = &util.Graph{}
-	for _, edge := range edges {
-		if edge[0] != "end" && edge[1] != "start" {
-			g.AddEdge(edge[0], edge[1])
+func countAllPathsDense(g *graph.Dense, allowTwice bool) int {
+	start, _ := g.V("start")
+	end, _ := g.V("end")
+	smallCaves := make([]bool, g.Len())
+	smallCaves[start] = true
+	return countPathsDense(g, start, end, allowTwice, smallCaves)
+}
+
+func countPathsDense(g *graph.Dense, src, dst int, allowTwice bool, smallCaves []bool) (paths int) {
+	if src == dst {
+		return 1
+	}
+	for it := g.Succ(src); it.Valid(); it = g.Next(it) {
+		next := it.Head()
+		lower := unicode.IsLower(rune(g.Label(next)[0]))
+		usedAllowance := false
+		if lower {
+			if smallCaves[next] {
+				if allowTwice {
+					usedAllowance = true
+					allowTwice = false
+				} else {
+					continue
+				}
+			}
+			if !usedAllowance {
+				smallCaves[next] = true
+			}
 		}
-		if edge[1] != "end" && edge[0] != "start" {
-			g.AddEdge(edge[1], edge[0])
+		paths += countPathsDense(g, next, dst, allowTwice, smallCaves)
+		if lower {
+			if usedAllowance {
+				allowTwice = true
+			} else {
+				smallCaves[next] = false
+			}
 		}
 	}
-	return g
+	return paths
+}
+
+func makeGraph[T any](edges [][]string, builder func(*graph.Builder) T) T {
+	g := graph.NewBuilder()
+	for _, edge := range edges {
+		if edge[0] != "end" && edge[1] != "start" {
+			g.AddEdgeL(edge[0], edge[1])
+		}
+		if edge[1] != "end" && edge[0] != "start" {
+			g.AddEdgeL(edge[1], edge[0])
+		}
+	}
+	return builder(g)
 }
 
 // plotting

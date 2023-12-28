@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/graph"
 )
 
 func init() {
@@ -162,34 +162,35 @@ func plotFlow(lines []string, out io.Writer) error {
 		return err
 	}
 
-	g := &util.Graph{}
+	gb := graph.NewBuilder()
 	verts := make([]int, len(code)+1)
 	for i, inst := range code {
-		verts[i] = g.V(fmt.Sprintf("%d: %s %+d", i, mnemonics[inst.op], inst.arg))
+		verts[i] = gb.V(fmt.Sprintf("%d: %s %+d", i, mnemonics[inst.op], inst.arg))
 	}
-	verts[len(code)] = g.V("halt")
+	verts[len(code)] = gb.V("halt")
 
 	for i, inst := range code {
 		switch inst.op {
 		case opAcc:
-			g.AddEdgeWV(verts[i], verts[i+1], 0)
+			gb.AddEdgeW(verts[i], verts[i+1], 0)
 		case opJmp:
-			g.AddEdgeWV(verts[i], verts[i+inst.arg], 0)
-			g.AddEdgeWV(verts[i], verts[i+1], 1)
+			gb.AddEdgeW(verts[i], verts[i+inst.arg], 0)
+			gb.AddEdgeW(verts[i], verts[i+1], 1)
 		case opNop:
-			g.AddEdgeWV(verts[i], verts[i+1], 0)
-			g.AddEdgeWV(verts[i], verts[i+inst.arg], 1)
+			gb.AddEdgeW(verts[i], verts[i+1], 0)
+			gb.AddEdgeW(verts[i], verts[i+inst.arg], 1)
 		}
 	}
 
-	return g.WriteDOT(out, "prog", func(v int) map[string]string {
+	g := gb.SparseDigraphW()
+	return graph.WriteDOT(g, out, "prog", true, func(v int) map[string]string {
 		if v == verts[0] || v == verts[len(verts)-1] {
 			return map[string]string{"peripheries": `2`}
 		}
 		return nil
-	}, func(fromV, toV int) map[string]string {
+	}, func(u, v int) map[string]string {
 		attrs := map[string]string{"label": `""`}
-		if g.W(fromV, toV) == 1 {
+		if g.W(u, v) == 1 {
 			attrs["color"] = `"red"`
 		}
 		return attrs

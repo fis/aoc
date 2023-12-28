@@ -32,7 +32,6 @@ func TestLongestPath(t *testing.T) {
 func TestUnsafeLongestPath(t *testing.T) {
 	l := util.ParseFixedLevel([]byte(ex))
 	g, startV, endV := deconstruct(l)
-	g.MakeUndirected()
 	want := 154
 	if got := unsafeLongestPath(g, startV, endV); got != want {
 		t.Errorf("evenLongestPath(ex) = %d, want %d", got, want)

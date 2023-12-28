@@ -20,7 +20,7 @@ import (
 	"strings"
 
 	"github.com/fis/aoc/glue"
-	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/graph"
 )
 
 func init() {
@@ -44,14 +44,19 @@ type program struct {
 	subNames []string
 }
 
-func findRoot(g *util.Graph) string {
-	root := ""
-	g.Range(func(name string) {
-		if g.NumPred(name) == 0 {
-			root = name
+func findRoot(g *graph.Sparse) string {
+	numPred := make([]int, g.Len())
+	for u := 0; u < g.Len(); u++ {
+		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
+			numPred[it.Head()]++
 		}
-	})
-	return root
+	}
+	for u, n := range numPred {
+		if n == 0 {
+			return g.Label(u)
+		}
+	}
+	return ""
 }
 
 func fixWeight(root string, progs map[string]*program) (treeW, fixedW int) {
@@ -93,16 +98,16 @@ func fixWeight(root string, progs map[string]*program) (treeW, fixedW int) {
 	panic("impossible: bad weight not found")
 }
 
-func buildGraph(progs map[string]*program) *util.Graph {
-	g := &util.Graph{}
+func buildGraph(progs map[string]*program) *graph.Sparse {
+	g := graph.NewBuilder()
 	for _, prog := range progs {
-		fromV := g.V(prog.name)
+		u := g.V(prog.name)
 		for _, sub := range prog.subNames {
-			toV := g.V(sub)
-			g.AddEdgeV(fromV, toV)
+			v := g.V(sub)
+			g.AddEdge(u, v)
 		}
 	}
-	return g
+	return g.SparseDigraph()
 }
 
 func parseLines(lines [][]string) (progs map[string]*program) {

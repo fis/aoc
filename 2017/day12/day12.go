@@ -16,33 +16,39 @@
 package day12
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/graph"
 )
 
 func init() {
-	glue.RegisterSolver(2017, 12, glue.RegexpSolver{
-		Solver: solve,
-		Regexp: `^(\d+) <-> (\d+(?:, \d+)*)$`,
-	})
+	glue.RegisterSolver(2017, 12, glue.LineSolver(solve))
 }
 
-func solve(data [][]string) ([]string, error) {
-	g := buildGraph(data)
+func solve(lines []string) ([]string, error) {
+	g, err := buildGraph(lines)
+	if err != nil {
+		return nil, err
+	}
 	vertGroup, groupVerts := partition(g)
-	p1 := len(groupVerts[vertGroup[g.V("0")]])
+	zero, ok := g.V("0")
+	if !ok {
+		return nil, fmt.Errorf("no vertex 0 in graph")
+	}
+	p1 := len(groupVerts[vertGroup[zero]])
 	p2 := len(groupVerts)
 	return glue.Ints(p1, p2), nil
 }
 
-func partition(g *util.Graph) (vertGroup map[int]int, groupVerts map[int][]int) {
+func partition(g *graph.Sparse) (vertGroup map[int]int, groupVerts map[int][]int) {
 	vertGroup = make(map[int]int)
 	groupVerts = make(map[int][]int)
-	g.RangeV(func(startV int) {
+	for startV := 0; startV < g.Len(); startV++ {
 		if _, found := vertGroup[startV]; found {
-			return
+			continue
 		}
 		group := len(groupVerts)
 		edge := []int{startV}
@@ -54,26 +60,30 @@ func partition(g *util.Graph) (vertGroup map[int]int, groupVerts map[int][]int) 
 			}
 			vertGroup[at] = group
 			groupVerts[group] = append(groupVerts[group], at)
-			g.RangeSuccV(at, func(toV int) bool {
+			for it := g.Succ(at); it.Valid(); it = g.Next(it) {
+				_, toV := it.At()
 				if _, found := vertGroup[toV]; !found {
 					edge = append(edge, toV)
 				}
-				return true
-			})
+			}
 		}
-	})
+	}
 	return vertGroup, groupVerts
 }
 
-func buildGraph(data [][]string) *util.Graph {
-	g := &util.Graph{}
-	for _, row := range data {
-		fromV := g.V(row[0])
-		for _, to := range strings.Split(row[1], ", ") {
-			toV := g.V(to)
-			g.AddEdgeV(fromV, toV)
-			g.AddEdgeV(toV, fromV)
+func buildGraph(lines []string) (*graph.Sparse, error) {
+	g := graph.NewBuilder()
+	for _, line := range lines {
+		from, tos, ok := strings.Cut(line, " <-> ")
+		if !ok {
+			return nil, fmt.Errorf("bad line: missing <->: %s", line)
+		}
+		u := g.V(from)
+		for s := util.Splitter(tos); !s.Empty(); {
+			to := s.Next(", ")
+			v := g.V(to)
+			g.AddEdge(u, v)
 		}
 	}
-	return g
+	return g.SparseDigraph(), nil
 }

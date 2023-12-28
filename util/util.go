@@ -270,6 +270,15 @@ func (m LabelMap) Get(label string) int {
 	return id
 }
 
+// Returns all the labels as a slice in the integer index order.
+func (m LabelMap) Slice() []string {
+	labels := make([]string, len(m))
+	for k, v := range m {
+		labels[v] = k
+	}
+	return labels
+}
+
 // Splitter is a convenience type for iterating over the results of splitting a string without allocating a slice.
 type Splitter string
 

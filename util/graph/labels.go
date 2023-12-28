@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,32 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package day12
+package graph
 
-import (
-	"testing"
-)
+import "github.com/fis/aoc/util"
 
-var ex = []string{
-	"0 <-> 2",
-	"1 <-> 1",
-	"2 <-> 0, 3, 4",
-	"3 <-> 2, 4",
-	"4 <-> 2, 3, 6",
-	"5 <-> 6",
-	"6 <-> 4, 5",
+type graphLabels struct {
+	labels   []string
+	labelMap util.LabelMap
 }
 
-func TestPartition(t *testing.T) {
-	want1, want2 := 6, 2
-	g, err := buildGraph(ex)
-	if err != nil {
-		t.Fatal(err)
-	}
-	vertGroup, groupVerts := partition(g)
-	zero, _ := g.V("0")
-	got1, got2 := len(groupVerts[vertGroup[zero]]), len(groupVerts)
-	if got1 != want1 || got2 != want2 {
-		t.Errorf("part1 = %d, want %d; part2 = %d, want %d", got1, want1, got2, want2)
-	}
+// Len returns the number of vertices in the graph.
+func (l graphLabels) Len() int { return len(l.labels) }
+
+// V returns the vertex index of the vertex with the given name.
+func (l graphLabels) V(name string) (idx int, ok bool) {
+	idx, ok = l.labelMap[name]
+	return
 }
+
+// Label returns the label corresponding to a vertex index.
+func (l graphLabels) Label(v int) string { return l.labels[v] }

@@ -16,21 +16,29 @@ package day23
 
 // #include "native.h"
 import "C"
-import "github.com/fis/aoc/util"
+import (
+	"github.com/fis/aoc/util/graph"
+)
 
-func unsafeLongestPath(g *util.Graph, startV, endV int) (longest int) {
+func unsafeLongestPath(g *graph.SparseW, startV, endV int) (longest int) {
 	sg := make([]C.struct_vertex, g.Len())
 	for u := range sg {
-		g.RangeSuccV(u, func(v int) bool {
-			if v != startV && v != endV {
-				d := sg[u].degree
-				sg[u].next[d].v, sg[u].next[d].w = C.uint32_t(v), C.uint32_t(g.W(u, v))
-				sg[u].degree = d + 1
+		if u == startV || u == endV {
+			continue
+		}
+		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
+			v, w := it.Head(), it.W()
+			if u == startV || u == endV {
+				continue
 			}
-			return true
-		})
+			for _, e := range [2][2]int{{u, v}, {v, u}} {
+				d := sg[e[0]].degree
+				sg[e[0]].next[d].v, sg[e[0]].next[d].w = C.uint32_t(e[1]), C.uint32_t(w)
+				sg[e[0]].degree = d + 1
+			}
+		}
 	}
-	firstV, lastV := g.SuccV(startV, 0), g.PredV(endV, 0)
+	firstV, lastV := g.SuccI(startV, 0), g.PredI(endV, 0)
 	wS, wE := g.W(startV, firstV), g.W(lastV, endV)
 	return wS + int(C.brute_force(&sg[0], C.uint32_t(firstV), C.uint32_t(lastV))) + wE
 }
