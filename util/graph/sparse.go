@@ -111,6 +111,37 @@ type SparseItW struct {
 
 func (it SparseItW) W() int { return it.w }
 
+// ForSucc iterates over the successors of u, returning true if the end was reached.
+// Return false from the callback to stop short; that is then returned to the caller.
+func (g *Sparse) ForSucc(u int, cb func(v int) bool) bool {
+	for _, v := range g.edges[u] {
+		if !cb(v) {
+			return false
+		}
+	}
+	return true
+}
+
+// ForSuccW is like ForSucc, but the weight (always 1) will also be passed to the callback.
+func (g *Sparse) ForSuccW(u int, cb func(v, w int) bool) bool {
+	for _, v := range g.edges[u] {
+		if !cb(v, 1) {
+			return false
+		}
+	}
+	return true
+}
+
+// ForSuccW is like ForSucc, but the weight will also be passed to the callback.
+func (g *SparseW) ForSuccW(u int, cb func(v, w int) bool) bool {
+	for i, v := range g.edges[u] {
+		if !cb(v, g.edgeW[u][i]) {
+			return false
+		}
+	}
+	return true
+}
+
 // NumSucc returns the number of successors of u. This is an O(1) operation.
 func (g *SparseW) NumSucc(u int) int { return len(g.edges[u]) }
 

@@ -25,28 +25,19 @@ import (
 //
 // It's useful for writing generic functions on both sparse and dense graphs.
 // Note that there's generally some performance impact, so it's best left for non-sensitive utility functions.
-type AnyGraph[It AnyIt] interface {
+type Any interface {
 	Len() int
 	V(string) (int, bool)
 	Label(v int) string
 	W(u, v int) int
-	Succ(u int) It
-	Next(It) It
+	ForSucc(u int, cb func(v int) bool) bool
 	hasWeights() bool
-}
-
-// AnyIt represents the common interface for the graph edge iterators.
-type AnyIt interface {
-	Valid() bool
-	At() (u, v int)
-	Tail() (u int)
-	Head() (v int)
 }
 
 // WriteDOT writes the graph out in GraphViz format. The `nodeAttr` and `edgeAttr` callback
 // functions are optional, and can be used to add extra attributes to the node. If the callback
 // returns a "label" attribute, it takes precedence over the usual node name / edge weight.
-func WriteDOT[It AnyIt](g AnyGraph[It], w io.Writer, name string, directed bool, nodeAttr func(v int) map[string]string, edgeAttr func(u, v int) map[string]string) (err error) {
+func WriteDOT(g Any, w io.Writer, name string, directed bool, nodeAttr func(v int) map[string]string, edgeAttr func(u, v int) map[string]string) (err error) {
 	fmt.Fprintf(w, "%s %s {\n", fn.If(directed, "digraph", "graph"), name)
 	for v := 0; v < g.Len(); v++ {
 		var attrs map[string]string
@@ -58,10 +49,9 @@ func WriteDOT[It AnyIt](g AnyGraph[It], w io.Writer, name string, directed bool,
 		fmt.Fprintf(w, "];\n")
 	}
 	for u := 0; u < g.Len(); u++ {
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			v := it.Head()
+		g.ForSucc(u, func(v int) bool {
 			if !directed && v < u {
-				continue
+				return true
 			}
 			var attrs map[string]string
 			if edgeAttr != nil {
@@ -75,7 +65,8 @@ func WriteDOT[It AnyIt](g AnyGraph[It], w io.Writer, name string, directed bool,
 				writeAttrs(w, attrs)
 			}
 			fmt.Fprintf(w, "];\n")
-		}
+			return true
+		})
 	}
 	_, err = fmt.Fprintln(w, "}")
 	return err

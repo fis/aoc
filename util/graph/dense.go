@@ -110,6 +110,56 @@ func (it DenseIt) At() (u, v int) { return it.u, it.v }
 func (it DenseIt) Tail() int      { return it.u }
 func (it DenseIt) Head() int      { return it.v }
 
+// ForSucc iterates over the successors of u, returning true if the end was reached.
+// Return false from the callback to stop short; that is then returned to the caller.
+func (g *Dense) ForSucc(u int, cb func(v int) bool) bool {
+	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
+		if g.adj[e] {
+			if !cb(v) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// ForSuccW is like ForSucc, but the weight (always 1) will also be passed to the callback.
+func (g *Dense) ForSuccW(u int, cb func(v, w int) bool) bool {
+	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
+		if g.adj[e] {
+			if !cb(v, 1) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// ForSucc iterates over the successors of u, returning true if the end was reached.
+// Return false from the callback to stop short; that is then returned to the caller.
+func (g *DenseW) ForSucc(u int, cb func(v int) bool) bool {
+	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
+		if g.adj[e] != 0 {
+			if !cb(v) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// ForSuccW is like ForSucc, but the weight will also be passed to the callback.
+func (g *DenseW) ForSuccW(u int, cb func(v, w int) bool) bool {
+	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
+		if w := g.adj[e]; w != 0 {
+			if !cb(v, w) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 // NumSucc returns the total number of successors of u. This is an O(|V|) operation.
 func (g *Dense) NumSucc(u int) (n int) {
 	for e, eN := g.e(u, 0), g.e(u+1, 0); e < eN; e++ {
