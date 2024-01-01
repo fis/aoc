@@ -17,6 +17,7 @@ package day24
 import (
 	"testing"
 
+	"github.com/fis/aoc/util"
 	"github.com/fis/aoc/util/fn"
 )
 
@@ -47,5 +48,29 @@ func TestFindCollider(t *testing.T) {
 	want := p3{24, 13, 10}
 	if got := findCollider(stones); got != want {
 		t.Errorf("findCollider(ex) = %v, want %v", got, want)
+	}
+}
+
+func TestFindColliders(t *testing.T) {
+	lines, err := util.ReadLines("../../testdata/2023/day24.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	stones, err := fn.MapE(lines, parseHailstone)
+	if err != nil {
+		t.Fatal(err)
+	}
+	algos := []struct {
+		name string
+		f    func([]hailstone) p3
+	}{
+		{"findCollider", findCollider},
+		{"altFindCollider", altFindCollider},
+	}
+	want := p3{344525619959965, 437880958119624, 242720827369528}
+	for _, algo := range algos {
+		if got := algo.f(stones); got != want {
+			t.Errorf("%s(stones) = %v, want %v", algo.name, got, want)
+		}
 	}
 }

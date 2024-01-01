@@ -19,11 +19,13 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"math/big"
 	"strconv"
 	"strings"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -50,7 +52,7 @@ func countIntersectXY(stones []hailstone, minX, minY, maxX, maxY float64) (inter
 		for j := i + 1; j < len(stones); j++ {
 			b := stones[j]
 			pb, vb := b.p.asFloat(), b.v.asFloat()
-			ta := (pb.x*vb.y + pa.y*vb.x - pa.x*vb.y - pb.y*vb.x) / (va.x*vb.y - va.y*vb.x)
+			ta := ((pb.x-pa.x)*vb.y - (pb.y-pa.y)*vb.x) / (va.x*vb.y - va.y*vb.x)
 			if ta < 0 || ta < minT || ta > maxT {
 				continue
 			}
@@ -65,41 +67,46 @@ func countIntersectXY(stones []hailstone, minX, minY, maxX, maxY float64) (inter
 
 func findCollider(stones []hailstone) p3 {
 	s0, s1, s2 := pickThree(stones)
-	p0, v0 := s0.p.asFloat(), s0.v.asFloat()
-	p1, v1 := s1.p.asFloat(), s1.v.asFloat()
-	p2, v2 := s2.p.asFloat(), s2.v.asFloat()
-	dp1, dv1 := p1.Sub(p0), v1.Sub(v0)
-	dp2, dv2 := p2.Sub(p0), v2.Sub(v0)
-	A := [6][7]float64{
-		{0, -dp1.z, dp1.y, 0, dv1.z, -dv1.y, p1.y*v1.z - p1.z*v1.y - p0.y*v0.z + p0.z*v0.y},
-		{dp1.z, 0, -dp1.x, -dv1.z, 0, dv1.x, p1.z*v1.x - p1.x*v1.z - p0.z*v0.x + p0.x*v0.z},
-		{-dp1.y, dp1.x, 0, dv1.y, -dv1.x, 0, p1.x*v1.y - p1.y*v1.x - p0.x*v0.y + p0.y*v0.x},
-		{0, -dp2.z, dp2.y, 0, dv2.z, -dv2.y, p2.y*v2.z - p2.z*v2.y - p0.y*v0.z + p0.z*v0.y},
-		{dp2.z, 0, -dp2.x, -dv2.z, 0, dv2.x, p2.z*v2.x - p2.x*v2.z - p0.z*v0.x + p0.x*v0.z},
-		{-dp2.y, dp2.x, 0, dv2.y, -dv2.x, 0, p2.x*v2.y - p2.y*v2.x - p0.x*v0.y + p0.y*v0.x},
-	}
+	p0, v0, p1, v1, p2, v2 := s0.p, s0.v, s1.p, s1.v, s2.p, s2.v
+	dp1, dv1, dp2, dv2 := p1.Sub(p0), v1.Sub(v0), p2.Sub(p0), v2.Sub(v0)
+	var A [6][7]*big.Rat
+	setRow(&A[0], 0, -dp1.z, dp1.y, 0, dv1.z, -dv1.y, p1.y*v1.z-p1.z*v1.y-p0.y*v0.z+p0.z*v0.y)
+	setRow(&A[1], dp1.z, 0, -dp1.x, -dv1.z, 0, dv1.x, p1.z*v1.x-p1.x*v1.z-p0.z*v0.x+p0.x*v0.z)
+	setRow(&A[2], -dp1.y, dp1.x, 0, dv1.y, -dv1.x, 0, p1.x*v1.y-p1.y*v1.x-p0.x*v0.y+p0.y*v0.x)
+	setRow(&A[3], 0, -dp2.z, dp2.y, 0, dv2.z, -dv2.y, p2.y*v2.z-p2.z*v2.y-p0.y*v0.z+p0.z*v0.y)
+	setRow(&A[4], dp2.z, 0, -dp2.x, -dv2.z, 0, dv2.x, p2.z*v2.x-p2.x*v2.z-p0.z*v0.x+p0.x*v0.z)
+	setRow(&A[5], -dp2.y, dp2.x, 0, dv2.y, -dv2.x, 0, p2.x*v2.y-p2.y*v2.x-p0.x*v0.y+p0.y*v0.x)
 	reduce(&A)
-	pRz := ri(A[5][6] / A[5][5])
-	pRy := ri((A[4][6] - A[4][5]*float64(pRz)) / A[4][4])
-	pRx := ri((A[3][6] - A[3][5]*float64(pRz) - A[3][4]*float64(pRy)) / A[3][3])
-	return p3{pRx, pRy, pRz}
+	var pRx, pRy, pRz big.Rat
+	pRz.Inv(A[5][5]).Mul(&pRz, A[5][6])
+	pRy.Inv(A[4][4]).Mul(&pRy, A[4][6].Sub(A[4][6], A[4][5].Mul(A[4][5], &pRz)))
+	pRx.Inv(A[3][3]).Mul(&pRx, A[3][6].Sub(A[3][6], A[3][5].Mul(A[3][5], &pRz)).Sub(A[3][6], A[3][4].Mul(A[3][4], &pRy)))
+	if !pRx.IsInt() || !pRy.IsInt() || !pRz.IsInt() {
+		panic("expected an integer solution")
+	}
+	return p3{int(pRx.Num().Int64()), int(pRy.Num().Int64()), int(pRz.Num().Int64())}
 }
 
-func ri(x float64) int {
-	return int(math.Round(x))
+func setRow(row *[7]*big.Rat, xs ...int) {
+	for i := 0; i < 7; i++ {
+		row[i] = big.NewRat(int64(xs[i]), 1)
+	}
 }
 
-func reduce(A *[6][7]float64) {
+func reduce(A *[6][7]*big.Rat) {
 	// standard Gaussian elimination with partial pivoting
 	h, k := 0, 0
+	var maxV, v, f, fj, zero big.Rat
 	for h < 6 && k < 7 {
-		maxV, maxI := math.Abs(A[h][k]), h
+		maxV.Abs(A[h][k])
+		maxI := h
 		for i := h + 1; i < 6; i++ {
-			if v := math.Abs(A[i][k]); v > maxV {
+			v.Abs(A[i][k])
+			if v.Cmp(&maxV) > 0 {
 				maxV, maxI = v, i
 			}
 		}
-		if A[maxI][k] == 0 {
+		if A[maxI][k].Cmp(&zero) == 0 {
 			k++
 			continue
 		}
@@ -107,10 +114,10 @@ func reduce(A *[6][7]float64) {
 			A[h], A[maxI] = A[maxI], A[h]
 		}
 		for i := h + 1; i < 6; i++ {
-			f := A[i][k] / A[h][k]
-			A[i][k] = 0
+			f.Inv(A[h][k]).Mul(&f, A[i][k])
+			A[i][k].SetInt64(0)
 			for j := k + 1; j < 7; j++ {
-				A[i][j] -= A[h][j] * f
+				A[i][j].Sub(A[i][j], fj.Mul(&f, A[h][j]))
 			}
 		}
 		h, k = h+1, k+1
@@ -157,6 +164,67 @@ func pickThree(stones []hailstone) (a, b, c hailstone) {
 	return a, b, c
 }
 
+// alternative solution
+
+func altFindCollider(stones []hailstone) p3 {
+	vX, vY, vZ := make(map[int][]int), make(map[int][]int), make(map[int][]int)
+	for _, s := range stones {
+		vX[s.v.x] = append(vX[s.v.x], s.p.x)
+		vY[s.v.y] = append(vY[s.v.y], s.p.y)
+		vZ[s.v.z] = append(vZ[s.v.z], s.p.z)
+	}
+	vRx, vRy, vRz := constrainV(vX), constrainV(vY), constrainV(vZ)
+	a, b := stones[0], stones[1]
+	nAx, nAy, nAz := a.v.y*vRz-a.v.z*vRy, a.v.z*vRx-a.v.x*vRz, a.v.x*vRy-a.v.y*vRx
+	pAB := a.p.Sub(b.p)
+	pABnA := pAB.x*nAx + pAB.y*nAy + pAB.z*nAz
+	vBnA := b.v.x*nAx + b.v.y*nAy + b.v.z*nAz
+	tB := pABnA / vBnA
+	return p3{b.p.x + tB*(b.v.x-vRx), b.p.y + tB*(b.v.y-vRy), b.p.z + tB*(b.v.z-vRz)}
+}
+
+func constrainV(m map[int][]int) int {
+	const (
+		minV = -2000
+		maxV = 2000
+	)
+	possible := []int(nil)
+	for v, ps := range m {
+		if len(ps) < 2 {
+			continue
+		}
+		for i := 0; i < len(ps)-1; i++ {
+			for j := i + 1; j < len(ps); j++ {
+				a, b := ps[i], ps[j]
+				gap := ix.Abs(a - b)
+				if len(possible) == 0 {
+					for rv := minV; rv <= maxV; rv++ {
+						if rv != 0 && gap%rv == 0 {
+							possible = append(possible, rv+v)
+						}
+					}
+				} else {
+					filtered := possible[:0]
+					for _, ov := range possible {
+						if rv := ov - v; rv != 0 && gap%rv == 0 {
+							filtered = append(filtered, ov)
+						}
+					}
+					possible = filtered
+				}
+				if len(possible) < 1 {
+					panic("no choice")
+				} else if len(possible) == 1 {
+					return possible[0]
+				}
+			}
+		}
+	}
+	panic("too much choice")
+}
+
+// parsing
+
 type hailstone struct {
 	p, v p3
 }
@@ -165,16 +233,16 @@ type p3 struct {
 	x, y, z int
 }
 
+func (p p3) Sub(q p3) p3 {
+	return p3{p.x - q.x, p.y - q.y, p.z - q.z}
+}
+
 func (p p3) asFloat() fp3 {
 	return fp3{float64(p.x), float64(p.y), float64(p.z)}
 }
 
 type fp3 struct {
 	x, y, z float64
-}
-
-func (p fp3) Sub(q fp3) fp3 {
-	return fp3{p.x - q.x, p.y - q.y, p.z - q.z}
 }
 
 func parseHailstone(line string) (hs hailstone, err error) {

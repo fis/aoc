@@ -1130,9 +1130,13 @@ so it's in a separate file: [2023-day24.md](2023-day24.md).
 If you're viewing this on GitHub, you'll be wanting
 [2023-day24-github.md](2023-day24-github.md) instead, as the GitHub renderer
 does not like certain use of the `_` character in `$`- or `$$`-delimited math
-blocks, and requires them either be escaped as `\_`. However, the KaTeX-based
-preview in Visual Studio Code (which I'm writing this in) does not like *that*.
-It seems impossible to satisfy both.
+blocks, and requires them either be escaped as `\_`, or used in
+backtick-delimited math blocks. However, the KaTeX-based preview in Visual
+Studio Code (which I'm writing this in) does not like either of those. It seems
+impossible to satisfy both, without avoiding certain subscript usages.
+
+There's also an alternative solution on completely different lines in:
+[2023-day24-alt.md](2023-day24-alt.md).
 
 ## [Day 25](https://adventofcode.com/2023/day/25): Snowverload
 
