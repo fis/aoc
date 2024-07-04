@@ -45,8 +45,7 @@ func sumReflections(ps []pattern, find func(p pattern) (rx, ry int)) (sum int) {
 func findReflection(p pattern) (rx, ry int) {
 findX:
 	for x := 1; x < len(p.cols); x++ {
-		s := min(x, len(p.cols)-x)
-		for i := 0; i < s; i++ {
+		for i := range min(x, len(p.cols)-x) {
 			if p.cols[x-1-i] != p.cols[x+i] {
 				continue findX
 			}
@@ -59,8 +58,7 @@ findX:
 	}
 findY:
 	for y := 1; y < len(p.lines); y++ {
-		s := min(y, len(p.lines)-y)
-		for i := 0; i < s; i++ {
+		for i := range min(y, len(p.lines)-y) {
 			if p.lines[y-1-i] != p.lines[y+i] {
 				continue findY
 			}

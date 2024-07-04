@@ -18,6 +18,7 @@ package day07
 import (
 	"fmt"
 	"io"
+	"iter"
 	"regexp"
 	"strconv"
 	"strings"
@@ -84,8 +85,8 @@ func countAncestors(g *graph.DenseW, node string) int {
 		}
 		seen[at] = true
 		count := 1
-		for it := g.Pred(at); it.Valid(); it = g.Next(it) {
-			count += dfs(it.Tail())
+		for p := range g.Pred(at) {
+			count += dfs(p)
 		}
 		return count
 	}
@@ -101,8 +102,7 @@ func countDescendants(g *graph.DenseW, node string) int {
 			return c
 		}
 		count := 0
-		for it := g.Succ(at); it.Valid(); it = g.Next(it) {
-			next := it.Head()
+		for next := range g.Succ(at) {
 			n := g.W(at, next)
 			count += n * (1 + dfs(next))
 		}
@@ -142,22 +142,21 @@ func plotRules(rules []string, out io.Writer) error {
 
 	var (
 		colors   map[int]string
-		colorize func(int, func(int) graph.DenseIt, func(graph.DenseIt) int, string)
+		colorize func(int, func(int) iter.Seq[int], string)
 	)
 	colors = make(map[int]string)
-	colorize = func(u int, next func(int) graph.DenseIt, end func(graph.DenseIt) int, color string) {
+	colorize = func(u int, seq func(int) iter.Seq[int], color string) {
 		colors[u] = color
-		for it := next(u); it.Valid(); it = g.Next(it) {
-			v := end(it)
+		for v := range seq(u) {
 			if _, ok := colors[v]; !ok {
-				colorize(v, next, end, color)
+				colorize(v, seq, color)
 			}
 		}
 	}
 
 	nodeV, _ := g.V("shiny gold")
-	colorize(nodeV, g.Pred, graph.DenseIt.Tail, `"#1e8e3e"`)
-	colorize(nodeV, g.Succ, graph.DenseIt.Head, `"#1a73e8"`)
+	colorize(nodeV, g.Pred, `"#1e8e3e"`)
+	colorize(nodeV, g.Succ, `"#1a73e8"`)
 	colors[nodeV] = `"#d93025"`
 
 	return graph.WriteDOT(g, out, "bags", true, func(v int) map[string]string {

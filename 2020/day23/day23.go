@@ -34,7 +34,7 @@ func solve(lines []string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		r1 = r1.move()
 	}
 	p1 := r1.key()
@@ -43,7 +43,7 @@ func solve(lines []string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i := 0; i < 10000000; i++ {
+	for range 10000000 {
 		r2.move()
 	}
 	p2 := r2.key()
@@ -58,7 +58,7 @@ func newRing(s string) (r ring, err error) {
 		return 0, fmt.Errorf("invalid labels (expected 9): %q", s)
 	}
 	r = 0
-	for i := 0; i < 9; i++ {
+	for i := range 9 {
 		b := s[i]
 		if b < '1' || b > '9' {
 			return 0, fmt.Errorf("invalid label: %v", b)
@@ -70,7 +70,7 @@ func newRing(s string) (r ring, err error) {
 
 func (r ring) String() string {
 	labels := make([]byte, 9)
-	for i := 0; i < 9; i++ {
+	for i := range 9 {
 		labels[i] = '1' + byte((r>>(4*i))&0xf)
 	}
 	return string(labels)

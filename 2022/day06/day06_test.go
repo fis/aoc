@@ -68,7 +68,7 @@ func BenchmarkFindMarker(b *testing.B) {
 		for _, algo := range algos {
 			testCase := fmt.Sprintf("size=%d/algo=%s", size, algo.name)
 			b.Run(testCase, func(b *testing.B) {
-				for n := 0; n < b.N; n++ {
+				for range b.N {
 					got := algo.f(sig, size)
 					if got != want {
 						b.Errorf("findMarker[%s](sig, %d) = %d, want %d", algo.name, size, got, want)

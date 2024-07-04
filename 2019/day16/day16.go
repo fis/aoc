@@ -37,7 +37,7 @@ func solve(lines []string) ([]string, error) {
 
 func fft(sig []int, phases int) {
 	work := make([]int, len(sig))
-	for p := 0; p < phases; p++ {
+	for range phases {
 		for n := range work {
 			r := 0
 			for i := n; i < len(sig); {
@@ -66,7 +66,7 @@ func rfft(sig []int, phases, reps int) []int {
 	for i := range work {
 		work[i] = sig[(off+i)%len(sig)]
 	}
-	for p := 0; p < phases; p++ {
+	for range phases {
 		c := 0
 		for n := len(work) - 1; n >= 0; n-- {
 			c = (c + work[n]) % 10

@@ -58,7 +58,7 @@ func render(prog []instruction) []string {
 	var screen [H][W]byte
 	cycle, x := 0, 1
 	for _, inst := range prog {
-		for c := 0; c < inst.cycles; c++ {
+		for c := range inst.cycles {
 			px, py := (cycle+c)%W, (cycle+c)/W
 			screen[py][px] = fn.If[byte](px >= x-1 && px <= x+1, '#', ' ')
 		}

@@ -83,7 +83,7 @@ type monadCoeff struct {
 type monadCoeffs [ndigits]monadCoeff
 
 func parseCoeffs(lines []string) (coeffs monadCoeffs) {
-	for i := 0; i < ndigits; i++ {
+	for i := range ndigits {
 		base := i * 18
 		if words := strings.Split(lines[base+4], " "); words[2] == "26" {
 			coeffs[i].pop = true

@@ -86,7 +86,7 @@ func drop(bricks []brick) (succ [][]uint16) {
 		case b[1].x > b[0].x: // horizontal brick with some X extent
 			x, y, n := b[0].x, b[0].y, b[1].x-b[0].x+1
 			minD := uint16(math.MaxUint16)
-			for j := byte(0); j < n; j++ {
+			for j := range n {
 				if d := b[0].z - top[y][x+j].z; d < minD {
 					minD = d
 				}
@@ -105,7 +105,7 @@ func drop(bricks []brick) (succ [][]uint16) {
 		default: // horizontal brick with some Y extent
 			x, y, n := b[0].x, b[0].y, b[1].y-b[0].y+1
 			minD := uint16(math.MaxUint16)
-			for j := byte(0); j < n; j++ {
+			for j := range n {
 				if d := b[0].z - top[y+j][x].z; d < minD {
 					minD = d
 				}

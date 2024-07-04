@@ -118,7 +118,7 @@ func maxGeodes(bp blueprint, maxT int) (maxGeo int) {
 			}
 			nn++
 		}
-		for ni := 0; ni < nn; ni++ {
+		for ni := range nn {
 			n := next[ni]
 			if n.t > maxT {
 				continue

@@ -73,7 +73,7 @@ func BenchmarkAlgos(b *testing.B) {
 	}
 	for _, algo := range algos {
 		b.Run(algo.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				level := util.ParseLevelString(strings.TrimPrefix(ex, "\n"), '.')
 				want := 2511944
 				if got := algo.f(level, 10000000); got != want {

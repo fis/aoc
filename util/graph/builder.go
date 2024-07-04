@@ -124,7 +124,7 @@ func (b *Builder) SparseDigraph() (g *Sparse) {
 	}
 	allEdges := make([]int, len(b.edges))
 	edges := make([][]int, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		edges[i] = allEdges[edgePos[i]:edgePos[i+1]:edgePos[i+1]]
 	}
 	for _, e := range b.edges {
@@ -149,7 +149,7 @@ func (b *Builder) SparseDigraphW() (g *SparseW) {
 	allEdgeW := make([]int, len(b.edges))
 	edges := make([][]int, N)
 	edgeW := make([][]int, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		edges[i] = allEdges[edgePos[i]:edgePos[i+1]:edgePos[i+1]]
 		edgeW[i] = allEdgeW[edgePos[i]:edgePos[i+1]:edgePos[i+1]]
 	}

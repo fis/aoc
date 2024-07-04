@@ -33,7 +33,7 @@ func countFish(initial []int, days int) (total int) {
 		counts[i]++
 	}
 	offset := 0
-	for t := 0; t < days; t++ {
+	for range days {
 		counts[(offset+7)%9] += counts[offset]
 		offset = (offset + 1) % 9
 	}

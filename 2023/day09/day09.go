@@ -36,7 +36,7 @@ func predict(seq []int) int {
 	var n int
 	for n = len(buf) - 1; n > 0; n-- {
 		nz := false
-		for i := 0; i < n; i++ {
+		for i := range n {
 			buf[i] = buf[i+1] - buf[i]
 			nz = nz || buf[i] != 0
 		}

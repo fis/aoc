@@ -50,7 +50,7 @@ func newGrid(lines []string) (*grid, error) {
 		if len(line) != size {
 			return nil, fmt.Errorf("line %d: expected %d columns, got %d", y, size, len(line))
 		}
-		for x := 0; x < size; x++ {
+		for x := range size {
 			c := line[x]
 			if c < '0' || c > '9' {
 				return nil, fmt.Errorf("line %d, column %d: expected '0'..'9', got '%c'", y, x, c)
@@ -62,7 +62,7 @@ func newGrid(lines []string) (*grid, error) {
 }
 
 func (g *grid) simulate(steps int) (flashes int) {
-	for step := 0; step < steps; step++ {
+	for range steps {
 		flashes += g.step()
 	}
 	return flashes
@@ -78,8 +78,8 @@ func (g *grid) simulateToSync() (steps int) {
 
 func (g *grid) step() (flashes int) {
 	var newFlashes bitset
-	for y := 0; y < size; y++ {
-		for x := 0; x < size; x++ {
+	for y := range size {
+		for x := range size {
 			c := g[y][x] + 1
 			if c == 10 {
 				flashes++

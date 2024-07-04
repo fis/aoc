@@ -60,7 +60,7 @@ func closest(ps []particle) (minI int) {
 }
 
 func collideSim(ps []particle, rounds int) int {
-	for t := 0; t < rounds; t++ {
+	for t := range rounds {
 		positions := map[p3][]int{}
 		for i, p := range ps {
 			if p == (particle{}) {

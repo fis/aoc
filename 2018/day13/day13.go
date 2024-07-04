@@ -47,18 +47,18 @@ type cart struct {
 
 func simulate(level *util.Level, keepGoing bool) (outX, outY int) {
 	carts, occupied := []*cart(nil), map[util.P]struct{}{}
-	level.Range(func(x, y int, b byte) {
+	for p, b := range level.All() {
 		switch b {
 		case '^':
-			carts = append(carts, &cart{pos: util.P{x, y}, dir: util.P{0, -1}})
+			carts = append(carts, &cart{pos: p, dir: util.P{0, -1}})
 		case 'v':
-			carts = append(carts, &cart{pos: util.P{x, y}, dir: util.P{0, 1}})
+			carts = append(carts, &cart{pos: p, dir: util.P{0, 1}})
 		case '<':
-			carts = append(carts, &cart{pos: util.P{x, y}, dir: util.P{-1, 0}})
+			carts = append(carts, &cart{pos: p, dir: util.P{-1, 0}})
 		case '>':
-			carts = append(carts, &cart{pos: util.P{x, y}, dir: util.P{1, 0}})
+			carts = append(carts, &cart{pos: p, dir: util.P{1, 0}})
 		}
-	})
+	}
 	for _, c := range carts {
 		track := byte('-')
 		if c.dir.Y != 0 {

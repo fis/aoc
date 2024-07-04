@@ -46,7 +46,7 @@ func solve(lines []string) ([]string, error) {
 func partition(g *graph.Sparse) (vertGroup map[int]int, groupVerts map[int][]int) {
 	vertGroup = make(map[int]int)
 	groupVerts = make(map[int][]int)
-	for startV := 0; startV < g.Len(); startV++ {
+	for startV := range g.Len() {
 		if _, found := vertGroup[startV]; found {
 			continue
 		}
@@ -60,8 +60,7 @@ func partition(g *graph.Sparse) (vertGroup map[int]int, groupVerts map[int][]int
 			}
 			vertGroup[at] = group
 			groupVerts[group] = append(groupVerts[group], at)
-			for it := g.Succ(at); it.Valid(); it = g.Next(it) {
-				_, toV := it.At()
+			for toV := range g.Succ(at) {
 				if _, found := vertGroup[toV]; !found {
 					edge = append(edge, toV)
 				}

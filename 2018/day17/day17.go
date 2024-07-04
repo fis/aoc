@@ -130,14 +130,14 @@ func fill(level *util.Level, source util.P, filled map[util.P]struct{}) {
 }
 
 func measureWater(level *util.Level, minY, maxY int) (total int, pooled int) {
-	level.Range(func(_, y int, b byte) {
-		if y >= minY && y <= maxY && (b == '~' || b == '|') {
+	for p, b := range level.All() {
+		if p.Y >= minY && p.Y <= maxY && (b == '~' || b == '|') {
 			total++
 			if b == '~' {
 				pooled++
 			}
 		}
-	})
+	}
 	return total, pooled
 }
 

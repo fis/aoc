@@ -44,8 +44,8 @@ type grid [300][300]int8
 
 func makeGrid(s int) *grid {
 	var g grid
-	for y := 0; y < 300; y++ {
-		for x := 0; x < 300; x++ {
+	for y := range 300 {
+		for x := range 300 {
 			g[y][x] = int8(powerLevel(x+1, y+1, s))
 		}
 	}
@@ -54,12 +54,12 @@ func makeGrid(s int) *grid {
 
 func sweetSpot(g *grid) (bestX, bestY, totalPower int) {
 	totalPower = -3*3*5 - 1
-	for y := 0; y+2 < 300; y++ {
+	for y := range 300 - 2 {
 		pow := int(g[y][0] + g[y][1] + g[y][2] + g[y+1][0] + g[y+1][1] + g[y+1][2] + g[y+2][0] + g[y+2][1] + g[y+2][2])
 		if pow > totalPower {
 			bestX, bestY, totalPower = 0, y, pow
 		}
-		for x := 0; x+3 < 300; x++ {
+		for x := range 300 - 3 {
 			pow -= int(g[y][x] + g[y+1][x] + g[y+2][x])
 			pow += int(g[y][x+3] + g[y+1][x+3] + g[y+2][x+3])
 			if pow > totalPower {

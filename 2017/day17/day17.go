@@ -76,7 +76,7 @@ func (r *ring) move(steps int) {
 	if steps >= r.size {
 		steps %= r.size
 	}
-	for i := 0; i < steps; i++ {
+	for range steps {
 		r.pos = r.pos.next
 	}
 }

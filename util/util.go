@@ -56,7 +56,7 @@ func Chunks(s string) (chunks []string) {
 // as defined by the ScanInts split function.
 func Ints(s string) (ints []int) {
 	cur, in, neg := 0, false, false
-	for i := 0; i < len(s); i++ {
+	for i := range len(s) {
 		b := s[i]
 		if in && (b < '0' || b > '9') {
 			if neg {

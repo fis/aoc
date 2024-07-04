@@ -36,7 +36,7 @@ func enhanceBytes(algoLine string, imgLines []string) (lit2, lit50 int) {
 	const steps = 50
 
 	var algo [512]byte
-	for i := 0; i < 512; i++ {
+	for i := range algo {
 		if algoLine[i] == '#' {
 			algo[i] = 1
 		}
@@ -62,7 +62,7 @@ func enhanceBytes(algoLine string, imgLines []string) (lit2, lit50 int) {
 		invert1[0], invert9[1] = 1, 0b111_111_111
 	}
 
-	for step := 0; step < steps; step++ {
+	for step := range steps {
 		x0, x1, y0, y1 = x0-1, x1+1, y0-1, y1+1
 		for y := y0; y <= y1; y++ {
 			for x := x0; x <= x1; x++ {
@@ -101,7 +101,7 @@ func enhanceBits(algoLine string, imgLines []string) (lit2, lit50 int) {
 	)
 
 	var algo [512]byte
-	for i := 0; i < 512; i++ {
+	for i := range algo {
 		if algoLine[i] == '#' {
 			algo[i] = 1
 		}
@@ -129,7 +129,7 @@ func enhanceBits(algoLine string, imgLines []string) (lit2, lit50 int) {
 		invert1[0], invert9[1] = 1, 0b111_111_111
 	}
 
-	for step := uint32(0); step < steps; step++ {
+	for step := range steps {
 		x0, x1, y0, y1 = x0-1, x1+1, y0-1, y1+1
 		for y := y0; y <= y1; y++ {
 			for xu := x0 >> shift; xu < (x1+bitw)>>shift; xu++ {
@@ -185,7 +185,7 @@ func enhanceBitsPar(algoLine string, imgLines []string, workers int) (lit2, lit5
 	)
 
 	var algo [512]byte
-	for i := 0; i < 512; i++ {
+	for i := range algo {
 		if algoLine[i] == '#' {
 			algo[i] = 1
 		}
@@ -220,7 +220,7 @@ func enhanceBitsPar(algoLine string, imgLines []string, workers int) (lit2, lit5
 	}
 	workQueue := make(chan workRequest, workers)
 	var workWait sync.WaitGroup
-	for i := 0; i < workers; i++ {
+	for range workers {
 		go func() {
 			for {
 				req := <-workQueue
@@ -258,6 +258,7 @@ func enhanceBitsPar(algoLine string, imgLines []string, workers int) (lit2, lit5
 		}()
 	}
 
+	// N.B. uses `step` shared with workers
 	for step = 0; step < steps; step++ {
 		x0, x1, y0, y1 = x0-1, x1+1, y0-1, y1+1
 		workWait.Add(workers)

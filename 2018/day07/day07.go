@@ -52,7 +52,7 @@ func parseRules(lines []string) *graph.Dense {
 
 func toplexSort(g *graph.Dense) (order []string) {
 	avail := labelHeap{}
-	for v := 0; v < g.Len(); v++ {
+	for v := range g.Len() {
 		if g.NumPred(v) == 0 {
 			heap.Push(&avail, g.Label(v))
 		}
@@ -61,8 +61,7 @@ func toplexSort(g *graph.Dense) (order []string) {
 		from := heap.Pop(&avail).(string)
 		order = append(order, from)
 		u, _ := g.V(from)
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			v := it.Head()
+		for v := range g.Succ(u) {
 			g.DelEdge(u, v)
 			if g.NumPred(v) == 0 {
 				heap.Push(&avail, g.Label(v))
@@ -74,7 +73,7 @@ func toplexSort(g *graph.Dense) (order []string) {
 
 func timedSort(g *graph.Dense, workers, baseTime int) (order []string, totalTime int) {
 	avail := labelHeap{}
-	for v := 0; v < g.Len(); v++ {
+	for v := range g.Len() {
 		if g.NumPred(v) == 0 {
 			heap.Push(&avail, g.Label(v))
 		}
@@ -86,8 +85,7 @@ func timedSort(g *graph.Dense, workers, baseTime int) (order []string, totalTime
 			wi := heap.Pop(&busy).(workItem)
 			order = append(order, wi.label)
 			u, _ := g.V(wi.label)
-			for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-				v := it.Head()
+			for v := range g.Succ(u) {
 				g.DelEdge(u, v)
 				if g.NumPred(v) == 0 {
 					heap.Push(&avail, g.Label(v))

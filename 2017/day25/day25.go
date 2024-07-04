@@ -56,7 +56,7 @@ type turingState struct {
 
 func (tm *turingMachine) run(steps int) {
 	st := tm.start
-	for step := 0; step < steps; step++ {
+	for range steps {
 		old := tm.tape.read(tm.head)
 		tm.tape.write(tm.head, st.write[old])
 		tm.head += st.move[old]

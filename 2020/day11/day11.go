@@ -47,12 +47,11 @@ func fixedPoint(level *util.Level, mapper func(*util.Level) [][8]int, tolerance 
 
 func nearMap(level *util.Level) [][8]int {
 	offsets := make(map[util.P]int)
-	level.Range(func(x, y int, _ byte) {
-		offsets[util.P{x, y}] = len(offsets)
-	})
+	for p := range level.All() {
+		offsets[p] = len(offsets)
+	}
 	neigh := make([][8]int, len(offsets))
-	level.Range(func(x, y int, _ byte) {
-		p := util.P{x, y}
+	for p := range level.All() {
 		n, ni := &neigh[offsets[p]], 0
 		for _, np := range p.Neigh8() {
 			if level.At(np.X, np.Y) == 'L' {
@@ -63,22 +62,22 @@ func nearMap(level *util.Level) [][8]int {
 		for ; ni < 8; ni++ {
 			n[ni] = -1
 		}
-	})
+	}
 	return neigh
 }
 
 func farMap(level *util.Level) [][8]int {
 	offsets := make(map[util.P]int)
-	level.Range(func(x, y int, _ byte) {
-		offsets[util.P{x, y}] = len(offsets)
-	})
+	for p := range level.All() {
+		offsets[p] = len(offsets)
+	}
 	neigh := make([][8]int, len(offsets))
-	level.Range(func(x, y int, _ byte) {
-		n, ni := &neigh[offsets[util.P{x, y}]], 0
+	for p := range level.All() {
+		n, ni := &neigh[offsets[p]], 0
 		for _, d := range (util.P{0, 0}).Neigh8() {
-			for i := 1; level.InBounds(x+i*d.X, y+i*d.Y); i++ {
-				if level.At(x+i*d.X, y+i*d.Y) == 'L' {
-					n[ni] = offsets[util.P{x + i*d.X, y + i*d.Y}]
+			for i := 1; level.InBounds(p.X+i*d.X, p.Y+i*d.Y); i++ {
+				if level.At(p.X+i*d.X, p.Y+i*d.Y) == 'L' {
+					n[ni] = offsets[util.P{p.X + i*d.X, p.Y + i*d.Y}]
 					ni++
 					break
 				}
@@ -87,7 +86,7 @@ func farMap(level *util.Level) [][8]int {
 		for ; ni < 8; ni++ {
 			n[ni] = -1
 		}
-	})
+	}
 	return neigh
 }
 

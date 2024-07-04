@@ -46,9 +46,9 @@ type program struct {
 
 func findRoot(g *graph.Sparse) string {
 	numPred := make([]int, g.Len())
-	for u := 0; u < g.Len(); u++ {
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			numPred[it.Head()]++
+	for u := range g.Len() {
+		for v := range g.Succ(u) {
+			numPred[v]++
 		}
 	}
 	for u, n := range numPred {

@@ -60,7 +60,7 @@ func part2(packets []list) int {
 func cmp(left, right list) int {
 	llen, rlen := left.len(), right.len()
 	n := min(llen, rlen)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		lt, rt := left.itemType(i), right.itemType(i)
 		if lt == numItem && rt == numItem {
 			switch ln, rn := left.num(i), right.num(i); {
@@ -211,7 +211,7 @@ func (dl dataList) list(i int) list {
 func (dl dataList) String() string {
 	var s strings.Builder
 	s.WriteByte('[')
-	for i := 0; i < dl.len(); i++ {
+	for i := range dl.len() {
 		if i > 0 {
 			s.WriteByte(',')
 		}

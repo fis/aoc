@@ -68,7 +68,7 @@ func BenchmarkDecrypt(b *testing.B) {
 	want := 8119137886612
 	for _, skipSize := range skipSizes {
 		b.Run(fmt.Sprintf("size=%d", skipSize), func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
+			for range b.N {
 				if got := decrypt(file, 811589153, 10, skipSize); got != want {
 					b.Errorf("decrypt2(day20, 811589153, 10, %d) = %d, want %d", skipSize, got, want)
 				}

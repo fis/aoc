@@ -17,6 +17,7 @@ package graph
 import (
 	"fmt"
 	"io"
+	"iter"
 
 	"github.com/fis/aoc/util/fn"
 )
@@ -30,7 +31,7 @@ type Any interface {
 	V(string) (int, bool)
 	Label(v int) string
 	W(u, v int) int
-	ForSucc(u int, cb func(v int) bool) bool
+	Succ(u int) iter.Seq[int]
 	hasWeights() bool
 }
 
@@ -39,7 +40,7 @@ type Any interface {
 // returns a "label" attribute, it takes precedence over the usual node name / edge weight.
 func WriteDOT(g Any, w io.Writer, name string, directed bool, nodeAttr func(v int) map[string]string, edgeAttr func(u, v int) map[string]string) (err error) {
 	fmt.Fprintf(w, "%s %s {\n", fn.If(directed, "digraph", "graph"), name)
-	for v := 0; v < g.Len(); v++ {
+	for v := range g.Len() {
 		var attrs map[string]string
 		if nodeAttr != nil {
 			attrs = nodeAttr(v)
@@ -48,10 +49,10 @@ func WriteDOT(g Any, w io.Writer, name string, directed bool, nodeAttr func(v in
 		writeAttrs(w, attrs, "label", fmt.Sprintf(`"%s"`, g.Label(v)))
 		fmt.Fprintf(w, "];\n")
 	}
-	for u := 0; u < g.Len(); u++ {
-		g.ForSucc(u, func(v int) bool {
+	for u := range g.Len() {
+		for v := range g.Succ(u) {
 			if !directed && v < u {
-				return true
+				continue
 			}
 			var attrs map[string]string
 			if edgeAttr != nil {
@@ -65,8 +66,7 @@ func WriteDOT(g Any, w io.Writer, name string, directed bool, nodeAttr func(v in
 				writeAttrs(w, attrs)
 			}
 			fmt.Fprintf(w, "];\n")
-			return true
-		})
+		}
 	}
 	_, err = fmt.Fprintln(w, "}")
 	return err

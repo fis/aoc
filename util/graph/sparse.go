@@ -15,6 +15,7 @@
 package graph
 
 import (
+	"iter"
 	"slices"
 )
 
@@ -60,86 +61,25 @@ func (g *SparseW) W(u, v int) int {
 }
 
 // Succ returns an iterator for the successors of vertex u.
-func (g *Sparse) Succ(u int) SparseIt {
-	if len(g.edges[u]) == 0 {
-		return SparseIt{i: -1}
-	}
-	return SparseIt{u: u, v: g.edges[u][0], i: 0}
-}
-
-// Succ returns an iterator for the successors of vertex u.
-func (g *SparseW) Succ(u int) SparseItW {
-	if len(g.edges[u]) == 0 {
-		return SparseItW{SparseIt: SparseIt{i: -1}}
-	}
-	return SparseItW{SparseIt: SparseIt{u: u, v: g.edges[u][0], i: 0}, w: g.edgeW[u][0]}
-}
-
-// Next moves an edge iterator (from Succ or Pred) one step further.
-func (g *Sparse) Next(it SparseIt) SparseIt {
-	i := it.i + 1
-	if i == 0 || i == len(g.edges[it.u]) {
-		return SparseIt{i: -1}
-	}
-	return SparseIt{u: it.u, v: g.edges[it.u][i], i: i}
-}
-
-// Next moves an edge iterator (from Succ or Pred) one step further.
-func (g *SparseW) Next(it SparseItW) SparseItW {
-	i := it.i + 1
-	if i == 0 || i == len(g.edges[it.u]) {
-		return SparseItW{SparseIt: SparseIt{i: -1}}
-	}
-	return SparseItW{SparseIt: SparseIt{u: it.u, v: g.edges[it.u][i], i: i}, w: g.edgeW[it.u][i]}
-}
-
-// SparseIt is an iterator over the edges of a sparse unweighted graph.
-type SparseIt struct {
-	u, v, i int
-}
-
-func (it SparseIt) Valid() bool    { return it.i >= 0 }
-func (it SparseIt) At() (u, v int) { return it.u, it.v }
-func (it SparseIt) Tail() int      { return it.u }
-func (it SparseIt) Head() int      { return it.v }
-
-// SparseWIt is an iterator over the edges of a sparse weighted graph.
-type SparseItW struct {
-	SparseIt
-	w int
-}
-
-func (it SparseItW) W() int { return it.w }
-
-// ForSucc iterates over the successors of u, returning true if the end was reached.
-// Return false from the callback to stop short; that is then returned to the caller.
-func (g *Sparse) ForSucc(u int, cb func(v int) bool) bool {
-	for _, v := range g.edges[u] {
-		if !cb(v) {
-			return false
+func (g *Sparse) Succ(u int) iter.Seq[int] {
+	return func(yield func(int) bool) {
+		for _, v := range g.edges[u] {
+			if !yield(v) {
+				return
+			}
 		}
 	}
-	return true
 }
 
-// ForSuccW is like ForSucc, but the weight (always 1) will also be passed to the callback.
-func (g *Sparse) ForSuccW(u int, cb func(v, w int) bool) bool {
-	for _, v := range g.edges[u] {
-		if !cb(v, 1) {
-			return false
+// SuccW returns an iterator for the successors of vertex u, together with their weights.
+func (g *SparseW) SuccW(u int) iter.Seq2[int, int] {
+	return func(yield func(int, int) bool) {
+		for i, v := range g.edges[u] {
+			if !yield(v, g.edgeW[u][i]) {
+				return
+			}
 		}
 	}
-	return true
-}
-
-// ForSuccW is like ForSucc, but the weight will also be passed to the callback.
-func (g *SparseW) ForSuccW(u int, cb func(v, w int) bool) bool {
-	for i, v := range g.edges[u] {
-		if !cb(v, g.edgeW[u][i]) {
-			return false
-		}
-	}
-	return true
 }
 
 // NumSucc returns the number of successors of u. This is an O(1) operation.

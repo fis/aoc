@@ -62,7 +62,7 @@ func babyStepWithOrder(b, a, m, n int) (x int) {
 		a = (a * b) % m
 	}
 	amm := pow(b, m-mm-1, m)
-	for i := 0; i < m; i++ {
+	for i := range m {
 		if j, ok := logTable[a]; ok {
 			return ((i*mm)%m + j) % m
 		}

@@ -76,7 +76,7 @@ func walk(w string, cb func(x, y, s int)) {
 	for _, op := range strings.Split(w, ",") {
 		d := dir[op[0]]
 		n, _ := strconv.Atoi(op[1:])
-		for i := 0; i < n; i++ {
+		for range n {
 			x, y, s = x+d.X, y+d.Y, s+1
 			cb(x, y, s)
 		}

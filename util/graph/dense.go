@@ -14,6 +14,8 @@
 
 package graph
 
+import "iter"
+
 type Dense struct {
 	graphLabels
 	adj []bool
@@ -54,110 +56,78 @@ func (g *DenseW) W(u, v int) int {
 }
 
 // Succ returns an iterator for the successors of vertex u.
-func (g *Dense) Succ(u int) DenseIt {
-	return g.Next(DenseIt{u: u, v: -1, du: 0, dv: 1})
+func (g *Dense) Succ(u int) iter.Seq[int] {
+	return func(yield func(int) bool) {
+		e, n := g.e(u, 0), g.Len()
+		for v := range n {
+			if g.adj[e] {
+				if !yield(v) {
+					return
+				}
+			}
+			e++
+		}
+	}
 }
 
 // Succ returns an iterator for the successors of vertex u.
-func (g *DenseW) Succ(u int) DenseIt {
-	return g.Next(DenseIt{u: u, v: -1, du: 0, dv: 1})
+func (g *DenseW) Succ(u int) iter.Seq[int] {
+	return func(yield func(int) bool) {
+		e, n := g.e(u, 0), g.Len()
+		for v := range n {
+			if g.adj[e] != 0 {
+				if !yield(v) {
+					return
+				}
+			}
+			e++
+		}
+	}
+}
+
+// SuccW returns an iterator for the successors of vertex u, together with their weights.
+func (g *DenseW) SuccW(u int) iter.Seq2[int, int] {
+	return func(yield func(int, int) bool) {
+		e, n := g.e(u, 0), g.Len()
+		for v := range n {
+			if w := g.adj[e]; w != 0 {
+				if !yield(v, w) {
+					return
+				}
+			}
+			e++
+		}
+	}
 }
 
 // Pred returns an iterator for the predecessors of vertex v.
-func (g *Dense) Pred(v int) DenseIt {
-	return g.Next(DenseIt{u: -1, v: v, du: 1, dv: 0})
+func (g *Dense) Pred(v int) iter.Seq[int] {
+	return func(yield func(int) bool) {
+		e, n := g.e(0, v), g.Len()
+		for u := range n {
+			if g.adj[e] {
+				if !yield(u) {
+					return
+				}
+			}
+			e += n
+		}
+	}
 }
 
 // Pred returns an iterator for the predecessors of vertex v.
-func (g *DenseW) Pred(v int) DenseIt {
-	return g.Next(DenseIt{u: -1, v: v, du: 1, dv: 0})
-}
-
-// Next moves an edge iterator (from Succ or Pred) one step further.
-func (g *Dense) Next(it DenseIt) DenseIt {
-	for {
-		it.u, it.v = it.u+it.du, it.v+it.dv
-		if it.u >= g.Len() || it.v >= g.Len() {
-			return DenseIt{u: -1}
-		}
-		if g.adj[g.e(it.u, it.v)] {
-			return it
-		}
-	}
-}
-
-// Next moves an edge iterator (from Succ or Pred) one step further.
-func (g *DenseW) Next(it DenseIt) DenseIt {
-	for {
-		it.u, it.v = it.u+it.du, it.v+it.dv
-		if it.u >= g.Len() || it.v >= g.Len() {
-			return DenseIt{u: -1}
-		}
-		if g.adj[g.e(it.u, it.v)] != 0 {
-			return it
-		}
-	}
-}
-
-// DenseIt is an iterator over the edges of a dense graph.
-type DenseIt struct {
-	u, v   int
-	du, dv int
-}
-
-func (it DenseIt) Valid() bool    { return it.u >= 0 }
-func (it DenseIt) At() (u, v int) { return it.u, it.v }
-func (it DenseIt) Tail() int      { return it.u }
-func (it DenseIt) Head() int      { return it.v }
-
-// ForSucc iterates over the successors of u, returning true if the end was reached.
-// Return false from the callback to stop short; that is then returned to the caller.
-func (g *Dense) ForSucc(u int, cb func(v int) bool) bool {
-	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
-		if g.adj[e] {
-			if !cb(v) {
-				return false
+func (g *DenseW) Pred(v int) iter.Seq[int] {
+	return func(yield func(int) bool) {
+		e, n := g.e(0, v), g.Len()
+		for u := range n {
+			if g.adj[e] != 0 {
+				if !yield(u) {
+					return
+				}
 			}
+			e += n
 		}
 	}
-	return true
-}
-
-// ForSuccW is like ForSucc, but the weight (always 1) will also be passed to the callback.
-func (g *Dense) ForSuccW(u int, cb func(v, w int) bool) bool {
-	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
-		if g.adj[e] {
-			if !cb(v, 1) {
-				return false
-			}
-		}
-	}
-	return true
-}
-
-// ForSucc iterates over the successors of u, returning true if the end was reached.
-// Return false from the callback to stop short; that is then returned to the caller.
-func (g *DenseW) ForSucc(u int, cb func(v int) bool) bool {
-	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
-		if g.adj[e] != 0 {
-			if !cb(v) {
-				return false
-			}
-		}
-	}
-	return true
-}
-
-// ForSuccW is like ForSucc, but the weight will also be passed to the callback.
-func (g *DenseW) ForSuccW(u int, cb func(v, w int) bool) bool {
-	for v, e := 0, g.e(u, 0); v < g.Len(); v, e = v+1, e+1 {
-		if w := g.adj[e]; w != 0 {
-			if !cb(v, w) {
-				return false
-			}
-		}
-	}
-	return true
 }
 
 // NumSucc returns the total number of successors of u. This is an O(|V|) operation.

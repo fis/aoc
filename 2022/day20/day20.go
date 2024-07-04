@@ -50,7 +50,7 @@ func decrypt(file []int, key, rounds, skipSize int) (plain int) {
 			nodes[i].pskip, nodes[i].nskip = &nodes[ps], &nodes[ns]
 		}
 	}
-	for round := 0; round < rounds; round++ {
+	for range rounds {
 		for i := range nodes {
 			from := &nodes[i]
 			v := from.value % (N - 1)
@@ -146,7 +146,7 @@ func decryptPlain(file []int, key int, rounds int) (plain int) {
 		p, n := (i+N-1)%N, (i+1)%N
 		nodes[i] = nodePlain{value: key * v, prev: &nodes[p], next: &nodes[n]}
 	}
-	for round := 0; round < rounds; round++ {
+	for range rounds {
 		for i := range nodes {
 			from := &nodes[i]
 			v := from.value % (N - 1)
@@ -172,7 +172,7 @@ func decryptPlain(file []int, key int, rounds int) (plain int) {
 		}
 	}
 	for i, p := 0, zero; i < 3; i++ {
-		for j := 0; j < 1000; j++ {
+		for range 1000 {
 			p = p.next
 		}
 		plain += p.value

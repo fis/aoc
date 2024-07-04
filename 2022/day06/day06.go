@@ -54,7 +54,7 @@ func findMarkerWindowed(sig string, size int) int {
 		counts [64]int
 		unique int
 	)
-	for i := 0; i < size; i++ {
+	for i := range size {
 		b := sig[i] & 0x3f
 		if counts[b] == 0 {
 			unique++

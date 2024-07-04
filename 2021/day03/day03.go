@@ -36,13 +36,13 @@ func gammaEpsilon(lines []string) (gamma, epsilon int) {
 	N, K := len(lines), len(lines[0])
 	ones := make([]int, K)
 	for _, line := range lines {
-		for i := 0; i < K; i++ {
+		for i := range K {
 			if line[i]&1 != 0 {
 				ones[i]++
 			}
 		}
 	}
-	for i := 0; i < K; i++ {
+	for i := range K {
 		gamma <<= 1
 		if ones[i] > N/2 {
 			gamma |= 1
@@ -55,7 +55,7 @@ func gammaEpsilon(lines []string) (gamma, epsilon int) {
 func filterBits(lines []string, keepLCB int) int {
 	var surviving []string
 	K := len(lines[0])
-	for i := 0; i < K; i++ {
+	for i := range K {
 		ones := 0
 		for _, line := range lines {
 			if line[i]&1 != 0 {

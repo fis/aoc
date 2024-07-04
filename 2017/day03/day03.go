@@ -56,7 +56,7 @@ func part2(limit int) int {
 	for {
 		p := util.P{X: r, Y: -r}
 		for _, d := range []util.P{{0, 1}, {-1, 0}, {0, -1}, {1, 0}} {
-			for i := 0; i < 2*r; i++ {
+			for range 2 * r {
 				p = p.Add(d)
 				v := 0
 				for _, n := range p.Neigh8() {

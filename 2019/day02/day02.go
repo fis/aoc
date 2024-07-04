@@ -33,8 +33,8 @@ func part1(prog []int64) int64 {
 }
 
 func part2(prog []int64) int64 {
-	for noun := 0; noun < 100; noun++ {
-		for verb := 0; verb < 100; verb++ {
+	for noun := range 100 {
+		for verb := range 100 {
 			if run(noun, verb, prog) == 19690720 {
 				return int64(100*noun + verb)
 			}

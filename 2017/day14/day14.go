@@ -39,7 +39,7 @@ func solve(lines []string) ([]string, error) {
 }
 
 func hash(key string) (hashes [][]byte, used int) {
-	for i := 0; i < 128; i++ {
+	for i := range 128 {
 		rowKey := fmt.Sprintf("%s-%d", key, i)
 		hash := knot.Hash(knot.N, knot.Rounds, rowKey)
 		hashes = append(hashes, hash)
@@ -54,7 +54,7 @@ func buildLevel(hashes [][]byte) *util.Level {
 	lvl := util.EmptyLevel(util.P{0, 0}, util.P{knot.N - 1, len(hashes) - 1}, '.')
 	for y, row := range hashes {
 		for x1, b := range row {
-			for x2 := 0; x2 < 8; x2++ {
+			for x2 := range 8 {
 				if ((b << x2) & 0x80) != 0 {
 					lvl.Set(8*x1+x2, y, '#')
 				}
@@ -66,12 +66,12 @@ func buildLevel(hashes [][]byte) *util.Level {
 
 func countRegions(lvl *util.Level) (regions int) {
 	seen := map[util.P]struct{}{}
-	lvl.Range(func(x, y int, b byte) {
-		if _, found := seen[util.P{x, y}]; found {
-			return
+	for start := range lvl.All() {
+		if _, found := seen[start]; found {
+			continue
 		}
 		regions++
-		edge := []util.P{{x, y}}
+		edge := []util.P{start}
 		for len(edge) > 0 {
 			at := edge[len(edge)-1]
 			edge = edge[:len(edge)-1]
@@ -85,6 +85,6 @@ func countRegions(lvl *util.Level) (regions int) {
 				}
 			}
 		}
-	})
+	}
 	return regions
 }

@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"iter"
 	"os"
 )
 
@@ -179,6 +180,26 @@ func (l *Level) CoreAt(x, y int) byte {
 	return l.core[y-l.coreMin.Y][x-l.coreMin.X]
 }
 
+// All returns an iterator over all non-empty cells in the level.
+func (l *Level) All() iter.Seq2[P, byte] {
+	return func(yield func(P, byte) bool) {
+		for i, row := range l.core {
+			for j, b := range row {
+				if b != l.empty {
+					if !yield(P{l.coreMin.X + j, l.coreMin.Y + i}, b) {
+						return
+					}
+				}
+			}
+		}
+		for p, b := range l.spill {
+			if !yield(p, b) {
+				return
+			}
+		}
+	}
+}
+
 // Row returns a []byte with the contents of a single contiguous row from the level.
 // If this is within the core area, the returned slice will share storage with the level.
 func (l *Level) Row(x1, x2, y int) []byte {
@@ -256,20 +277,6 @@ func (l *Level) InBounds(x, y int) bool {
 // CoreBounds returns the top-left and bottom-right corners of the core (densely stored) area.
 func (l *Level) CoreBounds() (min, max P) {
 	return l.coreMin, l.coreMax
-}
-
-// Range calls the callback function for all non-empty cells in the level.
-func (l *Level) Range(cb func(x, y int, b byte)) {
-	for i, row := range l.core {
-		for j, b := range row {
-			if b != l.empty {
-				cb(l.coreMin.X+j, l.coreMin.Y+i, b)
-			}
-		}
-	}
-	for p, b := range l.spill {
-		cb(p.X, p.Y, b)
-	}
 }
 
 // Find locates the coordinates of a byte, which must be unique on the level.
@@ -372,7 +379,7 @@ func (l *FixedLevel) InBounds(x, y int) bool { return x >= 0 && x < l.W && y >= 
 func (l *FixedLevel) Write(w io.Writer) {
 	row := make([]byte, l.W+1)
 	row[l.W] = '\n'
-	for y := 0; y < l.H; y++ {
+	for y := range l.H {
 		copy(row, l.Data[y*l.W:(y+1)*l.W])
 		w.Write(row)
 	}
@@ -380,8 +387,8 @@ func (l *FixedLevel) Write(w io.Writer) {
 
 // Find locates the coordinates of a byte, which must be unique on the level.
 func (l *FixedLevel) Find(key byte) (x, y int, found bool) {
-	for i := 0; i < l.H; i++ {
-		for j := 0; j < l.W; j++ {
+	for i := range l.H {
+		for j := range l.W {
 			if l.Data[i*l.W+j] == key {
 				if found {
 					return 0, 0, false

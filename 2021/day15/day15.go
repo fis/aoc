@@ -199,7 +199,7 @@ func readLevel(lines []string) (w, h int32, data [][]byte, err error) {
 			return 0, 0, nil, fmt.Errorf("misshapen level: expected %d columns, got %d", w, len(line))
 		}
 		row := block[y*int(w) : (y+1)*int(w)]
-		for x := int32(0); x < w; x++ {
+		for x := range w {
 			c := line[x]
 			if c < '0' || c > '9' {
 				return 0, 0, nil, fmt.Errorf("bad level data: expected '0'..'9', got '%c' (%v)", c, c)

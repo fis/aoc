@@ -94,15 +94,15 @@ amphiState represents the entire state of the amphipods, encoded as follows:
 
 Let's denote the possible positions of the level an amphipod may be in as follows:
 
-    #############
-    #12.3.4.5.67#
-    ###A#B#C#D###
-      #a#b#c#d#
-      #########
+	#############
+	#12.3.4.5.67#
+	###A#B#C#D###
+	  #a#b#c#d#
+	  #########
 
 The state of each of the 15 labeled positions is encoded in a different nybble of a 60-bit word:
 
-    0x7654321dDcCbBaA
+	0x7654321dDcCbBaA
 
 Each nybble is either 0 (for empty), or a value between 4 .. 7 to denote an A-type .. D-type amphipod respectively.
 */
@@ -262,21 +262,21 @@ amphiDeepState represents the entire state of the amphipods for part 2, encoded 
 
 Let's denote the possible positions of the level an amphipod may be in as follows:
 
-    #############
-    #12.3.4.5.67#
-    ###A#B#C#D###
-      #X#Y#Z#W#
-      #x#y#z#w#
-      #a#b#c#d#
-      #########
+	#############
+	#12.3.4.5.67#
+	###A#B#C#D###
+	  #X#Y#Z#W#
+	  #x#y#z#w#
+	  #a#b#c#d#
+	  #########
 
 The state of each of the 7 labeled corridor positions is encoded in a nybble of a 28-bit word:
 
-    0x7654321
+	0x7654321
 
 And the state of each of the 16 labeled room positions is encoded in a nybble of a 64-bit word:
 
-    0xdwWDczZCbyYBaxXA
+	0xdwWDczZCbyYBaxXA
 
 Each nybble is either 0 (for empty), or a value between 4 .. 7 to denote an A-type .. D-type amphipod respectively.
 */

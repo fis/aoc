@@ -38,7 +38,7 @@ func part1(nums []int) (valid int) {
 
 func part2(nums []int) (valid int) {
 	for base := 0; base+8 < len(nums); base += 9 {
-		for i := 0; i < 3; i++ {
+		for i := range 3 {
 			if isValid(nums[base+i], nums[base+i+3], nums[base+i+6]) {
 				valid++
 			}

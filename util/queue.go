@@ -131,7 +131,7 @@ func (q *Queue[T]) Clear() {
 func (q Queue[T]) String() string {
 	var sb strings.Builder
 	sb.WriteByte('[')
-	for i := 0; i < cap(q.q); i++ {
+	for i := range cap(q.q) {
 		if i > 0 {
 			sb.WriteByte(' ')
 		}

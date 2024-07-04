@@ -26,8 +26,7 @@ func unsafeLongestPath(g *graph.SparseW, startV, endV int) (longest int) {
 		if u == startV || u == endV {
 			continue
 		}
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			v, w := it.Head(), it.W()
+		for v, w := range g.SuccW(u) {
 			if u == startV || u == endV {
 				continue
 			}

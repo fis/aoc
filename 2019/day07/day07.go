@@ -51,7 +51,7 @@ func findBest(prog []int64, phases *[ampCount]int64, runner func([]int64, *[ampC
 
 func run(prog []int64, phases *[ampCount]int64) int64 {
 	sig := int64(0)
-	for i := 0; i < ampCount; i++ {
+	for i := range ampCount {
 		out, _ := intcode.Run(prog, []int64{phases[i], sig})
 		sig = out[0]
 	}
@@ -60,7 +60,7 @@ func run(prog []int64, phases *[ampCount]int64) int64 {
 
 func runFeedback(prog []int64, phases *[ampCount]int64) int64 {
 	amps, tokens := [ampCount]intcode.VM{}, [ampCount]intcode.WalkToken{}
-	for i := 0; i < ampCount; i++ {
+	for i := range ampCount {
 		amps[i].Load(prog)
 		amps[i].Walk(&tokens[i])
 		tokens[i].ProvideInput(phases[i])
@@ -68,7 +68,7 @@ func runFeedback(prog []int64, phases *[ampCount]int64) int64 {
 	}
 	sig, done := int64(0), false
 	for !done {
-		for i := 0; i < ampCount; i++ {
+		for i := range ampCount {
 			tokens[i].ProvideInput(sig)
 			amps[i].Walk(&tokens[i])
 			sig = tokens[i].ReadOutput()
@@ -86,7 +86,7 @@ func permutations(vals *[ampCount]int64, k int, cb func(*[ampCount]int64)) {
 	}
 	permutations(vals, k-1, cb)
 	even := k&1 == 0
-	for i := 0; i < k-1; i++ {
+	for i := range k - 1 {
 		if even {
 			vals[i], vals[k-1] = vals[k-1], vals[i]
 		} else {

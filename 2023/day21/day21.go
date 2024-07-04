@@ -220,8 +220,8 @@ func (plotter) Plot(r io.Reader, w io.Writer) error {
 		colorVisited = color.NRGBA{R: 66, G: 133, B: 244, A: 255}
 	)
 	img := image.NewNRGBA(image.Rect(0, 0, 2*l.W, 2*l.H))
-	for y := 0; y < l.H; y++ {
-		for x := 0; x < l.W; x++ {
+	for y := range l.H {
+		for x := range l.W {
 			var c color.NRGBA
 			switch l.At(x, y) {
 			case '.':

@@ -48,7 +48,7 @@ type rucksack [2]uint64
 func pack(line string) (rs rucksack, err error) {
 	rs[0], rs[1] = 0, 0
 	n := len(line) / 2
-	for i := 0; i < n; i++ {
+	for i := range n {
 		rs[0] |= 1 << itemPriority(line[i])
 		rs[1] |= 1 << itemPriority(line[n+i])
 	}

@@ -60,7 +60,7 @@ type hash [md5.Size]byte
 const noTriple byte = 0x10
 
 func (h hash) findTriple() byte {
-	for i := 0; i < md5.Size-1; i++ {
+	for i := range md5.Size - 1 {
 		half := h[i]<<4 | h[i+1]>>4
 		if h[i] == half || half == h[i+1] {
 			return half & 0xf
@@ -71,7 +71,7 @@ func (h hash) findTriple() byte {
 
 func (h hash) matchPentad(key byte) bool {
 	kk := key<<4 | key
-	for i := 0; i < md5.Size-2; i++ {
+	for i := range md5.Size - 2 {
 		if h[i] == kk && h[i+1] == kk && h[i+2]>>4 == key {
 			return true
 		}
@@ -149,7 +149,7 @@ func (ks *stretchedStreamer) peek(offset int) hash {
 		idx := int64(ks.cnt + offset)
 		idxSize := len(strconv.AppendInt(ks.buf[ks.saltSize:ks.saltSize], idx, 10))
 		h := md5.Sum(ks.buf[:ks.saltSize+idxSize])
-		for i := 0; i < ks.stretch; i++ {
+		for range ks.stretch {
 			hex.Encode(ks.hashBuf[:], h[:])
 			h = md5.Sum(ks.hashBuf[:])
 		}

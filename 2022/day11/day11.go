@@ -39,7 +39,7 @@ func solve(monkeys []monkey) ([]string, error) {
 func monkeyBusiness(monkeys []monkey, rounds int) int {
 	items := fn.Map(monkeys, func(m monkey) []int { return slices.Clone(m.startItems) })
 	act := make([]int, len(monkeys))
-	for round := 0; round < rounds; round++ {
+	for range rounds {
 		for i, m := range monkeys {
 			act[i] += len(items[i])
 			for _, worry := range items[i] {
@@ -58,7 +58,7 @@ func worryingMonkeyBusiness(monkeys []monkey, rounds int) int {
 	items := fn.Map(monkeys, func(m monkey) []int { return slices.Clone(m.startItems) })
 	act := make([]int, len(monkeys))
 	modulo := fn.Prod(fn.Map(monkeys, func(m monkey) int { return m.test }))
-	for round := 0; round < rounds; round++ {
+	for range rounds {
 		for i, m := range monkeys {
 			act[i] += len(items[i])
 			for _, worry := range items[i] {
@@ -133,7 +133,7 @@ func parseMonkey(chunk string) (m monkey, err error) {
 	} else if m.test, err = strconv.Atoi(test); err != nil {
 		return monkey{}, fmt.Errorf("bad monkey: expected test: %w", err)
 	}
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		if next, ok := util.CheckPrefix(lines[4+i], fn.If(i == 0, prefixNextTrue, prefixNextFalse)); !ok {
 			return monkey{}, fmt.Errorf("bad monkey: expected next, got: %q", lines[4+i])
 		} else if m.next[i], err = strconv.Atoi(next); err != nil {

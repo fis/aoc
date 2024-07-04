@@ -49,7 +49,7 @@ func dropRocks(jets string, rocks int) int {
 func analyzeRocks(jets string, rocks int) int {
 	sim, rock := newSimulation(jets), 0
 	for sim.height() < fingerprintSize {
-		for i := 0; i < len(jets); i++ {
+		for range len(jets) {
 			if sim.step() {
 				rock++
 			}
@@ -76,7 +76,7 @@ outerLoop:
 			break outerLoop
 		}
 		states[fp] = state{rock: rock, height: discarded + sim.height()}
-		for i := 0; i < len(jets); i++ {
+		for range len(jets) {
 			if sim.step() {
 				rock++
 				if rock == rocks {
@@ -149,7 +149,7 @@ func (sim *simulation) step() bool {
 	newX := fn.If(jet == '<', sim.rockX-1, sim.rockX+1)
 	if newX >= 0 && newX+rs.w <= 7 {
 		blocked := false
-		for y := 0; y < rs.h; y++ {
+		for y := range rs.h {
 			if sim.chute[sim.rockY+y]&(rs.shape[y]<<(7-rs.w-newX)) != 0 {
 				blocked = true
 				break
@@ -163,7 +163,7 @@ func (sim *simulation) step() bool {
 	newY := sim.rockY - 1
 	blocked := newY < 0
 	if !blocked {
-		for y := 0; y < rs.h; y++ {
+		for y := range rs.h {
 			if sim.chute[newY+y]&(rs.shape[y]<<(7-rs.w-sim.rockX)) != 0 {
 				blocked = true
 				break
@@ -175,7 +175,7 @@ func (sim *simulation) step() bool {
 		return false
 	}
 
-	for y := 0; y < rs.h; y++ {
+	for y := range rs.h {
 		sim.chute[sim.rockY+y] |= rs.shape[y] << (7 - rs.w - sim.rockX)
 	}
 	topY := max(len(sim.chute)-sim.airGap, sim.rockY+rs.h)

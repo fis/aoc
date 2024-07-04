@@ -36,12 +36,12 @@ func solve(level *util.Level) ([]string, error) {
 
 func findBest(level *util.Level) (util.P, int) {
 	bestX, bestY, best := 0, 0, -1
-	level.Range(func(fromX, fromY int, _ byte) {
-		visible := findVisible(fromX, fromY, level)
+	for from := range level.All() {
+		visible := findVisible(from.X, from.Y, level)
 		if len(visible) > best {
-			bestX, bestY, best = fromX, fromY, len(visible)
+			bestX, bestY, best = from.X, from.Y, len(visible)
 		}
-	})
+	}
 	return util.P{bestX, bestY}, best
 }
 
@@ -64,21 +64,21 @@ func findNth(from util.P, n int, level *util.Level) util.P {
 
 func findVisible(fromX, fromY int, level *util.Level) []util.P {
 	var visible []util.P
-	level.Range(func(toX, toY int, _ byte) {
-		dx, dy := toX-fromX, toY-fromY
+	for to := range level.All() {
+		dx, dy := to.X-fromX, to.Y-fromY
 		if dx == 0 && dy == 0 {
-			return
+			continue
 		}
 		d := ix.GCD(ix.Abs(dx), ix.Abs(dy))
 		dx, dy = dx/d, dy/d
 		tx, ty := fromX+dx, fromY+dy
-		for (tx != toX || ty != toY) && level.At(tx, ty) != '#' {
+		for (tx != to.X || ty != to.Y) && level.At(tx, ty) != '#' {
 			tx, ty = tx+dx, ty+dy
 		}
-		if tx == toX && ty == toY {
-			visible = append(visible, util.P{toX, toY})
+		if tx == to.X && ty == to.Y {
+			visible = append(visible, util.P{to.X, to.Y})
 		}
-	})
+	}
 	return visible
 }
 

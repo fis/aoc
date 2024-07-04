@@ -54,7 +54,7 @@ func TestRingKey(t *testing.T) {
 
 func TestBigRing(t *testing.T) {
 	r, _ := newBigRing("389125467")
-	for i := 0; i < 10000000; i++ {
+	for range 10000000 {
 		r.move()
 	}
 	want := 149245887792

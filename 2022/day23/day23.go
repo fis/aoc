@@ -70,7 +70,7 @@ func simulate(lines []string) (space10, lastRound int) {
 			if neigh == 0b000_010_000 {
 				continue
 			}
-			for j := 0; j < 4; j++ {
+			for j := range 4 {
 				dir := directions[(round+j)&3]
 				if neigh&dir.test == 0 {
 					to := elf.Add(dir.d)

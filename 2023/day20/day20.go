@@ -47,7 +47,7 @@ func stepN(g *graph, steps int) int {
 	state := make([]uint16, len(g.modules))
 	q := util.MakeQueue[pulse](64)
 	low, high := 0, 0
-	for i := 0; i < steps; i++ {
+	for range steps {
 		q.Clear()
 		l, h := step(g, state, &q)
 		low, high = low+l, high+h

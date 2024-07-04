@@ -97,7 +97,7 @@ func grayCodes(items int) []int {
 	out[0] = 0
 	out[1] = 1
 	for k := 2; k < n; k *= 2 {
-		for i := 0; i < k; i++ {
+		for i := range k {
 			out[2*k-1-i] = out[i] | k
 		}
 	}

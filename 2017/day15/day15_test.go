@@ -66,17 +66,17 @@ func TestJudge2(t *testing.T) {
 
 func BenchmarkRelative(b *testing.B) {
 	b.Run("judge", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			judge(xA, xB, 40000000)
 		}
 	})
 	b.Run("judge2", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			judge2(xA, xB, 5000000)
 		}
 	})
 	b.Run("judge2p", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			judge2p(xA, xB, 5000000)
 		}
 	})

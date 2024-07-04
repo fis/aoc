@@ -37,17 +37,17 @@ func maxEnergized(l *util.FixedLevel, best int) int {
 			best = e
 		}
 	}
-	for x := 0; x < w; x++ {
+	for x := range w {
 		if e := countEnergized(l, x, 0, 0, 1, 1); e > best {
 			best = e
 		}
 	}
-	for y := 0; y < h; y++ {
+	for y := range h {
 		if e := countEnergized(l, w-1, y, -1, 0, 2); e > best {
 			best = e
 		}
 	}
-	for x := 0; x < w; x++ {
+	for x := range w {
 		if e := countEnergized(l, x, h-1, 0, -1, 3); e > best {
 			best = e
 		}

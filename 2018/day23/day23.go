@@ -130,7 +130,7 @@ func findBest(bots []nanobot, min, max p3, baseN, boundD, boundN, level int) (be
 	}
 	if max.y-min.y >= linearSearch {
 		midY := min.y + (max.y-min.y)/2
-		for i, l := 0, len(cubes); i < l; i++ {
+		for i := range len(cubes) {
 			cmin, cmax := cubes[i].min, cubes[i].max
 			max1, min2 := p3{cmax.x, midY - 1, cmax.z}, p3{cmin.x, midY, cmin.z}
 			cubes[i] = subCube{min: cmin, max: max1}
@@ -139,7 +139,7 @@ func findBest(bots []nanobot, min, max p3, baseN, boundD, boundN, level int) (be
 	}
 	if max.z-min.z >= linearSearch {
 		midZ := min.z + (max.z-min.z)/2
-		for i, l := 0, len(cubes); i < l; i++ {
+		for i := range len(cubes) {
 			cmin, cmax := cubes[i].min, cubes[i].max
 			max1, min2 := p3{cmax.x, cmax.y, midZ - 1}, p3{cmin.x, cmin.y, midZ}
 			cubes[i] = subCube{min: cmin, max: max1}

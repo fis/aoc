@@ -37,7 +37,7 @@ type node struct {
 func parseLicense(input []int) (n node, consumed int) {
 	nc, nd, input := input[0], input[1], input[2:]
 	consumed += 2
-	for i := 0; i < nc; i++ {
+	for range nc {
 		c, cl := parseLicense(input)
 		n.child = append(n.child, c)
 		input = input[cl:]

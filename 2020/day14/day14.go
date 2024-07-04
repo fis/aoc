@@ -119,7 +119,7 @@ func makeFloatBits(mask uint, buf []uint) []uint {
 		mask ^= lowBit
 	}
 	buf = buf[:0]
-	for i, n := 0, 1<<len(ones); i < n; i++ {
+	for i := range 1 << len(ones) {
 		v := uint(0)
 		for j, b := range ones {
 			if i&(1<<j) != 0 {

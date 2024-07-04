@@ -49,8 +49,7 @@ func longestPath(g *graph.SparseW) (longest int) {
 	order := g.TopoSort(true)
 	d[order[0]] = 0
 	for _, u := range order {
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			v, w := it.Head(), it.W()
+		for v, w := range g.SuccW(u) {
 			if d[v] > d[u]-w {
 				d[v] = d[u] - w
 			}
@@ -217,8 +216,7 @@ func (tracerA) trace(g *graph.SparseW, startV, endV int) (longestV map[int]struc
 	order := g.TopoSort(true)
 	d[order[0]] = 0
 	for _, u := range order {
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			v, w := it.Head(), it.W()
+		for v, w := range g.SuccW(u) {
 			if d[v] > d[u]-w {
 				d[v] = d[u] - w
 				p[v] = u
@@ -249,8 +247,7 @@ type backRef struct {
 func (tr tracerB) trace(g *graph.SparseW, startV, endV int) (longestV map[int]struct{}, longestE map[[2]int]struct{}) {
 	sg := make([]vertex, g.Len())
 	for u := range sg {
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			v, w := it.Head(), it.W()
+		for v, w := range g.SuccW(u) {
 			if u != startV && u != endV && v != startV && v != endV {
 				d := sg[u].degree
 				sg[u].next[d].v, sg[u].next[d].w = uint32(v), uint32(w)

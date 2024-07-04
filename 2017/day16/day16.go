@@ -54,7 +54,7 @@ type danceMove struct {
 
 func perform(N int, moves []danceMove) string {
 	line, progPos := make([]byte, N), make([]int, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		line[i] = byte('a' + i)
 		progPos[i] = i
 	}
@@ -86,7 +86,7 @@ func encore(N int, moves []danceMove, times int) string {
 	line1, line2 := make([]byte, N), make([]byte, N)
 	perm1, perm2 := make([]byte, N), make([]byte, N)
 	renamed := make([]byte, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		line1[i] = byte('a' + i)
 		perm1[i] = byte(i)
 		renamed[i] = byte(i)
@@ -114,19 +114,19 @@ func encore(N int, moves []danceMove, times int) string {
 	applyRenames := (times & 1) == 1
 	for times > 0 {
 		if (times & 1) == 1 {
-			for i := 0; i < N; i++ {
+			for i := range N {
 				line2[i] = line1[perm1[i]]
 			}
 			line1, line2 = line2, line1
 		}
-		for i := 0; i < N; i++ {
+		for i := range N {
 			perm2[i] = perm1[perm1[i]]
 		}
 		perm1, perm2 = perm2, perm1
 		times >>= 1
 	}
 	if applyRenames {
-		for i := 0; i < N; i++ {
+		for i := range N {
 			line2[i] = byte('a' + renamed[line1[i]-'a'])
 		}
 		line1 = line2

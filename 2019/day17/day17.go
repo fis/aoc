@@ -65,14 +65,15 @@ func capture(prog []int64) *util.Level {
 
 func crosses(level *util.Level) int {
 	sum := 0
-	level.Range(func(x, y int, _ byte) {
-		for _, n := range (util.P{x, y}).Neigh() {
+outer:
+	for p := range level.All() {
+		for _, n := range p.Neigh() {
 			if level.At(n.X, n.Y) != '#' {
-				return
+				continue outer
 			}
 		}
-		sum += x * y
-	})
+		sum += p.X * p.Y
+	}
 	return sum
 }
 

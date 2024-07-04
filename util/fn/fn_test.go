@@ -325,16 +325,6 @@ func TestFilter(t *testing.T) {
 	}
 }
 
-func TestForEach(t *testing.T) {
-	data := []int{1, 2, 3, 4}
-	want := []int{2, 3, 4, 5}
-	var got []int
-	ForEach(data, func(i int) { got = append(got, i+1) })
-	if !cmp.Equal(got, want) {
-		t.Errorf("ForEach(%v, f) -> %v, want %v", data, got, want)
-	}
-}
-
 func TestAll(t *testing.T) {
 	f := func(i int) bool { return i%2 == 0 }
 	tests := []struct {

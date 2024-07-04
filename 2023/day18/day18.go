@@ -61,7 +61,7 @@ func traceLoop(plan []instruction, f func(instruction) (direction, int)) (verts 
 	} else {
 		panic("top-left corner is not right")
 	}
-	for i := 0; i < len(cubes); i++ {
+	for i := range len(cubes) {
 		bi := startI + i*di
 		a, b, c := cubes.at(bi-di), cubes.at(bi), cubes.at(bi+di)
 		dx, dy := 0, 0

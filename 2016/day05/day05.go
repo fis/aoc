@@ -83,7 +83,7 @@ func controller(prefix string, sortedCh chan<- [][2]byte, doneCh <-chan struct{}
 		chunkCh = make(chan int64)
 		foundCh = make(chan result)
 	)
-	for i := 0; i < parallelism; i++ {
+	for range parallelism {
 		go searchChunk(prefix, chunkCh, foundCh)
 	}
 loop:
@@ -126,7 +126,7 @@ func searchChunk(prefix string, chunkCh <-chan int64, foundCh chan<- result) {
 			return
 		}
 		var found [][2]byte
-		for i := int64(0); i < chunkSize; i++ {
+		for i := range int64(chunkSize) {
 			in := strconv.AppendInt(buf[:len(prefix)], start+i, 10)
 			out := md5.Sum(in)
 			if out[0] == 0 && out[1] == 0 && (out[2]&0xf0) == 0 {

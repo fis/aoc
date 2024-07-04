@@ -262,7 +262,7 @@ func hvd(line [2]util.P) (h, v, dA, dD bool) {
 func bounds(lines [][2]util.P) (minX, maxX, minY, maxY int) {
 	minX, maxX, minY, maxY = lines[0][0].X, lines[0][0].X, lines[0][0].Y, lines[0][0].Y
 	for _, line := range lines {
-		for d := 0; d < 2; d++ {
+		for d := range 2 {
 			p := line[d]
 			if p.X < minX {
 				minX = p.X

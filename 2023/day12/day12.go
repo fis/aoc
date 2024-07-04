@@ -48,7 +48,7 @@ func unfold(data []record, factor int) []record {
 	for i, r := range data {
 		row := make([]byte, 0, factor*len(r.row)+factor-1)
 		groups := make([]int, 0, factor*len(r.groups))
-		for j := 0; j < factor; j++ {
+		for j := range factor {
 			if j > 0 {
 				row = append(row, '?')
 			}
@@ -119,7 +119,7 @@ func testFit(row []byte, groupSize int) bool {
 	if groupSize > len(row) {
 		return false
 	}
-	for i := 0; i < groupSize; i++ {
+	for i := range groupSize {
 		if row[i] == '.' {
 			return false
 		}

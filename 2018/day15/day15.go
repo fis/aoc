@@ -65,15 +65,15 @@ type unit struct {
 
 func combat(level *util.Level, elfPower int, holyElves bool) (outcome int) {
 	var units []unit
-	level.Range(func(x, y int, b byte) {
+	for p, b := range level.All() {
 		if b == 'E' || b == 'G' {
 			pow := 3
 			if b == 'E' {
 				pow = elfPower
 			}
-			units = append(units, unit{kind: b, pos: util.P{x, y}, hp: 200, power: pow})
+			units = append(units, unit{kind: b, pos: p, hp: 200, power: pow})
 		}
-	})
+	}
 
 	type distP struct {
 		p    util.P

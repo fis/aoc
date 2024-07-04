@@ -40,7 +40,7 @@ func BenchmarkAlgos(b *testing.B) {
 	inB, inA, inM := 7, 9232416, 20201227
 	for _, algo := range algos {
 		b.Run(algo.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				algo.f(inB, inA, inM)
 			}
 		})

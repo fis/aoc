@@ -144,8 +144,8 @@ func (e edgeType) reverse(o orientation) edgeType {
 
 func (e edgeType) orientTo(t edgeType) orientation {
 	es, ef, ts, tf := int(e%4), int(e/4), int(t%4), int(t/4)
-	switch {
-	case ef == tf:
+	switch ef {
+	case tf:
 		return orientation((4 - es + ts) % 4)
 	default:
 		return orientation(4 + (es+ts)%4)
@@ -283,7 +283,7 @@ func (s *imageSet) reassemble() (merged []byte, msize, checksum int, err error) 
 		ori  orientation
 	}
 	arrangement := make([]orientedTile, size*size)
-	for y := 0; y < size; y++ {
+	for y := range size {
 		if y == 0 {
 			var (
 				corner *imageTile
@@ -320,13 +320,13 @@ func (s *imageSet) reassemble() (merged []byte, msize, checksum int, err error) 
 	tsize := s.tiles[0].size - 2
 	msize = size * tsize
 	merged = make([]byte, msize*msize)
-	for y := 0; y < size; y++ {
-		for x := 0; x < size; x++ {
+	for y := range size {
+		for x := range size {
 			t := arrangement[y*size+x]
 			mx, my := x*tsize, y*tsize
 			tz, tdx, tdy := t.ori.basis(tsize)
-			for ty := 0; ty < tsize; ty++ {
-				for tx := 0; tx < tsize; tx++ {
+			for ty := range tsize {
+				for tx := range tsize {
 					tp := tz.Add(tdy.Scale(ty)).Add(tdx.Scale(tx))
 					merged[(my+tp.Y)*msize+mx+tp.X] = t.tile.data[(ty+1)*t.tile.size+tx+1]
 				}

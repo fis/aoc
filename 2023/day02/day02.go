@@ -38,7 +38,7 @@ func findPossible(games []game, cubes cubeCount) (idSum int) {
 nextGame:
 	for _, g := range games {
 		for _, s := range g.samples {
-			for c := 0; c < colorCount; c++ {
+			for c := range colorCount {
 				if s[c] > cubes[c] {
 					continue nextGame
 				}
@@ -52,7 +52,7 @@ nextGame:
 func findPower(games []game) int {
 	return fn.SumF(games, func(g game) int {
 		var minCubes cubeCount
-		for c := 0; c < colorCount; c++ {
+		for c := range colorCount {
 			minCubes[c] = fn.MaxF(g.samples, func(s cubeCount) int { return s[c] })
 		}
 		return minCubes[colorRed] * minCubes[colorGreen] * minCubes[colorBlue]

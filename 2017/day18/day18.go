@@ -73,8 +73,7 @@ func part2(code []instruction) int {
 	reqChan := make(chan request)
 	respChans := [2]chan response{make(chan response), make(chan response)}
 
-	for i := 0; i < 2; i++ {
-		progId := i
+	for progId := range 2 {
 		snd := func(val int) {
 			reqChan <- request{code: reqSnd, prog: progId, val: val}
 		}

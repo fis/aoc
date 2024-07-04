@@ -51,7 +51,7 @@ const rootTile tile3 = 0b010_001_111
 func iterate(src *bitmap, book *ruleBook, n int) *bitmap {
 	diag := util.IsDiag()
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if diag {
 			util.Diagf("i = %d:\n", i)
 			src.print()
@@ -102,8 +102,8 @@ func parseBook(lines [][]string) (*ruleBook, error) {
 func (book *ruleBook) expand2(src *bitmap) (dst *bitmap) {
 	size := src.size / 2
 	dst = newBitmap(size * 3)
-	for y := 0; y < size; y++ {
-		for x := 0; x < size; x++ {
+	for y := range size {
+		for x := range size {
 			dst.put3(3*x, 3*y, book.rules2[src.get2(2*x, 2*y)])
 		}
 	}
@@ -113,8 +113,8 @@ func (book *ruleBook) expand2(src *bitmap) (dst *bitmap) {
 func (book *ruleBook) expand3(src *bitmap) (dst *bitmap) {
 	size := src.size / 3
 	dst = newBitmap(size * 4)
-	for y := 0; y < size; y++ {
-		for x := 0; x < size; x++ {
+	for y := range size {
+		for x := range size {
 			dst.put4(4*x, 4*y, book.rules3[src.get3(3*x, 3*y)])
 		}
 	}
@@ -136,9 +136,9 @@ func (src tile2) flips() (dst [8]tile2) {
 		{0, 1, 2, 3}, {0, 2, 1, 3}, {1, 0, 3, 2}, {2, 0, 3, 1},
 		{3, 2, 1, 0}, {3, 1, 2, 0}, {2, 3, 0, 1}, {1, 3, 0, 2},
 	}
-	for b := 0; b < 4; b++ {
+	for b := range 4 {
 		if (src & 1) == 1 {
-			for i := 0; i < 8; i++ {
+			for i := range 8 {
 				dst[i] |= 1 << order[i][b]
 			}
 		}
@@ -169,9 +169,9 @@ func (src tile3) flips() (dst [8]tile3) {
 		{8, 7, 6, 5, 4, 3, 2, 1, 0}, {8, 5, 2, 7, 4, 1, 6, 3, 0},
 		{6, 7, 8, 3, 4, 5, 0, 1, 2}, {2, 5, 8, 1, 4, 7, 0, 3, 6},
 	}
-	for b := 0; b < 9; b++ {
+	for b := range 9 {
 		if (src & 1) == 1 {
-			for i := 0; i < 8; i++ {
+			for i := range 8 {
 				dst[i] |= 1 << order[i][b]
 			}
 		}
@@ -219,7 +219,7 @@ func newBitmap(size int) *bitmap {
 
 func (b *bitmap) get2(x, y int) (v tile2) {
 	xu, xb := x>>5, x&0b11111
-	for row := 0; row < 2; row++ {
+	for row := range 2 {
 		off := (y + row) * b.rowSize
 		v <<= 2
 		v |= tile2(b.data[off+xu]>>(30-xb)) & 0b11
@@ -230,14 +230,14 @@ func (b *bitmap) get2(x, y int) (v tile2) {
 func (b *bitmap) get3(x, y int) (v tile3) {
 	xu, xb := x>>5, x&0b11111
 	if xb <= 29 { // fast path: contiguous
-		for row := 0; row < 3; row++ {
+		for row := range 3 {
 			off := (y + row) * b.rowSize
 			v <<= 3
 			v |= tile3(b.data[off+xu]>>(29-xb)) & 0b111
 		}
 	} else { // slow path: straddling the unit boundary
 		split := 32 - xb // bits in xu (2 or 1)
-		for row := 0; row < 3; row++ {
+		for row := range 3 {
 			off := (y + row) * b.rowSize
 			v <<= split
 			v |= tile3(b.data[off+xu] & uint32(split|1))
@@ -251,7 +251,7 @@ func (b *bitmap) get3(x, y int) (v tile3) {
 func (b *bitmap) put3(x, y int, v tile3) {
 	xu, xb := x>>5, x&0b11111
 	if xb <= 29 { // fast path: contiguous
-		for row := 0; row < 3; row++ {
+		for row := range 3 {
 			off := (y + row) * b.rowSize
 			rv := (uint32(v) >> 6) & 0b111
 			v <<= 3
@@ -259,7 +259,7 @@ func (b *bitmap) put3(x, y int, v tile3) {
 		}
 	} else { // slow path: straddling the unit boundary
 		split := 32 - xb
-		for row := 0; row < 3; row++ {
+		for row := range 3 {
 			off := (y + row) * b.rowSize
 			rv := (uint32(v) >> 6) & 0b111
 			v <<= 3
@@ -271,7 +271,7 @@ func (b *bitmap) put3(x, y int, v tile3) {
 
 func (b *bitmap) put4(x, y int, v tile4) {
 	xu, xb := x>>5, x&0b11111
-	for row := 0; row < 4; row++ {
+	for row := range 4 {
 		off := (y + row) * b.rowSize
 		rv := (uint32(v) >> 12) & 0b1111
 		v <<= 4
@@ -287,7 +287,7 @@ func (b *bitmap) popCount() (count int) {
 }
 
 func (b *bitmap) print() {
-	for y := 0; y < b.size; y++ {
+	for y := range b.size {
 		for xo, v := range b.data[y*b.rowSize : (y+1)*b.rowSize] {
 			for x := 0; x < 32 && (xo<<5)+x < b.size; x++ {
 				util.Diagf("%c", [2]rune{'.', '#'}[v>>31])

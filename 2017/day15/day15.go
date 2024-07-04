@@ -47,7 +47,7 @@ const (
 )
 
 func judge(xA, xB, N int) (matches int) {
-	for i := 0; i < N; i++ {
+	for range N {
 		xA = (xA * mA) % div
 		xB = (xB * mB) % div
 		if (xA & 0xffff) == (xB & 0xffff) {
@@ -58,7 +58,7 @@ func judge(xA, xB, N int) (matches int) {
 }
 
 func judge2(xA, xB, N int) (matches int) {
-	for i := 0; i < N; i++ {
+	for range N {
 		for {
 			xA = (xA * mA) % div
 			if xA&3 == 0 {

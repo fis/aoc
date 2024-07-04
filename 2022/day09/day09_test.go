@@ -69,7 +69,7 @@ func BenchmarkMeasureTail(b *testing.B) {
 	want := 6391
 	for _, algo := range algos {
 		b.Run("algo="+algo.name, func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
+			for range b.N {
 				if got := algo.f(moves); got != want {
 					b.Errorf("%s(ex) = %d, want %d", algo.name, got, want)
 				}
@@ -113,7 +113,7 @@ func BenchmarkMeasureLongTail(b *testing.B) {
 	want := 2593
 	for _, algo := range algos {
 		b.Run("algo="+algo.name, func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
+			for range b.N {
 				if got := algo.f(moves); got != want {
 					b.Errorf("%s(ex) = %d, want %d", algo.name, got, want)
 				}

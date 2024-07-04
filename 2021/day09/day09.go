@@ -34,15 +34,16 @@ func solve(level *util.Level) ([]string, error) {
 }
 
 func riskLevels(level *util.Level) (totalRisk int) {
-	level.Range(func(x, y int, b byte) {
-		for _, n := range (util.P{x, y}).Neigh() {
+outer:
+	for p, b := range level.All() {
+		for _, n := range p.Neigh() {
 			nb := level.At(n.X, n.Y)
 			if nb != ' ' && nb <= b {
-				return
+				continue outer
 			}
 		}
 		totalRisk += int(b-'0') + 1
-	})
+	}
 	return totalRisk
 }
 

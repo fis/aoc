@@ -78,7 +78,7 @@ func countBugs(initial state, steps int) int {
 		}
 	}
 
-	for t := 0; t < steps; t++ {
+	for range steps {
 		copy(ps[low-2:high+3], s[low-2:high+3])
 		for d := low - 1; d <= high+1; d++ {
 			for i, bitsets := range neigh {
@@ -137,7 +137,7 @@ func recursiveNeighbors() [stateW * stateH][]relbits {
 	rneigh[mid] = nil
 	{
 		var top, bottom []state
-		for x := 0; x < stateW; x++ {
+		for x := range stateW {
 			top = append(top, state(x))
 			bottom = append(bottom, state((stateH-1)*stateW+x))
 		}
@@ -146,7 +146,7 @@ func recursiveNeighbors() [stateW * stateH][]relbits {
 	}
 	{
 		var left, right []state
-		for y := 0; y < stateH; y++ {
+		for y := range stateH {
 			left = append(left, state(y*stateW))
 			right = append(right, state((y+1)*stateW-1))
 		}
@@ -181,8 +181,8 @@ func parseState(lines []string) state {
 }
 
 func printState(s state) {
-	for y := 0; y < stateH; y++ {
-		for x := 0; x < stateW; x++ {
+	for y := range stateH {
+		for x := range stateW {
 			c := '.'
 			if s&(1<<(stateW*y+x)) != 0 {
 				c = '#'

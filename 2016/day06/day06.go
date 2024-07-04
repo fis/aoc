@@ -33,7 +33,7 @@ func solve(lines []string) ([]string, error) {
 func decode(lines []string) (string, string) {
 	N := len(lines[0])
 	m1, m2 := make([]byte, N), make([]byte, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		var freqs [26]int
 		for _, line := range lines {
 			if b := line[i]; b >= 'a' && b <= 'z' {
@@ -41,7 +41,7 @@ func decode(lines []string) (string, string) {
 			}
 		}
 		maxB, maxF, minB, minF := byte(0), math.MinInt, byte(0), math.MaxInt
-		for b := byte(0); b < 26; b++ {
+		for b := range byte(26) {
 			f := freqs[b]
 			if f == 0 {
 				continue

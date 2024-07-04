@@ -129,8 +129,7 @@ func countPathsSparse(g *graph.Sparse, src, dst int, allowTwice bool, smallCaves
 	if src == dst {
 		return 1
 	}
-	for it := g.Succ(src); it.Valid(); it = g.Next(it) {
-		next := it.Head()
+	for next := range g.Succ(src) {
 		lower := unicode.IsLower(rune(g.Label(next)[0]))
 		usedAllowance := false
 		if lower {
@@ -170,8 +169,7 @@ func countPathsDense(g *graph.Dense, src, dst int, allowTwice bool, smallCaves [
 	if src == dst {
 		return 1
 	}
-	for it := g.Succ(src); it.Valid(); it = g.Next(it) {
-		next := it.Head()
+	for next := range g.Succ(src) {
 		lower := unicode.IsLower(rune(g.Label(next)[0]))
 		usedAllowance := false
 		if lower {

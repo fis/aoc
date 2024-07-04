@@ -91,7 +91,7 @@ func BenchmarkOverlaps(b *testing.B) {
 	}
 	for _, test := range tests {
 		b.Run(test.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				if got := test.f(lines); got != test.want {
 					b.Errorf("%s = %d, want %d", test.name, got, test.want)
 				}

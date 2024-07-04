@@ -90,7 +90,7 @@ func BenchmarkSimulate(b *testing.B) {
 	want := 458
 	for i, alg := range algos {
 		b.Run(alg.name, func(b *testing.B) {
-			for n := 0; n < b.N; n++ {
+			for range b.N {
 				data := alg.copy(datas[i])
 				if got := alg.run(data); got != want {
 					b.Errorf("%s(day25) = %d, want %d", alg.name, got, want)

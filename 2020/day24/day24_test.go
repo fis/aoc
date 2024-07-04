@@ -68,7 +68,7 @@ func TestEvolve(t *testing.T) {
 
 	m := newTileMap()
 	m.flipAll(paths)
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		m = m.evolve()
 	}
 

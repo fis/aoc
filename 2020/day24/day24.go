@@ -37,7 +37,7 @@ func solve(lines []string) ([]string, error) {
 	m.flipAll(paths)
 	part1 := m.countBlack()
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		m = m.evolve()
 	}
 	part2 := m.countBlack()

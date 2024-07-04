@@ -54,8 +54,8 @@ func convertLevel(level *util.Level) (data []state, w, h int) {
 	min, max := level.Bounds()
 	w, h = max.X-min.X+1, max.Y-min.Y+1
 	data = make([]state, w*h)
-	for y := 0; y < h; y++ {
-		for x := 0; x < w; x++ {
+	for y := range h {
+		for x := range w {
 			switch level.At(min.X+x, min.Y+y) {
 			case '.':
 				data[y*w+x] = stateOpen
@@ -71,7 +71,7 @@ func convertLevel(level *util.Level) (data []state, w, h int) {
 
 func evolve(data []state, w, h, generations int) []state {
 	next := make([]state, len(data))
-	for g := 0; g < generations; g++ {
+	for range generations {
 		step(data, next, w, h)
 		data, next = next, data
 	}
@@ -93,8 +93,8 @@ func findCycle(data []state, w, h int) (out []state, at, period int) {
 }
 
 func step(in, out []state, w, h int) {
-	for y := 0; y < h; y++ {
-		for x := 0; x < w; x++ {
+	for y := range h {
+		for x := range w {
 			nt, nl := 0, 0
 			for _, n := range (util.P{x, y}).Neigh8() {
 				if n.X < 0 || n.X >= w || n.Y < 0 || n.Y >= h {

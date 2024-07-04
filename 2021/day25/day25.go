@@ -131,7 +131,7 @@ func parseInput(lines []string) (sf seaFloor) {
 	w, h := len(lines[0]), len(lines)
 	cumbers := make([]seaCumber, w*h)
 	for y, line := range lines {
-		for x := 0; x < w; x++ {
+		for x := range w {
 			switch line[x] {
 			case '>':
 				cumbers[y*w+x] = eastCumber
@@ -152,10 +152,10 @@ func simulateBits(bf bitFloor) (steps int) {
 	for {
 		steps++
 		moves := uint32(0)
-		for y := uint32(0); y < bf.h; y++ {
+		for y := range bf.h {
 			old1 := bf.bits[y*bf.wu] >> 30
 			carry := uint32(0)
-			for x := uint32(0); x < bf.wu; x++ {
+			for x := range bf.wu {
 				var b, nb uint32
 				b = bf.bits[y*bf.wu+x]
 				if x < bf.wu-1 {
@@ -189,10 +189,10 @@ func simulateBits(bf bitFloor) (steps int) {
 				bf.bits[y*bf.wu] |= carry
 			}
 		}
-		for x := uint32(0); x < bf.wu; x++ {
+		for x := range bf.wu {
 			old1 := bf.bits[x]
 			carry := uint32(0)
-			for y := uint32(0); y < bf.h; y++ {
+			for y := range bf.h {
 				var b, nb uint32
 				b = bf.bits[y*bf.wu+x]
 				if y < bf.h-1 {
@@ -224,7 +224,7 @@ func parseInputBits(lines []string) (bf bitFloor) {
 	wu := (w + 15) >> 4
 	cumbers := make([]uint32, wu*h)
 	for y, line := range lines {
-		for x := 0; x < w; x++ {
+		for x := range w {
 			switch line[x] {
 			case '>':
 				cumbers[y*wu+(x>>4)] |= 0b01 << (30 - ((x & 0b1111) << 1))

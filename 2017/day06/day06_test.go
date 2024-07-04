@@ -40,7 +40,7 @@ func TestBalance(t *testing.T) {
 		{1, 3, 4, 1},
 		{2, 4, 1, 2},
 	}
-	for i := 0; i < len(steps)-1; i++ {
+	for i := range len(steps) - 1 {
 		banks, want := steps[i], steps[i+1]
 		got := append(banks[:0:0], banks...)
 		balance(got)

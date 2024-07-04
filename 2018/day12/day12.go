@@ -65,7 +65,7 @@ func parseState(text string) stateVector {
 
 func (s *stateVector) evolve(generations int, r *ruleSet) {
 	var next []byte
-	for g := 0; g < generations; g++ {
+	for range generations {
 		var disp int
 		next, disp = r.step(s.data, next)
 		s.data, s.offset, s.gen, next = next, s.offset+disp, s.gen+1, s.data

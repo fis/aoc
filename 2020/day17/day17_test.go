@@ -29,7 +29,7 @@ var example = `
 
 func TestCycle3(t *testing.T) {
 	state, min, max := loadLevel3(util.ParseLevelString(strings.TrimSpace(example), '.'))
-	for i := 0; i < 6; i++ {
+	for range 6 {
 		state, min, max = cycle3(state, min, max)
 	}
 	want := 112
@@ -41,7 +41,7 @@ func TestCycle3(t *testing.T) {
 
 func TestCycle4(t *testing.T) {
 	state, min, max := loadLevel4(util.ParseLevelString(strings.TrimSpace(example), '.'))
-	for i := 0; i < 6; i++ {
+	for range 6 {
 		state, min, max = cycle4(state, min, max)
 	}
 	want := 848

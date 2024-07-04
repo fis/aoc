@@ -130,9 +130,7 @@ const maxArgs = 3
 // Load resets the computer and initializes its memory to be a copy of the program.
 func (vm *VM) Load(p []int64) {
 	vm.data = make([]int64, len(p))
-	for i, val := range p {
-		vm.data[i] = val
-	}
+	copy(vm.data, p)
 	vm.Reset()
 }
 
@@ -196,7 +194,7 @@ func (vm *VM) fetch(args *[maxArgs]arg) *opcode {
 	}
 	vm.page(vm.ip + op.narg)
 	inst /= 100
-	for i := 0; i < op.narg; i++ {
+	for i := range op.narg {
 		args[i].val = vm.data[vm.ip+1+i]
 		args[i].mode = argMode(inst % 10)
 		inst /= 10

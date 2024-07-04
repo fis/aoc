@@ -98,7 +98,7 @@ func TestExamples(t *testing.T) {
 			continue
 		}
 		deck := make([]int64, deckSize)
-		for in := int64(0); in < deckSize; in++ {
+		for in := range deckSize {
 			out := shuffleForward(in, deckSize, ops)
 			deck[out] = in
 		}

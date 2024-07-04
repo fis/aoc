@@ -114,7 +114,7 @@ func (cs *checksummer) compute() (out [5]byte) {
 		}
 		return a < b
 	})
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		out[i] = byte('a' + order[i])
 	}
 	return out

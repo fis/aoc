@@ -63,7 +63,7 @@ func game(p1, p2 *deck) (score int) {
 		p1 = p2
 	}
 	n := p1.len()
-	for i := 0; i < p1.size; i++ {
+	for i := range p1.size {
 		c := p1.c[(p1.start+i)%len(p1.c)]
 		score += (n - i) * int(c)
 	}
@@ -97,7 +97,7 @@ func recursive(p1, p2 *deck) (score int) {
 		p1, sign = p2, -1
 	}
 	n := p1.len()
-	for i := 0; i < p1.size; i++ {
+	for i := range p1.size {
 		c := p1.c[(p1.start+i)%len(p1.c)]
 		score += (n - i) * int(c)
 	}

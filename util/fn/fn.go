@@ -1,7 +1,9 @@
 // Package fn contains the sort of non-Go-like, occasionally higher-order, utility functions you might find in a functional language.
 package fn
 
-import "cmp"
+import (
+	"cmp"
+)
 
 type integer interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
@@ -103,7 +105,7 @@ func MaxF[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](s S, f F) (result O) {
 	return result
 }
 
-// Head returns the first line of a slice, or a default value for an empty slice.
+// Head returns the first element of a slice, or a default value for an empty slice.
 func Head[S ~[]E, E any](s S, def E) E {
 	if len(s) > 0 {
 		return s[0]
@@ -154,13 +156,6 @@ func Filter[S ~[]E, P ~func(E) bool, E any](s S, p P) (out []E) {
 	return out
 }
 
-// ForEach invokes a function (which must not return anything) for each element of a slice in order.
-func ForEach[S ~[]E, F ~func(E), E any](s S, f F) {
-	for _, e := range s {
-		f(e)
-	}
-}
-
 // All returns true if the function f returns true for all elements of slice s. Returns true for an empty slice.
 func All[S ~[]E, F ~func(E) bool, E any](s S, f F) bool {
 	for _, e := range s {
@@ -179,14 +174,4 @@ func Any[S ~[]E, F ~func(E) bool, E any](s S, f F) bool {
 		}
 	}
 	return false
-}
-
-// Keys returns a slice consisting of the keys of a map.
-// The keys are in no particular order, the same as the iteration order of a map.
-func Keys[M ~map[K]V, K comparable, V any](m M) []K {
-	keys := make([]K, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	return keys
 }

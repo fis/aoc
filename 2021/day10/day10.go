@@ -67,7 +67,7 @@ var errorScores = map[byte]int{
 
 func check(line string) (corrupted bool, score int) {
 	var stack []byte
-	for i := 0; i < len(line); i++ {
+	for i := range len(line) {
 		c := line[i]
 		if pair, ok := delimPairs[c]; ok {
 			stack = append(stack, pair)

@@ -97,7 +97,7 @@ func strategy1(log map[int][]sleepMask) (guard, minute int) {
 
 func strategy2(log map[int][]sleepMask) (guard, minute int) {
 	var bestM, bestG, bestF int
-	for m := 0; m < 60; m++ {
+	for m := range 60 {
 		var maxG, maxF int
 		for g, masks := range log {
 			var f int

@@ -27,7 +27,7 @@ const Size = 16
 // List generates the initial knot hash state list, of the given size.
 func List(N int) []byte {
 	list := make([]byte, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		list[i] = byte(i)
 	}
 	return list
@@ -38,7 +38,7 @@ func Hash(N, rounds int, input string) []byte {
 	list := List(N)
 	lengths := append([]byte(input), []byte{17, 31, 73, 47, 23}...)
 	pos, skip := 0, 0
-	for i := 0; i < rounds; i++ {
+	for range rounds {
 		pos, skip = Round(pos, skip, list, lengths)
 	}
 	return compact(list, 16)
@@ -58,9 +58,9 @@ func Round(pos, skip int, list []byte, lengths []byte) (newPos, newSkip int) {
 func compact(list []byte, factor int) (hash []byte) {
 	N := len(list) / factor
 	hash = make([]byte, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		v := byte(0)
-		for j := 0; j < factor; j++ {
+		for j := range factor {
 			v ^= list[i*factor+j]
 		}
 		hash[i] = v
@@ -70,7 +70,7 @@ func compact(list []byte, factor int) (hash []byte) {
 
 func reverse(list []byte, pos, length int) {
 	N := len(list)
-	for i := 0; i < length/2; i++ {
+	for i := range length / 2 {
 		pa, pb := (pos+i)%N, (pos+length-1-i)%N
 		a, b := list[pa], list[pb]
 		list[pa], list[pb] = b, a

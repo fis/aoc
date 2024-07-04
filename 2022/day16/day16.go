@@ -18,11 +18,13 @@ package day16
 import (
 	"fmt"
 	"io"
+	"maps"
 	"math/bits"
 	"strings"
 
 	"github.com/fis/aoc/glue"
 	"github.com/fis/aoc/util"
+	"github.com/fis/aoc/util/fi"
 	"github.com/fis/aoc/util/fn"
 )
 
@@ -64,7 +66,7 @@ func Preprocess(scan []ValveScan) (sum ValveSummary) {
 	sum.InitDist = make([]int, n)
 	sum.Dist = fn.MapRange(0, n, func(int) []int { return make([]int, n) })
 
-	for _, from := range append(fn.Keys(nonzeroValves), "AA") {
+	for from := range fi.Chain(maps.Keys(nonzeroValves), fi.Single("AA")) {
 		fromN, fromNonzero := nonzeroValves[from]
 		type path struct {
 			at string
@@ -101,7 +103,7 @@ const (
 
 func findOne(sum ValveSummary, maxT int) (bestP int) {
 	q := util.NewBucketQ[state](32)
-	for i := uint16(0); i < nValves; i++ {
+	for i := range uint16(nValves) {
 		t := sum.InitDist[i] + 1
 		q.Push(t, state{at: i, open: 1 << i, pressure: uint32((maxT - t) * sum.FlowRates[i])})
 	}
@@ -112,7 +114,7 @@ func findOne(sum ValveSummary, maxT int) (bestP int) {
 		if pr := int(p.pressure); pr > bestP {
 			bestP = pr
 		}
-		for i := uint16(0); i < nValves; i++ {
+		for i := range uint16(nValves) {
 			open := p.open | (1 << i)
 			if open == p.open {
 				continue
@@ -133,7 +135,7 @@ func findOne(sum ValveSummary, maxT int) (bestP int) {
 
 func findTwo(sum ValveSummary, maxT int) (bestP int) {
 	q := util.NewBucketQ[state](32)
-	for i := uint16(0); i < nValves; i++ {
+	for i := range uint16(nValves) {
 		t := sum.InitDist[i] + 1
 		q.Push(t, state{at: i, open: 1 << i, pressure: uint32((maxT - t) * sum.FlowRates[i])})
 	}
@@ -145,7 +147,7 @@ func findTwo(sum ValveSummary, maxT int) (bestP int) {
 		if pr := p.pressure; pr > maxP[p.open] {
 			maxP[p.open] = pr
 		}
-		for i := uint16(0); i < nValves; i++ {
+		for i := range uint16(nValves) {
 			open := p.open | (1 << i)
 			if open == p.open {
 				continue
@@ -169,7 +171,7 @@ func findTwo(sum ValveSummary, maxT int) (bestP int) {
 			if maxP[open] != 0 || bits.OnesCount16(open) != setSize {
 				continue
 			}
-			for i := 0; i < nValves; i++ {
+			for i := range nValves {
 				lessOpen := open &^ (1 << i)
 				if lessOpen != open && maxP[lessOpen] > maxP[open] {
 					maxP[open] = maxP[lessOpen]
@@ -178,7 +180,7 @@ func findTwo(sum ValveSummary, maxT int) (bestP int) {
 		}
 	}
 
-	for open1 := uint16(0); open1 < nValveSets; open1++ {
+	for open1 := range nValveSets {
 		open2 := (nValveSets - 1) ^ open1
 		if p := int(maxP[open1] + maxP[open2]); p > bestP {
 			bestP = p

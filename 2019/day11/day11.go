@@ -37,7 +37,9 @@ func part1(prog []int64) int {
 	level := util.SparseLevel(util.P{0, 0}, ' ')
 	run(prog, level)
 	painted := 0
-	level.Range(func(_, _ int, _ byte) { painted++ })
+	for range level.All() {
+		painted++
+	}
 	return painted
 }
 

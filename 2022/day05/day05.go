@@ -55,7 +55,7 @@ type move struct {
 
 func (m move) apply9000(stacks [][]byte) {
 	from, to := stacks[m.from], stacks[m.to]
-	for i := 0; i < m.count; i++ {
+	for range m.count {
 		t := from[len(from)-1]
 		from = from[:len(from)-1]
 		to = append(to, t)

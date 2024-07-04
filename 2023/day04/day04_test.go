@@ -91,7 +91,7 @@ func BenchmarkParseCard(b *testing.B) {
 	}
 	for _, p := range parsers {
 		b.Run(p.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				for _, line := range lines {
 					if _, err := p.f(line); err != nil {
 						b.Fatal(err)

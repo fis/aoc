@@ -67,7 +67,7 @@ O..#.OO...
 
 func printLevel(l *util.FixedLevel) string {
 	var buf strings.Builder
-	for y := 0; y < l.H; y++ {
+	for y := range l.H {
 		fmt.Fprintf(&buf, "%s\n", l.Row(y))
 	}
 	return buf.String()

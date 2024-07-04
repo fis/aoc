@@ -35,8 +35,8 @@ func solve(prog []int64) ([]int64, error) {
 
 func part1(size int, probe func(x, y int) bool) int64 {
 	var count int64
-	for y := 0; y < size; y++ {
-		for x := 0; x < size; x++ {
+	for y := range size {
+		for x := range size {
 			c := " "
 			if probe(x, y) {
 				count++

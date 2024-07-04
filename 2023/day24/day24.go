@@ -88,7 +88,7 @@ func findCollider(stones []hailstone) p3 {
 }
 
 func setRow(row *[7]*big.Rat, xs ...int) {
-	for i := 0; i < 7; i++ {
+	for i := range 7 {
 		row[i] = big.NewRat(int64(xs[i]), 1)
 	}
 }

@@ -106,7 +106,7 @@ func BenchmarkAlgos(b *testing.B) {
 	}
 	for _, test := range tests {
 		b.Run(test.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				if gotX, gotCost := test.f(input); gotX != test.want[0] || gotCost != test.want[1] {
 					b.Errorf("%s = (%d, %d), want (%d, %d)", test.name, gotX, gotCost, test.want[0], test.want[1])
 				}

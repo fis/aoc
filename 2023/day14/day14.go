@@ -48,7 +48,7 @@ var singleRoundRock = []byte{'O'}
 
 func totalLoad(l *util.FixedLevel) (sum int) {
 	h := l.H
-	for y := 0; y < h; y++ {
+	for y := range h {
 		load := h - y
 		sum += bytes.Count(l.Row(y), singleRoundRock) * load
 	}
@@ -64,7 +64,7 @@ func runCycles(l *util.FixedLevel, cycles int) {
 		if prev, ok := seen[hash]; ok {
 			n := cycle - prev
 			left := (cycles - cycle) % n
-			for i := 0; i < left; i++ {
+			for range left {
 				slideCycle(l)
 			}
 			return
@@ -88,7 +88,7 @@ func slideCycle(l *util.FixedLevel) {
 
 func slideNorth(l *util.FixedLevel) {
 	w, h := l.W, l.H
-	for x := 0; x < w; x++ {
+	for x := range w {
 		for y, startY, rocks := h-1, h-1, 0; y >= -1; y-- {
 			if y == -1 || l.At(x, y) == '#' {
 				if startY > y+1 && rocks > 0 {
@@ -112,7 +112,7 @@ func slideNorth(l *util.FixedLevel) {
 
 func slideWest(l *util.FixedLevel) {
 	w, h := l.W, l.H
-	for y := 0; y < h; y++ {
+	for y := range h {
 		for x, startX, rocks := w-1, w-1, 0; x >= -1; x-- {
 			if x == -1 || l.At(x, y) == '#' {
 				if startX > x+1 && rocks > 0 {
@@ -136,7 +136,7 @@ func slideWest(l *util.FixedLevel) {
 
 func slideSouth(l *util.FixedLevel) {
 	w, h := l.W, l.H
-	for x := 0; x < w; x++ {
+	for x := range w {
 		for y, startY, rocks := 0, 0, 0; y <= h; y++ {
 			if y == h || l.At(x, y) == '#' {
 				if startY < y-1 && rocks > 0 {
@@ -160,7 +160,7 @@ func slideSouth(l *util.FixedLevel) {
 
 func slideEast(l *util.FixedLevel) {
 	w, h := l.W, l.H
-	for y := 0; y < h; y++ {
+	for y := range h {
 		for x, startX, rocks := 0, 0, 0; x <= w; x++ {
 			if x == w || l.At(x, y) == '#' {
 				if startX < x-1 && rocks > 0 {

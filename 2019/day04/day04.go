@@ -47,7 +47,7 @@ func solve(inputRange []int) ([]string, error) {
 
 func validate1(digits []byte) bool {
 	double := false
-	for i := 0; i+1 < len(digits); i++ {
+	for i := range len(digits) - 1 {
 		a, b := digits[i], digits[i+1]
 		if b < a {
 			return false
@@ -61,7 +61,7 @@ func validate1(digits []byte) bool {
 
 func validate2(digits []byte) bool {
 	double := false
-	for i := 0; i+1 < len(digits); i++ {
+	for i := range len(digits) - 1 {
 		a, b := digits[i], digits[i+1]
 		if b < a {
 			return false

@@ -26,11 +26,11 @@ func init() {
 
 func solve(level *util.Level) ([]string, error) {
 	state3, min3, max3 := loadLevel3(level)
-	for i := 0; i < 6; i++ {
+	for range 6 {
 		state3, min3, max3 = cycle3(state3, min3, max3)
 	}
 	state4, min4, max4 := loadLevel4(level)
-	for i := 0; i < 6; i++ {
+	for range 6 {
 		state4, min4, max4 = cycle4(state4, min4, max4)
 	}
 	return glue.Ints(len(state3), len(state4)), nil

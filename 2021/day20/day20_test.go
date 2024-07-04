@@ -88,7 +88,7 @@ func BenchmarkEnhance(b *testing.B) {
 		for _, test := range tests {
 			name := fmt.Sprintf("%s/%s", alg.name, test.name)
 			b.Run(name, func(b *testing.B) {
-				for i := 0; i < b.N; i++ {
+				for range b.N {
 					alg.f(test.algo, test.img)
 				}
 			})

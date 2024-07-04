@@ -49,7 +49,7 @@ func find(steps []string) (end, hq int) {
 			d.X, d.Y = -d.Y, d.X
 		}
 		n, _ := strconv.Atoi(step[1:])
-		for i := 0; i < n; i++ {
+		for range n {
 			at.X += d.X
 			at.Y += d.Y
 			if hq >= 0 {

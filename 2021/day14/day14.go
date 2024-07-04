@@ -58,7 +58,7 @@ func (rb *pairRuleBook) countElements(pairCounts []int, ends [2]byte) (quants []
 
 func (rb *pairRuleBook) updateCountsN(in []int, steps int) (out []int) {
 	cur, next := append([]int(nil), in...), []int(nil)
-	for i := 0; i < steps; i++ {
+	for range steps {
 		next = rb.updateCounts(cur, next)
 		cur, next = next, cur
 	}
@@ -118,7 +118,7 @@ func parsePairRules(lines []string) (rb *pairRuleBook, initial []int, ends [2]by
 	}
 
 	initial = make([]int, len(pairs))
-	for i := 0; i < len(lines[0])-1; i++ {
+	for i := range len(lines[0]) - 1 {
 		a, b := mapElement(lines[0][i]), mapElement(lines[0][i+1])
 		p, ok := pairMap[[2]byte{a, b}]
 		if !ok {
@@ -139,7 +139,7 @@ type elementCounter struct {
 
 func (ec *elementCounter) countPolymer(polymer []byte, steps int, rb *ruleBook) []int {
 	quants := make([]int, len(rb.elements))
-	for i := 0; i < len(polymer)-1; i++ {
+	for i := range len(polymer) - 1 {
 		qp := ec.countPair(polymer[i], polymer[i+1], steps, rb)
 		for j := range quants {
 			quants[j] += qp[j]
@@ -215,7 +215,7 @@ type ruleBook struct {
 
 func (rb *ruleBook) expandN(in []byte, steps int) (out []byte) {
 	cur, next := append([]byte(nil), in...), []byte(nil)
-	for i := 0; i < steps; i++ {
+	for range steps {
 		next = rb.expand(cur, next)
 		cur, next = next, cur
 	}
@@ -224,7 +224,7 @@ func (rb *ruleBook) expandN(in []byte, steps int) (out []byte) {
 
 func (rb *ruleBook) expand(in, buf []byte) (out []byte) {
 	out = buf[:0]
-	for i := 0; i < len(in)-1; i++ {
+	for i := range len(in) - 1 {
 		a, b := in[i], in[i+1]
 		if i == 0 {
 			out = append(out, a)
@@ -276,7 +276,7 @@ func parseRules(lines []string) (rb *ruleBook, initial []byte, err error) {
 		rules[a][b] = c
 	}
 
-	for i := 0; i < len(lines[0]); i++ {
+	for i := range len(lines[0]) {
 		e := elementMap[lines[0][i]]
 		if e == 0 {
 			return nil, nil, fmt.Errorf("unknown element %c in initial polymer", e)

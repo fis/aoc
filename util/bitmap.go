@@ -25,7 +25,7 @@ func MakeFixedBitmap2D(w, h int) FixedBitmap2D {
 	ww := (w + 63) >> 6
 	data := make([]uint64, ww*h)
 	bmp := make(FixedBitmap2D, h)
-	for y := 0; y < h; y++ {
+	for y := range h {
 		bmp[y] = data[y*ww : (y+1)*ww]
 	}
 	return bmp
@@ -230,8 +230,8 @@ func (bmp *Bitmap2D) GetClear(x, y int) (old bool) {
 
 func (bmp *Bitmap2D) Count() (sum int) {
 	sum = bmp.zeroPage.count()
-	for y := 0; y < bitmapPageSize; y++ {
-		for x := 0; x < bitmapPageSize; x++ {
+	for y := range bitmapPageSize {
+		for x := range bitmapPageSize {
 			if p := bmp.nearPages[y][x]; p != nil {
 				sum += p.count()
 			}
@@ -244,8 +244,8 @@ func (bmp *Bitmap2D) Count() (sum int) {
 }
 
 func (p *bitmapPage) count() (c int) {
-	for y := 0; y < bitmapPageSize; y++ {
-		for x := 0; x < bitmapPageSize; x++ {
+	for y := range bitmapPageSize {
+		for x := range bitmapPageSize {
 			c += bits.OnesCount64(p[y][x])
 		}
 	}

@@ -54,7 +54,7 @@ type move struct {
 func decode(lvl *level, path []move) (pass int) {
 	x, y, dx, dy := lvl.wrapX[0][0]+1, 0, 1, 0
 	for _, m := range path {
-		for i := 0; i < m.steps; i++ {
+		for range m.steps {
 			nx := wrap(x+dx, lvl.wrapX[y][0], lvl.wrapX[y][1])
 			ny := wrap(y+dy, lvl.wrapY[x][0], lvl.wrapY[x][1])
 			if lvl.data[ny][nx] != '.' {
@@ -118,7 +118,7 @@ type cube struct {
 func decodeCube(c *cube, path []move) (pass int) {
 	f, x, y, dir, dx, dy := 0, 0, 0, dirRight, 1, 0
 	for _, m := range path {
-		for i := 0; i < m.steps; i++ {
+		for range m.steps {
 			nf, nx, ny, ndir, ndx, ndy := f, x+dx, y+dy, dir, dx, dy
 			if nx < 0 || nx >= c.size || ny < 0 || ny >= c.size {
 				n := cubeLinks[f][c.faces[f].rot.rotD(dir)]
@@ -165,8 +165,8 @@ func fold(lvl *level, size int) (c *cube, err error) {
 
 	fw, fh := lvl.w/size, lvl.h/size
 	fmap, fcount := util.MakeFixedBitmap2D(fw, fh), 0
-	for fy := 0; fy < fh; fy++ {
-		for fx := 0; fx < fw; fx++ {
+	for fy := range fh {
+		for fx := range fw {
 			x, y := fx*size, fy*size
 			if x < len(lvl.data[y]) && lvl.data[y][x] != ' ' {
 				fmap.Set(fx, fy)
@@ -179,7 +179,7 @@ func fold(lvl *level, size int) (c *cube, err error) {
 	}
 
 	fcount = 0
-	for fx := 0; fx < fw; fx++ {
+	for fx := range fw {
 		if lvl.data[0][fx*size] != ' ' {
 			fcount = findFaces(c, lvl, fw, fh, fx, 0, 0, 0, fmap)
 			break
@@ -197,7 +197,7 @@ func findFaces(c *cube, lvl *level, fw, fh, fx, fy, face int, rot rotation, fmap
 	fmap.Clear(fx, fy)
 
 	c.faces[face].data = make([]string, c.size)
-	for i := 0; i < c.size; i++ {
+	for i := range c.size {
 		c.faces[face].data[i] = lvl.data[fy*c.size+i][fx*c.size : (fx+1)*c.size]
 	}
 	c.faces[face].rot = rot
@@ -286,7 +286,7 @@ func parseInput(lines []string) (lvl *level, path []move, err error) {
 
 	w, h := 0, len(lines)-2
 	wrapX := make([][2]int, h)
-	for y := 0; y < h; y++ {
+	for y := range h {
 		line := lines[y]
 		if len(line) > w {
 			w = len(line)
@@ -304,7 +304,7 @@ func parseInput(lines []string) (lvl *level, path []move, err error) {
 		wrapX[y] = [2]int{x0, x1}
 	}
 	wrapY := make([][2]int, w)
-	for x := 0; x < w; x++ {
+	for x := range w {
 		y0, y1 := -1, h
 		for y0+1 < h && (x >= len(lines[y0+1]) || lines[y0+1][x] == ' ') {
 			y0++

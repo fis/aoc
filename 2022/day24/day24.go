@@ -84,8 +84,8 @@ func parseLevel(lines []string) (lvl level) {
 		'<': util.MakeFixedBitmap2D(w, h),
 		'^': util.MakeFixedBitmap2D(w, h),
 	}
-	for y := 0; y < h; y++ {
-		for x := 0; x < w; x++ {
+	for y := range h {
+		for x := range w {
 			if bmp, ok := bmaps[lines[y+1][x+1]]; ok {
 				bmp.Set(x, y)
 			}
@@ -96,10 +96,10 @@ func parseLevel(lines []string) (lvl level) {
 	blizzards := make([]util.FixedBitmap2D, period)
 	yD, yU, bw := 0, 0, (w+63)>>6
 	bR, bD, bL, bU := bmaps['>'], bmaps['v'], bmaps['<'], bmaps['^']
-	for t := 0; t < period; t++ {
+	for t := range period {
 		blizzards[t] = util.MakeFixedBitmap2D(w, h+2)
-		for y := 0; y < h; y++ {
-			for x := 0; x < bw; x++ {
+		for y := range h {
+			for x := range bw {
 				blizzards[t][y+1][x] |= bR[y][x]
 				blizzards[t][y+1][x] |= bD[(yD+y)%h][x]
 				blizzards[t][y+1][x] |= bL[y][x]

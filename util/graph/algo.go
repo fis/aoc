@@ -23,7 +23,7 @@ func (g *Dense) TopoSort(keepEdges bool) []int {
 	}
 
 	var stack []int
-	for v := 0; v < g.Len(); v++ {
+	for v := range g.Len() {
 		if g.NumPred(v) == 0 {
 			stack = append(stack, v)
 		}
@@ -33,8 +33,7 @@ func (g *Dense) TopoSort(keepEdges bool) []int {
 		u := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 		order = append(order, u)
-		for it := g.Succ(u); it.Valid(); it = g.Next(it) {
-			v := it.Head()
+		for v := range g.Succ(u) {
 			g.DelEdge(u, v)
 			if g.NumPred(v) == 0 {
 				stack = append(stack, v)

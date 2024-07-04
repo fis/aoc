@@ -36,7 +36,7 @@ func solve(l *util.Level) ([]string, error) {
 func simulateSimple(l *util.Level, rounds int) (infected int) {
 	minP, maxP := l.Bounds()
 	at, d := util.P{(minP.X + maxP.X) / 2, (minP.Y + maxP.Y) / 2}, util.P{0, -1}
-	for round := 0; round < rounds; round++ {
+	for range rounds {
 		if l.At(at.X, at.Y) == '#' {
 			d = util.P{-d.Y, d.X}
 			l.Set(at.X, at.Y, '.')
@@ -53,7 +53,7 @@ func simulateSimple(l *util.Level, rounds int) (infected int) {
 func simulateEvolvedLevel(l *util.Level, rounds int) (infected int) {
 	minP, maxP := l.Bounds()
 	at, d := util.P{(minP.X + maxP.X) / 2, (minP.Y + maxP.Y) / 2}, util.P{0, -1}
-	for round := 0; round < rounds; round++ {
+	for range rounds {
 		switch c := l.At(at.X, at.Y); c {
 		case '.':
 			d = util.P{d.Y, -d.X}
@@ -93,7 +93,7 @@ func simulateEvolvedArray(l *util.Level, rounds int) (infected int) {
 	}
 	atX, atY, dX, dY := (minP.X+maxP.X)/2, (minP.Y+maxP.Y)/2, 0, -1
 
-	for round := 0; round < rounds; round++ {
+	for range rounds {
 		atI := ((atY - Y0) << Wbits) + (atX - X0)
 		switch c := arr[atI]; c {
 		case 0:

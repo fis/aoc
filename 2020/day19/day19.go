@@ -133,7 +133,7 @@ func (rs ruleSet) toRegexp(r int, magic bool) *syntax.Regexp {
 	if magic && r == 11 {
 		r42, r31 := rs.toRegexp(42, true), rs.toRegexp(31, true)
 		subs := make([]*syntax.Regexp, 40)
-		for i := 0; i < 20; i++ {
+		for i := range 20 {
 			subs[i] = r42
 			subs[20+i] = r31
 		}

@@ -242,9 +242,9 @@ func (tr transform) apply(p p3) (q p3) {
 }
 
 func (tr transform) combine(next transform) (out transform) {
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			for k := 0; k < 4; k++ {
+	for i := range 4 {
+		for j := range 4 {
+			for k := range 4 {
 				out[i][j] += tr[i][k] * next[k][j]
 			}
 		}

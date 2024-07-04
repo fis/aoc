@@ -50,8 +50,8 @@ type dimState struct {
 }
 
 func run(state *[dims]dimState, steps int) {
-	for s := 0; s < steps; s++ {
-		for d := 0; d < dims; d++ {
+	for range steps {
+		for d := range dims {
 			step1(&state[d])
 		}
 	}
@@ -71,16 +71,16 @@ func step1(state *dimState) {
 		}
 	}
 	// velocity
-	for i := 0; i < moons; i++ {
+	for i := range moons {
 		state.pos[i] += state.vel[i]
 	}
 }
 
 func totalEnergy(state *[dims]dimState) int {
 	tot := 0
-	for i := 0; i < moons; i++ {
+	for i := range moons {
 		pot, kin := 0, 0
-		for d := 0; d < dims; d++ {
+		for d := range dims {
 			pot += ix.Abs(state[d].pos[i])
 			kin += ix.Abs(state[d].vel[i])
 		}
@@ -91,7 +91,7 @@ func totalEnergy(state *[dims]dimState) int {
 
 func cycle(state *[dims]dimState) int {
 	var cycles [dims]int
-	for d := 0; d < dims; d++ {
+	for d := range dims {
 		c, s := 0, state[d]
 		for {
 			c++

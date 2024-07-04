@@ -42,7 +42,7 @@ func measureTail(moves []move) int {
 	visited.Set(0, 0)
 	for _, m := range moves {
 		d := dirStep[m.dir]
-		for i := 0; i < m.steps; i++ {
+		for range m.steps {
 			head = head.Add(d)
 			tail = updateTail(head, tail)
 			visited.Set(tail.X, tail.Y)
@@ -58,7 +58,7 @@ func measureLongTail(moves []move) int {
 	visited.Set(0, 0)
 	for _, m := range moves {
 		d := dirStep[m.dir]
-		for i := 0; i < m.steps; i++ {
+		for range m.steps {
 			rope[0] = rope[0].Add(d)
 			for i := 1; i < ropeLength; i++ {
 				rope[i] = updateTail(rope[i-1], rope[i])
@@ -129,7 +129,7 @@ func measureTailMap(moves []move) int {
 	visited := map[util.P]struct{}{{0, 0}: {}}
 	for _, m := range moves {
 		d := dirStep[m.dir]
-		for i := 0; i < m.steps; i++ {
+		for range m.steps {
 			head = head.Add(d)
 			tail = updateTail(head, tail)
 			visited[tail] = struct{}{}
@@ -144,7 +144,7 @@ func measureLongTailMap(moves []move) int {
 	visited := map[util.P]struct{}{{0, 0}: {}}
 	for _, m := range moves {
 		d := dirStep[m.dir]
-		for i := 0; i < m.steps; i++ {
+		for range m.steps {
 			rope[0] = rope[0].Add(d)
 			for i := 1; i < ropeLength; i++ {
 				rope[i] = updateTail(rope[i-1], rope[i])

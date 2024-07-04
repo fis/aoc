@@ -61,7 +61,7 @@ type screen [H]uint64
 
 func (s *screen) rect(a, b int) {
 	mask := (uint64(1) << a) - 1
-	for y := 0; y < b; y++ {
+	for y := range b {
 		s[y] |= mask
 	}
 }
@@ -73,7 +73,7 @@ func (s *screen) rotRow(a, b int) {
 func (s *screen) rotCol(a, b int) {
 	os := *s
 	mask := uint64(1) << a
-	for y := 0; y < H; y++ {
+	for y := range H {
 		s[y] &^= mask
 		s[y] |= os[(y+H-b)%H] & mask
 	}
@@ -88,8 +88,8 @@ func (s *screen) countLit() (sum int) {
 
 func (s *screen) print() (rows []string) {
 	var row [W]byte
-	for y := 0; y < H; y++ {
-		for x := 0; x < W; x++ {
+	for y := range H {
+		for x := range W {
 			if (s[y] & (uint64(1) << x)) != 0 {
 				row[x] = '#'
 			} else {

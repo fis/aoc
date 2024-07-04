@@ -46,15 +46,15 @@ func findCutSizes(g *sparseGraph) (leftSize, rightSize int) {
 		if dst == -1 {
 			break
 		}
-		for i := 0; i < len(firstPath)-1; i++ {
+		for i := range len(firstPath) - 1 {
 			g.delEdge(firstPath[i], firstPath[i+1])
 		}
 		secondPath := cf.shortestPath(src, dst)
-		for i := 0; i < len(secondPath)-1; i++ {
+		for i := range len(secondPath) - 1 {
 			g.delEdge(secondPath[i], secondPath[i+1])
 		}
 		thirdPath := cf.shortestPath(src, dst)
-		for i := 0; i < len(thirdPath)-1; i++ {
+		for i := range len(thirdPath) - 1 {
 			g.delEdge(thirdPath[i], thirdPath[i+1])
 			ls := cf.componentSize(thirdPath[i], thirdPath[i+1])
 			if ls != -1 {
@@ -65,7 +65,7 @@ func findCutSizes(g *sparseGraph) (leftSize, rightSize int) {
 		}
 		paths := [3][]int{firstPath, secondPath}
 		for _, p := range paths {
-			for j := 0; j < len(p)-1; j++ {
+			for j := range len(p) - 1 {
 				g.addEdge(p[j], p[j+1])
 			}
 		}
@@ -87,13 +87,13 @@ func findCutEdges(g *sparseGraph) (edges [3][2]int) {
 		if dst == -1 {
 			panic("cut not found")
 		}
-		for i := 0; i < len(firstPath)-1; i++ {
+		for i := range len(firstPath) - 1 {
 			g.delEdge(firstPath[i], firstPath[i+1])
 			secondPath := cf.shortestPath(firstPath[i], firstPath[i+1])
-			for j := 0; j < len(secondPath)-1; j++ {
+			for j := range len(secondPath) - 1 {
 				g.delEdge(secondPath[j], secondPath[j+1])
 				thirdPath := cf.shortestPath(secondPath[j], secondPath[j+1])
-				for k := 0; k < len(thirdPath)-1; k++ {
+				for k := range len(thirdPath) - 1 {
 					g.delEdge(thirdPath[k], thirdPath[k+1])
 					if !cf.hasPath(thirdPath[k], thirdPath[k+1]) {
 						edges = [3][2]int{
@@ -272,7 +272,7 @@ func (cf *cutFinder) edgeUsage(src int, counts map[[2]int]int) {
 			cf.q.Push(n)
 		}
 	}
-	for end := 0; end < g.len(); end++ {
+	for end := range g.len() {
 		v := end
 		for cf.p[v] != -1 {
 			u := cf.p[v]
@@ -352,10 +352,10 @@ func plotCut(lines []string, w io.Writer) error {
 	g := parseGraph(lines)
 	edges := findCutEdges(g)
 	fmt.Fprintln(w, "graph G {")
-	for v := 0; v < g.len(); v++ {
+	for v := range g.len() {
 		fmt.Fprintf(w, "  v%d [label=\"%s\"];\n", v, g.labels[v])
 	}
-	for u := 0; u < g.len(); u++ {
+	for u := range g.len() {
 		for _, v := range g.edges[u] {
 			if v > u {
 				fmt.Fprintf(w, "  v%d -- v%d", u, v)
@@ -374,7 +374,7 @@ func plotEdges(lines []string, w io.Writer) error {
 	g := parseGraph(lines)
 	counts := make(map[[2]int]int)
 	cf := newCutFinder(g)
-	for v := 0; v < g.len(); v++ {
+	for v := range g.len() {
 		cf.edgeUsage(v, counts)
 	}
 	vCounts, minC, maxC := make(map[int]int), math.MaxInt, math.MinInt
@@ -386,12 +386,12 @@ func plotEdges(lines []string, w io.Writer) error {
 	}
 	fmt.Println("graph G {")
 	fmt.Printf("  bgcolor=\"black\";")
-	for v := 0; v < g.len(); v++ {
+	for v := range g.len() {
 		c := vCounts[v] / len(g.edges[v])
 		r, g, b := colorOf(c, minC, maxC)
 		fmt.Printf("  v%d [label=\"\",shape=point,color=\"#%02x%02x%02x\"];\n", v, r, g, b)
 	}
-	for u := 0; u < g.len(); u++ {
+	for u := range g.len() {
 		for _, v := range g.edges[u] {
 			if v > u {
 				c := counts[[2]int{u, v}]

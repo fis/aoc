@@ -110,7 +110,7 @@ func BenchmarkAlgos(b *testing.B) {
 	}
 	for _, algo := range algos {
 		b.Run(algo.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				ps2 := append([]particle(nil), ps...)
 				want := 574
 				if got := algo.f(ps2); got != want {

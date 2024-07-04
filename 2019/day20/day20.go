@@ -108,13 +108,13 @@ func recursive(from, to label, edges map[label]map[label]distance) int {
 func distances(level *util.Level) map[label]map[label]distance {
 	labels := make(map[util.P]label)
 
-	level.Range(func(x, y int, c byte) {
+	for p, c := range level.All() {
 		if !unicode.IsUpper(rune(c)) {
-			return
+			continue
 		}
 		for _, d := range (util.P{}).Neigh() {
-			c2 := level.At(x+d.X, y+d.Y)
-			if !unicode.IsUpper(rune(c2)) || level.At(x+2*d.X, y+2*d.Y) != '.' {
+			c2 := level.At(p.X+d.X, p.Y+d.Y)
+			if !unicode.IsUpper(rune(c2)) || level.At(p.X+2*d.X, p.Y+2*d.Y) != '.' {
 				continue
 			}
 			var name string
@@ -123,12 +123,12 @@ func distances(level *util.Level) map[label]map[label]distance {
 			} else {
 				name = string([]byte{c2, c})
 			}
-			labels[util.P{x + 2*d.X, y + 2*d.Y}] = label{
+			labels[util.P{p.X + 2*d.X, p.Y + 2*d.Y}] = label{
 				name:  name,
-				outer: !level.InBounds(x-d.X, y-d.Y),
+				outer: !level.InBounds(p.X-d.X, p.Y-d.Y),
 			}
 		}
-	})
+	}
 
 	allDist := make(map[label]map[label]distance)
 

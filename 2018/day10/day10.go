@@ -88,7 +88,7 @@ func drawAt(stars []star, t int) (lines []string) {
 		x, y := p.X-min.X, p.Y-min.Y
 		pixels[y*w+x] = '#'
 	}
-	for y := 0; y < h; y++ {
+	for y := range h {
 		lines = append(lines, string(pixels[y*w:(y+1)*w]))
 	}
 	return lines

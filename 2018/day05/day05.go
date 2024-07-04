@@ -63,7 +63,7 @@ func reduce(polymer []byte) []byte {
 
 func improve(polymer string) int {
 	min := len(polymer)
-	for i := byte(0); i < 26; i++ {
+	for i := range byte(26) {
 		buf := reduce(prune([]byte(polymer), 'a'+i, 'A'+i))
 		if len(buf) < min {
 			min = len(buf)
@@ -89,7 +89,7 @@ func prune(polymer []byte, u1, u2 byte) []byte {
 var unitPairs [256]byte
 
 func init() {
-	for i := byte(0); i < 26; i++ {
+	for i := range byte(26) {
 		unitPairs['a'+i] = 'A' + i
 		unitPairs['A'+i] = 'a' + i
 	}

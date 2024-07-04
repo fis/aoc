@@ -48,7 +48,7 @@ func BenchmarkAlgos(b *testing.B) {
 	want := 689
 	for _, test := range tests {
 		b.Run(test.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				got := test.f(initial, upTo)
 				if got != want {
 					b.Errorf("%s = %d, want %d", test.name, got, want)

@@ -194,8 +194,7 @@ func buildGraph(level *util.Level) *graph {
 	verts := make(map[util.P]*graphV)
 	var sources []util.P
 
-	level.Range(func(x, y int, b byte) {
-		p := util.P{x, y}
+	for p, b := range level.All() {
 		l := noLabel
 		switch {
 		case b >= 'a' && b <= 'z':
@@ -212,8 +211,8 @@ func buildGraph(level *util.Level) *graph {
 		case b != '.':
 			panic(fmt.Sprintf("unexpected feature: %c", b))
 		}
-		tiles[util.P{x, y}] = l
-	})
+		tiles[p] = l
+	}
 
 	for _, v := range verts {
 		v.id = len(g.verts)

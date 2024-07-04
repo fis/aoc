@@ -109,7 +109,7 @@ func BenchmarkAlgos(b *testing.B) {
 	}
 	for _, alg := range algos {
 		b.Run(alg.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				if got1, got2 := alg.f(edges); got1 != 5228 || got2 != 131228 {
 					b.Errorf("%s = (%d, %d), want (5228, 131228)", alg.name, got1, got2)
 				}

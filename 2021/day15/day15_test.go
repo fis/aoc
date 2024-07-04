@@ -93,7 +93,7 @@ func BenchmarkShortestPath(b *testing.B) {
 			for _, alg := range algos {
 				name := fmt.Sprintf("%s/scale=%d/%s", sample.name, scale, alg.name)
 				b.Run(name, func(b *testing.B) {
-					for i := 0; i < b.N; i++ {
+					for range b.N {
 						alg.f(sample.w, sample.h, sample.level, scale)
 					}
 				})
