@@ -26,6 +26,7 @@ import (
 	_ "github.com/fis/aoc/2021" // solvers
 	_ "github.com/fis/aoc/2022" // solvers
 	_ "github.com/fis/aoc/2023" // solvers
+	_ "github.com/fis/aoc/2024" // solvers
 )
 
 func main() {
