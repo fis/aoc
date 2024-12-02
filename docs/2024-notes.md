@@ -20,19 +20,47 @@ tricks of how to do Burlesque efficiently I learned in year X-1.
 Part 1:
 
 ```
-WD)ri2cotp)><^p{.-ab}Z]++
+ps2cotp)><^p{.-ab}Z]++
 ```
 
 Part 2:
 
 ```
-WD)ri2cotp^p{jJ#rCN.*}j+]ms
+ps2cotp^p{jJ#rCN.*}j+]ms
 ```
 
 Combined:
 
 ```
-1:           )><   .-ab     Z]++
-C: WD)ri2cotp   ^p{        }
-2:                 jJ#rCN.* j+]ms
+1:        )><   .-ab     Z]++
+C: ps2cotp   ^p{        }
+2:              jJ#rCN.* j+]ms
+```
+
+## [Day 2](https://adventofcode.com/2024/day/2): Red-Nosed Reports
+
+Tried to do an "allow one error before returning false" style solution for part
+2, but it failed a case like `[10 9 11 12]`, where the deletion would have had
+to change an already established trajectory. In the end just making copies.
+
+### Burlesque
+
+Part 1:
+
+```
+ln{ps2CO{.-}^mJ)snsmj)abJ>]3<=j<]1>=&&&&}ms
+```
+
+Part 2:
+
+```
+ln{pssa-.rzj{jRA}j+]m[{2CO{.-}^mJ)snsmj)abJ>]3<=j<]1>=&&&&}ay}ms
+```
+
+Combined:
+
+```
+1:                                                            ms
+C: ln{ps                  2CO{.-}^mJ)snsmj)abJ>]3<=j<]1>=&&&&}
+2:      sa-.rzj{jRA}j+]m[{                                    ay}ms
 ```
