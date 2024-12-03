@@ -64,3 +64,33 @@ Combined:
 C: ln{ps                  2CO{.-}^mJ)snsmj)abJ>]3<=j<]1>=&&&&}
 2:      sa-.rzj{jRA}j+]m[{                                    ay}ms
 ```
+
+## [Day 3](https://adventofcode.com/2024/day/3): Mull It Over
+
+Went "where the fence is lowest", and just did the regex.
+
+### Burlesque
+
+If there's one thing Burlesque is not great for, it's anything the slightest bit
+imperative. Would have probably done it with a regex-replace instead, but it
+seems like the relevant regex library does not do non-greedy matching.
+
+Part 1:
+
+```
+"mul\([0-9]+,[0-9]+\)"~?{",";;{:><ri}mp}ms
+```
+
+Part 2:
+
+```
+"mul\([0-9]+,[0-9]+\)|do(n't)?\(\)"~?0+]1Pp{J1!!'o=={2!!'n!=Pp}j{",";;{:><ri}mppP.*.+}jie}r[
+```
+
+Combined:
+
+```
+1:                                      {                                         }ms
+C: "mul\([0-9]+,[0-9]+\)             "~?                            ",";;{:><ri}mp
+2:                      |do(n't)?\(\)   0+]1Pp{J1!!'o=={2!!'n!=Pp}j{              pP.*.+}jie}r[
+```
