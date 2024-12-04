@@ -69,6 +69,14 @@ C: ln{ps                  2CO{.-}^mJ)snsmj)abJ>]3<=j<]1>=&&&&}
 
 Went "where the fence is lowest", and just did the regex.
 
+Edited to add: due to some IRC conversations, also added a non-regex solution.
+It's definitely faster:
+
+```
+BenchmarkAlgos/regexp-32      45457    774447 ns/op
+BenchmarkAlgos/string-32    3362403     11299 ns/op
+```
+
 ### Burlesque
 
 If there's one thing Burlesque is not great for, it's anything the slightest bit
