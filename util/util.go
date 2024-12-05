@@ -257,11 +257,11 @@ func SortBy[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](x S, f F) {
 	})
 }
 
-// LabelMap is a mapping from string labels to integer indices, with automatic allocation.
-type LabelMap map[string]int
+// LabelMap is a mapping from labels (of any comparable type) to integer indices, with automatic allocation.
+type LabelMap[T comparable] map[T]int
 
 // Retrieves the corresponding index for a label, or allocates the next free one if it is new.
-func (m LabelMap) Get(label string) int {
+func (m LabelMap[T]) Get(label T) int {
 	if id, ok := m[label]; ok {
 		return id
 	}
@@ -271,8 +271,8 @@ func (m LabelMap) Get(label string) int {
 }
 
 // Returns all the labels as a slice in the integer index order.
-func (m LabelMap) Slice() []string {
-	labels := make([]string, len(m))
+func (m LabelMap[T]) Slice() []T {
+	labels := make([]T, len(m))
 	for k, v := range m {
 		labels[v] = k
 	}

@@ -18,51 +18,59 @@ import (
 	"github.com/fis/aoc/util"
 )
 
-// A Builder is used to incrementally grow a graph.
+// Builder is a compatibility alias for BuilderG[string].
+type Builder = BuilderG[string]
+
+// BuilderG is used to incrementally grow a graph.
 //
 // Note that there is no checking for duplicate edges by default. The caller should pick one of:
 //   - Ensure that the input only lists each edge once.
 //   - Accept that the resulting graph will in fact be a multigraph.
 //   - Use one of the dense graphs, which use an adjacency matrix (inherently robust for this).
 //   - TODO: add methods for deduplicating
-type Builder struct {
-	verts util.LabelMap
+type BuilderG[T comparable] struct {
+	verts util.LabelMap[T]
 	edges [][3]int
 }
 
 // NewBuilder returns a new, empty Builder.
 func NewBuilder() *Builder {
-	return &Builder{
-		verts: make(util.LabelMap),
+	return NewBuilderG[string]()
+}
+
+// NewBuilder returns a new, empty Builder.
+func NewBuilderG[T comparable]() *BuilderG[T] {
+	return &BuilderG[T]{
+		verts: make(util.LabelMap[T]),
 	}
 }
 
 // Len returns the number of vertices added to the builder so far.
-func (b *Builder) Len() int { return len(b.verts) }
+func (b *BuilderG[T]) Len() int { return len(b.verts) }
 
 // V returns the vertex number corresponding to the given label, creating it if necessary.
-func (b *Builder) V(label string) int { return b.verts.Get(label) }
+func (b *BuilderG[T]) V(label T) int { return b.verts.Get(label) }
 
 // AddEdgeW records a new weighted edge between two vertices in the graph.
-func (b *Builder) AddEdgeW(from, to, w int) { b.edges = append(b.edges, [3]int{from, to, w}) }
+func (b *BuilderG[T]) AddEdgeW(from, to, w int) { b.edges = append(b.edges, [3]int{from, to, w}) }
 
 // AddEdge records a new edge between two vertices in the graph.
-func (b *Builder) AddEdge(from, to int) { b.AddEdgeW(from, to, 1) }
+func (b *BuilderG[T]) AddEdge(from, to int) { b.AddEdgeW(from, to, 1) }
 
 // AddEdgeWL records a new weighted edge between two vertices (denoted by labels, created if necessary).
-func (b *Builder) AddEdgeWL(from, to string, w int) { b.AddEdgeW(b.V(from), b.V(to), w) }
+func (b *BuilderG[T]) AddEdgeWL(from, to T, w int) { b.AddEdgeW(b.V(from), b.V(to), w) }
 
 // AddEdgeL records a new edge between two vertices (denoted by labels, created if necessary).
-func (b *Builder) AddEdgeL(from, to string) { b.AddEdgeW(b.V(from), b.V(to), 1) }
+func (b *BuilderG[T]) AddEdgeL(from, to T) { b.AddEdgeW(b.V(from), b.V(to), 1) }
 
 // TODO: make adjacency list thing a function
 
 // DenseDigraph returns the contents of the builder as an unweighted dense digraph.
-func (b *Builder) DenseDigraph() (g *Dense) {
+func (b *BuilderG[T]) DenseDigraph() (g *DenseG[T]) {
 	labels := b.labels()
 	N := labels.Len()
 	adj := make([]bool, N*N)
-	g = &Dense{graphLabels: labels, adj: adj}
+	g = &DenseG[T]{graphLabels: labels, adj: adj}
 	for _, e := range b.edges {
 		adj[g.e(e[0], e[1])] = true
 	}
@@ -72,11 +80,11 @@ func (b *Builder) DenseDigraph() (g *Dense) {
 // DenseDigraphW returns the contents of the builder as a weighted dense digraph.
 //
 // If multiple edges have been recorded between two vertices, their values sum up.
-func (b *Builder) DenseDigraphW() (g *DenseW) {
+func (b *BuilderG[T]) DenseDigraphW() (g *DenseWG[T]) {
 	labels := b.labels()
 	N := labels.Len()
 	adj := make([]int, N*N)
-	g = &DenseW{graphLabels: labels, adj: adj}
+	g = &DenseWG[T]{graphLabels: labels, adj: adj}
 	for _, e := range b.edges {
 		adj[g.e(e[0], e[1])] += e[2]
 	}
@@ -84,11 +92,11 @@ func (b *Builder) DenseDigraphW() (g *DenseW) {
 }
 
 // DenseGraph returns the contents of the builder as an unweighted dense undirected graph.
-func (b *Builder) DenseGraph() (g *Dense) {
+func (b *BuilderG[T]) DenseGraph() (g *DenseG[T]) {
 	labels := b.labels()
 	N := labels.Len()
 	adj := make([]bool, N*N)
-	g = &Dense{graphLabels: labels, adj: adj}
+	g = &DenseG[T]{graphLabels: labels, adj: adj}
 	for _, e := range b.edges {
 		adj[g.e(e[0], e[1])] = true
 		adj[g.e(e[1], e[2])] = true
@@ -99,11 +107,11 @@ func (b *Builder) DenseGraph() (g *Dense) {
 // DenseGraphW returns the contents of the builder as a weighted dense undirected graph.
 //
 // If multiple edges have been recorded between two vertices (in any order), their values sum up.
-func (b *Builder) DenseGraphW() (g *DenseW) {
+func (b *BuilderG[T]) DenseGraphW() (g *DenseWG[T]) {
 	labels := b.labels()
 	N := labels.Len()
 	adj := make([]int, N*N)
-	g = &DenseW{graphLabels: labels, adj: adj}
+	g = &DenseWG[T]{graphLabels: labels, adj: adj}
 	for _, e := range b.edges {
 		adj[g.e(e[0], e[1])] += e[2]
 		adj[g.e(e[1], e[0])] += e[2]
@@ -112,7 +120,7 @@ func (b *Builder) DenseGraphW() (g *DenseW) {
 }
 
 // SparseDigraph returns the contents of the builder as an unweighted sparse digraph.
-func (b *Builder) SparseDigraph() (g *Sparse) {
+func (b *BuilderG[T]) SparseDigraph() (g *SparseG[T]) {
 	labels := b.labels()
 	N := labels.Len()
 	edgePos := make([]int, N+1)
@@ -131,11 +139,11 @@ func (b *Builder) SparseDigraph() (g *Sparse) {
 		allEdges[edgePos[e[0]]] = e[1]
 		edgePos[e[0]]++
 	}
-	return &Sparse{graphLabels: labels, edges: edges}
+	return &SparseG[T]{graphLabels: labels, edges: edges}
 }
 
-// SparseDigraphW returns the contents of the builder as an unweighted sparse digraph.
-func (b *Builder) SparseDigraphW() (g *SparseW) {
+// SparseDigraphW returns the contents of the builder as a weighted sparse digraph.
+func (b *BuilderG[T]) SparseDigraphW() (g *SparseWG[T]) {
 	labels := b.labels()
 	N := labels.Len()
 	edgePos := make([]int, N+1)
@@ -158,9 +166,9 @@ func (b *Builder) SparseDigraphW() (g *SparseW) {
 		allEdgeW[edgePos[e[0]]] = e[2]
 		edgePos[e[0]]++
 	}
-	return &SparseW{Sparse: Sparse{graphLabels: labels, edges: edges}, edgeW: edgeW}
+	return &SparseWG[T]{SparseG: SparseG[T]{graphLabels: labels, edges: edges}, edgeW: edgeW}
 }
 
-func (b *Builder) labels() graphLabels {
-	return graphLabels{labels: b.verts.Slice(), labelMap: b.verts}
+func (b *BuilderG[T]) labels() graphLabels[T] {
+	return graphLabels[T]{labels: b.verts.Slice(), labelMap: b.verts}
 }

@@ -15,7 +15,7 @@
 package graph
 
 // TopoSort returns a topological sort order for the graph.
-func (g *Dense) TopoSort(keepEdges bool) []int {
+func (g *DenseG[T]) TopoSort(keepEdges bool) []int {
 	var adjCopy []bool
 	if keepEdges {
 		adjCopy = make([]bool, len(g.adj))
@@ -48,7 +48,7 @@ func (g *Dense) TopoSort(keepEdges bool) []int {
 }
 
 // TopoSort returns a topological sort order for the graph.
-func (g *SparseW) TopoSort(keepEdges bool) []int {
+func (g *SparseWG[T]) TopoSort(keepEdges bool) []int {
 	var copyEdges, copyEdgeW [][]int
 	if keepEdges {
 		copyEdges, copyEdgeW = make([][]int, len(g.edges)), make([][]int, len(g.edges))
@@ -91,7 +91,7 @@ func (g *SparseW) TopoSort(keepEdges bool) []int {
 
 // N.B. this wasn't actually needed for toposort (since it only drops entire edge lists), but could come useful some day
 
-func (g *SparseW) deepEdgeCopy() (edges [][]int, edgeW [][]int) {
+func (g *SparseWG[T]) deepEdgeCopy() (edges [][]int, edgeW [][]int) {
 	totalEdges := 0
 	for _, e := range g.edges {
 		totalEdges += len(e)

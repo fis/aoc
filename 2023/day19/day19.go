@@ -246,7 +246,7 @@ func parsePart(line string) (p part, err error) {
 	return p, nil
 }
 
-type workflowMap util.LabelMap
+type workflowMap util.LabelMap[string]
 
 func (m workflowMap) get(label string) int {
 	switch label {
@@ -255,7 +255,7 @@ func (m workflowMap) get(label string) int {
 	case "R":
 		return actReject
 	}
-	return util.LabelMap(m).Get(label)
+	return util.LabelMap[string](m).Get(label)
 }
 
 // plotting

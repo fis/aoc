@@ -22,14 +22,17 @@ import (
 	"github.com/fis/aoc/util/fn"
 )
 
-// AnyGraph represents the common subset of all graph types.
+// Any is a compatibility alias for AnyG[string]
+type Any = AnyG[string]
+
+// AnyG represents the common subset of all graph types.
 //
 // It's useful for writing generic functions on both sparse and dense graphs.
 // Note that there's generally some performance impact, so it's best left for non-sensitive utility functions.
-type Any interface {
+type AnyG[T comparable] interface {
 	Len() int
-	V(string) (int, bool)
-	Label(v int) string
+	V(T) (int, bool)
+	Label(v int) T
 	W(u, v int) int
 	Succ(u int) iter.Seq[int]
 	hasWeights() bool
@@ -38,7 +41,7 @@ type Any interface {
 // WriteDOT writes the graph out in GraphViz format. The `nodeAttr` and `edgeAttr` callback
 // functions are optional, and can be used to add extra attributes to the node. If the callback
 // returns a "label" attribute, it takes precedence over the usual node name / edge weight.
-func WriteDOT(g Any, w io.Writer, name string, directed bool, nodeAttr func(v int) map[string]string, edgeAttr func(u, v int) map[string]string) (err error) {
+func WriteDOT[T comparable](g AnyG[T], w io.Writer, name string, directed bool, nodeAttr func(v int) map[string]string, edgeAttr func(u, v int) map[string]string) (err error) {
 	fmt.Fprintf(w, "%s %s {\n", fn.If(directed, "digraph", "graph"), name)
 	for v := range g.Len() {
 		var attrs map[string]string
@@ -46,7 +49,7 @@ func WriteDOT(g Any, w io.Writer, name string, directed bool, nodeAttr func(v in
 			attrs = nodeAttr(v)
 		}
 		fmt.Fprintf(w, "  n%d [", v)
-		writeAttrs(w, attrs, "label", fmt.Sprintf(`"%s"`, g.Label(v)))
+		writeAttrs(w, attrs, "label", fmt.Sprintf(`"%v"`, g.Label(v)))
 		fmt.Fprintf(w, "];\n")
 	}
 	for u := range g.Len() {

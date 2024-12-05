@@ -313,7 +313,7 @@ func (g *sparseGraph) delEdge(a, b int) {
 
 func parseGraph(lines []string) (g *sparseGraph) {
 	g = &sparseGraph{}
-	v := make(util.LabelMap)
+	v := make(util.LabelMap[string])
 	for _, line := range lines {
 		src, dsts, _ := strings.Cut(line, ": ")
 		srcV := v.Get(src)

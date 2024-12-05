@@ -158,11 +158,11 @@ const (
 	modConjunction = '&'
 )
 
-func parseGraph(lines []string) (*graph, util.LabelMap, error) {
+func parseGraph(lines []string) (*graph, util.LabelMap[string], error) {
 	modules := make([]module, len(lines))
 	broadcast := []edge(nil)
 
-	labels := make(util.LabelMap)
+	labels := make(util.LabelMap[string])
 	for _, line := range lines {
 		srcLabel, dsts, ok := strings.Cut(line, " -> ")
 		if !ok {

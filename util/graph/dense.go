@@ -16,30 +16,38 @@ package graph
 
 import "iter"
 
-type Dense struct {
-	graphLabels
+// Dense is a compatibility alias for DenseG[string].
+type Dense = DenseG[string]
+
+// DenseG represents a dense graph using a boolean adjacency matrix.
+type DenseG[T comparable] struct {
+	graphLabels[T]
 	adj []bool
 }
 
-func (Dense) hasWeights() bool { return false }
+func (DenseG[T]) hasWeights() bool { return false }
 
-type DenseW struct {
-	graphLabels
+// DenseW is a compatibility alias for DenseWG[string]
+type DenseW = DenseWG[string]
+
+// DenseWG represents a dense weighted graph using an integer adjacency matrix.
+type DenseWG[T comparable] struct {
+	graphLabels[T]
 	adj []int
 }
 
-func (DenseW) hasWeights() bool { return true }
+func (DenseWG[T]) hasWeights() bool { return true }
 
-func (g *Dense) e(u, v int) int  { return u*len(g.labels) + v }
-func (g *DenseW) e(u, v int) int { return u*len(g.labels) + v }
+func (g *DenseG[T]) e(u, v int) int  { return u*len(g.labels) + v }
+func (g *DenseWG[T]) e(u, v int) int { return u*len(g.labels) + v }
 
 // E returns true if the edge (u, v) exists in the graph.
-func (g *Dense) E(u, v int) bool {
+func (g *DenseG[T]) E(u, v int) bool {
 	return g.adj[g.e(u, v)]
 }
 
 // W returns 1 if an edge exists between the two vertices, or 0 otherwise.
-func (g *Dense) W(u, v int) int {
+func (g *DenseG[T]) W(u, v int) int {
 	if g.E(u, v) {
 		return 1
 	} else {
@@ -48,15 +56,15 @@ func (g *Dense) W(u, v int) int {
 }
 
 // E returns true if the edge (u, v) exists and has a non-zero weight in the graph.
-func (g *DenseW) E(u, v int) bool { return g.W(u, v) != 0 }
+func (g *DenseWG[T]) E(u, v int) bool { return g.W(u, v) != 0 }
 
 // W returns the weight of an edge between two vertices.
-func (g *DenseW) W(u, v int) int {
+func (g *DenseWG[T]) W(u, v int) int {
 	return g.adj[g.e(u, v)]
 }
 
 // Succ returns an iterator for the successors of vertex u.
-func (g *Dense) Succ(u int) iter.Seq[int] {
+func (g *DenseG[T]) Succ(u int) iter.Seq[int] {
 	return func(yield func(int) bool) {
 		e, n := g.e(u, 0), g.Len()
 		for v := range n {
@@ -71,7 +79,7 @@ func (g *Dense) Succ(u int) iter.Seq[int] {
 }
 
 // Succ returns an iterator for the successors of vertex u.
-func (g *DenseW) Succ(u int) iter.Seq[int] {
+func (g *DenseWG[T]) Succ(u int) iter.Seq[int] {
 	return func(yield func(int) bool) {
 		e, n := g.e(u, 0), g.Len()
 		for v := range n {
@@ -86,7 +94,7 @@ func (g *DenseW) Succ(u int) iter.Seq[int] {
 }
 
 // SuccW returns an iterator for the successors of vertex u, together with their weights.
-func (g *DenseW) SuccW(u int) iter.Seq2[int, int] {
+func (g *DenseWG[T]) SuccW(u int) iter.Seq2[int, int] {
 	return func(yield func(int, int) bool) {
 		e, n := g.e(u, 0), g.Len()
 		for v := range n {
@@ -101,7 +109,7 @@ func (g *DenseW) SuccW(u int) iter.Seq2[int, int] {
 }
 
 // Pred returns an iterator for the predecessors of vertex v.
-func (g *Dense) Pred(v int) iter.Seq[int] {
+func (g *DenseG[T]) Pred(v int) iter.Seq[int] {
 	return func(yield func(int) bool) {
 		e, n := g.e(0, v), g.Len()
 		for u := range n {
@@ -116,7 +124,7 @@ func (g *Dense) Pred(v int) iter.Seq[int] {
 }
 
 // Pred returns an iterator for the predecessors of vertex v.
-func (g *DenseW) Pred(v int) iter.Seq[int] {
+func (g *DenseWG[T]) Pred(v int) iter.Seq[int] {
 	return func(yield func(int) bool) {
 		e, n := g.e(0, v), g.Len()
 		for u := range n {
@@ -131,7 +139,7 @@ func (g *DenseW) Pred(v int) iter.Seq[int] {
 }
 
 // NumSucc returns the total number of successors of u. This is an O(|V|) operation.
-func (g *Dense) NumSucc(u int) (n int) {
+func (g *DenseG[T]) NumSucc(u int) (n int) {
 	for e, eN := g.e(u, 0), g.e(u+1, 0); e < eN; e++ {
 		if g.adj[e] {
 			n++
@@ -141,7 +149,7 @@ func (g *Dense) NumSucc(u int) (n int) {
 }
 
 // NumPred returns the total number of successors of u. This is an O(|V|) operation.
-func (g *Dense) NumPred(v int) (n int) {
+func (g *DenseG[T]) NumPred(v int) (n int) {
 	for e, eN := g.e(0, v), g.e(g.Len(), v); e < eN; e += g.Len() {
 		if g.adj[e] {
 			n++
@@ -151,6 +159,6 @@ func (g *Dense) NumPred(v int) (n int) {
 }
 
 // DelEdge removes the edge (u, v) from the graph. If the edge did not exist, the call does nothing.
-func (g *Dense) DelEdge(u, v int) {
+func (g *DenseG[T]) DelEdge(u, v int) {
 	g.adj[g.e(u, v)] = false
 }
