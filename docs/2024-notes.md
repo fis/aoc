@@ -102,3 +102,49 @@ Combined:
 C: "mul\([0-9]+,[0-9]+\)             "~?                            ",";;{:><ri}mp
 2:                      |do(n't)?\(\)   0+]1Pp{J1!!'o=={2!!'n!=Pp}j{              pP.*.+}jie}r[
 ```
+
+## [Day 4](https://adventofcode.com/2024/day/4): Ceres Search
+
+Nothing to say here, haven't even done the Burlesque part yet. If it wasn't for
+the diagonals it wouldn't be too bad; now it's going to be a pain. For part 2,
+maybe I can do something like shifting and zipping.
+
+## [Day 5](https://adventofcode.com/2024/day/5): Print Queue
+
+Kinda frustrated by today's puzzle. Started by assuming that of course the
+ruleset will not explicitly contain rules for *all* page pairs, and adapted the
+existing graph library to deal with integer rather than string labels, so that I
+could use the topological sort routine in it. Of course it turns out that:
+
+- The full list of rules is *not* a DAG; it's just that there are no cycles
+  within the pages of an individual update.
+- The ruleset does in fact contain a rule for every possible page pair.
+
+In the end it all boiled down to just checking the consecutive pages in part 1,
+and a call to `slices.SortFunc` in part 2. Oh well, at least it's pretty fast.
+
+### Burlesque
+
+Burlesque has a slightly annoying quirk in that both the state stack as well as
+the "global variables" (`s0`, `g0`) are inaccessible in the comparison function
+of `sb`. So this code has to smuggle the list of rules into the function block
+itself.
+
+Part 1:
+
+```
+ln{""};;p^{"|";;)ri}m[s0{",";;)riJ2CO{g0j~[}aljsa2./!!.*}ms
+```
+
+Part 2:
+
+```
+ln{""};;p^{"|";;)ri}m[s0{",";;)riJ2CO{g0j~[}aln!j{_+j~[2.*-.}g01iasbsa2./!!.*}ms
+```
+
+Combined:
+
+```
+C: ln{""};;p^{"|";;)ri}m[s0{",";;)riJ2CO{g0j~[}al  j                   sa2./!!.*}ms
+2:                                               n! {_+j~[2.*-.}g01iasb
+```
