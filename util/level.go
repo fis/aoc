@@ -360,6 +360,13 @@ func EmptyFixedLevel(w, h int, empty byte) *FixedLevel {
 	return &FixedLevel{W: w, H: h, Data: data}
 }
 
+// Copy returns a duplicate of the level.
+func (l *FixedLevel) Copy() *FixedLevel {
+	data := make([]byte, len(l.Data))
+	copy(data, l.Data)
+	return &FixedLevel{W: l.W, H: l.H, Data: data}
+}
+
 // At returns the value at the given coordinates.
 func (l *FixedLevel) At(x, y int) byte { return l.Data[y*l.W+x] }
 
@@ -387,15 +394,18 @@ func (l *FixedLevel) Write(w io.Writer) {
 
 // Find locates the coordinates of a byte, which must be unique on the level.
 func (l *FixedLevel) Find(key byte) (x, y int, found bool) {
-	for i := range l.H {
-		for j := range l.W {
-			if l.Data[i*l.W+j] == key {
-				if found {
-					return 0, 0, false
-				}
-				x, y, found = j, i, true
-			}
-		}
+	idx := bytes.IndexByte(l.Data, key)
+	if idx < 0 {
+		return 0, 0, false
 	}
-	return
+	return idx % l.W, idx / l.W, true
+}
+
+// FindAny locates the coordinates of the first occurrence of a byte from the given set.
+func (l *FixedLevel) FindAny(keys string) (x, y int, found byte) {
+	idx := bytes.IndexAny(l.Data, keys)
+	if idx < 0 {
+		return 0, 0, 0
+	}
+	return idx % l.W, idx / l.W, l.Data[idx]
 }

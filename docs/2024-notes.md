@@ -148,3 +148,14 @@ Combined:
 C: ln{""};;p^{"|";;)ri}m[s0{",";;)riJ2CO{g0j~[}al  j                   sa2./!!.*}ms
 2:                                               n! {_+j~[2.*-.}g01iasb
 ```
+
+## [Day 6](https://adventofcode.com/2024/day/6): Guard Gallivant
+
+The code looks quite convoluted, but the gist of it is:
+
+- For part 1, it just walks the path, marking every position with `X`, and
+  counting every time it hits a new one.
+- For part 2, it does a similar walk, but every time just before stepping into a
+  new `.` square, it considers what would happen if that were `#` instead. This
+  consideration is done by a *third* copy of the guard-walking routine. The two
+  related to part 2 also maintain a (x, y, direction) bitmap to detect loops.
