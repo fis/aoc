@@ -100,3 +100,34 @@ func TestSqrt(t *testing.T) {
 		}
 	}
 }
+
+func TestPow(t *testing.T) {
+	tests := [][3]int{
+		{0, 0, 1}, {1, 0, 1}, {2, 0, 1}, {3, 0, 1}, {10, 0, 1},
+		{0, 1, 0}, {1, 1, 1}, {2, 1, 2}, {3, 1, 3}, {10, 1, 10},
+		{0, 2, 0}, {1, 2, 1}, {2, 2, 4}, {3, 2, 9}, {10, 2, 100},
+		{0, 3, 0}, {1, 3, 1}, {2, 3, 8}, {3, 3, 27}, {10, 3, 1000},
+		{0, 10, 0}, {1, 10, 1}, {2, 10, 1024}, {3, 10, 59049}, {10, 10, 10000000000},
+	}
+	for _, test := range tests {
+		if got := Pow(test[0], test[1]); got != test[2] {
+			t.Errorf("Pow(%d, %d) = %d, want %d", test[0], test[1], got, test[2])
+		}
+	}
+}
+
+func TestConcat(t *testing.T) {
+	tests := [][3]int{
+		{0, 12345, 12345},
+		{1, 2345, 12345},
+		{12, 345, 12345},
+		{123, 45, 12345},
+		{1234, 5, 12345},
+		{12345, 0, 12345},
+	}
+	for _, test := range tests {
+		if got := Concat(test[0], test[1]); got != test[2] {
+			t.Errorf("Concat(%d, %d) = %d, want %d", test[0], test[1], got, test[2])
+		}
+	}
+}

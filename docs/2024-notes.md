@@ -159,3 +159,11 @@ The code looks quite convoluted, but the gist of it is:
   new `.` square, it considers what would happen if that were `#` instead. This
   consideration is done by a *third* copy of the guard-walking routine. The two
   related to part 2 also maintain a (x, y, direction) bitmap to detect loops.
+
+## [Day 7](https://adventofcode.com/2024/day/7): Bridge Repair
+
+My initial solution here was pretty elegant-looking loop over the number of
+possibilities ($2^{N-1}$ for part 1, $3^{N-1}$ for part 2), using the base-2/3
+digits of the loop counter as the operators. Unfortunately it turned out to be
+significantly slower than the recursive approach, probably because it did not
+reuse the partial results, but re-evaluated every possible choice from scratch.

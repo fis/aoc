@@ -81,3 +81,25 @@ func Sqrt(y int) int {
 	}
 	return x0
 }
+
+// Pow calculates the exponentiation operator for positive integer powers.
+func Pow[T integer](base, exp T) T {
+	result := T(1)
+	for exp > 0 {
+		if exp&1 == 1 {
+			result *= base
+		}
+		base *= base
+		exp >>= 1
+	}
+	return result
+}
+
+// Concat returns the concatenation of two (assumed nonnegative) integer values.
+// For example, ix.Concat(12, 345) == 12345.
+func Concat[T integer](a, b T) T {
+	for t := b; t > 0; t /= 10 {
+		a *= 10
+	}
+	return a + b
+}
