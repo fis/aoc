@@ -164,19 +164,18 @@ def plot_stats_chart(data):
     counts = counts.stack().rename_axis(index=['year', 'day', 'ts_utc', 'since', 'stars'])
     counts = pd.DataFrame.from_dict({'count': counts}).reset_index()
 
-    selection = alt.selection_multi(fields=['day'], bind='legend')
-    hover = alt.selection_single(fields=['day'], on='mouseover')
+    selection = alt.selection_point(fields=['day'], bind='legend')
+    opacity = alt.condition(selection, alt.value(1), alt.value(0.2))
 
     alt.Chart(counts) \
+        .add_params(selection) \
         .mark_line() \
         .encode(
             alt.X('utcyearmonthdatehoursminutes(ts_utc):T', title='Time of stats snapshot'),
             alt.Y('count:Q', title='Number of solutions'),
             alt.Color('day:O', scale=_rainbow_day_scale),
-            opacity=alt.condition(selection | hover, alt.value(1), alt.value(0.2)),
+            opacity=opacity,
             tooltip=['day']) \
-        .add_selection(selection) \
-        .add_selection(hover) \
         .facet(column='stars:N', row='year:O') \
         .resolve_scale(x='independent', y='independent') \
         .save('out/stats.chart.html')
@@ -184,15 +183,14 @@ def plot_stats_chart(data):
     counts['since_d'] = counts.since / 86400
 
     alt.Chart(counts) \
+        .add_params(selection) \
         .mark_line() \
         .encode(
             alt.X('since_d:Q', title='Time since puzzle start (days)', scale=alt.Scale(type='sqrt')),
             alt.Y('count:Q', title='Number of solutions'),
             alt.Color('day:O', scale=_rainbow_day_scale),
-            opacity=alt.condition(selection | hover, alt.value(1), alt.value(0.2)),
+            opacity=opacity,
             tooltip=['day']) \
-        .add_selection(selection) \
-        .add_selection(hover) \
         .facet(column='stars:N', row='year:O') \
         .resolve_scale(x='independent', y='independent') \
         .save('out/stats.aligned.chart.html')
@@ -206,21 +204,19 @@ def plot_stats_trajectory(data):
     data = data.reset_index()
     data = data.loc[(data['one_star'] > 0) & (data['two_stars'] > 0)]
 
-    selection = alt.selection_multi(fields=['day'], bind='legend')
-    hover = alt.selection_single(fields=['day'], on='mouseover')
+    selection = alt.selection_point(fields=['day'], bind='legend')
 
     for scale_type in ('linear', 'log'):
         alt.Chart(data) \
+            .add_params(selection) \
             .mark_line() \
             .encode(
                 alt.X('one_star:Q', title='Solutions with just one star', scale=alt.Scale(type=scale_type)),
                 alt.Y('two_stars:Q', title='Solutions with both stars', scale=alt.Scale(type=scale_type)),
                 alt.Color('day:O', scale=_rainbow_day_scale),
-                opacity=alt.condition(selection | hover, alt.value(1), alt.value(0.2)),
+                opacity=alt.condition(selection, alt.value(1), alt.value(0.2)),
                 tooltip=['day'],
                 order='ts') \
-            .add_selection(selection) \
-            .add_selection(hover) \
             .properties(width=800, height=480) \
             .facet(row='year:O') \
             .resolve_scale(x='independent', y='independent') \
@@ -236,19 +232,17 @@ def plot_stats_ratio(data):
     ratios = ratios.reset_index()
     ratios = ratios.loc[ratios.ratio > 0]
 
-    selection = alt.selection_multi(fields=['day'], bind='legend')
-    hover = alt.selection_single(fields=['day'], on='mouseover')
+    selection = alt.selection_point(fields=['day'], bind='legend')
 
     alt.Chart(ratios) \
+        .add_params(selection) \
         .mark_line() \
         .encode(
             alt.X('utcyearmonthdatehoursminutes(ts_utc):T', title='Time of stats snapshot'),
             alt.Y('ratio:Q', title='Fraction of solutions with just one star', scale=alt.Scale(type='log')),
             alt.Color('day:O', scale=_rainbow_day_scale),
-            opacity=alt.condition(selection | hover, alt.value(1), alt.value(0.2)),
+            opacity=alt.condition(selection , alt.value(1), alt.value(0.2)),
             tooltip=['day']) \
-        .add_selection(selection) \
-        .add_selection(hover) \
         .facet(row='year:O') \
         .resolve_scale(x='independent', y='independent') \
         .save('out/stats.ratio.html')
@@ -256,15 +250,14 @@ def plot_stats_ratio(data):
     ratios['since_d'] = ratios.since / 86400
 
     alt.Chart(ratios) \
+        .add_params(selection) \
         .mark_line() \
         .encode(
             alt.X('since_d:Q', title='Time since puzzle start (days)', scale=alt.Scale(type='sqrt')),
             alt.Y('ratio:Q', title='Fraction of solutions with just one star', scale=alt.Scale(type='log')),
             alt.Color('day:O', scale=_rainbow_day_scale),
-            opacity=alt.condition(selection | hover, alt.value(1), alt.value(0.2)),
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.2)),
             tooltip=['day']) \
-        .add_selection(selection) \
-        .add_selection(hover) \
         .facet(row='year:O') \
         .resolve_scale(x='independent', y='independent') \
         .save('out/stats.aligned.ratio.html')
