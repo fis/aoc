@@ -176,3 +176,43 @@ Initially thought about processing all pairs with the typical `i = 0…N-2`,
 `j = i+1…N-1` loops, but since you have to do a pretty "symmetric" thing in both
 parts, instead just doing two nested identical loops and skipping the `i = j`
 pair.
+
+## [Day 9](https://adventofcode.com/2024/day/9): Disk Fragmenter
+
+Pretty straight-forward algorithms.
+
+For both parts, it all starts from expanding the initial "compact" disk map to a
+full disk image: an `[]int` where each disk block has a corresponding value
+indicating which file ID it is part of (or `-1` if free space). That's
+sufficient for part 1; for part 2, it also builds a file map (just a list of the
+start position and size of each file) and a free list (for each size 1..9, the
+locations with free space gaps of that size, in order).
+
+To compact by block (part 1), the code uses two pointers: one starting at the
+beginning of the disk, and another at the end. The first pointer is incremented
+to iterate over all free space, skipping any files; the second is decremented to
+iterate over all file blocks, skipping free space. Compaction is then just a
+matter of moving file blocks from the second pointer to the first until they
+cross over.
+
+The second part is a little more sophisticated. Each free list is treated as a
+heap; conveniently, a sorted list (which is it by construction) already
+satisfies the heap invariant. We then iterate over the file map in reverse (so
+largest file ID first), and for each file, check the free lists of sizes equal
+to or greater than the file size. The leftmost gap that's to the left of the
+file position (if any) is chosen, and popped off its corresponding heap. Since
+here we always move complete files, we can ignore the disk image and update the
+positions in the file map instead.
+
+Calculating the checksum for the file uses the closed form of the sum of
+consecutive integers; given file $f$ of size $s$ at position $p$, we have:
+
+$$\begin{aligned}
+\mathrm{checksum} &= \sum_{i=p}^{p+s-1} f i \\
+&= \frac{1}{2} f s (2p+s-1)
+\end{aligned}$$
+
+Interestingly, profiling the initial solution showed that a large chunk of the
+total time was spent in `expandMap`, specifically in resizing the slice.
+Preallocating the disk image (with a worst-case estimate of 9 blocks per file)
+and file map cut the runtime down from 2.2 ms to 1.3 ms.
