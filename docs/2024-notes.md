@@ -167,3 +167,12 @@ possibilities ($2^{N-1}$ for part 1, $3^{N-1}$ for part 2), using the base-2/3
 digits of the loop counter as the operators. Unfortunately it turned out to be
 significantly slower than the recursive approach, probably because it did not
 reuse the partial results, but re-evaluated every possible choice from scratch.
+
+## [Day 8](https://adventofcode.com/2024/day/8): Resonant Collinearity
+
+No real surprises today.
+
+Initially thought about processing all pairs with the typical `i = 0…N-2`,
+`j = i+1…N-1` loops, but since you have to do a pretty "symmetric" thing in both
+parts, instead just doing two nested identical loops and skipping the `i = j`
+pair.

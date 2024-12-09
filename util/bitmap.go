@@ -19,6 +19,13 @@ func (bmp FixedBitmap1D) Get(i int) bool { return bmp[i>>6]&(1<<(i&63)) != 0 }
 func (bmp FixedBitmap1D) Set(i int)      { bmp[i>>6] |= 1 << (i & 63) }
 func (bmp FixedBitmap1D) Unset(i int)    { bmp[i>>6] &^= 1 << (i & 63) }
 
+func (bmp FixedBitmap1D) Count() (count int) {
+	for _, v := range bmp {
+		count += bits.OnesCount64(v)
+	}
+	return count
+}
+
 type FixedBitmap2D [][]uint64
 
 func MakeFixedBitmap2D(w, h int) FixedBitmap2D {
