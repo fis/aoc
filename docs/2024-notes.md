@@ -216,3 +216,36 @@ Interestingly, profiling the initial solution showed that a large chunk of the
 total time was spent in `expandMap`, specifically in resizing the slice.
 Preallocating the disk image (with a worst-case estimate of 9 blocks per file)
 and file map cut the runtime down from 2.2 ms to 1.3 ms.
+
+### Burlesque
+
+Really behind on the Burlesque solutions, and only did part 1 today. Even that
+was a pain: first two solutions (relying on `sa`-based updates to the list)
+worked on the example but were too slow to be feasible on the actual puzzle
+input; second even managed to use large amounts of memory somehow.
+
+Part 1:
+
+```
+riXX0[+2cozi{+.bxj^p{0}j.*#r.*}m^FL
+JJ{z?}fI-1+]2CO{.-}m^?dj:nz<-saPp{j{0}j.*}Z]FL?+?dPP.+zi)pd++
+```
+
+## [Day 10](https://adventofcode.com/2024/day/10): Hoof It
+
+Pretty sure _everyone_ did the same thing for this: solved part 2 before solving
+part 1. I definitely did.
+
+## [Day 11](https://adventofcode.com/2024/day/11): Plutonian Pebbles
+
+There isn't anything particularly interesting about the solution algorithmically
+(it's just memoized recursion), but spent a little while making it relatively
+performant.
+
+Go maps continue to be not so great. The runtime was approximately 15ms when I
+used a single (stone, steps) → count map for the memoization. Switching to 75
+separate maps (one for each "remaining steps" count) dropped it to 10ms. Using a
+simple handcrafted hash table of size 8192 (with open addressing and linear
+probing, and the hash function being just taking the low bits) dropped it to
+4.5ms. Finally, forgetting about hashing and just keeping a table of 1024 values
+(and not caching higher values at all) was the fastest, at 0.7ms.
