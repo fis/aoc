@@ -26,6 +26,12 @@ func (bmp FixedBitmap1D) Count() (count int) {
 	return count
 }
 
+func (bmp FixedBitmap1D) SetAll(other FixedBitmap1D) {
+	for i, v := range other {
+		bmp[i] |= v
+	}
+}
+
 type FixedBitmap2D [][]uint64
 
 func MakeFixedBitmap2D(w, h int) FixedBitmap2D {
