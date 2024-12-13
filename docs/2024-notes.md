@@ -249,3 +249,42 @@ simple handcrafted hash table of size 8192 (with open addressing and linear
 probing, and the hash function being just taking the low bits) dropped it to
 4.5ms. Finally, forgetting about hashing and just keeping a table of 1024 values
 (and not caching higher values at all) was the fastest, at 0.7ms.
+
+## [Day 12](https://adventofcode.com/2024/day/12): Garden Groups
+
+It's just a flood fill. I'm doing the recursive DFS, and lowercasing the letters
+of the map to mark them as visited to prevent cycles.
+
+For part 2, the side-counting is done by only counting the "first" edge of each
+side, checking whether the edge continues "backwards" or not; the definition of
+that is fairly arbitrary, as long as it's done consistently.
+
+## [Day 13](https://adventofcode.com/2024/day/13): Claw Contraption
+
+Today's puzzle presents itself as a minimization problem, but really there's
+only ever a single solution, if any.
+
+If you think of it geometrically, it's just a matter of representing the
+location of the prize point using the motions of the buttons as the basis
+vectors of the coordinate system. If the two vectors are not collinear, there's
+a single, unique representation.
+
+Finding the answer involves solving the following for $a$, $b$:
+
+$$
+a \begin{pmatrix} A_x \\ A_y \end{pmatrix}
++ b \begin{pmatrix} B_x \\ B_y \end{pmatrix}
+= \begin{pmatrix} P_x \\ P_y \end{pmatrix}
+$$
+
+After some maths™, this yields:
+
+$$
+\begin{aligned}
+a &= \frac{P_x B_y - P_y B_x}{d} \\
+b &= \frac{P_y A_x - P_x A_y}{d} \\
+d &= A_x B_y - A_y B_x
+\end{aligned}
+$$
+
+A prize is achievable iff both $a$ and $b$ are integers.
