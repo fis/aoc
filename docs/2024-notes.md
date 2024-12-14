@@ -288,3 +288,44 @@ d &= A_x B_y - A_y B_x
 $$
 
 A prize is achievable iff both $a$ and $b$ are integers.
+
+## [Day 14](https://adventofcode.com/2024/day/14): Restroom Redoubt
+
+Part 1 was straight-forward, as usual: just evaluate the robots' new positions
+at $t=100$ (modulo the region size), and count how many are in each quadrant.
+
+Part 2, on the other hand, was the vaguest in a while. What exactly does it mean
+to "arrange themselves into a picture of a Christmas tree"? Who knows.
+
+Observing the behavior of the robots for a few hundred seconds, it looks like at
+a certain time every 101 seconds (width of the area) the robots mostly all pack
+up to a specific vertical strip in the image; and conversely, at a different
+time repeating every 103 seconds (height of the area) they do the same along the
+other axis. It stands to reason to assume that the tree gets formed when the two
+cycles coincide.
+
+How to quantify this? Well, if the $N$ robots were distributed uniformly
+randomly over the $S$ rows (or, respectively, columns), then we should expect
+the counts of robots on each row (or column) have a mean of $\frac{N}{S}$, and a
+variance of $\frac{N(S-1)}{S^2}$ (from a multinomial distribution of $N$ trials
+and a uniform probability of $\frac{1}{S}$ for each of the $S$ outcomes). If we
+compute the counts of the robots, and the observed sample variance deviates
+significantly, that's probably the key moment in the cycle.
+
+After finding out the first times $t_H$, $t_V$ when all the robots bunch up
+horizontally and vertically, we just need to find the target time $t_{HV}$ that
+satisfies both cycles:
+
+$$
+\begin{aligned}
+t_{HV} &= t_H \pmod{101} \\
+t_{HV} &= t_V \pmod{103}
+\end{aligned}
+$$
+
+The
+[Chinese reminder theorem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
+article describes various ways of solving this, but since the numbers involved
+are so small (and there are only two congruences), we take the easy way out and
+simply test all values $t_H + k \cdot 101$ and return the first one that is
+congruent to $t_V$ (modulo 103).
