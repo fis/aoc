@@ -329,3 +329,10 @@ article describes various ways of solving this, but since the numbers involved
 are so small (and there are only two congruences), we take the easy way out and
 simply test all values $t_H + k \cdot 101$ and return the first one that is
 congruent to $t_V$ (modulo 103).
+
+## [Day 15](https://adventofcode.com/2024/day/15): Warehouse Woes
+
+No math today, just a matter of implementing things. Nothing particularly clever
+in the implementation either. Part 1 just goes ahead and does it; for part 2,
+specifically for vertical box moves, there's a little recursive function to
+collect the affected boxes and also verify if they are all movable.

@@ -74,6 +74,10 @@ func (bmp FixedBitmap2D) Clear(x, y int) {
 	bmp[y][wx] &^= 1 << ox
 }
 
+func (bmp FixedBitmap2D) ClearWord(x, y int) {
+	bmp[y][x>>6] = 0
+}
+
 func (bmp FixedBitmap2D) RotateR(w int) {
 	for y := range bmp {
 		wc, oc := (w-1)>>6, (w-1)&63
