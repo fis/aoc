@@ -336,3 +336,68 @@ No math today, just a matter of implementing things. Nothing particularly clever
 in the implementation either. Part 1 just goes ahead and does it; for part 2,
 specifically for vertical box moves, there's a little recursive function to
 collect the affected boxes and also verify if they are all movable.
+
+## [Day 16](https://adventofcode.com/2024/day/16): Reindeer Maze
+
+Surprising it took this long to get to a "shortest path in a maze" program.
+
+The solution here is a basic implementation of Dijkstra's algorithm, on top of
+the existing bucket priority queue. To solve part 2, the usual `prev` link is
+extended to a list of potential predecessors; to handle the "directionality"
+(i.e., that turning costs more than going straight), the state includes the
+current direction.
+
+## [Day 17](https://adventofcode.com/2024/day/17): Chronospatial Computer
+
+Disassembled program:
+
+```
+loop:
+  bst A
+  bxl 3
+  cdv B
+  adv 3
+  bxc
+  bxl 5
+  out B
+  jnz loop
+```
+
+Alternatively, simplified to a Go snippet:
+
+```go
+for A != 0 {  // technically a do-while loop, but let's assume A != 0 initially
+  B = A & 7
+  B ^= 3
+  C = A >> B
+  A >>= 3
+  B ^= C
+  B ^= 5
+  out(B & 7)
+}
+```
+
+In other words, for each iteration through the loop, we will output one value,
+based on the low bits of `A`. More specifically, if we call the 3 lowest bits
+`k`, we will output the value `k ^ 3 ^ (A >> (k ^ 3)) ^ 5`, which simplifies to
+`k ^ (A >> (k ^ 3)) ^ 6`.
+
+Since the "consumed" bits of `A` will not affect later outputs in any way, if we
+want the program to output any specific sequence, we should encode it into `A`
+starting from the last digit.
+
+It might be possible to work this out from first principles, but the solution
+here just tests all possible bits to add to `A` to get the right output. It also
+has to backtrack sometimes, because depending on what you add, you may not be
+able to get the right output "later".
+
+## [Day 18](https://adventofcode.com/2024/day/18): RAM Run
+
+Today was surprisingly simple, and I don't think it was just me. We already had
+a shortest-path maze thing (with "directionality" in the cost) on day 16, while
+today's puzzle was just the shortest path in a uniform grid.
+
+Also, using the part 1 solution to brute-force part 2 (by just recomputing the
+shortest path after every change) was surprisingly fast, clocking in at ~100 ms.
+The solution here, where we only recompute the path if the modification hits one
+of its squares, is of course still much faster, at ~3 ms.

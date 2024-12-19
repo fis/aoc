@@ -36,6 +36,9 @@ type Queue[T any] struct {
 
 // MakeQueue makes a new, empty queue of the given initial size, which must be a power of 2.
 func MakeQueue[T any](size int) Queue[T] {
+	if size & (size-1) != 0 {
+		panic(fmt.Sprintf("MakeQueue: size %d not power of 2", size))
+	}
 	return Queue[T]{
 		q:    make([]T, 0, size),
 		head: 0,
@@ -47,9 +50,10 @@ func QueueOf[T any](size int, init ...T) Queue[T] {
 	if len(init) > size {
 		panic(fmt.Sprintf("QueueOf: out of bounds: %d > %d", len(init), size))
 	}
-	q := make([]T, len(init), size)
-	copy(q, init)
-	return Queue[T]{q: q, head: 0}
+	q := MakeQueue[T](size)
+	q.q = q.q[:len(init)]
+	copy(q.q, init)
+	return q
 }
 
 // Len returns the number of items currently in the queue.
@@ -67,11 +71,16 @@ func (q Queue[T]) Empty() bool {
 	return len(q.q) == 0
 }
 
+// data returns the entire backing array of the queue as a slice; when you want to access arbitrary elements.
+func (q Queue[T]) data() []T {
+	return q.q[:cap(q.q)]
+}
+
 // Index returns the i'th item in the queue.
 // The head of the queue (least recently pushed item) is at index 0.
 func (q Queue[T]) Index(i int) T {
 	i = (q.head + i) & (cap(q.q) - 1)
-	return q.q[:i+1][i]
+	return q.data()[i]
 }
 
 // Slice returns a segment of the contents of the queue as a slice.
@@ -105,7 +114,7 @@ func (q *Queue[T]) Push(t T) {
 		q.q, q.head = newQ, 0
 	}
 	i := (q.head + n) & (cap(q.q) - 1)
-	q.q[:i+1][i] = t
+	q.data()[i] = t
 	q.q = q.q[:n+1]
 }
 
@@ -118,7 +127,7 @@ func (q *Queue[T]) Pop() T {
 	head := q.head
 	q.head = (head + 1) & (cap(q.q) - 1)
 	q.q = q.q[:len(q.q)-1]
-	return q.q[:head+1][head]
+	return q.data()[head]
 }
 
 // Clear makes the queue empty but without releasing any storage associated with it.

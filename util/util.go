@@ -257,6 +257,17 @@ func SortBy[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](x S, f F) {
 	})
 }
 
+// Make2D makes a "two-dimensional" slice-of-slices. A single `w*h` element slice is allocated
+// to store all the data, and then the slice-of-slices is initialized with individual "rows" of that.
+func Make2D[T any](w, h int) [][]T {
+	data := make([]T, w*h)
+	rows := make([][]T, h)
+	for y := range h {
+		rows[y] = data[y*w : y*w+w]
+	}
+	return rows
+}
+
 // LabelMap is a mapping from labels (of any comparable type) to integer indices, with automatic allocation.
 type LabelMap[T comparable] map[T]int
 
