@@ -229,6 +229,34 @@ func CheckPrefix(s, prefix string) (tail string, ok bool) {
 	return s[len(prefix):], true
 }
 
+// Given a sorted slice of strings, WithPrefix returns the (possibly empty) subrange where
+// all the strings start with a particular prefix.
+func WithPrefix(s []string, prefix string) []string {
+	n := len(s)
+	s1, s2 := 0, n
+	for s1 < s2 {
+		h := (s1 + s2) >> 1
+		if s[h] < prefix {
+			s1 = h + 1
+		} else {
+			s2 = h
+		}
+	}
+	if s1 == n || !strings.HasPrefix(s[s1], prefix) {
+		return nil
+	}
+	e1, e2 := s1, n
+	for e1 < e2 {
+		h := (e1 + e2) >> 1
+		if strings.HasPrefix(s[h], prefix) {
+			e1 = h + 1
+		} else {
+			e2 = h
+		}
+	}
+	return s[s1:e1]
+}
+
 // NextWord returns the prefix of s up to the first space character, if any.
 // If there is no space, the entire string is returned. The second return value
 // gives the remainder of the input string.
@@ -255,6 +283,15 @@ func SortBy[S ~[]I, F ~func(I) O, I any, O cmp.Ordered](x S, f F) {
 	slices.SortFunc(x, func(a, b I) int {
 		return cmp.Compare(f(a), f(b))
 	})
+}
+
+// EnsureSize returns either s[:size] if it's long enough, or the result of appending
+// sufficient zero values to s to pad it to the desired length.
+func EnsureSize[S ~[]T, T any](s S, size int) S {
+	if cap(s) >= size {
+		return s[:size]
+	}
+	return append(s, make(S, size-len(s))...)
 }
 
 // Make2D makes a "two-dimensional" slice-of-slices. A single `w*h` element slice is allocated

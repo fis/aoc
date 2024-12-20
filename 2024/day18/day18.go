@@ -78,11 +78,7 @@ loop:
 		return nil
 	}
 
-	if end.dist > len(path) {
-		path = append(path, make([]util.P, end.dist-len(path))...)
-	} else {
-		path = path[:end.dist]
-	}
+	path = util.EnsureSize(path, end.dist)
 	for i, p := end.dist-1, (util.P{tx, ty}); i >= 0; i-- {
 		path[i] = p
 		p = state[p.Y][p.X].prev

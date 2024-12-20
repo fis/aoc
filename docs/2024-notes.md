@@ -401,3 +401,32 @@ Also, using the part 1 solution to brute-force part 2 (by just recomputing the
 shortest path after every change) was surprisingly fast, clocking in at ~100 ms.
 The solution here, where we only recompute the path if the modification hits one
 of its squares, is of course still much faster, at ~3 ms.
+
+## [Day 19](https://adventofcode.com/2024/day/19): Linen Layout
+
+Again a pretty simple one for a day 19, so spent a bit of effort in trying to
+make it reasonably fast.
+
+The naïve dynamic-programming approach of just having a table of how many ways
+each suffix of the design can be prepared, and for each suffix just iterating
+over the list of towels in the original order, ran in 23.6 ms.
+
+The slightly more clever method of sorting the towel list initially, and then
+for each suffix (let's say `abcd`) using a binary search to incrementally narrow
+down the range of possible towels to those starting with `a`, `ab`, `abc`, ...,
+was significantly better, at 3.0 ms.
+
+Benchmarking the solution, most (≥90%) of the runtime was in the binary search.
+Putting the towels in a trie (so that each step just needs to descend one level)
+cut the runtime further down to 0.53 ms.
+
+As a quirky little tweak, replacing the switch that mapped `w`, `u`, `b`, `r`,
+`g` down to 0, 1, 2, 3, 4 with a bitwise expression that just extracts three
+bits that happen to be unique (and making the trie child pointer array size 8 to
+compensate) further reduced the runtime to 0.32 ms.
+
+Also considered using packed bitstrings, since they could do prefix checks much
+faster. The maximum stripe count for a towel in my input is 8, which fits well
+in a machine word (packed 3 or 4 bits per stripe). The maximum design size is
+60, which doesn't, but it's still manageable. However, the trie solution
+probably wouldn't benefit as much from this, so that's still unimplemented.

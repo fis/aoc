@@ -89,3 +89,34 @@ func TestScanInts(t *testing.T) {
 		}
 	}
 }
+
+func TestWithPrefix(t *testing.T) {
+	data := []string{
+		// N.B. must be sorted
+		"bar",
+		"foo",
+		"foobar",
+		"foobaz",
+		"fooquux",
+		"quux",
+		"zuul",
+	}
+	tests := []struct{
+		prefix string
+		want []string
+	}{
+		{"b", []string{"bar"}},
+		{"bar", []string{"bar"}},
+		{"f", []string{"foo", "foobar", "foobaz", "fooquux"}},
+		{"foo", []string{"foo", "foobar", "foobaz", "fooquux"}},
+		{"foob", []string{"foobar", "foobaz"}},
+		{"foobar", []string{"foobar"}},
+		{"q", []string{"quux"}},
+		{"r", nil},
+	}
+	for _, test := range tests {
+		if got := WithPrefix(data, test.prefix); !cmp.Equal(got, test.want) {
+			t.Errorf("WithPrefix(..., %s) = %v, want %v", test.prefix, got, test.want)
+		}
+	}
+}
