@@ -21,6 +21,7 @@ import (
 	"cmp"
 	"fmt"
 	"io"
+	"iter"
 	"math"
 	"os"
 	"regexp"
@@ -390,6 +391,22 @@ func (p P) Scale(n int) P {
 // The directions will be returned in this order: north, south, west, east.
 func (p P) Neigh() [4]P {
 	return [4]P{{p.X, p.Y - 1}, {p.X, p.Y + 1}, {p.X - 1, p.Y}, {p.X + 1, p.Y}}
+}
+
+// CircleM returns an iterator over the positions that are the given distance (as in DistM) away from the point.
+// TODO: add test
+func (p P) CircleM(dist int) iter.Seq[P] {
+	basis := [4]P{{1, 0}, {0, -1}, {-1, 0}, {0, 1}}
+	return func(yield func(P) bool) {
+		for di := range basis {
+			d1, d2 := basis[di], basis[(di+1)&3]
+			for i := range dist {
+				if !yield(p.Add(d1.Scale(dist - i)).Add(d2.Scale(i))) {
+					return
+				}
+			}
+		}
+	}
 }
 
 // Neigh8 returns a point's Moore neighbourhood (the 8 orthogonally or diagonally adjacent elements).

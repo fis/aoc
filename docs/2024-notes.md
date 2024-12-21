@@ -430,3 +430,29 @@ faster. The maximum stripe count for a towel in my input is 8, which fits well
 in a machine word (packed 3 or 4 bits per stripe). The maximum design size is
 60, which doesn't, but it's still manageable. However, the trie solution
 probably wouldn't benefit as much from this, so that's still unimplemented.
+
+## [Day 20](https://adventofcode.com/2024/day/20): Race Condition
+
+The gist of the solution is: for every square that's part of the single path
+from start to end, consider what other parts of the path are within ≤ 20 steps,
+and how much it would help to take the shortest possible path there, ignoring
+walls.
+
+The initial solution just checked all pairs (that were sufficiently far of each
+other on the path), and compared their Manhattan distance to their on-path
+distance. This was a little sluggish (~50 ms), so the current one instead keeps
+track of "chunks" of paths, and only checks the chunks that could be possible.
+It also uses the same coordinate transform as 2022 day 15, to turn the
+diamond-shaped regions into axis-aligned boxes, for convenience.
+
+The chunk size is mostly arbitrary. Benchmarking sizes $2^1$, $2^2$, $2^3$,
+$2^4$ and $2^5$, the resulting times were, respectively, 9.6, 6.6, 6.0, 7.6 and
+11.1 ms. So the solution uses an 8-by-8 chunk size (in the transformed
+coordinates).
+
+There's also one more speedup trick. Due to the construction, the items of a
+chunk are sorted based on their on-path position. We only need to consider items
+that are at least $N$ steps further along the path; otherwise the cheat could
+not possibly save enough time, even if it was zero-length. Since the chunk is
+consistently ordered, we can do a quick binary search to find the starting
+position to start looking at a chunk in. This drops the runtime to 4.0 ms.

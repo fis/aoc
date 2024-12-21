@@ -15,6 +15,7 @@
 package util
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -101,9 +102,9 @@ func TestWithPrefix(t *testing.T) {
 		"quux",
 		"zuul",
 	}
-	tests := []struct{
+	tests := []struct {
 		prefix string
-		want []string
+		want   []string
 	}{
 		{"b", []string{"bar"}},
 		{"bar", []string{"bar"}},
@@ -117,6 +118,22 @@ func TestWithPrefix(t *testing.T) {
 	for _, test := range tests {
 		if got := WithPrefix(data, test.prefix); !cmp.Equal(got, test.want) {
 			t.Errorf("WithPrefix(..., %s) = %v, want %v", test.prefix, got, test.want)
+		}
+	}
+}
+
+func TestCircleM(t *testing.T) {
+	tests := []struct {
+		p    P
+		dist int
+		want []P
+	}{
+		{p: P{3, 7}, dist: 1, want: []P{{4, 7}, {3, 6}, {2, 7}, {3, 8}}},
+		{p: P{5, 11}, dist: 3, want: []P{{8, 11}, {7, 10}, {6, 9}, {5, 8}, {4, 9}, {3, 10}, {2, 11}, {3, 12}, {4, 13}, {5, 14}, {6, 13}, {7, 12}}},
+	}
+	for _, test := range tests {
+		if got := slices.Collect(test.p.CircleM(test.dist)); !cmp.Equal(got, test.want) {
+			t.Errorf("%v.CircleM(%d) = %v, want %v", test.p, test.dist, got, test.want)
 		}
 	}
 }
