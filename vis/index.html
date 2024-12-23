@@ -65,19 +65,17 @@
       <li>All the chart pages have been produced using <a href="https://altair-viz.github.io/index.html">Vega-Altair</a>'s HTML export mode. Some of them have a little more data points than is really healthy, and the encoding is not particularly efficient, so they may be a bit sluggish to load or use.</li>
     </ul>
     <div class="group">
-      <h2>time</h2>
+      <h2>leaderboard</h2>
       <p class="updated">Last updated: %UPDATED:leaderboard%</p>
-      <p>The <code>time</code> charts are based on the global per-day leaderboards, and measure how long it took for the first 100 people to solve each day's puzzle for one or two stars.</p>
+      <p>All the charts in this group are based on the global per-day leaderboard data, which is available from the very beginning of the contest.</p>
+      <p>The <code>time</code> charts measure how long it took for the first 100 people to solve each day's puzzle for one or two stars.</p>
       <p>Note: There was a problem publishing the day 1 puzzle of 2020, so the charts for that particular date are a little wonky, as the data of the <a href="https://adventofcode.com/2020/leaderboard/day/1">corresponding leaderboard</a> is quite... clumpy.</p>
       <ul class="chartlist">
         <li><a class="chart" href="time.one.html">time.one</a> / <a class="chart" href="time.two.html">time.two</a>: box plot showing the time (in minutes) it took to get one / two stars for the person ranked 1st, 25th, 75th and 100th, grouped by puzzle day to allow comparing the same day across the different years.</li>
         <li><a class="chart" href="time.dist.html">time.dist</a>: smoothed density plot of all the 100 leaderboard entries. Each facet shows a particular year and whether the time was for one or two stars, while each line represents a particular puzzle, with the line color moving from lighter (day 1) to darker (day 25).</li>
+        <li><a class="chart" href="time.top.html">time.top</a>: the 1st rank time for one/two stars, by year and date. This was added to see the LLM boom of 2024 more clearly.</li>
       </ul>
-    </div>
-    <div class="group">
-      <h2>twist</h2>
-      <p class="updated">Last updated: %UPDATED:leaderboard%</p>
-      <p>The <code>twist</code> charts are also based on the leaderboard, but measure the "twistiness" of the puzzle, defined as the total time taken by the 100 people on the leaderboard for two stars (i.e., summing up their individual times), divided by the same total time measurement for the one-star leaderboard. Since you must have had one star prior to getting two, the minimum possible twistiness is 1. The twistiness score is attempting to measure how much harder the second part of the puzzle was, compared to the first one.</p>
+      <p>The <code>twist</code> charts measure the "twistiness" of the puzzle, defined as the total time taken by the 100 people on the leaderboard for two stars (i.e., summing up their individual times), divided by the same total time measurement for the one-star leaderboard. Since you must have had one star prior to getting two, the minimum possible twistiness is 1. The twistiness score is attempting to measure how much harder the second part of the puzzle was, compared to the first one.</p>
       <ul class="chartlist">
         <li><a class="chart" href="twist.html">twist</a>: bar chart of each puzzle's twistiness score, grouped by puzzle day to allow cross-year comparisons.</li>
         <li><a class="chart" href="twist.heat.html">twist.heat</a>: heat map of all twistiness scores, good for locating the most twisty days overall.</li>

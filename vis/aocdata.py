@@ -142,9 +142,10 @@ def _leaderboard_parse(year, day):
     
     Returns:
         A Pandas dataframe containing that day's data. It will have a three-level index with the
-        columns `year`, `day` and `rank` (the latter with values ranging from 1 to 100), and two
-        series, `one_star` and `two_stars`, containing the time (in seconds) that yielded that given
-        ranking, for the first part or both parts respectively.
+        columns `year`, `day` and `rank` (the latter with values ranging from 1 to 100), and four
+        series. `one_star` and `two_stars` contain the time (in seconds) that yielded that given
+        ranking, for the first part or both parts respectively. `one_star_user` and `two_stars_user`
+        contain the user ID (opaque string) that achieved the corresponding time/rank.
     """
     page = html.parse(_cachefile('leaderboard', year, day))
     entries = page.xpath('//div[@class="leaderboard-entry"]')
@@ -153,14 +154,21 @@ def _leaderboard_parse(year, day):
 
     times = np.empty((2, 100))
     times.fill(np.nan)
+    users = ([], [])
     for i, e in enumerate(entries):
         text = e.xpath('span[@class="leaderboard-time"]')[0].text_content()
         d = datetime.strptime(text, '%b %d  %H:%M:%S') - datetime(1900, 12, day, 0, 0, 0)
         times[i//100, i%100] = d.total_seconds()
-    
+        users[i//100].append(e.get('data-user-id'))
+
     ranks = pd.MultiIndex.from_product(
         [[year], [day], range(1, 101)], names=('year', 'day', 'rank'))
-    return pd.DataFrame({'one_star': times[1,:], 'two_stars': times[0,:]}, index=ranks)
+    return pd.DataFrame({
+        'one_star': times[1,:],
+        'one_star_user': users[1],
+        'two_stars': times[0,:],
+        'two_stars_user': users[0],
+    }, index=ranks)
 
 
 def stats_update():

@@ -40,10 +40,12 @@ def plot_leaderboard():
     """Redraws all the plots based on the daily leaderboard data."""
 
     data = aocdata.leaderboard()
-    plot_leaderboard_time(data, 'one_star', 'out/time.one')
-    plot_leaderboard_time(data, 'two_stars', 'out/time.two')
-    plot_leaderboard_twist(data)
-    plot_leaderboard_dist(data)
+    times = data.drop(['one_star_user', 'two_stars_user'], axis=1)
+    plot_leaderboard_time(times, 'one_star', 'out/time.one')
+    plot_leaderboard_time(times, 'two_stars', 'out/time.two')
+    plot_leaderboard_top(times)
+    plot_leaderboard_twist(times)
+    plot_leaderboard_dist(times)
 
 
 def plot_leaderboard_time(data, series, file_name):
@@ -76,6 +78,29 @@ def plot_leaderboard_time(data, series, file_name):
         .encode(alt.Y('r25:Q', title=y_title, scale=y_scale), alt.Y2('r75:Q')) \
         .properties(width=1000, height=600) \
         .save(file_name + '.byday.html')
+
+
+def plot_leaderboard_top(data):
+    """Plots the per-day top times."""
+
+    print('leaderboard_top')
+
+    top = data.loc[:,:,1]
+    top = top.rename(columns={'one_star': 'one star', 'two_stars': 'two stars'})
+    top = top.stack().rename_axis(index=['year','day','stars'])
+    top = pd.DataFrame({'seconds': top}).reset_index()
+
+    selection = alt.selection_point(fields=['year'], bind='legend')
+    alt.Chart(top) \
+        .add_params(selection) \
+        .mark_line() \
+        .encode(
+            x='day:O',
+            y=alt.Y('seconds:Q', title='Times (s)', scale=alt.Scale(type='log')),
+            color='year:N',
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.2)),
+            column=alt.Column('stars:O', title='Fastest time on leaderboard')) \
+        .save('out/time.top.html')
 
 
 def plot_leaderboard_twist(data):
