@@ -456,3 +456,33 @@ that are at least $N$ steps further along the path; otherwise the cheat could
 not possibly save enough time, even if it was zero-length. Since the chunk is
 consistently ordered, we can do a quick binary search to find the starting
 position to start looking at a chunk in. This drops the runtime to 4.0 ms.
+
+## [Day 21](https://adventofcode.com/2024/day/21): Keypad Conundrum
+
+For some reason had a lot of trouble keeping this problem in my head. But
+there's nothing special about the solution, it's mostly just a recursive
+formulation of the cost of typing a digit: you pick one of the two possible
+directions that get you closer to the key you want, and then add up the
+keypresses to go from there to the correct key, plus whatever it takes on the
+higher-up keypads to move one step in that direction.
+
+...and of course a layer of memoization, as usual.
+
+## [Day 22](https://adventofcode.com/2024/day/22): Monkey Market
+
+This was real simple for a day 22: iterate over the monkeys' prices for the
+requisite number of steps, and keep track of the price sequences (of which there
+are only $19^4 = 130321$ different ones). Then just count them bananas.
+
+## [Day 23](https://adventofcode.com/2024/day/23): LAN Party
+
+Slightly surprised here. The
+[clique problem](https://en.wikipedia.org/wiki/Clique_problem) is usually
+NP-complete; since it was day 23, was expecting there would be something special
+you'd need to notice about the graph structure to solve part 2 in a reasonable
+amount of time. But the straight-forward recursive enumeration of all cliques
+was sufficient.
+
+From the visualizations that other people have made, there is probably some
+structure in the graph. But again, a sub-10 ms runtime means I can't be
+bothered.
