@@ -120,14 +120,17 @@ func (nl nodeList) from(node nodeID) nodeList {
 }
 
 func (nl nodeList) hasAll(nodes nodeList) bool {
-	for _, n := range nodes {
-		pos, ok := nl.find(n)
-		if !ok {
+	for len(nl) > 0 && len(nodes) > 0 {
+		switch {
+		case nodes[0] < nl[0]:
 			return false
+		case nodes[0] > nl[0]:
+			nl = nl[1:]
+		default: // equal
+			nl, nodes = nl[1:], nodes[1:]
 		}
-		nl = nl[pos+1:]
 	}
-	return true
+	return len(nodes) == 0
 }
 
 func buildGraph(lines []string) (nodes nodeList, neigh *neighMap) {
