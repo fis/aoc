@@ -486,3 +486,11 @@ was sufficient.
 From the visualizations that other people have made, there is probably some
 structure in the graph. But again, a sub-10 ms runtime means I can't be
 bothered.
+
+## [Day 24](https://adventofcode.com/2024/day/24): Crossed Wires
+
+Did it semi-manually first, after using Graphviz to draw the circuit, and then
+writing some code to try to match the graph to the expected chain of full
+adders.
+
+Might draw a TikZ picture here later, haven't done one of those yet this year.
