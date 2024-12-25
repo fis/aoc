@@ -494,3 +494,43 @@ writing some code to try to match the graph to the expected chain of full
 adders.
 
 Might draw a TikZ picture here later, haven't done one of those yet this year.
+
+## [Day 25](https://adventofcode.com/2024/day/25): Code Chronicle
+
+Often there's something unusual about the last day, but this time it was more
+like a first-week part 1. Oh well.
+
+## Benchmarks
+
+Relative performance of the Go solutions at `-benchtime 10s`:
+
+```
+BenchmarkAllDays/day=2024.01-32     88729      125303 ns/op
+BenchmarkAllDays/day=2024.02-32     50296      199043 ns/op
+BenchmarkAllDays/day=2024.03-32    200149       67657 ns/op
+BenchmarkAllDays/day=2024.04-32     40605      301551 ns/op
+BenchmarkAllDays/day=2024.05-32     98529      116535 ns/op
+BenchmarkAllDays/day=2024.06-32       866    13694724 ns/op
+BenchmarkAllDays/day=2024.07-32      1034    11713141 ns/op
+BenchmarkAllDays/day=2024.08-32    364077       30725 ns/op
+BenchmarkAllDays/day=2024.09-32     15426      818411 ns/op
+BenchmarkAllDays/day=2024.10-32    208833       56679 ns/op
+BenchmarkAllDays/day=2024.11-32     18757      640763 ns/op
+BenchmarkAllDays/day=2024.12-32     27565      447110 ns/op
+BenchmarkAllDays/day=2024.13-32    145771       81377 ns/op
+BenchmarkAllDays/day=2024.14-32     35786      330905 ns/op
+BenchmarkAllDays/day=2024.15-32     29908      413287 ns/op
+BenchmarkAllDays/day=2024.16-32       445    25129578 ns/op
+BenchmarkAllDays/day=2024.17-32    902026       12074 ns/op
+BenchmarkAllDays/day=2024.18-32      4022     3209242 ns/op
+BenchmarkAllDays/day=2024.19-32     36718      328328 ns/op
+BenchmarkAllDays/day=2024.20-32      2960     3971082 ns/op
+BenchmarkAllDays/day=2024.21-32    119991       96147 ns/op
+BenchmarkAllDays/day=2024.22-32       980    12446180 ns/op
+BenchmarkAllDays/day=2024.23-32      1528     7743539 ns/op
+BenchmarkAllDays/day=2024.24-32     38362      263102 ns/op
+BenchmarkAllDays/day=2024.25-32     82014      146961 ns/op
+```
+
+This year was comparatively cheap, computationally speaking; 18/25 days were
+sub-one-millisecond, with the median day being around 0.33 ms.
