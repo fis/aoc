@@ -1,0 +1,100 @@
+  jp solve
+
+include 'read_u16.z80'
+
+solve:
+  ld hl, hands
+
+.parse_hand:
+
+  ;; clear the count space
+
+  push hl
+  ld hl, blank
+  ld de, rank_counts
+  ld bc, 13
+  ldir
+
+  ;; read and save cards, also use them to increment rank counts
+
+  ld de, 5
+  pop hl
+  add hl, de
+  push hl
+
+.read_card:
+  in a, (1)
+  or a
+  jr z, .do_sort
+  call find_rank
+  pop hl
+  ld (hl), a
+  inc hl
+  push hl
+  ld h, rank_counts >> 8
+  ld l, a
+  inc (hl)
+  dec e
+  jr nz, .read_card
+
+  ;; read rank counts and use them to increment count counts
+  ;; do count counts directly into the hand
+
+  ld l, 0
+  ld b, 13
+.read_count:
+  ld a, (hl)
+  or a
+  jr z, .ignore_count
+  exx
+  add a, 5
+  neg
+  ld d, 0xff
+  ld e, a
+  pop hl
+  push hl
+  add hl, de
+  inc (hl)
+  exx
+.ignore_count:
+  inc hl
+  djnz .read_count
+
+  ;; read the bid value and add it to the hand too
+
+  in a, (1)
+  call read_u16
+  ex de, hl
+  pop hl
+  ld (hl), e
+  inc hl
+  ld (hl), d
+  ld de, 5
+  add hl, de
+
+  jr .parse_hand
+
+  ;; TODO sort the hands in the correct ranking
+
+.do_sort:
+
+  ld bc, 0x5001
+  ld hl, hands
+  otir
+
+  halt
+
+hands: equ 0x4000
+blank: equ 0x2000-13
+rank_counts: equ 0x2000
+
+find_rank:
+  ld hl, .ranks
+  ld bc, 0
+  cpir
+  ld a, l
+  and 0xf
+  ret
+
+  defs (31-($&0xf))&0xf
+.ranks: defb "23456789TJQKA"
