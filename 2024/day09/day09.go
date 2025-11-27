@@ -16,11 +16,11 @@
 package day09
 
 import (
-	"container/heap"
 	"fmt"
 	"math"
 
 	"github.com/fis/aoc/glue"
+	"github.com/fis/aoc/util/heap"
 )
 
 func init() {
@@ -48,7 +48,8 @@ type inode struct {
 	size int
 }
 
-type freeList []int // heap
+type void struct{}
+type freeList = heap.Heap[void]
 
 func expandMap(diskMap string) (disk []int, fileMap []inode, freeLists [9]freeList) {
 	// this prealloc cuts the runtime by close to 45%
@@ -67,7 +68,7 @@ func expandMap(diskMap string) (disk []int, fileMap []inode, freeLists [9]freeLi
 		if i+1 < N {
 			size := int(diskMap[i+1] - '0')
 			if size > 0 {
-				freeLists[size-1] = append(freeLists[size-1], len(disk))
+				freeLists[size-1] = append(freeLists[size-1], heap.Item[void]{P: len(disk)})
 				for range size {
 					disk = append(disk, -1)
 				}
@@ -111,7 +112,7 @@ func compactFiles(fileMap []inode, freeLists *[9]freeList) {
 			if len(freeLists[size-1]) == 0 {
 				continue
 			}
-			nextSlot := freeLists[size-1][0]
+			nextSlot := freeLists[size-1][0].P
 			if nextSlot < slotAt && nextSlot < file.pos {
 				slotAt, slotSize = nextSlot, size
 			}
@@ -120,9 +121,9 @@ func compactFiles(fileMap []inode, freeLists *[9]freeList) {
 			continue
 		}
 		fileMap[fileID].pos = slotAt
-		heap.Pop(&freeLists[slotSize-1])
+		freeLists[slotSize-1].Pop()
 		if gap := slotSize - file.size; gap > 0 {
-			heap.Push(&freeLists[gap-1], slotAt+file.size)
+			freeLists[gap-1].Push(slotAt+file.size, void{})
 		}
 	}
 }
@@ -132,22 +133,4 @@ func checksumFiles(fileMap []inode) (sum int) {
 		sum += fileID * file.size * (2*file.pos + file.size - 1) / 2
 	}
 	return sum
-}
-
-// heap.Interface implementation
-
-func (h freeList) Len() int           { return len(h) }
-func (h freeList) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
-func (h freeList) Less(i, j int) bool { return h[i] < h[j] }
-
-func (h *freeList) Push(x any) {
-	*h = append(*h, x.(int))
-}
-
-func (h *freeList) Pop() any {
-	old := *h
-	n := len(old)
-	x := old[n-1]
-	*h = old[0 : n-1]
-	return x
 }
