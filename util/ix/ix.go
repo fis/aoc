@@ -98,8 +98,17 @@ func Pow[T integer](base, exp T) T {
 // Concat returns the concatenation of two (assumed nonnegative) integer values.
 // For example, ix.Concat(12, 345) == 12345.
 func Concat[T integer](a, b T) T {
-	for t := b; t > 0; t /= 10 {
+	for t := b; t != 0; t /= 10 {
 		a *= 10
 	}
 	return a + b
+}
+
+// Len returns the number of (decimal) digits in an (assumed nonnegative) integer.
+// Zero is considered to have a length of 0.
+func Len[T integer](x T) (n int) {
+	for ; x != 0; x /= 10 {
+		n++
+	}
+	return n
 }
