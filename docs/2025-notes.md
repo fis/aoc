@@ -89,3 +89,27 @@ Combined:
 C: ',;;{ps)ab^pr@{XXsa          ./cosa1.>jsm&&}      f[++}ms
 2:                    fCNBj{sax/               j+]ay}
 ```
+
+## [Day 3](https://adventofcode.com/2025/day/3): Lobby
+
+### Burlesque
+
+Part 1:
+
+```
+ln{JJ~]>]Fi.-g_j>]_+ri}ms
+```
+
+Part 2:
+
+```
+ln{{JJ<-g0-.S0.->]Fi.-g_j}12S0E!vvCl\[ri}ms
+```
+
+Combined:
+
+```
+1:       ~]                 >]_+
+C: ln{ JJ          >]Fi.-g_j             ri}ms
+2:    {  <-g0-.S0.-         }12S0E!vvCl\[
+```
