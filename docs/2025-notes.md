@@ -113,3 +113,30 @@ Combined:
 C: ln{ JJ          >]Fi.-g_j             ri}ms
 2:    {  <-g0-.S0.-         }12S0E!vvCl\[
 ```
+
+## [Day 4](https://adventofcode.com/2025/day/4): Printing Department
+
+### Burlesque
+
+Part 1:
+
+```
+lnS0L[-.S1rzJcp{Jg0jd!'@==j{2rz?d?+}MPcp{{J0>=jg1<=}al}{g0jd!}FM'@CN4<=&&}fl
+```
+
+Part 2:
+
+```
+lnS0L[-.S1rzJcp{g0jd!'@==}f[1Pp{{{2rz?d?+}MPcp{{J0>=jg1<=}al}{g0jd!}FM'@CN4<=}pt
+p^saPp{{'xD!}j+]}\mg0je!s0}{pP}w!p\CL++-.
+```
+
+Combined:
+
+```
+1:                 J         j                                                   && fl
+C: lnS0L[-.S1rzJcp{ g0jd!'@==        {2rz?d?+}MPcp{{J0>=jg1<=}al}{g0jd!}FM'@CN4<=  }
+2:                           }f[1Pp{{                                               pt
+
+2: p^saPp{{'xD!}j+]}\mg0je!s0}{pP}w!p\CL++-.
+```

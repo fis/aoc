@@ -409,3 +409,31 @@ func (l *FixedLevel) FindAny(keys string) (x, y int, found byte) {
 	}
 	return idx % l.W, idx / l.W, l.Data[idx]
 }
+
+// All returns an iterator over all cells in the level.
+func (l *FixedLevel) All() iter.Seq2[P, byte] {
+	return func(yield func(P, byte) bool) {
+		for y := range l.H {
+			for x := range l.W {
+				if !yield(P{x, y}, l.At(x, y)) {
+					return
+				}
+			}
+		}
+	}
+}
+
+// NonEmpty returns an iterator over all non-empty cells in the level.
+func (l *FixedLevel) NonEmpty(empty byte) iter.Seq2[P, byte] {
+	return func(yield func(P, byte) bool) {
+		for y := range l.H {
+			for x := range l.W {
+				if b := l.At(x, y); b != empty {
+					if !yield(P{x, y}, l.At(x, y)) {
+						return
+					}
+				}
+			}
+		}
+	}
+}
