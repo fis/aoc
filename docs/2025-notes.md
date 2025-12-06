@@ -140,3 +140,27 @@ C: lnS0L[-.S1rzJcp{ g0jd!'@==        {2rz?d?+}MPcp{{J0>=jg1<=}al}{g0jd!}FM'@CN4<
 
 2: p^saPp{{'xD!}j+]}\mg0je!s0}{pP}w!p\CL++-.
 ```
+
+## [Day 5](https://adventofcode.com/2025/day/5): Cafeteria
+
+### Burlesque
+
+Part 1:
+
+```
+ln{""};;p^{ps)ab}m[s0)ri{{Jx/rm==}j+]g0jay}ms
+```
+
+Part 2:
+
+```
+lnJ""Fi.+{ps)ab}m[><g_Pp{J-]pP[~+..>{JPp}if[~PP^px/>._+Pp}m[p\CL{p^.-+.}ms
+```
+
+Combined:
+
+```
+1:   {  };;p^         s0)ri  {Jx/rm==}j+]g0jay
+C: ln ""     {ps)ab}m[      {                                              }ms
+2:   J  Fi.+          ><g_Pp J-]pP[~+..>{JPp}if[~PP^px/>._+Pp}m[p\CL{p^.-+.
+```
