@@ -164,3 +164,27 @@ Combined:
 C: ln ""     {ps)ab}m[      {                                              }ms
 2:   J  Fi.+          ><g_Pp J-]pP[~+..>{JPp}if[~PP^px/>._+Pp}m[p\CL{p^.-+.
 ```
+
+## [Day 6](https://adventofcode.com/2025/day/6): Trash Compactor
+
+### Burlesque
+
+Part 1:
+
+```
+lnl_ttpstpjWD{'.+]psr[}Z]++
+```
+
+Part 2:
+
+```
+lnl_)XXtp)\[tt{""};;rijWD{'.+]psr[}Z]++
+```
+
+Combined:
+
+```
+1:     ttps
+C: lnl_    tp             jWD{'.+]psr[}Z]++
+2:     )XX   )\[tt{""};;rijWD{'.+]psr[}Z]++
+```
