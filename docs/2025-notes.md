@@ -188,3 +188,46 @@ Combined:
 C: lnl_    tp             jWD{'.+]psr[}Z]++
 2:     )XX   )\[tt{""};;rijWD{'.+]psr[}Z]++
 ```
+
+## [Day 7](https://adventofcode.com/2025/day/7): Laboratories
+
+### Burlesque
+
+Rather different approaches this time: part 1 uses a list containing the column
+indices of active beams (and the set operations `\\`, `UN` and `IN` to update),
+while part 2 just has a list of counters for each column (with pairwise
+"coercing" operators `?*` and `?+` to update).
+
+The part 2 solution can also pretty much solve part 1, but the extra code to
+count the number of non-zero results out of the splitters means it's not
+actually any shorter
+
+Part 1:
+
+```
+lng_'SFibx+]{{'.!=}fIjJx/INS0saPp\\g0?dg0?iUNUN}r[p\CL++
+```
+
+Part 2:
+
+```
+ln{{'.!=}m[}m[{S0)n!jJx/?*jg0?*JrtjRT?+?+}r[++
+```
+
+
+Combined:
+
+```
+1:   g_'SFibx+]       fIjJx/INS0saPp\\g0?dg0?iUNUN       p\CL
+C: ln          {{'.!=}                                }r[    ++
+2:                    m[}m[{S0)n!jJx/?*jg0?*JrtjRT?+?+
+```
+
+Bonus solution! Alternative part 2, more efficient but longer:
+
+```
+lng_'SFi1_+bx+]{{'^==}fIs0{s1Jg0j~[{J+.g1_+j-.}ifg1_+}^m{-]j-]==}gb{tpp^-]j++_+}m[}r[)[~++
+```
+
+This uses an alist-like structure for tracking the beams, but I couldn't figure
+out a good merge operation for them.
