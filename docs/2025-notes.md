@@ -214,7 +214,6 @@ Part 2:
 ln{{'.!=}m[}m[{S0)n!jJx/?*jg0?*JrtjRT?+?+}r[++
 ```
 
-
 Combined:
 
 ```
@@ -231,3 +230,35 @@ lng_'SFi1_+bx+]{{'^==}fIs0{s1Jg0j~[{J+.g1_+j-.}ifg1_+}^m{-]j-]==}gb{tpp^-]j++_+}
 
 This uses an alist-like structure for tracking the beams, but I couldn't figure
 out a good merge operation for them.
+
+## [Day 8](https://adventofcode.com/2025/day/8): Playground
+
+### Burlesque
+
+We've reached the point where I can't be bothered to try golf these...
+
+Part 1:
+
+```
+',' r~SPS0zi)-]S1J)bxs2Jcp{^p.<}{J{g0j!!}MP?-J?*+++]}FM><1000.+{vvS3g1j!!S4jS5g1j!!S6!=
+{g2{g2g6!!{Jg1jg4jsas1}m[_+}g4ap{}g6sas2}if}m^vvg2)L[<>3.+pd
+```
+
+Part 2:
+
+```
+',' r~SPS0zi)-]S1J)bxs2Jcp{^p.<}{J{g0j!!}MP?-J?*+++]}FM><{g_p^vvS3g1j!!S4jS5g1j!!S6!=
+{g2{g2g6!!{Jg1jg4jsas1}m[_+}g4ap{}g6sas2}if}{g2:L[L[-.}w!vvg0g3!!-]g0g5!!-].*
+```
+
+Combined:
+
+```
+1:                                                          1000.+
+C: ',' r~SPS0zi)-]S1J)bxs2Jcp{^p.<}{J{g0j!!}MP?-J?*+++]}FM><      {    vvS3g1j!!S4jS5g1j!!S6!=
+2:                                                                 g_p^
+
+1:                                             m^vvg2)L[<>3.+pd
+C: {g2{g2g6!!{Jg1jg4jsas1}m[_+}g4ap{}g6sas2}if}
+2:                                             {g2:L[L[-.}w!vvg0g3!!-]g0g5!!-].*
+```
