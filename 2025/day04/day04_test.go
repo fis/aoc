@@ -34,14 +34,6 @@ var ex = strings.TrimPrefix(`
 @.@.@@@.@.
 `, "\n")
 
-func TestCountAccessible(t *testing.T) {
-	level := util.ParseFixedLevel([]byte(ex))
-	want := 13
-	if got := countAccessible(level); got != want {
-		t.Errorf("countAccessible(ex) = %d, want %d", got, want)
-	}
-}
-
 func TestRemovePaper(t *testing.T) {
 	level := util.ParseFixedLevel([]byte(ex))
 	want1, want2 := 13, 43
