@@ -262,3 +262,36 @@ C: ',' r~SPS0zi)-]S1J)bxs2Jcp{^p.<}{J{g0j!!}MP?-J?*+++]}FM><      {    vvS3g1j!!
 C: {g2{g2g6!!{Jg1jg4jsas1}m[_+}g4ap{}g6sas2}if}
 2:                                             {g2:L[L[-.}w!vvg0g3!!-]g0g5!!-].*
 ```
+
+## [Day 9](https://adventofcode.com/2025/day/9): Movie Theater
+
+### Burlesque
+
+Following the lead of the Go solution here. Part 2 is abysmally slow.
+
+Part 1:
+
+```
+',' r~SPJcp{tpJ)>]j)<]?-?ipd}m[>]
+```
+
+Part 2:
+
+```
+',' r~SPJJ2.+_+3CO{J2CO{?-}m^FL^p0.>x/0.>||j0.<x/0.<||_+j1!!?+}m[J-][+2COs0
+Jcp{tpJ)>]S2j)<]S1?-?ipdg0{><Jtp)sm-]Jn!{p^J0Jg10<=jg20.>||j1g21.>||j1g11<=||}
+j(-])r~j([~)r~e!}al.*}m[>]
+```
+
+Combined:
+
+```
+C: ',' r~SP
+2:         JJ2.+_+3CO{J2CO{?-}m^FL^p0.>x/0.>||j0.<x/0.<||_+j1!!?+}m[J-][+2COs0
+
+C: Jcp{tpJ}>]  j)<]  ?-?ipd
+2:           S2    S1      g0{><Jtp)sm-]Jn!{p^J0Jg10<=jg20.>||j1g21.>||j1g11<=||}
+
+C:                      }m[>]
+2: j(-])r~j([~)r~e!}al.*
+```

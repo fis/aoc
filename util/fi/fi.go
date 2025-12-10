@@ -207,3 +207,18 @@ func Chain[T any](seqs ...iter.Seq[T]) iter.Seq[T] {
 		}
 	}
 }
+
+// Pairwise returns an iterator that iterates over all pairs of elements from a slice.
+// The pairs are returned in order (0,1), (0,2), ..., (0,N-1), (1,2), ..., (N-2,N-1).
+func Pairwise[E any, S ~[]E](s S) iter.Seq2[E, E] {
+	return func(yield func(E, E) bool) {
+		N := len(s)
+		for i := 0; i < N-1; i++ {
+			for j := i + 1; j < N; j++ {
+				if !yield(s[i], s[j]) {
+					return
+				}
+			}
+		}
+	}
+}
