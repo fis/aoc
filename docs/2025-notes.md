@@ -295,3 +295,63 @@ C: Jcp{tpJ}>]  j)<]  ?-?ipd
 C:                      }m[>]
 2: j(-])r~j([~)r~e!}al.*
 ```
+
+## [Day 10](https://adventofcode.com/2025/day/10): Factory
+
+### Burlesque
+
+Part 2 might not happen, but at least part 1 exists.
+
+Part 1:
+
+```
+ln{WD~]g_~-{'#==}m[sas0<-2ugs1{XX{><}gB2en{\[ri2j**}ms}m[
+S2L[2j**?drz{2dg++}Cmsb[-{2dg<-{}fIg2jsi{$$}r[g1==}fe2dg++}ms
+```
+
+## [Day 11](https://adventofcode.com/2025/day/11): Reactor
+
+### Burlesque
+
+Found it much simpler than day 10 this time.
+
+Part 1:
+
+```
+ln)WDs0{{"you"1}}s1%xP={J{~[}j+]Jg1jfi0>={/vg1jfe[~}{g0j{-]~]xP}FM++
+Jx/bxj[+g1j[+s1}x/ie}"out"xP
+```
+
+Part 2:
+
+```
+ln)WDs08 2dg"svr"+]bxs1%xP={J{~[}j+]Jg1jfi0>={/vg1jfe[-}{g0j{-]~]xP}FMtp)++
+jJ"fft"=={j{0 0 2 2}sij}ifJ"dac"=={j2.+J_+j}if+]J[-jg1j[+s1}x/ie}"out"xP[~
+```
+
+Combined:
+
+```
+1:        {{"you"1}}                                    [~
+C: ln)WDs0              s1%xP={J{~[}j+]Jg1jfi0>={/vg1jfe  }{g0j{-]~]xP}FM   ++
+2:        8 2dg"svr"+]bx                                [-               tp)
+
+1: Jx/bxj[+
+C:                                                     g1j[+s1}x/ie}"out"xP
+2: jJ"fft"=={j{0 0 2 2}sij}ifJ"dac"=={j2.+J_+j}if+]J[-j                    [~
+```
+
+## [Day 12](https://adventofcode.com/2025/day/12): Christmas Tree Farm
+
+Okay, I really didn't enjoy the joke. But at least it makes for a short
+Burlesque solution...
+
+### Burlesque
+
+Just the one part on the last day. Notably this ignores the shapes completely.
+
+Part 1:
+
+```
+ln{""};;[~{':;;p^'x;;ri?i?i3?/pdjWDri++>=}ms
+```

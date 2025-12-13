@@ -222,3 +222,30 @@ func Pairwise[E any, S ~[]E](s S) iter.Seq2[E, E] {
 		}
 	}
 }
+
+// HammingOrder returns an iterator that iterates over all n-bit values in order of increasing
+// Hamming weight (number of set bits), and within each group in lexicographical order.
+// The keys of the sequence are the number of bits, the values the numbers.
+// The largest supported width n is 63. (TODO: fix to support 64.)
+func HammingOrder(n int) iter.Seq2[int, uint64] {
+	return func(yield func(w int, x uint64) bool) {
+		if !yield(0, 0) {
+			return
+		}
+		for w := 1; w <= n; w++ {
+			first := uint64(1)<<w - 1
+			last := first << (n - w)
+			for x := first; ; {
+				if !yield(w, x) {
+					return
+				}
+				if x == last {
+					break
+				}
+				y := x & -x
+				c := x + y
+				x = (((x ^ c) >> 2) / y) | c
+			}
+		}
+	}
+}

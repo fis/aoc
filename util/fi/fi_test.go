@@ -287,3 +287,19 @@ func TestChain(t *testing.T) {
 		t.Errorf("Chain({1, 2, 3}, {}, {4, 5, 6}) = %v, want %v", got, want)
 	}
 }
+
+func TestHammingOrder(t *testing.T) {
+	want1 := []int{0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4}
+	want2 := []uint64{0, 1, 2, 4, 8, 3, 5, 6, 9, 10, 12, 7, 11, 13, 14, 15}
+	var (
+		got1 []int
+		got2 []uint64
+	)
+	for k, v := range HammingOrder(4) {
+		got1 = append(got1, k)
+		got2 = append(got2, v)
+	}
+	if !cmp.Equal(got1, want1) || !cmp.Equal(got2, want2) {
+		t.Errorf("HammingOrder(4) = (%v, %v), want (%v, %v)", got1, got2, want1, want2)
+	}
+}
