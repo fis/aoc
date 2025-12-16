@@ -112,3 +112,15 @@ func Len[T integer](x T) (n int) {
 	}
 	return n
 }
+
+// SLen returns the number of (decimal) digits in an integer, including one for sign.
+// Zero is considered to have a length of 1 as well. This is the print width of the integer.
+func SLen[T integer](x T) (n int) {
+	for y := x; y != 0; y /= 10 {
+		n++
+	}
+	if x <= 0 {
+		n++
+	}
+	return n
+}

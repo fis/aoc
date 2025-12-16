@@ -25,6 +25,7 @@ import (
 	"github.com/fis/aoc/util"
 	"github.com/fis/aoc/util/fi"
 	"github.com/fis/aoc/util/fn"
+	"github.com/fis/aoc/util/ix"
 )
 
 func init() {
@@ -59,42 +60,369 @@ func (m machine) configLights() (totalPresses int) {
 }
 
 func (m machine) configJolts() (totalPresses int) {
-	fixedPresses, bounds := m.simplify()
+	fixedPresses, _ := m.simplify()
 	if len(m.buttons) == 0 {
 		return fixedPresses
 	}
-	solvedPresses := lpsolve(m.buttons, m.jolts, bounds)
+
+	A := matZero(len(m.jolts), len(m.buttons))
+	for bi, b := range m.buttons {
+		for ji := range m.jolts {
+			if b&(1<<ji) != 0 {
+				A.set(ji, bi, 1)
+			}
+		}
+	}
+	solvedPresses := solveEqs(A, m.jolts)
+
 	return fixedPresses + solvedPresses
 }
 
-// TODO: maybe try implementing this
-func solveEqs(A [][]int, b []int) (x []int) {
-	m, n := len(A), len(A[0])
-	_, _ = m, n
+func solveEqs(A mat, b []int) (s int) {
+	// solving the initial system of equation following the lead of:
+	// https://www.epfl.ch/labs/disopt/wp-content/uploads/2018/09/hnf.pdf
 
-	// build U such that U is unimodular and H = UA is upper triangular
+	// find Hermite normal form of A: H = AU such that U is unimodular, H is lower triangular
 
-	// find an integer solution for the system Hy = b, where y = U^-1 x
+	H, U := A, matI(A.n) // A is no longer used past this point, so okay to do this in-place
 
-	// extract x = Uy
+outer:
+	for k := 0; k < min(H.m, H.n); k++ {
+		// ensure H(k,j) >= 0 for all j >= k
+		for j := k; j < H.n; j++ {
+			if H.at(k, j) < 0 {
+				H.scaleCol(j, -1)
+				U.scaleCol(j, -1)
+			}
+		}
+		// ensure H(k,k) > 0, H(k,j) == 0 for all j > k
+		for {
+			j1, j2 := -1, -1
+			for j := k; j < H.n; j++ {
+				if H.at(k, j) != 0 {
+					if j1 == -1 {
+						j1 = j
+					} else {
+						j2 = j
+						break
+					}
+				}
+			}
+			if j1 == -1 { // this row is redundant, throw it away to achieve full row rank
+				H.delRow(k)
+				// A.delRow(k)
+				b = slices.Delete(b, k, k+1)
+				k-- // reprocess the row
+				continue outer
+			}
+			if j2 == -1 {
+				if j1 != k {
+					H.swapCol(k, j1)
+					U.swapCol(k, j1)
+				}
+				break
+			}
+			d1, d2 := H.at(k, j1), H.at(k, j2)
+			if d1 > d2 {
+				H.subCol(j1, j2, d1/d2)
+				U.subCol(j1, j2, d1/d2)
+			} else {
+				H.subCol(j2, j1, d2/d1)
+				U.subCol(j2, j1, d2/d1)
+			}
+		}
+		// ensure 0 <= H(k,j) < H(k,k) for all j < k
+		dk := H.at(k, k)
+		for j := range k {
+			dj := H.at(k, j)
+			if dj >= dk {
+				H.subCol(j, k, dj/dk)
+				U.subCol(j, k, dj/dk)
+			} else if dj < 0 {
+				H.addCol(j, k, (dk-dj-1)/dk)
+				U.addCol(j, k, (dk-dj-1)/dk)
+			}
+		}
+	}
+	r := min(H.m, H.n)
 
-	return nil
+	// find the solution vector y = [y1 ... yr 0 ... 0]^T for the system Hy = b
+
+	y := make([]int, r)
+	for i := range r {
+		di, bi := H.at(i, i), b[i]
+		for j := range i {
+			bi -= y[j] * H.at(i, j)
+		}
+		if bi%di != 0 {
+			panic("unsolvable: y not integral")
+		}
+		y[i] = bi / di
+	}
+
+	// find the lattice of integer solutions x = Uy' where y' y + arbitrary last "free" components
+
+	x0 := make([]int, H.n)
+	for i := range H.n {
+		for j := range r {
+			x0[i] += y[j] * U.at(i, j)
+		}
+	}
+
+	basis := U.cols(r, H.n)
+	free := len(basis)
+
+	// find the (integer) values for the free variables that minimize sum(xi) subject to xi >= 0
+	// this is done by finding the vertices that bound the region of valid solutions,
+	// without worrying about integrality or the objective function, and then iterating over
+	// the integer values within that bounding box
+
+	switch free {
+	case 0:
+		return fn.Sum(x0) // unique solution, assume valid
+
+	case 1:
+		x, xc := make([]int, H.n), make([]int, H.n)
+		return solve1(x, math.MaxInt, unbounded, x0, basis[0], xc)
+
+	case 2:
+		x, xc0, xc1 := make([]int, H.n), make([]int, H.n), make([]int, H.n)
+		return solve2(x, math.MaxInt, unbounded, unbounded, x0, basis[0], basis[1], xc0, xc1)
+
+	case 3:
+		x, xc0, xc1, xc2 := make([]int, H.n), make([]int, H.n), make([]int, H.n), make([]int, H.n)
+		return solve3(x, x0, basis[0], basis[1], basis[2], xc0, xc1, xc2)
+
+	default:
+		panic("unsupported number of free variables")
+	}
 }
 
-/*
-[....###..] (0,2,3,4,5,6,7) (0,2,3,4,7) (5,6) (2,7,8) (0,1,2,3,6,7,8) (0,1,2,3,4,5,6,7) (4,8) (2,4,5,6,7,8) (1,4) {30,31,60,30,46,40,51,60,42}
+func solve1(x []int, minS int, zb ival, x0, basis, xc []int) int {
+	for i, bi := range basis {
+		switch {
+		case bi < 0:
+			z := ix.RatOf(-x0[i], bi)
+			zb = zb.updateMax(z.Floor())
+		case bi > 0:
+			z := ix.RatOf(-x0[i], bi)
+			zb = zb.updateMin(z.Ceil())
+		}
+	}
+	if !zb.isFinite() {
+		return minS
+	}
+	for z := zb.min; z <= zb.max; z++ {
+		if s := fn.Sum(combine(xc, x0, basis, z)); fn.Min(xc) >= 0 && s < minS {
+			copy(x, xc)
+			minS = s
+		}
+	}
+	return minS
+}
 
- p0 + p1 + p4 + p5 = 30
- p4 + p5 + p8 = 31
- p0 + p1 + p3 + p4 + p5 + p7 = 60
- p0 + p1 + p4 + p5 = 30
- p0 + p1 + p5 + p6 + p7 + p8 = 46
- p0 + p2 + p5 + p7 = 40
- p0 + p2 + p4 + p5 + p7 = 51
- p0 + p1 + p3 + p4 + p5 + p7 = 60
- p3 + p4 + p6 + p7 = 42
+func solve2(x []int, minS int, zb0, zb1 ival, x0, basis0, basis1, xc0, xc1 []int) int {
+	n := len(x)
+	zr0, zr1 := empty, empty
+	for i := 0; i < n-1; i++ {
+	nextIntersect:
+		for j := i + 1; j < n; j++ {
+			a1, b1, c1 := basis0[i], basis1[i], -x0[i]
+			a2, b2, c2 := basis0[j], basis1[j], -x0[j]
+			det := a1*b2 - b1*a2
+			if det == 0 {
+				continue
+			}
+			z0, z1 := ix.RatOf(c1*b2-b1*c2, det), ix.RatOf(a1*c2-c1*a2, det)
+			for k := range n {
+				if k == i || k == j {
+					continue // 0 by construction
+				}
+				xk := ix.RatI(x0[k]).Add(z0.MulI(basis0[k])).Add(z1.MulI(basis1[k]))
+				if xk.P < 0 {
+					continue nextIntersect // in wrong half, can't be a vertex of valid region
+				}
+			}
+			zr0 = zr0.extend(z0.Ceil(), z0.Floor())
+			zr1 = zr1.extend(z1.Ceil(), z1.Floor())
+		}
+	}
+	zb0, zb1 = zb0.isect(zr0), zb1.isect(zr1)
+	if !zb0.isFinite() || !zb1.isFinite() {
+		panic("failed to bound 2 free variables")
+	}
+	if zb1.size() < zb0.size() {
+		zb0, zb1, basis0, basis1 = zb1, zb0, basis1, basis0
+	}
+	for z0 := zb0.min; z0 <= zb0.max; z0++ {
+		combine(xc0, x0, basis0, z0)
+		minS = solve1(x, minS, zb1, xc0, basis1, xc1)
+	}
+	return minS
+}
 
-*/
+func solve3(x, x0, basis0, basis1, basis2, xc0, xc1, xc2 []int) int {
+	minS := math.MaxInt
+	zb0, zb1, zb2 := empty, empty, empty
+	n := len(x)
+	for i := 0; i < n-1; i++ {
+		for j := i + 1; j < n; j++ {
+		nextIntersect:
+			for k := j + 1; k < n; k++ {
+				a1, b1, c1, d1 := basis0[i], basis1[i], basis2[i], -x0[i]
+				a2, b2, c2, d2 := basis0[j], basis1[j], basis2[j], -x0[j]
+				a3, b3, c3, d3 := basis0[k], basis1[k], basis2[k], -x0[k]
+				det := det3(a1, b1, c1, a2, b2, c2, a3, b3, c3)
+				if det == 0 {
+					continue
+				}
+				z0 := ix.RatOf(det3(d1, b1, c1, d2, b2, c2, d3, b3, c3), det)
+				z1 := ix.RatOf(det3(a1, d1, c1, a2, d2, c2, a3, d3, c3), det)
+				z2 := ix.RatOf(det3(a1, b1, d1, a2, b2, d2, a3, b3, d3), det)
+				for l := range n {
+					if l == i || l == j || l == k {
+						continue // 0 by construction
+					}
+					xl := ix.RatI(x0[l]).Add(z0.MulI(basis0[l])).Add(z1.MulI(basis1[l])).Add(z2.MulI(basis2[l]))
+					if xl.P < 0 {
+						continue nextIntersect // in wrong half, can't be a vertex of valid region
+					}
+				}
+				zb0 = zb0.extend(z0.Ceil(), z0.Floor())
+				zb1 = zb1.extend(z1.Ceil(), z1.Floor())
+				zb2 = zb2.extend(z2.Ceil(), z2.Floor())
+			}
+		}
+	}
+	if !zb0.isFinite() || !zb1.isFinite() || !zb2.isFinite() {
+		panic("failed to bound 3 free variables")
+	}
+	if zb2.size() < zb1.size() {
+		zb1, zb2, basis1, basis2 = zb2, zb1, basis2, basis1
+	}
+	if zb1.size() < zb0.size() {
+		zb0, zb1, basis0, basis1 = zb1, zb0, basis1, basis0
+	}
+	for z0 := zb0.min; z0 <= zb0.max; z0++ {
+		combine(xc0, x0, basis0, z0)
+		minS = solve2(x, minS, zb1, zb2, xc0, basis1, basis2, xc1, xc2)
+	}
+	return minS
+}
+
+func det3(a, b, c, d, e, f, g, h, i int) int {
+	return a*e*i + b*f*g + c*d*h - c*e*g - b*d*i - a*f*h
+}
+
+func combine(xc, x0 []int, b []int, z int) []int {
+	for i, x0i := range x0 {
+		xc[i] = x0i + z*b[i]
+	}
+	return xc
+}
+
+type ival struct {
+	min, max int
+}
+
+var (
+	unbounded = ival{min: math.MinInt, max: math.MaxInt}
+	empty     = ival{min: math.MaxInt, max: math.MinInt}
+)
+
+func (iv ival) isFinite() bool         { return iv.min != math.MinInt && iv.max != math.MaxInt }
+func (iv ival) size() int              { return iv.max - iv.min + 1 }
+func (iv ival) updateMin(x int) ival   { return ival{max(iv.min, x), iv.max} }
+func (iv ival) updateMax(x int) ival   { return ival{iv.min, min(iv.max, x)} }
+func (iv ival) extend(lo, hi int) ival { return ival{min(iv.min, lo), max(iv.max, hi)} }
+func (iv ival) isect(iv2 ival) ival    { return ival{max(iv.min, iv2.min), min(iv.max, iv2.max)} }
+
+type mat struct {
+	m, n int
+	a    []int
+}
+
+func matZero(m, n int) mat {
+	return mat{m: m, n: n, a: make([]int, m*n)}
+}
+
+func matI(n int) mat {
+	m := matZero(n, n)
+	for i := range n {
+		m.set(i, i, 1)
+	}
+	return m
+}
+
+func (m mat) at(i, j int) int { return m.a[i*m.n+j] }
+func (m mat) row(i int) []int { return m.a[i*m.n : (i+1)*m.n] }
+func (m mat) set(i, j, v int) { m.a[i*m.n+j] = v }
+
+func (m mat) cols(j1, j2 int) [][]int {
+	cols := make([][]int, j2-j1)
+	for c, j := 0, j1; j < j2; c, j = c+1, j+1 {
+		cols[c] = make([]int, m.m)
+		for i := range m.m {
+			cols[c][i] = m.at(i, j)
+		}
+	}
+	return cols
+}
+
+func (m mat) swapCol(j1, j2 int) {
+	for i := range m.m {
+		p1, p2 := i*m.n+j1, i*m.n+j2
+		m.a[p1], m.a[p2] = m.a[p2], m.a[p1]
+	}
+}
+
+func (m mat) scaleCol(j, k int) {
+	for i := range m.m {
+		m.a[i*m.n+j] *= k
+	}
+}
+
+func (m mat) addCol(jd, js, s int) {
+	for i := range m.m {
+		m.a[i*m.n+jd] += s * m.a[i*m.n+js]
+	}
+}
+
+func (m mat) subCol(jd, js, s int) {
+	for i := range m.m {
+		m.a[i*m.n+jd] -= s * m.a[i*m.n+js]
+	}
+}
+
+func (m *mat) delRow(i int) {
+	copy(m.a[i*m.n:], m.a[(i+1)*m.n:])
+	m.m--
+	m.a = m.a[:m.m*m.n]
+}
+
+func (m mat) String() string {
+	cw := 1
+	for _, v := range m.a {
+		cw = max(cw, ix.SLen(v))
+	}
+	var s strings.Builder
+	for i := range m.m {
+		for j, v := range m.row(i) {
+			if j > 0 {
+				s.WriteByte(' ')
+			}
+			w := max(1, ix.SLen(v))
+			for range cw - w {
+				s.WriteByte(' ')
+			}
+			fmt.Fprintf(&s, "%d", v)
+		}
+		if i < m.m-1 {
+			s.WriteByte('\n')
+		}
+	}
+	return s.String()
+}
 
 func (m *machine) simplify() (fixedPresses int, bounds [][2]int) {
 	bounds = make([][2]int, len(m.buttons))
