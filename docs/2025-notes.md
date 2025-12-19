@@ -298,15 +298,162 @@ C:                      }m[>]
 
 ## [Day 10](https://adventofcode.com/2025/day/10): Factory
 
+Initial solution here just passed the problem to the `lp_solve` library (via
+some `cgo` calls), but the external dependency was annoying me, so it got
+replaced by a pure-Go solution.
+
+What the Go code does is:
+
+1. Find the lattice of all possible integer solutions to the system of (linear
+   Diophantine) equations describing the button presses to achieve the required
+   joltage levels. This is done via a decomposition into the
+   [Hermite normal form](https://en.wikipedia.org/wiki/Hermite_normal_form), and
+   finds all solutions, including the invalid (negative button presses) and
+   non-optimal ones.
+2. For the input problems, the resulting lattice has rank between 0 and 3
+   inclusive. To find the optimal solution:
+   - For rank 0, there's just the one solution, so we'll just assume it works.
+   - For rank 1, there's one free variable $z \in \mathbb{Z}$. We derive bounds
+     for valid solutions from the constraint that each button press count
+     $x_i \ge 0$, and iterate find the solution at one of the endpoints.
+   - For rank 2, there's two free variables $z_0, z_1$. We again use the
+     $x_i \ge 0$ constraints to find the vertices that define the boundary of
+     valid solutions (ignoring integrality) and establish a bounding box for all
+     the points. Then we iterate over all valid values of (say) $z_0$, and use
+     the rank 1 solution to find the optimal $z_1$.
+   - For rank 3, it's exactly the same, except calling the rank 2 solution on
+     each iteration.
+
+In a bit more detail:
+
+Any given machine has $m$ joltage levels to achieve, and $n$ buttons. Let's
+denote by $\mathbf{A}$ the $m$-by-$n$ matrix of integers, where $a_{ij} = 1$ iff
+joltage $i$ is increased when button $j$ is pressed, and 0 otherwise. Denoting
+by $\mathbf{x}$ and $\mathbf{v}$ column vectors that indicate the button presses
+and joltage levels, respectively, we're interested in finding an integer
+solution for $\mathbf{A} \mathbf{x} = \mathbf{v}$, where $x_i \ge 0\ \forall i$,
+that also minimizes $\sum_i x_i$.
+
+Ignoring the constraints and optimality for now, we can find _all_ integer
+solutions to this system of linear equations by decomposing $\mathbf{A}$ into
+$\mathbf{H} = \mathbf{A} \mathbf{U}$, where $\mathbf{H}$ (the column-style
+Hermite normal form) is lower triangular (and has a couple of other properties
+besides), and $\mathbf{U}$ is unimodular.
+
+It turns out that if we now find the (integer) solution
+$\mathbf{y} = \mathbf{U}^{-1} \mathbf{x}$ to the system
+$\mathbf{H} \mathbf{y} = \mathbf{v}$, then it is the case that
+$\mathbf{y} = \begin{bmatrix} y_1 \cdots y_r \ 0 \cdots 0 \end{bmatrix}^T$
+(where $r$ is the rank of $\mathbf{H}$), and all solutions $\mathbf{x}$ can be
+obtained as $\mathbf{x} = \mathbf{U} \mathbf{y}'$, where $\mathbf{y}'$ is
+$\mathbf{y}$ with arbitrary integers $z_1, \ldots, z_{n-r} \in \mathbb{Z}$ in
+place of the zeroes. Or, put differently, all solutions have the form
+$\mathbf{x} = \mathbf{x}_0 + \sum_i z_i \mathbf{b}_i$, where
+$\mathbf{x}_0 = \mathbf{U} \mathbf{y}$ and the basis vectors $\mathbf{b}_i$ are
+the $f=n-r$ last columns of $\mathbf{U}$. Since $\mathbf{H}$ is lower
+triangular, finding $\mathbf{y}$ is quite easy.
+
+Next, we need to take into account the nonnegativity constraints and optimality
+of the desired solution. We can do this slighly differently depending on the
+number of "free variables" ($f$).
+
+When $f=0$, the system has a single unique solution, so that must be the optimal
+one. For completeness, we could also check that it satisfies the constraints,
+but here we just assume the puzzle authors are playing fair.
+
+When $f=1$, all solutions have the form
+$\mathbf{x} = \mathbf{x}_0 + z_1 \mathbf{b}$. We can use the set of constraints
+$x_i \ge 0$ to derive lower and upper bounds for $z_1$ from every component of
+$b_i$ with a positive or negative value, respectively. Specifically:
+
+- If $b_i < 0$: $z_1 \le \lfloor \frac{-x_i}{b_i} \rfloor$.
+- If $b_i > 0$: $z_1 \ge \lceil \frac{-x_i}{b_i} \rceil$.
+
+Intersecting all the constraints gives exact bounds for the range of $z_1$ where
+the solution is valid (in practice, this seems to always be a finite range). Now
+we just need to pick the one that minimizes $\sum_i x_i$. From the form of the
+solution, $\sum_i x_i = \sum_i x_{0,i} + z_1 \sum_i b_i$. This means:
+
+- If $\sum_i b_i > 0$: increasing $z_1$ also increases the number of button
+  presses, so the optimal $z_1$ is at the lower bound:
+  $z_1 = \max_j \lceil \frac{-x_j}{b_j} \rceil$ where $b_j > 0$.
+- If $\sum_i b_i < 0$: increasing $z_1$ decreases the number of button presses,
+  so the optimal solution is at the upper bound:
+  $z_1 = \min_j \lfloor \frac{-x_j}{b_j} \rfloor$ where $b_j < 0$.
+- If $\sum_i b_i = 0$: value of $z_1$ does not change the number of button
+  presses, so we can pick any valid $z_1$.
+
+When $f=2$, it would be in principle to do something very similar. Each
+constraint $x_i = x_{0,i} + z_1 b_{1,i} + z_2 b_{2,i} \ge 0$ defines a (closed)
+half-plane in the $(z_1, z_2)$ space where valid solutions could be found, and
+the intersection of all those half-planes is exactly the set of valid solutions.
+
+Likewise, we can again characterize the objective function as
+$\sum_i x_i = \sum_i x_{0,i} + z_1 \sum_i b_{1,i} + z_2 \sum_i b_{2,i}$.
+Ignoring integrality, we could directly find $z_1, z_2$ minimizing this function
+at the point in the set of valid solutions that's furthest along in the
+direction $(-\sum_i b_{1,i}, -\sum_i b_{2,i})$. This would have to be at one of
+the points where the constraints' boundaries intersect, which we can find by
+locating all the intersections of pairs of lines defined by
+$b_{1,i} z_1 + b_{2,i} z_2 - x_i = 0$, filtering out those which the other
+constraints rule out as invalid.
+
+We are limited to integer values $z_1, z_2$, though, and locating the integer
+point furthest in that direction still contained within the region doesn't seem
+entirely trivial (except when the extreme intersection point happens to be one).
+Instead, what we do is, establish a bounding box that encloses all the valid
+intersections (the vertices of the polygon that defines the valid solutions),
+and then iterate along one coordinate axis (say, $z_1$) for the integer
+coordinates in the bounding box. With $z_1$ fixed, we can just call the solution
+for the $f=1$ case to find the optimal $z_2$.
+
+(There are hypothetical badly shaped regions for which this does not work, for
+example ones that just have a single finite vertex, extending to infinity in
+some direction. In practice, this does not seem to occur; it's possible that the
+nature of the problem ensures it cannot.)
+
+As an implementation detail, we pick the dimension $j$ with the maximal
+$\left| \sum_i b_{j,i} \right|$ as the one to iterate over (as the one that's
+most "in the direction of" the optimal solution), and start from the end closer
+to the optimal solution. We also compute the "margin" as the best-case impact on
+the objective function from selecting $z_2$ from within its bounds, and stop the
+iteration early if we've found a solution that's no longer possible to improve
+on. In practice, this early stopping does not seem to make a difference to the
+runtime of the algorithm.
+
+The case of $f=3$ is the natural extension to three dimensions, just using
+triplets of constraints to find the intersection points, and calling the $f=2$
+solution again with one coordinate fixed.
+
 ### Burlesque
 
-Part 2 might not happen, but at least part 1 exists.
+For hopefully obvious reasons, part 2 hasn't really been golfed much. It's very
+much a port of the Go solution, with some non-essentials (simplifying the
+machines with ad-hoc rules, error checking) stripped off.
 
 Part 1:
 
 ```
 ln{WD~]g_~-{'#==}m[sas0<-2ugs1{XX{><}gB2en{\[ri2j**}ms}m[
 S2L[2j**?drz{2dg++}Cmsb[-{2dg<-{}fIg2jsi{$$}r[g1==}fe2dg++}ms
+```
+
+Part 2:
+
+```
+%xP={JJ{!!}j+]g0-]jm[sarox/?-{0.>}m[?*}%xd={156048237246138057XXsi3co)pd3co)++^p
+.-}%x1={g0-]g9ngz[:-]{-]0>=}ptp^{td./pd}m^>]j{td./av}m^<]r@{g0-]?*g9?+++}m[sa{<]
+bx}if}%x2={g02.+g8ng[+tpS5Jcp{J\[1304XXsi2co)pdp^.-J{j\[24150523XXsi2co)pd2co{.-
+}^mjtd?/0J}ifvvvv}m[NB{-1[+{{.*}Z]++0.0>=}j+]g5jal}f[sa{)[~J<]pdj>]avr@{g01!!?*
+g8?+s9x1p^}m[sa{<]bx}if}if}ln{WD[-{XX{><}gB2en)\[ri}m[l_js2{g2L[[+{2j**}ms2dg[-
+<-}m[sa-.rz)z?iR<>bxj+]s00{S3xP{0>=}m[2?*?d{{?*}Z]}j+]g0jm[s0xP++z?{JJ{RA}j+]{m[
+}j+]g0j0aps0g2jRAs2}{{xPzi:[~([~)sc2.+tpp^p^s7s8p^./s9g0{Jg7!!g9?*{?-}j+]g8ap}m[
+s0}{xP)nz++2>=}w!JxP{nz}fiS7!={g0{Jg7!!jJg3!!g7sajg3sa}m[s0}ifg0-]{g3!!}m[Jg3!!
+?/0g3sa{Jg3!!{?*?-}j+]0jZ]}j0jr~g0jm[s0+.}x/ie}{g0-]saj-]L[<..<}w!{}s1Jg0-]tpj.+
+saro{.+}Z]g2j{l_g1?*++x/j.-j./g1j[+s1}Z]vvg0[~Jg1?*tp)++s1j.-S0L[{{g1++}{g1s9x1
+-]}{g1s8x2-]}{g0g1ng[+tpS53CB{J)~]\[xdJ{jtpJJ3rositp\[xdbxj320XXsitp\[xd[+j130XX
+sitp\[xd[+jtd?/0J}ifvvvv}m[NB{-1[+{{.*}Z]++-0.1>=}j+]g5jal}f[)[~J<]pdj>]avr@{g0
+[~?*g1?+s8x2p^}m[<]}}j!!e!}ms
 ```
 
 ## [Day 11](https://adventofcode.com/2025/day/11): Reactor

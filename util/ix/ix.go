@@ -45,9 +45,28 @@ func Sign[T signed](x T) T {
 	return 0
 }
 
-// CeilDiv returns the result of the integer division a / b except rounded up (for nonnegative integers).
+// FloorDiv returns the result of the integer division a / b except always rounded down, even for negative numbers.
+func FloorDiv[T integer](a, b T) T {
+	if b < 0 {
+		a, b = -a, -b
+	}
+	if a >= 0 {
+		return a / b
+	} else {
+		return (a - b + 1) / b
+	}
+}
+
+// CeilDiv returns the result of the integer division a / b except always rounded up.
 func CeilDiv[T integer](a, b T) T {
-	return (a + b - 1) / b
+	if b < 0 {
+		a, b = -a, -b
+	}
+	if a >= 0 {
+		return (a + b - 1) / b
+	} else {
+		return a / b
+	}
 }
 
 // GCD returns the greatest common divisor of the two arguments.

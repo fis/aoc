@@ -16,6 +16,7 @@
 package day10
 
 import (
+	"cmp"
 	"fmt"
 	"math"
 	"slices"
@@ -60,11 +61,6 @@ func (m machine) configLights() (totalPresses int) {
 }
 
 func (m machine) configJolts() (totalPresses int) {
-	fixedPresses, _ := m.simplify()
-	if len(m.buttons) == 0 {
-		return fixedPresses
-	}
-
 	A := matZero(len(m.jolts), len(m.buttons))
 	for bi, b := range m.buttons {
 		for ji := range m.jolts {
@@ -73,13 +69,11 @@ func (m machine) configJolts() (totalPresses int) {
 			}
 		}
 	}
-	solvedPresses := solveEqs(A, m.jolts)
-
-	return fixedPresses + solvedPresses
+	return solveEqs(A, m.jolts)
 }
 
 func solveEqs(A mat, b []int) (s int) {
-	// solving the initial system of equation following the lead of:
+	// solving this initial system of equations is based on:
 	// https://www.epfl.ch/labs/disopt/wp-content/uploads/2018/09/hnf.pdf
 
 	// find Hermite normal form of A: H = AU such that U is unimodular, H is lower triangular
@@ -110,7 +104,6 @@ outer:
 			}
 			if j1 == -1 { // this row is redundant, throw it away to achieve full row rank
 				H.delRow(k)
-				// A.delRow(k)
 				b = slices.Delete(b, k, k+1)
 				k-- // reprocess the row
 				continue outer
@@ -162,150 +155,172 @@ outer:
 
 	// find the lattice of integer solutions x = Uy' where y' y + arbitrary last "free" components
 
-	x0 := make([]int, H.n)
+	x0 := vecZero(H.n)
 	for i := range H.n {
 		for j := range r {
-			x0[i] += y[j] * U.at(i, j)
+			x0.a[i] += y[j] * U.at(i, j)
 		}
+		x0.s += x0.a[i]
 	}
 
 	basis := U.cols(r, H.n)
-	free := len(basis)
+	for i := range basis {
+		basis[i].flipNegative()
+	}
+	slices.SortFunc(basis, func(a, b vec) int { return cmp.Compare(b.s, a.s) })
 
 	// find the (integer) values for the free variables that minimize sum(xi) subject to xi >= 0
 	// this is done by finding the vertices that bound the region of valid solutions,
 	// without worrying about integrality or the objective function, and then iterating over
 	// the integer values within that bounding box
 
-	switch free {
+	switch len(basis) {
 	case 0:
-		return fn.Sum(x0) // unique solution, assume valid
+		return x0.s // unique solution, assume valid
 
 	case 1:
-		x, xc := make([]int, H.n), make([]int, H.n)
-		return solve1(x, math.MaxInt, unbounded, x0, basis[0], xc)
+		return solve1(math.MaxInt, unbounded, x0, basis[0])
 
 	case 2:
-		x, xc0, xc1 := make([]int, H.n), make([]int, H.n), make([]int, H.n)
-		return solve2(x, math.MaxInt, unbounded, unbounded, x0, basis[0], basis[1], xc0, xc1)
+		xt := vecZero(H.n)
+		return solve2(math.MaxInt, unbounded, unbounded, x0, basis[0], basis[1], xt)
 
 	case 3:
-		x, xc0, xc1, xc2 := make([]int, H.n), make([]int, H.n), make([]int, H.n), make([]int, H.n)
-		return solve3(x, x0, basis[0], basis[1], basis[2], xc0, xc1, xc2)
+		xt0, xt1 := vecZero(H.n), vecZero(H.n)
+		return solve3(x0, basis[0], basis[1], basis[2], xt0, xt1)
 
 	default:
 		panic("unsupported number of free variables")
 	}
 }
 
-func solve1(x []int, minS int, zb ival, x0, basis, xc []int) int {
-	for i, bi := range basis {
+func solve1(minS int, zb ival, x0, basis vec) int {
+	for i, bi := range basis.a {
 		switch {
 		case bi < 0:
-			z := ix.RatOf(-x0[i], bi)
+			z := ix.Rat{P: x0.a[i], Q: -bi} // z = -x[0]/bi
 			zb = zb.updateMax(z.Floor())
 		case bi > 0:
-			z := ix.RatOf(-x0[i], bi)
+			z := ix.Rat{P: -x0.a[i], Q: bi} // z = -x[0]/bi
 			zb = zb.updateMin(z.Ceil())
 		}
 	}
-	if !zb.isFinite() {
+	if zb.empty() {
 		return minS
 	}
-	for z := zb.min; z <= zb.max; z++ {
-		if s := fn.Sum(combine(xc, x0, basis, z)); fn.Min(xc) >= 0 && s < minS {
-			copy(x, xc)
-			minS = s
-		}
-	}
-	return minS
+	return min(minS, x0.s+zb.min*basis.s)
 }
 
-func solve2(x []int, minS int, zb0, zb1 ival, x0, basis0, basis1, xc0, xc1 []int) int {
-	n := len(x)
+func solve2(minS int, zb0, zb1 ival, x0, basis0, basis1, xt vec) int {
+	n := x0.len()
 	zr0, zr1 := empty, empty
+	var bestZ0, bestZ1, bestS ix.Rat
 	for i := 0; i < n-1; i++ {
 	nextIntersect:
 		for j := i + 1; j < n; j++ {
-			a1, b1, c1 := basis0[i], basis1[i], -x0[i]
-			a2, b2, c2 := basis0[j], basis1[j], -x0[j]
+			a1, b1, c1 := basis0.a[i], basis1.a[i], -x0.a[i]
+			a2, b2, c2 := basis0.a[j], basis1.a[j], -x0.a[j]
 			det := a1*b2 - b1*a2
 			if det == 0 {
 				continue
 			}
-			z0, z1 := ix.RatOf(c1*b2-b1*c2, det), ix.RatOf(a1*c2-c1*a2, det)
+			z0p, z1p := c1*b2-b1*c2, a1*c2-c1*a2
 			for k := range n {
 				if k == i || k == j {
 					continue // 0 by construction
 				}
-				xk := ix.RatI(x0[k]).Add(z0.MulI(basis0[k])).Add(z1.MulI(basis1[k]))
-				if xk.P < 0 {
+				if ix.RatSign(x0.a[k]*det+z0p*basis0.a[k]+z1p*basis1.a[k], det) < 0 {
 					continue nextIntersect // in wrong half, can't be a vertex of valid region
 				}
 			}
+			z0, z1 := ix.RatU(z0p, det), ix.RatU(z1p, det)
 			zr0 = zr0.extend(z0.Ceil(), z0.Floor())
 			zr1 = zr1.extend(z1.Ceil(), z1.Floor())
+			s := ix.RatU(x0.s*det+z0p*basis0.s+z1p*basis1.s, det)
+			if !bestS.IsValid() || s.Compare(bestS) < 0 {
+				bestZ0, bestZ1, bestS = z0, z1, s
+			}
 		}
+	}
+	if bestS.IsValid() && bestZ0.IsInt() && bestZ1.IsInt() {
+		return min(minS, bestS.P/bestS.Q)
 	}
 	zb0, zb1 = zb0.isect(zr0), zb1.isect(zr1)
 	if !zb0.isFinite() || !zb1.isFinite() {
 		panic("failed to bound 2 free variables")
 	}
-	if zb1.size() < zb0.size() {
-		zb0, zb1, basis0, basis1 = zb1, zb0, basis1, basis0
+	if zb0.empty() || zb1.empty() {
+		return minS
 	}
+	if basis0.s == 0 {
+		return min(minS, x0.s) // objective function is the same for all these solutions
+	}
+	margin := zb1.min * basis1.s // best-case impact to solution cost from adjusting z1
 	for z0 := zb0.min; z0 <= zb0.max; z0++ {
-		combine(xc0, x0, basis0, z0)
-		minS = solve1(x, minS, zb1, xc0, basis1, xc1)
+		combine(&xt, x0, basis0, z0)
+		if xt.s+margin >= minS {
+			break // can't find a better solution
+		}
+		_ = margin
+		minS = solve1(minS, zb1, xt, basis1)
 	}
 	return minS
 }
 
-func solve3(x, x0, basis0, basis1, basis2, xc0, xc1, xc2 []int) int {
+func solve3(x0, basis0, basis1, basis2, xt0, xt1 vec) int {
 	minS := math.MaxInt
 	zb0, zb1, zb2 := empty, empty, empty
-	n := len(x)
+	n := x0.len()
+	var bestZ0, bestZ1, bestZ2, bestS ix.Rat
 	for i := 0; i < n-1; i++ {
 		for j := i + 1; j < n; j++ {
 		nextIntersect:
 			for k := j + 1; k < n; k++ {
-				a1, b1, c1, d1 := basis0[i], basis1[i], basis2[i], -x0[i]
-				a2, b2, c2, d2 := basis0[j], basis1[j], basis2[j], -x0[j]
-				a3, b3, c3, d3 := basis0[k], basis1[k], basis2[k], -x0[k]
+				a1, b1, c1, d1 := basis0.a[i], basis1.a[i], basis2.a[i], -x0.a[i]
+				a2, b2, c2, d2 := basis0.a[j], basis1.a[j], basis2.a[j], -x0.a[j]
+				a3, b3, c3, d3 := basis0.a[k], basis1.a[k], basis2.a[k], -x0.a[k]
 				det := det3(a1, b1, c1, a2, b2, c2, a3, b3, c3)
 				if det == 0 {
 					continue
 				}
-				z0 := ix.RatOf(det3(d1, b1, c1, d2, b2, c2, d3, b3, c3), det)
-				z1 := ix.RatOf(det3(a1, d1, c1, a2, d2, c2, a3, d3, c3), det)
-				z2 := ix.RatOf(det3(a1, b1, d1, a2, b2, d2, a3, b3, d3), det)
+				z0p := det3(d1, b1, c1, d2, b2, c2, d3, b3, c3)
+				z1p := det3(a1, d1, c1, a2, d2, c2, a3, d3, c3)
+				z2p := det3(a1, b1, d1, a2, b2, d2, a3, b3, d3)
 				for l := range n {
 					if l == i || l == j || l == k {
 						continue // 0 by construction
 					}
-					xl := ix.RatI(x0[l]).Add(z0.MulI(basis0[l])).Add(z1.MulI(basis1[l])).Add(z2.MulI(basis2[l]))
-					if xl.P < 0 {
+					if ix.RatSign(x0.a[l]*det+z0p*basis0.a[l]+z1p*basis1.a[l]+z2p*basis2.a[l], det) < 0 {
 						continue nextIntersect // in wrong half, can't be a vertex of valid region
 					}
 				}
+				z0, z1, z2 := ix.RatU(z0p, det), ix.RatU(z1p, det), ix.RatU(z2p, det)
 				zb0 = zb0.extend(z0.Ceil(), z0.Floor())
 				zb1 = zb1.extend(z1.Ceil(), z1.Floor())
 				zb2 = zb2.extend(z2.Ceil(), z2.Floor())
+				s := ix.RatU(x0.s*det+z0p*basis0.s+z1p*basis1.s+z2p*basis2.s, det)
+				if !bestS.IsValid() || s.Compare(bestS) < 0 {
+					bestZ0, bestZ1, bestZ2, bestS = z0, z1, z2, s
+				}
 			}
 		}
+	}
+	if bestS.IsValid() && bestZ0.IsInt() && bestZ1.IsInt() && bestZ2.IsInt() {
+		return min(minS, bestS.P/bestS.Q)
 	}
 	if !zb0.isFinite() || !zb1.isFinite() || !zb2.isFinite() {
 		panic("failed to bound 3 free variables")
 	}
-	if zb2.size() < zb1.size() {
-		zb1, zb2, basis1, basis2 = zb2, zb1, basis2, basis1
+	if basis0.s == 0 {
+		return min(minS, x0.s) // objective function is the same for all these solutions
 	}
-	if zb1.size() < zb0.size() {
-		zb0, zb1, basis0, basis1 = zb1, zb0, basis1, basis0
-	}
+	margin := zb1.min*basis1.s + zb2.min*basis2.s // best-case impact to solution cost from adjusting z1, z2
 	for z0 := zb0.min; z0 <= zb0.max; z0++ {
-		combine(xc0, x0, basis0, z0)
-		minS = solve2(x, minS, zb1, zb2, xc0, basis1, basis2, xc1, xc2)
+		combine(&xt0, x0, basis0, z0)
+		if xt0.s+margin >= minS {
+			break // can't find a better solution
+		}
+		minS = solve2(minS, zb1, zb2, xt0, basis1, basis2, xt1)
 	}
 	return minS
 }
@@ -314,11 +329,12 @@ func det3(a, b, c, d, e, f, g, h, i int) int {
 	return a*e*i + b*f*g + c*d*h - c*e*g - b*d*i - a*f*h
 }
 
-func combine(xc, x0 []int, b []int, z int) []int {
-	for i, x0i := range x0 {
-		xc[i] = x0i + z*b[i]
+func combine(xc *vec, x0, b vec, z int) {
+	xc.s = 0
+	for i, x0i := range x0.a {
+		xc.a[i] = x0i + z*b.a[i]
+		xc.s += xc.a[i]
 	}
-	return xc
 }
 
 type ival struct {
@@ -331,11 +347,34 @@ var (
 )
 
 func (iv ival) isFinite() bool         { return iv.min != math.MinInt && iv.max != math.MaxInt }
-func (iv ival) size() int              { return iv.max - iv.min + 1 }
+func (iv ival) empty() bool            { return iv.max < iv.min }
 func (iv ival) updateMin(x int) ival   { return ival{max(iv.min, x), iv.max} }
 func (iv ival) updateMax(x int) ival   { return ival{iv.min, min(iv.max, x)} }
 func (iv ival) extend(lo, hi int) ival { return ival{min(iv.min, lo), max(iv.max, hi)} }
 func (iv ival) isect(iv2 ival) ival    { return ival{max(iv.min, iv2.min), min(iv.max, iv2.max)} }
+
+type vec struct {
+	a []int
+	s int
+}
+
+func vecZero(n int) vec { return vec{a: make([]int, n), s: 0} }
+func (v vec) len() int  { return len(v.a) }
+
+func (v *vec) set(o vec) {
+	copy(v.a, o.a)
+	v.s = o.s
+}
+
+func (v *vec) flipNegative() {
+	if v.s >= 0 {
+		return
+	}
+	for i, x := range v.a {
+		v.a[i] = -x
+	}
+	v.s = -v.s
+}
 
 type mat struct {
 	m, n int
@@ -358,12 +397,14 @@ func (m mat) at(i, j int) int { return m.a[i*m.n+j] }
 func (m mat) row(i int) []int { return m.a[i*m.n : (i+1)*m.n] }
 func (m mat) set(i, j, v int) { m.a[i*m.n+j] = v }
 
-func (m mat) cols(j1, j2 int) [][]int {
-	cols := make([][]int, j2-j1)
+func (m mat) cols(j1, j2 int) []vec {
+	cols := make([]vec, j2-j1)
 	for c, j := 0, j1; j < j2; c, j = c+1, j+1 {
-		cols[c] = make([]int, m.m)
+		cols[c] = vecZero(m.m)
 		for i := range m.m {
-			cols[c][i] = m.at(i, j)
+			v := m.at(i, j)
+			cols[c].a[i] = v
+			cols[c].s += v
 		}
 	}
 	return cols
@@ -422,135 +463,6 @@ func (m mat) String() string {
 		}
 	}
 	return s.String()
-}
-
-func (m *machine) simplify() (fixedPresses int, bounds [][2]int) {
-	bounds = make([][2]int, len(m.buttons))
-	for i := range len(m.buttons) {
-		bounds[i] = [2]int{0, math.MaxInt}
-	}
-
-	changed := true
-	for changed {
-		changed = false
-
-		// remove joltages that are wired to same set of buttons (must have identical levels, otherwise unsolvable)
-
-		wiring := m.wiring()
-		wiringMap := make(map[uint32]int)
-		for ji, w := range wiring {
-			wiringMap[w] = m.jolts[ji]
-		}
-		if len(wiringMap) != len(wiring) {
-			changed = true
-			wiring, m.jolts = make([]uint32, 0, len(wiringMap)), make([]int, 0, len(wiringMap))
-			for w, j := range wiringMap {
-				wiring = append(wiring, w)
-				m.jolts = append(m.jolts, j)
-			}
-			m.wireButtons(wiring)
-		}
-
-		// update upper bounds: button can't be pressed more times than any joltage if affects (minus lower bounds of other buttons affecting that joltage)
-
-		for bi, b := range m.buttons {
-			for ji, j := range m.jolts {
-				if b&(1<<ji) == 0 {
-					continue
-				}
-				for oi, o := range m.buttons {
-					if oi == bi || o&(1<<ji) == 0 {
-						continue
-					}
-					j -= bounds[oi][0]
-				}
-				if j < bounds[bi][1] {
-					changed = true
-					bounds[bi][1] = j
-				}
-			}
-		}
-
-		// update lower bounds: a button must be pressed at least as many times as required to bump up any joltage upper bounds of other buttons can't get high enough
-
-		for bi, b := range m.buttons {
-			for ji, j := range m.jolts {
-				if b&(1<<ji) == 0 {
-					continue
-				}
-				for oi, o := range m.buttons {
-					if oi == bi || o&(1<<ji) == 0 {
-						continue
-					}
-					j -= bounds[oi][1]
-				}
-				if j > bounds[bi][0] {
-					changed = true
-					bounds[bi][0] = j
-				}
-			}
-		}
-
-		// remove buttons that have equal bounds completely
-
-		for bi := 0; bi < len(m.buttons); bi++ {
-			if bounds[bi][0] == bounds[bi][1] {
-				changed = true
-				fixedPresses += bounds[bi][0]
-				for ji := range len(m.jolts) {
-					if m.buttons[bi]&(1<<ji) != 0 {
-						m.jolts[ji] -= bounds[bi][0]
-					}
-				}
-				m.buttons = slices.Delete(m.buttons, bi, bi+1)
-				bounds = slices.Delete(bounds, bi, bi+1)
-				bi--
-			}
-		}
-
-		// remove joltages that have no buttons referring to them
-
-		wiring = m.wiring()
-		for ji := 0; ji < len(m.jolts); ji++ {
-			if wiring[ji] == 0 {
-				changed = true
-				m.jolts = slices.Delete(m.jolts, ji, ji+1)
-				wiring = slices.Delete(wiring, ji, ji+1)
-				for bi, b := range m.buttons {
-					mask := uint32(1)<<ji - 1
-					m.buttons[bi] = (b & mask) | ((b >> 1) &^ mask)
-				}
-				ji--
-			}
-		}
-	}
-
-	return fixedPresses, bounds
-}
-
-func (m machine) wiring() (wiring []uint32) {
-	wiring = make([]uint32, len(m.jolts))
-	for bi, b := range m.buttons {
-		for ji := range len(m.jolts) {
-			if b&(1<<ji) != 0 {
-				wiring[ji] |= 1 << bi
-			}
-		}
-	}
-	return wiring
-}
-
-func (m machine) wireButtons(wiring []uint32) {
-	for bi := range m.buttons {
-		m.buttons[bi] = 0
-	}
-	for ji, w := range wiring {
-		for bi := range len(m.buttons) {
-			if w&(1<<bi) != 0 {
-				m.buttons[bi] |= 1 << ji
-			}
-		}
-	}
 }
 
 func parseMachine(line string) (m machine, err error) {

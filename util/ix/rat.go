@@ -14,6 +14,8 @@
 
 package ix
 
+import "cmp"
+
 type Rat struct {
 	P, Q int
 }
@@ -28,14 +30,25 @@ func RatOf(p, q int) Rat {
 	return Rat{p, q}.simplify()
 }
 
-func RatI(n int) Rat         { return Rat{n, 1} }
-func (r Rat) Add(s Rat) Rat  { return Rat{r.P*s.Q + s.P*r.Q, r.Q * s.Q}.simplify() }
-func (r Rat) AddI(n int) Rat { return Rat{r.P + r.Q, r.Q} }
-func (r Rat) Sub(s Rat) Rat  { return Rat{r.P*s.Q - s.P*r.Q, r.Q * s.Q}.simplify() }
-func (r Rat) SubI(n int) Rat { return Rat{r.P - r.Q, r.Q} }
-func (r Rat) Mul(s Rat) Rat  { return Rat{r.P * s.P, r.Q * s.Q}.simplify() }
-func (r Rat) MulI(n int) Rat { return Rat{r.P * n, r.Q}.simplify() }
-func (r Rat) DivI(n int) Rat { return Rat{r.P, r.Q * n}.simplify() }
+func RatU(p, q int) Rat {
+	if q < 0 {
+		p, q = -p, -q
+	}
+	return Rat{p, q}
+}
+
+func RatI(n int) Rat            { return Rat{n, 1} }
+func (r Rat) Add(s Rat) Rat     { return Rat{r.P*s.Q + s.P*r.Q, r.Q * s.Q}.simplify() }
+func (r Rat) AddI(n int) Rat    { return Rat{r.P + r.Q, r.Q} }
+func (r Rat) Sub(s Rat) Rat     { return Rat{r.P*s.Q - s.P*r.Q, r.Q * s.Q}.simplify() }
+func (r Rat) SubI(n int) Rat    { return Rat{r.P - r.Q, r.Q} }
+func (r Rat) Mul(s Rat) Rat     { return Rat{r.P * s.P, r.Q * s.Q}.simplify() }
+func (r Rat) MulI(n int) Rat    { return Rat{r.P * n, r.Q}.simplify() }
+func (r Rat) MulIU(n int) Rat   { return Rat{r.P * n, r.Q} }
+func (r Rat) DivI(n int) Rat    { return Rat{r.P, r.Q * n}.simplify() }
+func (r Rat) Compare(s Rat) int { return cmp.Compare(r.P*s.Q, s.P*r.Q) }
+func (r Rat) IsValid() bool     { return r.Q != 0 }
+func (r Rat) IsInt() bool       { return r.P%r.Q == 0 }
 
 func (r Rat) Floor() int {
 	if r.P >= 0 {
@@ -58,4 +71,15 @@ func (r Rat) simplify() Rat {
 		return Rat{r.P / d, r.Q / d}
 	}
 	return r
+}
+
+func RatSign(p, q int) int {
+	switch {
+	case p == 0, q == 0:
+		return 0
+	case p > 0 && q > 0, p < 0 && q < 0:
+		return 1
+	default:
+		return -1
+	}
 }
