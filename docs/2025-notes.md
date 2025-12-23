@@ -92,7 +92,17 @@ C: ',;;{ps)ab^pr@{XXsa          ./cosa1.>jsm&&}      f[++}ms
 
 ## [Day 3](https://adventofcode.com/2025/day/3): Lobby
 
+Since picking digit $d_1$ over $d_2$, where $d_1 > d_2$, as the first digit is
+strictly better, no matter what happens later on in the number, we can solve
+this with a greedy algorithm that just always picks the earliest instance of the
+largest digit within the first $n-r$ characters, where $n$ is the length of the
+string, and $r$ the number of digits that still need to be selected after the
+current one, then proceeding to apply this repeatedly on what remains of the
+string after the first selected digit.
+
 ### Burlesque
+
+By contrast, day 3 _was_ pretty Burlesque-friendly.
 
 Part 1:
 
@@ -115,6 +125,11 @@ C: ln{ JJ          >]Fi.-g_j             ri}ms
 ```
 
 ## [Day 4](https://adventofcode.com/2025/day/4): Printing Department
+
+The solution here is pretty much exactly what the puzzle description states: it
+iterates over the level, and for each `@` counts the number of other `@`s in the
+Moore neighborhood. If it's less than 4, the coordinate is added to the lits of
+rolls to remove. Then the level is updated, numbers tallied, rinse and repeat.
 
 ### Burlesque
 
@@ -143,6 +158,15 @@ C: lnS0L[-.S1rzJcp{ g0jd!'@==        {2rz?d?+}MPcp{{J0>=jg1<=}al}{g0jd!}FM'@CN4<
 
 ## [Day 5](https://adventofcode.com/2025/day/5): Cafeteria
 
+Again, quite straight-forward. We parse the list of intervals, sort them by
+their lower endpoint, and then do a single pass over the list to merge the
+intervals into a set of non-overlapping, maximal-length ones that cover the same
+values.
+
+After that, part 1 can be solved by just testing each ingredient (binary search
+on the already-sorted interval list), while part 2 is just the sum of the
+lengths of the merged intervals.
+
 ### Burlesque
 
 Part 1:
@@ -167,6 +191,9 @@ C: ln ""     {ps)ab}m[      {                                              }ms
 
 ## [Day 6](https://adventofcode.com/2025/day/6): Trash Compactor
 
+This is really just an input parsing problem, with nothing "algorithmic" to
+speak of.
+
 ### Burlesque
 
 Part 1:
@@ -190,6 +217,14 @@ C: lnl_    tp             jWD{'.+]psr[}Z]++
 ```
 
 ## [Day 7](https://adventofcode.com/2025/day/7): Laboratories
+
+We just iterate row by row (in fact skipping every other row since they're
+always empty), maintaining a counter for each position where an active tachyon
+beam might be that tracks the number of paths required to get there.
+
+If a beam hits empty space, it's just propagated forward. If it hits a splitter,
+the number of paths it was "carrying" is added to both the neighboring cells,
+reflecting the choice that each of those paths could now go one of two ways.
 
 ### Burlesque
 
@@ -233,6 +268,16 @@ out a good merge operation for them.
 
 ## [Day 8](https://adventofcode.com/2025/day/8): Playground
 
+Today's solution revolves around a heap and a map tracking, for each junction
+box, which circuit (using an arbitrary labeling of them) it's in.
+
+The heap is initialized to contain all the pairwise distances between the boxes.
+The circuit map is initialized to put each box in its own, singleton circuit.
+The solution then keeps popping off pairs of boxes in increasing order of
+distance from the heap, and "connecting" them by updating the circuit map, until
+all boxes are in a single circuit, pausing after 1000 to also record the
+solution to part 1.
+
 ### Burlesque
 
 We've reached the point where I can't be bothered to try golf these...
@@ -264,6 +309,20 @@ C: {g2{g2g6!!{Jg1jg4jsas1}m[_+}g4ap{}g6sas2}if}
 ```
 
 ## [Day 9](https://adventofcode.com/2025/day/9): Movie Theater
+
+Part 1 is simple: just iterate over all pairs and find the rectangle with the
+largest area.
+
+Part 2 got a bit complicated; not conceptually, just in the details. What the Go
+code does first is to compute the signed area of the entire polygon, because
+that reveals the winding (clockwise or counterclockwise), which the second part
+of the solution relies on. We then iterate over the path and adjust the
+coordinates to be, not the indices (conceptually, top-left corners of) red
+tiles, but the actual corners of the infinitely thin lines that enclose the area
+where valid rectangles must lie. These lines are then broken down into a set of
+horizontal and vertical ones, after which we can again iterate over all possible
+rectangles (defined by a pair of red tiles), only this time we disqualify any
+rectangle that overlaps with one of the line segments from before.
 
 ### Burlesque
 
@@ -315,7 +374,7 @@ What the Go code does is:
    - For rank 0, there's just the one solution, so we'll just assume it works.
    - For rank 1, there's one free variable $z \in \mathbb{Z}$. We derive bounds
      for valid solutions from the constraint that each button press count
-     $x_i \ge 0$, and iterate find the solution at one of the endpoints.
+     $x_i \ge 0$, and find the solution at one of the endpoints.
    - For rank 2, there's two free variables $z_0, z_1$. We again use the
      $x_i \ge 0$ constraints to find the vertices that define the boundary of
      valid solutions (ignoring integrality) and establish a bounding box for all
@@ -327,7 +386,7 @@ What the Go code does is:
 In a bit more detail:
 
 Any given machine has $m$ joltage levels to achieve, and $n$ buttons. Let's
-denote by $\mathbf{A}$ the $m$-by-$n$ matrix of integers, where $a_{ij} = 1$ iff
+denote by $\mathbf{A}$ the $m$ by $n$ matrix of integers, where $a_{ij} = 1$ iff
 joltage $i$ is increased when button $j$ is pressed, and 0 otherwise. Denoting
 by $\mathbf{x}$ and $\mathbf{v}$ column vectors that indicate the button presses
 and joltage levels, respectively, we're interested in finding an integer
@@ -343,7 +402,11 @@ besides), and $\mathbf{U}$ is unimodular.
 It turns out that if we now find the (integer) solution
 $\mathbf{y} = \mathbf{U}^{-1} \mathbf{x}$ to the system
 $\mathbf{H} \mathbf{y} = \mathbf{v}$, then it is the case that
-$\mathbf{y} = \begin{bmatrix} y_1 \cdots y_r \ 0 \cdots 0 \end{bmatrix}^T$
+
+$$
+\mathbf{y} = \begin{bmatrix} y_1 \cdots y_r \ 0 \cdots 0 \end{bmatrix}^T
+$$
+
 (where $r$ is the rank of $\mathbf{H}$), and all solutions $\mathbf{x}$ can be
 obtained as $\mathbf{x} = \mathbf{U} \mathbf{y}'$, where $\mathbf{y}'$ is
 $\mathbf{y}$ with arbitrary integers $z_1, \ldots, z_{n-r} \in \mathbb{Z}$ in
@@ -362,9 +425,10 @@ one. For completeness, we could also check that it satisfies the constraints,
 but here we just assume the puzzle authors are playing fair.
 
 When $f=1$, all solutions have the form
-$\mathbf{x} = \mathbf{x}_0 + z_1 \mathbf{b}$. We can use the set of constraints
-$x_i \ge 0$ to derive lower and upper bounds for $z_1$ from every component of
-$b_i$ with a positive or negative value, respectively. Specifically:
+$\mathbf{x} = \mathbf{x}_0 + z_1 \mathbf{b}_1$. We can use the set of
+constraints $x_i \ge 0$ to derive lower and upper bounds for $z_1$ from every
+component of $b_i$ with a positive or negative value, respectively.
+Specifically:
 
 - If $b_i < 0$: $z_1 \le \lfloor \frac{-x_i}{b_i} \rfloor$.
 - If $b_i > 0$: $z_1 \ge \lceil \frac{-x_i}{b_i} \rceil$.
@@ -458,6 +522,20 @@ sitp\[xd[+jtd?/0J}ifvvvv}m[NB{-1[+{{.*}Z]++-0.1>=}j+]g5jal}f[)[~J<]pdj>]avr@{g0
 
 ## [Day 11](https://adventofcode.com/2025/day/11): Reactor
 
+The first (and only) pure graph thing this year.
+
+It wasn't too complicated. We assume it's a DAG, and could likely do this with a
+traditional "first do a toposort, then count number of paths with a dynamic
+programming approach" thing, but opted to a recursive backwards DFS with
+memoization instead; it probably boils down to the same thing, really.
+
+For part 2, the only wrinkle is to maintain separate counters for "number of
+paths with neither", "number of paths with `fft`", "number of paths with `dac`"
+and "number of paths with both", which can then be properly updated depending on
+the node being explored.
+
+Part 2 could again also solve part 1, except the source node is different.
+
 ### Burlesque
 
 Found it much simpler than day 10 this time.
@@ -495,10 +573,52 @@ Burlesque solution...
 
 ### Burlesque
 
-Just the one part on the last day. Notably this ignores the shapes completely.
+Just the one part on the last day, done two different ways corresponding to the
+positive (sufficient area to fit N 3x3 squares) and negative (total area of all
+shapes is larger than the rectangle) heuristics, which (for the puzzle inputs)
+are just inverses of each other.
 
-Part 1:
+The former is slightly shorter, probably because it is able to ignore the shapes
+completely.
+
+Part 1, positive:
 
 ```
 ln{""};;[~{':;;p^'x;;ri?i?i3?/pdjWDri++>=}ms
 ```
+
+Part 1, negative:
+
+```
+ln{""};;l_{\['#CN}m[s0{':;;p^'x;;ripdjWDrig0?*++.>}ms
+```
+
+Combined:
+
+```
++:         [~                         ?i?i3?/             >=
+C: ln{""};;              {':;;p^'x;;ri       pdjWDri    ++  }ms
+-:         l_{\['#CN}m[s0                           g0?*  .>
+```
+
+## Benchmarks
+
+As usual, non-scientific benchmarks for the Go solutions:
+
+```
+BenchmarkAllDays/day=2025.01-32     81399     139491 ns/op
+BenchmarkAllDays/day=2025.02-32    346077      34829 ns/op
+BenchmarkAllDays/day=2025.03-32    168002      71821 ns/op
+BenchmarkAllDays/day=2025.04-32      2550    4725766 ns/op
+BenchmarkAllDays/day=2025.05-32    143902      84326 ns/op
+BenchmarkAllDays/day=2025.06-32     71493     169607 ns/op
+BenchmarkAllDays/day=2025.07-32     98474     120800 ns/op
+BenchmarkAllDays/day=2025.08-32      2044    5876190 ns/op
+BenchmarkAllDays/day=2025.09-32      3398    3520390 ns/op
+BenchmarkAllDays/day=2025.10-32     13728     873956 ns/op
+BenchmarkAllDays/day=2025.11-32     25617     466415 ns/op
+BenchmarkAllDays/day=2025.12-32     79588     150799 ns/op
+```
+
+Relatively cheap again, with no solutions over the 10 millisecond mark, and a
+median time of 0.16 ms.
