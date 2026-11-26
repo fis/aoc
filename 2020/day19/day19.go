@@ -90,7 +90,7 @@ func parseRules(lines []string) (rs ruleSet, err error) {
 			for _, word := range util.Words(alt) {
 				num, err := strconv.Atoi(word)
 				if err != nil {
-					return ruleSet{}, fmt.Errorf("expected number, got %q", num)
+					return ruleSet{}, fmt.Errorf("expected number, got %q", word)
 				}
 				nums = append(nums, num)
 			}
